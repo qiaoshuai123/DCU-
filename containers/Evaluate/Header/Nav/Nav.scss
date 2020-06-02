@@ -1,0 +1,35 @@
+.navWrapper {
+    position: fixed;
+    top: 50px;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    padding-left: 30px;
+    display: flex;
+    align-items: center;
+    .navItem {
+        position: relative;
+        width: 150px;
+        margin-right: 30px;
+        cursor: pointer;
+        .navName {
+            height: 40px;
+            text-align: center;
+            line-height: 40px;
+            color: #05BBEC;
+        }
+        .navActive {
+            background: url(./nav_active.png) center center no-repeat;
+            background-size: contain;
+        }
+        .navBg {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: url(./nav.png) center center no-repeat;
+            background-size: 100% 100%;
+        }
+    }
+}

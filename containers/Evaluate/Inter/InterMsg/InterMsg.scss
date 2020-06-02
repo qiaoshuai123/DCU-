@@ -1,0 +1,66 @@
+.interMsgWrapper {
+    padding: 5px 0;
+    .chartsTitle {
+        font-size: 15px;
+        color: #03CB47;
+    }
+    .chartsSearch {
+        height: 50px;
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        :global(.ant-calendar-picker) {
+            width: 110px;
+            height: 30px;
+        }
+        :global(.ant-calendar-picker-icon) {
+            display: none;
+        }
+        :global(.ant-calendar-picker-clear) {
+            display: none;
+        }
+        :global(.ant-input) {
+            border: none;
+            background-color: #03406C;
+            color: #F1F1FB;
+        }
+        :global(.ant-select-selection__rendered) {
+            line-height: 28px;
+        }
+        :global(.ant-select-selection) {
+            background-color: #03406C;
+            color: #F1F1FB;
+            border: none;
+            box-shadow: none;
+            display: flex;
+            align-items: center;
+        }
+        :global(.ant-select-arrow) {
+            color: #F1F1FB;
+        }
+        :global(.ant-select-selection--multiple .ant-select-selection__choice) {
+            color: #F1F1FB;
+            background-color: transparent;
+            border: none;
+            margin-top: 2px;
+        }
+        :global(.ant-select-selection__choice__remove) {
+            color: #46A7C6;
+        }
+        .searchBtn {
+            width: 80px;
+            height: 30px;
+            margin-left: 5px;
+            text-align: center;
+            line-height: 30px;
+            border: 1px solid #032E55;
+            border-radius: 3px;
+            color: #F1F1FB;
+            cursor: pointer;
+        }
+        .searchActive {
+            background-color: #00A9C0;
+            border-color: #00A9C0;
+        }
+    }
+}

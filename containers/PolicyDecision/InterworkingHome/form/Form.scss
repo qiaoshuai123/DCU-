@@ -1,0 +1,47 @@
+.formBox{
+    height: 100%;
+}
+.pTop{
+    height: 30px;
+    font-size: 18px;
+    line-height: 30px;
+}
+.mountingManage {
+    // height: calc(100% - 100px);
+    .mountingTable {
+      height: 100%;
+      .mountingThead {
+        font-size: 12px;
+        height: 25px;
+        color: #95EDF4;
+        display: flex;
+      }
+      .mountingTr {
+        height: 25px;
+        display: flex;
+      }
+      .mountingThead {
+        background-color: rgba(14, 28, 63, .7);
+      }
+      .mountingTh, .mountingTd {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .deviceMsg {
+        margin-right: 20px;
+        color: #07a8ff;
+      }
+      .mountingTr:nth-child(odd) {
+        background-color: rgba(14, 50 ,98, .7);
+      }
+      .mountingTr:nth-child(even) {
+        background-color: rgba(14, 28, 63, .7);
+      }
+      .mountingTbody {
+        // height: calc(100% - 50px);
+        overflow-y: auto;
+      }
+    }
+  }
