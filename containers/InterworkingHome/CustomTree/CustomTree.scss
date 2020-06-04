@@ -1,0 +1,93 @@
+.treeWrapper {
+    font-size: 15px;
+    .treeList {
+        li {
+            margin: 0;
+            padding: 4px 0;
+            white-space: nowrap;
+            list-style: none;
+            outline: 0;
+        }
+        .treeLi {
+            position: relative;
+            margin-top: 7px;
+            .treeIcon {
+                width: 24px;
+                height: 24px;
+                position: absolute;
+                right: 30px;
+                margin: 0;
+                line-height: 24px;
+                text-align: center;
+                vertical-align: top;
+                border: 0 none;
+                outline: none;
+                font-size: 12px;
+                color: #fff;
+                cursor: pointer;
+            }
+            .treeNode {
+                display: inline-block;
+                height: 24px;
+                margin-left: 70px;
+                padding: 0 10px;
+                color: #f1f1fb;
+                line-height: 24px;
+                text-decoration: none;
+                vertical-align: top;
+                border-radius: 2px;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+            .childTree {
+                margin: 0;
+                padding: 0 0 0 25px;
+                transition: height ease .2s;
+                overflow: hidden;
+                .childLi {
+                    position: relative;
+                    &:first-child {
+                        margin-top: 7px;
+                    }
+                }
+                .childIcon {
+                    display: inline-block;
+                    width: 24px;
+                    height: 24px;
+                    margin: 0;
+                    line-height: 24px;
+                    text-align: center;
+                    vertical-align: top;
+                    border: 0 none;
+                    outline: none;
+                    font-size: 20px;
+                    color: #15AEE5;
+                    cursor: pointer;
+                }
+                .childNode {
+                    display: inline-block;
+                    height: 24px;
+                    margin: 0;
+                    padding: 0 5px 0 15px;
+                    color: #f1f1fb;
+                    line-height: 24px;
+                    text-decoration: none;
+                    vertical-align: top;
+                    border-radius: 2px;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                }
+            }
+        }
+    }
+}
+:global(.ant-tree-switcher_open .ant-tree-switcher-icon) {
+    font-size: 24px !important;
+}
+:global(.ant-tree-switcher_close .ant-tree-switcher-icon) {
+    font-size: 24px !important;
+}
+:global(.ant-tree.ant-tree-show-line li span.ant-tree-switcher) {
+    background-color: transparent;
+    color: #15AEE5;
+}

@@ -17,28 +17,8 @@ const Login = Loadable({
   loading: Loading,
   delay: 0,
 })
-const Entrance = Loadable({
-  loader: () => import('./containers/Entrance/Entrance'),
-  loading: Loading,
-  delay: 0,
-})
-const Inter = Loadable({
-  loader: () => import('./containers/Evaluate/Inter/Inter'),
-  loading: Loading,
-  delay: 0,
-})
-const Optimize = Loadable({
-  loader: () => import('./containers/PolicyDecision/optimize/optimize'),
-  loading: Loading,
-  delay: 0,
-})
-const Monitoring = Loadable({
-  loader: () => import('./containers/PolicyDecision/Monitoring/Monitoring'),
-  loading: Loading,
-  delay: 0,
-})
 const InterworkingHome = Loadable({
-  loader: () => import('./containers/PolicyDecision/InterworkingHome/InterworkingHome'),
+  loader: () => import('./containers/InterworkingHome/InterworkingHome'),
   loading: Loading,
   delay: 0,
 })
@@ -47,10 +27,7 @@ const Parent = () => (
   <React.Fragment>
     {/* <Route path="*" component={SystemMenu} /> */}
     {/* <Route path="/realtime" component={RealTime} />
-    <Route path="/entrance" component={Entrance} />
-    <Route path="/inter" component={Inter} />
-    <Route path="/optimize" component={Optimize} />
-    <Route path="/monitoring" component={Monitoring} /> */}
+ /> */}
     <Route path="/interworkingHome" component={InterworkingHome} />
   </React.Fragment>
 )
