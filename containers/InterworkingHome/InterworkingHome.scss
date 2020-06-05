@@ -29,8 +29,9 @@ $bor_color: #27343b;
       font-weight: bold;
       span {
         width: 28px;
-        height: 24px;
-        background-color: red;
+        height: 18px;
+        background:url('./img/03.png') no-repeat;
+        background-size: 100% 100%;
       }
     }
   }
@@ -41,16 +42,23 @@ $bor_color: #27343b;
     position: absolute;
     right: 0;
     top: 70px;
-    div{
+    div {
       height: 45px;
       display: flex;
       align-items: center;
       padding-left: 15px;
-      span{
+      span {
         width: 30px;
         height: 30px;
         margin-right: 8px;
-        background-color: red;
+      }
+      .spanTop {
+        background: url("./img/04.png") no-repeat;
+        background-size: contain;
+      }
+      .spanBom {
+        background: url("./img/05.png") no-repeat;
+        background-size: contain;
       }
     }
   }

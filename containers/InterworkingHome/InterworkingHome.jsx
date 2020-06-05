@@ -24,13 +24,13 @@ class InterworkingHome extends Component {
             />
           </div>
           <div className={styles.InterworkLeft_Title}>
-            <span>1</span>DCU点位列表
+            <span />DCU点位列表
           </div>
           <CustomTree />
         </div>
         <div className={styles.promptBox}>
-          <div><span>1</span>在线设备9处</div>
-          <div><span>1</span>在线设备3处</div>
+          <div><span className={styles.spanTop} />在线设备9处</div>
+          <div><span className={styles.spanBom} />在线设备3处</div>
         </div>
       </div>
     )

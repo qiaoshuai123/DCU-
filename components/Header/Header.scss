@@ -13,9 +13,11 @@
         display: flex;
         align-items: center;
         span {
-            width: 65px;
-            height: 60px;
-            background-color: red;
+            width: 45px;
+            height: 25px;
+            background: url("./img/01.png") no-repeat;
+            background-size: 100% 100%;
+            margin-right: 5px;
         }
     }
     .header_center {
@@ -36,18 +38,20 @@
         display: flex;
         align-items: center;
         span {
-            width: 65px;
-            height: 60px;
-            background-color: red;
+            width: 35px;
+            height: 35px;
+            background: url("./img/02.png") no-repeat;
+            background-size: contain;
+            margin-right: 5px;
         }
-        b{
+        b {
             cursor: pointer;
             font-weight: normal;
         }
     }
     .active {
         height: 57px;
-        background-color: #0D1215;
+        background-color: #0d1215;
         border-bottom: 3px solid #44e7fa;
     }
 }

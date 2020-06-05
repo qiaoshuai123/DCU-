@@ -47,7 +47,7 @@ class Header extends React.Component {
     return (
       <div className={styles.headerWrapper}>
         <div className={styles.header_left}>
-          <span>1</span>
+          <span />
           双向互通管控系统
         </div>
         <div className={styles.header_center}>
@@ -56,7 +56,7 @@ class Header extends React.Component {
           }
         </div>
         <div className={styles.header_right}>
-          <span>1</span>
+          <span />
           <Dropdown overlay={menu}>
             <b onClick={e => e.preventDefault()}>
               hello,admin <Icon type="down" />
