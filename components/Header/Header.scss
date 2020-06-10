@@ -24,11 +24,31 @@
         flex: 1;
         font-size: 16px;
         display: flex;
-        div {
+        > div {
             text-align: center;
-            padding: 0 20px;
-            line-height: 50px;
+            width: 170px;
+            line-height: 60px;
+            position: relative;
             cursor: pointer;
+            &:hover {
+                > div {
+                    display: block;
+                    animation: hideIndex 0.3s;
+                }
+            }
+            > div {
+                display: none;
+                position: absolute;
+                width: 170px;
+                top: 60px;
+                z-index: 9;
+                background-color: rgba(28, 33, 39, 0.9);
+                > div {
+                    &:hover {
+                        background-color: rgba(39, 52, 59, 0.7);
+                    }
+                }
+            }
         }
     }
     .header_right {
@@ -50,8 +70,11 @@
         }
     }
     .active {
-        height: 57px;
         background-color: #0d1215;
         border-bottom: 3px solid #44e7fa;
     }
+}
+@keyframes hideIndex{
+	0%{ opacity: 0; transform: translate(0, -10px) }
+	100%{opacity: 1; transform: translate(0, 0) }
 }

@@ -1,4 +1,5 @@
 .treeWrapper {
+    font-size: 15px;
     .treeList {
         li {
             margin: 0;
@@ -11,23 +12,24 @@
             position: relative;
             margin-top: 7px;
             .treeIcon {
-                display: inline-block;
                 width: 24px;
                 height: 24px;
+                position: absolute;
+                right: 30px;
                 margin: 0;
                 line-height: 24px;
                 text-align: center;
                 vertical-align: top;
                 border: 0 none;
                 outline: none;
-                font-size: 24px;
-                color: #F2B20F;
+                font-size: 12px;
+                color: #fff;
                 cursor: pointer;
             }
             .treeNode {
                 display: inline-block;
                 height: 24px;
-                margin: 0;
+                margin-left: 70px;
                 padding: 0 10px;
                 color: #f1f1fb;
                 line-height: 24px;
@@ -36,48 +38,16 @@
                 border-radius: 2px;
                 cursor: pointer;
                 transition: all 0.3s;
-                // &::before {
-                //     position: absolute;
-                //     left: 37px;
-                //     width: 1px;
-                //     height: 11px;
-                //     margin: 22px 0 0;
-                //     border-left: 1px dashed #15AEE5;
-                //     content: ' ';
-                // }
             }
             .childTree {
                 margin: 0;
                 padding: 0 0 0 25px;
                 transition: height ease .2s;
                 overflow: hidden;
-                &::after {
-                    position: absolute;
-                    top: 30px;
-                    left: 37px;
-                    width: 1px;
-                    height: 10px;
-                    // margin: -22px 0 0;
-                    border-left: 1px dashed #15AEE5;
-                    content: ' ';
-                }
                 .childLi {
                     position: relative;
-                    &::before {
-                        position: absolute;
-                        left: 12px;
-                        width: 1px;
-                        height: 100%;
-                        height: calc(100% - 20px);
-                        margin: 22px 0 0;
-                        border-left: 1px dashed #15AEE5;
-                        content: ' ';
-                    }
                     &:first-child {
                         margin-top: 7px;
-                    }
-                    &:last-child::before {
-                        height: 0;
                     }
                 }
                 .childIcon {
@@ -93,15 +63,6 @@
                     font-size: 20px;
                     color: #15AEE5;
                     cursor: pointer;
-                    &::before {
-                        position: absolute;
-                        left: 25px;
-                        width: 10px;
-                        height: 1px;
-                        margin: 12px 0 0;
-                        border-top: 1px dashed #15AEE5;
-                        content: ' ';
-                    }
                 }
                 .childNode {
                     display: inline-block;
@@ -129,7 +90,4 @@
 :global(.ant-tree.ant-tree-show-line li span.ant-tree-switcher) {
     background-color: transparent;
     color: #15AEE5;
-}
-:global(.ant-tree.ant-tree-show-line li:not(:last-child)::before) {
-    border: 1px dashed #15AEE5;
 }
