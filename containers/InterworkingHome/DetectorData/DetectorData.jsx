@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { Input } from 'antd'
 import Header from '../../..//components/Header/Header'
+import InterworkingList from './InterworkingList/InterworkingList'
 import styles from './DetectorData.scss'
 
 class DetectorData extends Component {
@@ -10,10 +10,12 @@ class DetectorData extends Component {
   }
 
   render() {
-    const { Search } = Input
     return (
       <div className={styles.DetectorData}>
         <Header {...this.props} />
+        <div className={styles.InterworkingList}>
+          <InterworkingList />
+        </div>
       </div>
     )
   }

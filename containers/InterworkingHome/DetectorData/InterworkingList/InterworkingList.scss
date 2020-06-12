@@ -12,13 +12,6 @@ $bor-color: #2e3440;
     .syetem_titleLeft {
       font-size: 30px;
     }
-    .syetem_titleRight {
-      width: 40px;
-      height: 40px;
-      cursor: pointer;
-      border: 1px solid $bor-color;
-      background-color: red;
-    }
   }
   .syetem_top {
     width: 100%;
@@ -60,18 +53,25 @@ $bor-color: #2e3440;
       input::-webkit-input-placeholder {
         color: $ft_color;
       }
+      :global(.anticon svg) {
+        color: #07f8ff;
+      }
+      :global(.ant-select-selection__rendered) {
+        width: 200px;
+        line-height: 30px;
+      }
       :global(.ant-input) {
         border: 1px solid #26394a;
         background: #26394a;
         color: $ft_color;
       }
       :global(.ant-select-selection) {
-        border: 1px solid #26394a;
-        background: #26394a;
-        color: $ft_color;
+        // background: url(./imgs/flowBorder.png) center center no-repeat;
+        background-size: 100% 100%;
+        color: #fff;
       }
-      :global(path) {
-        color: $ft_color;
+      :global(.ant-calendar-picker) {
+        width: 200px;
       }
     }
   }
@@ -193,13 +193,14 @@ $bor-color: #2e3440;
       :global(.ant-pagination-item-active) {
         background-color: #31869b;
       }
-      :global(.ant-pagination-item a){
+      :global(.ant-pagination-item a) {
         color: $ft_color;
       }
       :global(.ant-pagination-options-quick-jumper input) {
         background-color: transparent;
-        color:#d9d9d9;
-        &:hover{
+        border: 1px solid #d9d9d9;
+        color: #d9d9d9;
+        &:hover {
           border: 1px solid #d9d9d9;
         }
       }

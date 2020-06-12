@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Input, Pagination } from 'antd'
+import { Input, Pagination, Select } from 'antd'
 import styles from './InterworkingList.scss'
 
 class InterworkingList extends Component {
@@ -25,11 +25,18 @@ class InterworkingList extends Component {
   componentDidMount = () => {
 
   }
+  getresetPwd = (id) => {
+    window.open(`#roaddetail/${id}`)
+  }
+  handleChange = () => {
+
+  }
   backPage = () => {
     this.props.showInterworkingList(false)
   }
   render() {
     const { systemList } = this.state
+    const { Option } = Select
     return (
       <div className={styles.syetem_bg} ref={(input) => { this.userLimitBox = input }}>
         <div className={styles.syetem_title}>
@@ -43,11 +50,23 @@ class InterworkingList extends Component {
           </div>
           <div className={styles.syetem_item}>
             <span className={styles.item}>行政区:</span>
-            <div className={styles.inSle}><Input onChange={this.handleInputChange} /></div>
+            <div className={styles.inSle}>
+              <Select defaultValue="行政一" style={{ width: 200, margin: 0 }} onChange={this.handleChange}>
+                <Option value="行政一">行政一</Option>
+                <Option value="行政二">行政二</Option>
+              </Select>
+            </div>
           </div>
           <div className={styles.syetem_item}>
             <span className={styles.item}>点位名称:</span>
-            <div className={styles.inSle}><Input onChange={this.handleInputChange} /></div>
+            <div className={styles.inSle}>
+              <div className={styles.inSle}>
+                <Select defaultValue="点位一" style={{ width: 200, margin: 0 }} onChange={this.handleChange}>
+                  <Option value="点位一">点位一</Option>
+                  <Option value="点位二">点位二</Option>
+                </Select>
+              </div>
+            </div>
           </div>
           <span className={styles.searchBtn} onClick={() => { this.handlePagination('1') }} limitid="13">查询</span>
         </div>

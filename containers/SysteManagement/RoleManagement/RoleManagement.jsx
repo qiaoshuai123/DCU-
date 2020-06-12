@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import { Input } from 'antd'
-import Header from '../../components/Header/Header'
-import styles from './SignalManagement.scss'
+import Header from '../../../components/Header/Header'
+import styles from './RoleManagement.scss'
 
-class SignalManagement extends Component {
+class RoleManagement extends Component {
   constructor(props) {
     super(props)
     this.state = {}
@@ -12,11 +12,11 @@ class SignalManagement extends Component {
   render() {
     const { Search } = Input
     return (
-      <div className={styles.SignalManagement}>
+      <div className={styles.RoleManagement}>
         <Header {...this.props} />
       </div>
     )
   }
 }
 
-export default SignalManagement
+export default RoleManagement

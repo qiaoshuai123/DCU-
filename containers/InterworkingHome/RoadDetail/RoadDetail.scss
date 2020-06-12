@@ -1,0 +1,219 @@
+.RoadDetail {
+    width: 100%;
+    height: 100%;
+    background-color: #021035;
+    >img{
+        width: 100%;
+        height: 100%;
+    }
+    ul {
+        margin: 0;
+    }
+    .roadName {
+        width: 100%;
+        height: 65px;
+        background: rgba(31, 37, 49, 0.7);
+        border-bottom: 2px solid #303642;
+        padding-left: 30px;
+        display: flex;
+        position: absolute;
+        font-style: 16px;
+        top: 0;
+        left: 0;
+        .roadNameTitle {
+            width: 280px;
+            line-height: 65px;
+        }
+        > div:not(:first-child) {
+            width: 170px;
+            line-height: 65px;
+        }
+        span {
+            color: #3da6c0;
+            position: absolute;
+            right: 30px;
+            border-radius: 5px;
+            top: 15px;
+            padding: 5px 35px;
+            cursor: pointer;
+            border: 1px solid #3da6c0;
+            background-color: #253646;
+        }
+    }
+    .spanMessage {
+        width: 480px;
+        height: 295px;
+        background: rgba(31, 37, 49, 0.7);
+        border-radius: 3px;
+        position: absolute;
+        padding: 30px;
+        right: 30px;
+        top: 63px;
+        .closeStage{
+            font-size: 18px;
+            position: absolute;
+            cursor: pointer;
+            right: 30px;
+            top: 10px;
+        }
+        .stage,
+        .control,
+        .programme {
+            height: 60px;
+            display: flex;
+            > div {
+                width: 130px;
+                text-align: right;
+                padding-right: 15px;
+                line-height: 60px;
+            }
+            > ul {
+                width: 100%;
+                height: 100%;
+                border: 1px solid #25282f;
+                padding-left: 15px;
+            }
+        }
+        .stageRight {
+            display: flex;
+            align-items: center;
+            li {
+                width: 45px;
+                height: 45px;
+                margin: 0 15px;
+                background-color: red;
+            }
+        }
+        .controlRight,
+        .programmeRight {
+            overflow: auto;
+            li {
+                height: 25px;
+                line-height: 25px;
+            }
+        }
+        .Timing {
+            height: 50px;
+            width: 100%;
+            display: flex;
+            .timingLeft {
+                width: 130px;
+                text-align: right;
+                padding-right: 15px;
+                line-height: 50px;
+            }
+            .timingRight{
+                width: 100%;
+                display: flex;
+                align-items: center;
+                span{
+                    width: 48%;
+                    height: 30px;
+                    text-align: center;
+                    line-height: 30px;
+                    border-radius: 3px;
+                    cursor: pointer;
+                    &:nth-child(1){
+                        color: #3da6c0;
+                        border: 1px solid #3da6c0;
+                        background-color: #253646;
+                        margin-right: 5px;
+                    }
+                    &:nth-child(2){
+                        color: #ABB0B6;
+                        border: 1px solid #ABB0B6;
+                        background-color: #272B36; 
+                    }
+                }
+            }
+        }
+    }
+    .DeviceStatus {
+        height: 200px;
+        width: 480px;
+        background-color: rgba(37, 54, 70, 0.7);
+        position: absolute;
+        border-radius: 3px;
+        right: 30px;
+        bottom: 15px;
+        padding: 25px;
+        display: flex;
+        .DeviceStatus_left {
+            display: flex;
+            width: 220px;
+            flex-direction: column;
+            li {
+                flex: 1;
+                display: flex;
+                align-items: center;
+            }
+            .icons {
+                display: inline-block;
+                width: 35px;
+                height: 35px;
+                background-color: red;
+                margin: 0 15px;
+            }
+            &::after {
+                content: " ";
+                position: absolute;
+                left: 230px;
+                top: 30px;
+                width: 1px;
+                background: #384556;
+                height: 145px;
+            }
+        }
+        .DeviceStatus_right {
+            flex: 1;
+            display: flex;
+            color: #01d8e8;
+            flex-wrap: wrap;
+            overflow-y: auto;
+            font-size: 13px;
+            .deviceControlBtn {
+                cursor: pointer;
+                &:hover dd {
+                    color: #01d8e8;
+                }
+            }
+            dl {
+                width: 50%;
+                display: flex;
+                flex-direction: column;
+                dt {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    .stageImgBox {
+                        position: relative;
+                        width: 45px;
+                        height: 45px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        box-shadow: inset 0 0 8px #029fb7;
+                        border-radius: 4px;
+                        .runningStage {
+                            position: absolute;
+                            top: 0;
+                            right: -15px;
+                            width: 15px;
+                            height: 15px;
+                            text-align: center;
+                            line-height: 14px;
+                            color: #fff;
+                            font-weight: bold;
+                            background-color: #ffcb01;
+                        }
+                    }
+                }
+                dd {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+            }
+        }
+    }
+}

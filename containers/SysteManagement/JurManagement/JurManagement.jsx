@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import { Input } from 'antd'
-import Header from '../../components/Header/Header'
-import styles from './SignalManagement.scss'
+import Header from '../../../components/Header/Header'
+import styles from './JurManagement.scss'
 
-class SignalManagement extends Component {
+class JurManagement extends Component {
   constructor(props) {
     super(props)
     this.state = {}
@@ -12,11 +12,11 @@ class SignalManagement extends Component {
   render() {
     const { Search } = Input
     return (
-      <div className={styles.SignalManagement}>
+      <div className={styles.JurManagement}>
         <Header {...this.props} />
       </div>
     )
   }
 }
 
-export default SignalManagement
+export default JurManagement

@@ -22,64 +22,76 @@ class Header extends React.Component {
     this.state = {
       selectNum: 1,
     }
+    this.paths = this.props.match.url
     this.navItems = [
       {
         id: 1,
         name: '实时监控',
-        path: '/interworkingHome',
+        role: 1,
+        path: '/interworkinghome',
         child: [
           {
             id: '1_1',
             name: 'DCU状态',
-            path: '/interworkingHome',
+            role: 1,
+            path: '/interworkinghome',
           },
           {
             id: '1_2',
             name: '信号机实时状态',
-            path: '/signalStatus',
+            role: 1,
+            path: '/signalstatus',
           },
           {
             id: '1_3',
             name: '数据实时状态',
-            path: '/Datastatus',
+            role: 1,
+            path: '/datastatus',
           },
           {
             id: '1_4',
             name: '检测器数据',
-            path: '/DetectorData',
+            role: 1,
+            path: '/detectordata',
           },
         ],
       },
-      { id: 2, name: '信号参数管理', path: '/signalManagement' },
-      { id: 3, name: '设备参数管理' },
+      { id: 2, name: '信号参数管理', role: 2, path: '/signalmanagement' },
+      { id: 3, name: '设备参数管理', role: 3, path: 'equipmentManagement' },
       {
         id: 4,
         name: '日志管理',
+        role: 4,
         path: '/dcuFault',
         child: [
           {
             id: '4_1',
             name: 'DCU设备故障',
+            role: 4,
             path: '/dcuFault',
           },
           {
             id: '4_2',
             name: '信号机故障',
+            role: 4,
             path: '/signalFault',
           },
           {
             id: '4_3',
             name: '通信故障',
+            role: 4,
             path: '/communicationFault',
           },
           {
             id: '4_4',
             name: '操作日志',
+            role: 4,
             path: '/logFault',
           },
           {
             id: '4_5',
             name: '运行日志',
+            role: 4,
             path: '/functionFault',
           },
         ],
@@ -87,50 +99,60 @@ class Header extends React.Component {
       {
         id: 5,
         name: '系统管理',
-        path: '/userManagement',
+        role: 5,
+        path: '/usermanagement',
         child: [
           {
             id: '5_1',
             name: '用户管理',
-            path: '/userManagement',
+            role: 5,
+            path: '/usermanagement',
           },
           {
             id: '5_2',
             name: '权限管理',
-            path: '/jurManagement',
+            role: 5,
+            path: '/jurmanagement',
           },
           {
             id: '5_3',
             name: '角色管理',
-            path: '/roleManagement',
+            role: 5,
+            path: '/rolemanagement',
           },
         ],
       },
-      { id: 6, name: '关于系统' },
+      { id: 6, name: '关于系统', role: 6, path: '/aboutSystemt' },
     ]
   }
   componentDidMount = () => {
-    console.log(2)
+    this.pageRouter()
+  }
+  pageRouter = () => {
+    this.pageRouters(this.paths, this.navItems)
+    this.setState({
+      selectNum: this.num,
+    })
+  }
+  pageRouters = (paths, nav) => {
+    for (let i = 0; i < nav.length; i++) {
+      if (nav[i].path === paths) {
+        this.num = nav[i].role
+      }
+      if (nav[i].child) {
+        if (nav[i].path === paths) {
+          this.num = nav[i].role
+        }
+        this.pageRouters(this.paths, nav[i].child)
+      }
+    }
   }
   SelectButton = (e) => {
-    console.log(e, 'ss34')
-    this.setState({
-      selectNum: e.id,
-    }, () => {
-      this.props.history.push(e.path)
-    })
+    this.props.history.push(e.path)
   }
   SelectButtonChild = (e, item) => {
     e.stopPropagation()
-    console.log(e.target.getAttribute('path'), item, 'ss')
-    // console.log(e.target.parentNode.parentNode)
-    const ids = e.target.getAttribute('path')
-    if (this.props.location.pathname === item.path) return
-    this.setState({
-      selectNum: ids,
-    }, () => {
-      this.props.history.push(item.path)
-    })
+    this.props.history.push(item.path)
   }
   render() {
     const { selectNum } = this.state
@@ -148,7 +170,7 @@ class Header extends React.Component {
                   {item.name}
                   <div className={styles.child}>
                     {
-                      item.child && item.child.map(items => <div key={items.id} path={item.id} onClick={e => this.SelectButtonChild(e, items)}>{items.name}</div>)
+                      item.child && item.child.map(items => <div key={items.id} onClick={e => this.SelectButtonChild(e, items)}>{items.name}</div>)
                     }
                   </div>
                 </div>

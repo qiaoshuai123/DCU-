@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Input, Pagination, Select } from 'antd'
+import { Input, Pagination, DatePicker } from 'antd'
 import styles from './InterworkingList.scss'
 
 class InterworkingList extends Component {
@@ -28,17 +28,12 @@ class InterworkingList extends Component {
   getresetPwd = (id) => {
     window.open(`#roaddetail/${id}`)
   }
-  backPage = () => {
-    this.props.showInterworkingList(false)
-  }
   render() {
     const { systemList } = this.state
-    const { Option } = Select
     return (
       <div className={styles.syetem_bg} ref={(input) => { this.userLimitBox = input }}>
         <div className={styles.syetem_title}>
-          <div className={styles.syetem_titleLeft}>信号状态监视</div>
-          <div className={styles.syetem_titleRight} onClick={this.backPage} />
+          <div className={styles.syetem_titleLeft}>检测器数据</div>
         </div>
         <div className={styles.syetem_top}>
           <div className={styles.syetem_item}>
@@ -46,24 +41,12 @@ class InterworkingList extends Component {
             <div className={styles.inSle}><Input onChange={this.handleInputChange} /></div>
           </div>
           <div className={styles.syetem_item}>
-            <span className={styles.item}>行政区:</span>
-            <div className={styles.inSle}>
-              <Select defaultValue="行政一" style={{ width: 200, margin: 0 }} onChange={this.handleChange}>
-                <Option value="行政一">行政一</Option>
-                <Option value="行政二">行政二</Option>
-              </Select>
-            </div>
+            <span className={styles.item}>点位名称:</span>
+            <div className={styles.inSle}><Input onChange={this.handleInputChange} /></div>
           </div>
           <div className={styles.syetem_item}>
-            <span className={styles.item}>点位名称:</span>
-            <div className={styles.inSle}>
-              <div className={styles.inSle}>
-                <Select defaultValue="点位一" style={{ width: 200, margin: 0 }} onChange={this.handleChange}>
-                  <Option value="点位一">点位一</Option>
-                  <Option value="点位二">点位二</Option>
-                </Select>
-              </div>
-            </div>
+            <span className={styles.item}>上报时间:</span>
+            <div className={styles.inSle}><DatePicker /></div><span style={{ margin: '0 10px' }}>至</span><div className={styles.inSle}><DatePicker /></div>
           </div>
           <span className={styles.searchBtn} onClick={() => { this.handlePagination('1') }} limitid="13">查询</span>
         </div>
@@ -73,16 +56,13 @@ class InterworkingList extends Component {
         <div className={styles.syetem_buttom}>
           <div className={styles.listBox}>
             <div className={styles.listItems}>
-              <div className={styles.listTd} >点位名称</div>
-              <div className={styles.listTd} >信号机编号</div>
-              <div className={styles.listTd} >信号品牌</div>
-              <div className={styles.listTd} >设备IP</div>
-              <div className={styles.listTd} >经纬度</div>
-              <div className={styles.listTd} >维护电话</div>
-              <div className={styles.listTd} >设备状态</div>
-              <div className={styles.listTd} >信号控制状态</div>
-              <div className={styles.listTd} >运行阶段</div>
-              <div className={styles.listTd} >操作</div>
+              <div className={styles.listTd} >路口名称</div>
+              <div className={styles.listTd} >监测方向</div>
+              <div className={styles.listTd} >统计时间</div>
+              <div className={styles.listTd} >车道</div>
+              <div className={styles.listTd} >流量</div>
+              <div className={styles.listTd} >占有率</div>
+              <div className={styles.listTd} >平均车速</div>
             </div>
             {systemList && systemList.map((item, index) => {
               return (
@@ -93,9 +73,6 @@ class InterworkingList extends Component {
                   <div className={styles.listTd} >4</div>
                   <div className={styles.listTd} >5</div>
                   <div className={styles.listTd} >6</div>
-                  <div className={styles.listTd} >7</div>
-                  <div className={styles.listTd} >8</div>
-                  <div className={styles.listTd} >9</div>
                   <div className={styles.listTd} >
                     <span className={styles.delectName} onClick={() => { this.getresetPwd(item.id) }}>
                       路口监视

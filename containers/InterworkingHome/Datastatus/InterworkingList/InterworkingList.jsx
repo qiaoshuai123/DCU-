@@ -37,7 +37,7 @@ class InterworkingList extends Component {
     return (
       <div className={styles.syetem_bg} ref={(input) => { this.userLimitBox = input }}>
         <div className={styles.syetem_title}>
-          <div className={styles.syetem_titleLeft}>信号状态监视</div>
+          <div className={styles.syetem_titleLeft}>DCU设备状态监视</div>
           <div className={styles.syetem_titleRight} onClick={this.backPage} />
         </div>
         <div className={styles.syetem_top}>
@@ -74,13 +74,14 @@ class InterworkingList extends Component {
           <div className={styles.listBox}>
             <div className={styles.listItems}>
               <div className={styles.listTd} >点位名称</div>
-              <div className={styles.listTd} >信号机编号</div>
-              <div className={styles.listTd} >信号品牌</div>
+              <div className={styles.listTd} >设备编号</div>
+              <div className={styles.listTd} >数据来源</div>
               <div className={styles.listTd} >设备IP</div>
               <div className={styles.listTd} >经纬度</div>
               <div className={styles.listTd} >维护电话</div>
               <div className={styles.listTd} >设备状态</div>
-              <div className={styles.listTd} >信号控制状态</div>
+              <div className={styles.listTd} >数据接入状态</div>
+              <div className={styles.listTd} >数据输出状态</div>
               <div className={styles.listTd} >运行阶段</div>
               <div className={styles.listTd} >操作</div>
             </div>
@@ -96,6 +97,7 @@ class InterworkingList extends Component {
                   <div className={styles.listTd} >7</div>
                   <div className={styles.listTd} >8</div>
                   <div className={styles.listTd} >9</div>
+                  <div className={styles.listTd} >10</div>
                   <div className={styles.listTd} >
                     <span className={styles.delectName} onClick={() => { this.getresetPwd(item.id) }}>
                       路口监视
