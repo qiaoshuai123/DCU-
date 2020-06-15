@@ -112,3 +112,47 @@ a {
         display: block;
     }
 }
+/* 地图reset */
+a.amap-logo img{
+    display: none!important;
+}
+/* 标记点的效果 */
+.drawCircle {
+    position: absolute;
+    z-index: 999;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .inner {
+    width: 40px;
+    height: 40px;
+    left: -4px;
+    top: -4px;
+    border-radius: 50%;
+    position: absolute;
+    z-index: 10;
+    animation-duration: 1.8s;
+    animation-name: sm-state1;
+    animation-name: sm-state1;
+    animation-timing-function: linear;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
+    opacity: 0;
+    background-color:rgba(255, 255, 255, .8);
+    box-shadow: 0 0 20px rgba(255, 255, 255, .8);
+  }
+
+  @keyframes sm-state1 {
+    0% {
+      opacity: 0.5;
+      transform: scale(1);
+    }
+
+    100% {
+      opacity: 0;
+      transform: scale(1.5);
+    }
+  }
