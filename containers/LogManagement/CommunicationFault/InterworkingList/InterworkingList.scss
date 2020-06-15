@@ -1,0 +1,213 @@
+$ft_color: #dcdde2;
+$bor-color: #2e3440;
+.syetem_bg {
+  background: #1f2531;
+  padding: 0 40px;
+  height: 100%;
+  .syetem_title {
+    height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .syetem_titleLeft {
+      font-size: 30px;
+    }
+  }
+  .syetem_top {
+    width: 100%;
+    height: 85px;
+    display: flex;
+    align-items: center;
+    border: 2px solid $bor-color;
+    position: relative;
+    .searchBtn {
+      width: 100px;
+      height: 34px;
+      color: #40c3e3;
+      border: 1px solid #40c3e3;
+      position: absolute;
+      border-radius: 3px;
+      right: 30px;
+      text-align: center;
+      line-height: 34px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .syetem_item {
+      float: left;
+      height: 100%;
+      margin-left: 20px;
+      display: flex;
+      align-items: center;
+      .item {
+        color: $ft_color;
+        margin-right: 15px;
+        font-size: 16px;
+      }
+      .inSle {
+        width: 200px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+      }
+      input::-webkit-input-placeholder {
+        color: $ft_color;
+      }
+      :global(.anticon svg) {
+        color: #07f8ff;
+      }
+      :global(.ant-select-selection__rendered) {
+        width: 200px;
+        line-height: 30px;
+      }
+      :global(.ant-input) {
+        border: 1px solid #26394a;
+        background: #26394a;
+        color: $ft_color;
+      }
+      :global(.ant-select-selection) {
+        // background: url(./imgs/flowBorder.png) center center no-repeat;
+        background-size: 100% 100%;
+        color: #fff;
+      }
+      :global(.ant-calendar-picker) {
+        width: 200px;
+      }
+    }
+  }
+  .equipmentList {
+    color: #40c3e3;
+    height: 40px;
+    text-align: right;
+    cursor: pointer;
+    padding-right: 20px;
+    font-size: 16px;
+    line-height: 40px;
+  }
+  .syetem_buttom {
+    width: 100%;
+    height: calc(100% - 200px);
+    .title {
+      width: 100%;
+      height: 40px;
+      line-height: 40px;
+      > span {
+        width: 120px;
+        height: 34px;
+        display: inline-block;
+        color: $ft_color;
+        float: right;
+        font-size: 16px;
+        text-align: center;
+        margin-right: 30px;
+        cursor: pointer;
+      }
+    }
+    .listBox {
+      height: calc(100% - 40px);
+      .listItems {
+        color: #ffffff;
+        font-size: 14px;
+        display: flex;
+        height: 45px;
+        border: 1px solid $bor-color;
+        &:nth-child(1) {
+          font-size: 15px;
+          color: $ft_color;
+          background-color: #232c3b;
+        }
+        .listTd {
+          flex: 1;
+          height: 100%;
+          text-align: center;
+          line-height: 45px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          &:last-child {
+            flex: 1.4;
+          }
+          .icon {
+            margin-right: 5px;
+          }
+          .updateName {
+            color: #2ad2f0;
+            width: 30%;
+            padding: 3px 0;
+            text-align: center;
+            cursor: pointer;
+            margin: 0 5px;
+          }
+          .spantName {
+            color: #d46909;
+            width: 100%;
+            padding: 3px 0;
+            cursor: pointer;
+            text-align: center;
+            &:hover {
+              color: #1890ff;
+            }
+          }
+          .delectName {
+            color: #40c3e3;
+            width: 30%;
+            padding: 3px 0;
+            cursor: pointer;
+            text-align: center;
+            margin: 0 5px;
+          }
+        }
+      }
+      .noData {
+        font-size: 30px;
+        color: $ft_color;
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        margin-left: -105px;
+      }
+    }
+    .paginations {
+      position: absolute;
+      right: 20px;
+      bottom: 30px;
+      :global(.ant-pagination) {
+        color: $ft_color;
+      }
+      :global(.ant-pagination-item-link) {
+        color: $ft_color;
+        background-color: transparent;
+        &:hover {
+          border: 1px solid #d9d9d9;
+        }
+      }
+      :global(.ant-pagination) {
+        color: $ft_color;
+      }
+      :global(.ant-pagination-item-active) {
+        background-color: #31869b;
+      }
+      :global(.ant-pagination-item) {
+        color: $ft_color;
+        background-color: transparent;
+        &:hover {
+          border: 1px solid #d9d9d9;
+        }
+      }
+      :global(.ant-pagination-item-active) {
+        background-color: #31869b;
+      }
+      :global(.ant-pagination-item a) {
+        color: $ft_color;
+      }
+      :global(.ant-pagination-options-quick-jumper input) {
+        background-color: transparent;
+        border: 1px solid #d9d9d9;
+        color: #d9d9d9;
+        &:hover {
+          border: 1px solid #d9d9d9;
+        }
+      }
+    }
+  }
+}

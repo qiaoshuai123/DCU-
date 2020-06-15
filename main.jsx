@@ -41,7 +41,7 @@ const RoadDetail = Loadable({
   delay: 0,
 })
 const SignalManagement = Loadable({
-  loader: () => import('./containers/SignalManagement/SignalManagement'),
+  loader: () => import('./containers/SignalManagement/SignalManagement/SignalManagement'),
   loading: Loading,
   delay: 0,
 })
@@ -60,7 +60,36 @@ const UserManagement = Loadable({
   loading: Loading,
   delay: 0,
 })
-
+const CommunicationFault = Loadable({
+  loader: () => import('./containers/LogManagement/CommunicationFault/CommunicationFault'),
+  loading: Loading,
+  delay: 0,
+})
+const DcuFault = Loadable({
+  loader: () => import('./containers/LogManagement/DcuFault/DcuFault'),
+  loading: Loading,
+  delay: 0,
+})
+const FunctionFault = Loadable({
+  loader: () => import('./containers/LogManagement/FunctionFault/FunctionFault'),
+  loading: Loading,
+  delay: 0,
+})
+const LogFault = Loadable({
+  loader: () => import('./containers/LogManagement/LogFault/LogFault'),
+  loading: Loading,
+  delay: 0,
+})
+const SignalFault = Loadable({
+  loader: () => import('./containers/LogManagement/SignalFault/SignalFault'),
+  loading: Loading,
+  delay: 0,
+})
+const EquipmentManagement = Loadable({
+  loader: () => import('./containers/EquipmentManagement/EquipmentManagement/EquipmentManagement'),
+  loading: Loading,
+  delay: 0,
+})
 const Parent = () => (
   <React.Fragment>
     {/* <Route path="*" component={SystemMenu} /> */}
@@ -78,6 +107,14 @@ const Parent = () => (
     <Route path="/usermanagement" component={UserManagement} />
     <Route path="/jurmanagement" component={JurManagement} />
     <Route path="/rolemanagement" component={RoleManagement} />
+    {/* 日志管理 */}
+    <Route path="/dcufault" component={DcuFault} />
+    <Route path="/signalfault" component={SignalFault} />
+    <Route path="/communicationfault" component={CommunicationFault} />
+    <Route path="/logfault" component={LogFault} />
+    <Route path="/functionfault" component={FunctionFault} />
+    {/* 设备参数管理 */}
+    <Route path="/equipmentManagement" component={EquipmentManagement} />
   </React.Fragment>
 )
 reactDom.render(

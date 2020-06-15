@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Input } from 'antd'
-import Header from '../../components/Header/Header'
+import Header from '../../../components/Header/Header'
 import styles from './SignalManagement.scss'
 
 class SignalManagement extends Component {
