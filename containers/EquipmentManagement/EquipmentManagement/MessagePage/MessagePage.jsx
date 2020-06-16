@@ -31,7 +31,7 @@ class MessagePage extends Component {
   }
   // 更改input框内容
   changeNumber = (e) => {
-    const names = e.target.name
+    const names = e.target.getAttribute('paths')
     const values = e.target.value
     this.setState({
       [names]: values,
@@ -50,7 +50,6 @@ class MessagePage extends Component {
     // const keys = Object.keys(this.formsVerification)
     // keys.forEach((item) => {
     //   if (!this.state[item]) {
-    //     this.isbtns = true
     //     return message.warning(`请填写${this.formsVerification[item]}`)
     //   }
     // })
@@ -69,10 +68,10 @@ class MessagePage extends Component {
     return (
       <div className={styles.MessagePageBox}>
         <div className={styles.topTitle}>DCU点位信息<span onClick={this.closeMessage}><Icon type="close" /></span></div>
-        <div className={styles.items}><span>点位编号:</span><Input name="numbers" style={{ width: 300 }} value={numbers} onChange={this.changeNumber} /></div>
-        <div className={styles.items}><span>点位名称:</span><Input name="names" style={{ width: 300 }} value={names} onChange={this.changeNumber} /></div>
-        <div className={styles.items}><span>经度:</span><Input name="longitude" style={{ width: 300 }} value={longitude} onChange={this.changeNumber} /></div>
-        <div className={styles.items}><span>点位编号:</span><Input name="dimension" style={{ width: 300 }} value={dimension} onChange={this.changeNumber} /></div>
+        <div className={styles.items}><span>点位编号:</span><Input paths="numbers" style={{ width: 300 }} value={numbers} onChange={this.changeNumber} /></div>
+        <div className={styles.items}><span>点位名称:</span><Input paths="names" style={{ width: 300 }} value={names} onChange={this.changeNumber} /></div>
+        <div className={styles.items}><span>经度:</span><Input paths="longitude" style={{ width: 300 }} value={longitude} onChange={this.changeNumber} /></div>
+        <div className={styles.items}><span>点位编号:</span><Input paths="dimension" style={{ width: 300 }} value={dimension} onChange={this.changeNumber} /></div>
         <div className={styles.bombtn}><span onClick={this.addForm}>保存</span></div>
       </div>
     )
