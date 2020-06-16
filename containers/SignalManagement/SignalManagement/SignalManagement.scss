@@ -1,18 +1,157 @@
 $bor_color: #27343b;
+$stepBor_col: #393F4F;
 .SignalManagement {
     width: 100%;
     height: 100%;
     background-color: #021035;
+    /* 弹层start */
+    .maskBg{
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        top:0;
+        right:0;
+        bottom:0;
+        left:0;
+        background-color:rgba(19, 27, 37, .6);
+        z-index: 99;
+    }
+    .popBox{
+        position: absolute;
+        top:50%;
+        left:50%;
+        background-color: rgba(19, 19, 19, 0.9);
+        transform: translate(-50%,-50%);
+        -webkit-transform: translate(-50%,-50%);
+        -moz-transform: translate(-50%,-50%);
+        -ms-transform: translate(-50%,-50%);
+        -o-transform: translate(-50%,-50%);
+        z-index: 100;
+        padding:0 20px 20px;
+        .popTit{
+            height: 35px;
+            line-height: 35px;
+            font-size: 12px;
+            border-bottom: 1px solid #292a2d;
+            color: #BBBDBC;
+            position: relative;
+            .Close {
+                font-size: 16px;
+                position: absolute;
+                right: 0;
+                top: 50%;
+                margin-top:-8.5px;
+                cursor: pointer;
+                color: #BBBDBC;
+                & svg:hover {
+                  transition: all 0.5s;
+                  transform: rotate(180deg);
+                  color: #BBBDBC;
+                }
+              }
+        }
+        .popCon{
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding:15px 0;
+            margin-bottom:10px;
+            border-bottom: 1px solid #292a2d;
+            // 路口底图
+            .typePic{
+                width:120px;
+                height:80px;
+                flex: 1;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-wrap: wrap;
+                > s{
+                    width:100%;
+                    height: 100%;
+                    border:1px solid #292a2d;
+                    display: flex; 
+                    justify-content: center;
+                    align-items: center;
+                    text-decoration: none;
+                    background-color: #181B20;
+                    color:#5D6164;
+                    font-size: 14px;
+                }
+                > img{
+                    width:100%;
+                    height: 100%;
+                    border:1px solid #292a2d;
+                }
+                > em{
+                    width:80px;
+                    line-height: 25px;
+                    font-style: normal;
+                    font-size: 12px;
+                    display: inline-block;
+                    text-align: center;
+                    margin: 15px auto 0;
+                    border:1px #838a9a solid;
+                    border-radius: 4px;
+                    -webkit-border-radius: 4px;
+                    -moz-border-radius: 4px;
+                    -ms-border-radius: 4px;
+                    -o-border-radius: 4px;
+                    color:#838a9a;
+                    cursor: pointer;
+                    &:hover{
+                        color:#38C4D1;
+                        background-color: #1F2531;
+                    }
+                }
+                :global(.ant-radio-wrapper){
+                    color:#BBBDBC;
+                    font-size: 12px;
+                    padding:10px 0;
+                }
+                :global(.ant-radio-inner){
+                    background-color: transparent!important;
+                }
+            }
+        }
+        .popBottom{
+            display: flex;
+            justify-content: center;
+            > em{
+                width:80px;
+                line-height: 25px;
+                display: inline-block;
+                text-align: center;
+                font-size: 12px;
+                margin: 5px 5px 0;
+                border:1px #318592 solid;
+                border-radius: 4px;
+                -webkit-border-radius: 4px;
+                -moz-border-radius: 4px;
+                -ms-border-radius: 4px;
+                -o-border-radius: 4px;
+                color:#318592;
+                cursor: pointer;
+                font-style: normal;
+                background-color: #293644;
+                &:hover{
+                    color:#38C4D1;
+                    background-color: #1F2531;
+                }
+            }
+        }
+    }
+    /* 弹层end */
     .InterworkingList {
         width: 100%;
-        height: calc(100% - 60px);
+        height: calc(100% - 80px);
         position: absolute;
-        top: 60px;
+        top: 80px;
         z-index: 8;
     }
     .Interwork_left {
         width: 235px;
-        height: calc(100% - 120px);
+        height: calc(100% - 140px);
         border-right: 1px solid $bor_color;
         border-top: 1px solid $bor_color;
         background-color: rgba(28, 33, 39, 0.7);
@@ -56,12 +195,216 @@ $bor_color: #27343b;
             }
           }
       }
+    /* step box menu*/
+    .navContent{
+        height: 38px;
+        background-color:#1F2531;
+        padding:15px 0 21px 0;
+        box-sizing: content-box;
+        .navBoxMenu{
+            margin: 0 20px;
+            height: 38px;
+            font-size:14px;
+            color:$stepBor_col;
+            border-bottom: 2px solid $stepBor_col;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            > s{
+                height:2px;
+                width:80px;
+                margin:0 7px;
+                background-color: $stepBor_col;
+            }
+            > s.hover{
+                background-color: #38C4D1;
+            }
+            > span{
+                padding-left:25px;
+                background:url(../../../images/icon_gray.png) no-repeat;
+                cursor: pointer;
+            }
+            > span.link{
+                color:#38C4D1;
+                background:url(../../../images/icon_link.png) no-repeat;
+            }
+            > span.hover{
+                color:#38C4D1;
+                background:url(../../../images/icon_hover.png) no-repeat;
+            }
+            .controlBtnBox{
+                position: relative;
+                top:-3px;
+                > em{
+                    width:80px;
+                    line-height: 25px;
+                    display: inline-block;
+                    text-align: center;
+                    font-size: 12px;
+                    margin: 5px 5px 0;
+                    border:1px #318592 solid;
+                    border-radius: 4px;
+                    -webkit-border-radius: 4px;
+                    -moz-border-radius: 4px;
+                    -ms-border-radius: 4px;
+                    -o-border-radius: 4px;
+                    color:#318592;
+                    cursor: pointer;
+                    font-style: normal;
+                    background-color: #293644;
+                    &:hover{
+                        color:#38C4D1;
+                        background-color: #1F2531;
+                    }
+                }
+            }
+        }
+    }
+    /* step box content */
+    .stepBoxContent{
+        width: 100%;
+        height: calc(100% - 134px);
+        position: absolute;
+        top: 134px;
+        padding:0 20px 20px;
+        z-index: 10;
+        background-color:#1F2531;
+        display: flex;
+        justify-content: space-between;
+        .stepLeftCon{
+            width:calc(66% - 2px);
+            height: 100%;
+            border-right: 2px solid $stepBor_col;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            .leftItemCon{
+                width: 945px;
+                height: 780px;
+                margin:0 auto;
+                background: url(../../../images/intersectionBg.png) no-repeat;
+                background-position: center center;
+                background-size: contain;
+            }
+            .turnBgBtn{
+                width:80px;
+                line-height: 25px;
+                display: inline-block;
+                text-align: center;
+                font-size: 12px;
+                margin: 5px 5px 0;
+                border:1px #318592 solid;
+                border-radius: 4px;
+                -webkit-border-radius: 4px;
+                -moz-border-radius: 4px;
+                -ms-border-radius: 4px;
+                -o-border-radius: 4px;
+                color:#318592;
+                cursor: pointer;
+                font-style: normal;
+                background-color: #293644;
+                position: absolute;
+                bottom:20px;
+                right:20px;
+                &:hover{
+                    color:#38C4D1;
+                    background-color: #1F2531;
+                }
+            }
+        }
+        .stepRightCon{
+            width:34%;
+            height: 100%;
+            .conBox{
+                padding:0 20px;
+                font-size: 12px;
+                color:#BBBDBC;
+                .rTit{
+                    line-height: 35px;
+                    font-size:14px;
+                    position: relative;
+                    > em{
+                        position: absolute;
+                        top:2px;
+                        right:0;
+                        font-size:12px;
+                        font-style: normal;
+                        color:#338495;
+                        cursor: pointer;
+                        &:hover{
+                            text-decoration: underline;
+                        }
+                    }
+                }
+                // 表单类
+                .rCon{
+                    border:1px solid $stepBor_col;
+                    padding:15px;
+                    display: none;
+                    .itemInputBox{
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        flex-wrap: nowrap;
+                        margin-bottom:6px;
+                        > span{
+                            line-height: 30px;
+                            flex:1;
+                            text-align: right;
+                        }
+                        :global(.ant-input){
+                            flex: 4;
+                            height: 30px;
+                            line-height: 30px;
+                            color: #BBBDBC;
+                            background-color: #1b2d2f;
+                            border: none;
+                            outline: none;
+                            border:1px solid $stepBor_col;
+                        }
+                    }
+                }
+                // 列表类
+                .rList{
+                    width: 100%;
+                    .listItem{
+                        width: 100%;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        > em, > span{
+                            flex: 1;
+                            font-style: normal;
+                            line-height:35px;
+                            padding:0 10px;
+                            text-align: center;
+                        }
+                        > em{
+                            background-color: #26394A;
+                        }
+                        > span{
+                            border-bottom: 1px solid #26394A;
+                        }
+                        &:hover span{
+                            background-color: #153a61;
+                        }
+                    }
+                    .hover{
+                        background-color: #153a61;
+                    }
+                }
+            }
+
+        }
+    }
+    
     /* 地图 */
     .mapContent{
         width: 100%;
-        height: calc(100% - 60px);
+        height: calc(100% - 134px);
         position: absolute;
-        top: 60px;
+        top: 134px;
         z-index: 8;
         .tagMarker{
             height: 30px;
@@ -69,8 +412,8 @@ $bor_color: #27343b;
             justify-content: space-around;
             align-items: center;
             position: absolute;
-            top:70px;
-            right:10px;
+            top:10px;
+            right:20px;
             z-index: 9;
             .statusBox{
                 display: flex;
@@ -101,6 +444,7 @@ $bor_color: #27343b;
                 width:32px;
                 height:32px;
                 background:url(../../../images/icon_turn.png) no-repeat;
+                cursor: pointer;
             }
         }
     }
@@ -137,7 +481,6 @@ $bor_color: #27343b;
         padding-left: 30px;
         left: 0;
         right: 0;
-        // background: #131a22;
         top: 0;
     }
 
@@ -170,6 +513,10 @@ $bor_color: #27343b;
         -o-border-radius: 4px;
         color:#838a9a;
         cursor: pointer;
+        &:hover{
+            color:#38C4D1;
+            background-color: #1F2531;
+        }
 }
     :global(.content_box_title p.input_button) {
         text-align: center;

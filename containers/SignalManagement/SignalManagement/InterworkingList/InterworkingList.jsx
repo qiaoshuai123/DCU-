@@ -32,7 +32,7 @@ class InterworkingList extends Component {
 
   }
   backPage = () => {
-    this.props.showInterworkingList(false)
+    this.props.showInterworkingList(null)
   }
   render() {
     const { systemList } = this.state
@@ -40,13 +40,13 @@ class InterworkingList extends Component {
     return (
       <div className={styles.syetem_bg} ref={(input) => { this.userLimitBox = input }}>
         <div className={styles.syetem_title}>
-          <div className={styles.syetem_titleLeft}>DCU设备状态监视</div>
-          <div className={styles.syetem_titleRight} onClick={this.backPage} />
+          <div className={styles.syetem_titleLeft}>信号状态监视</div>
+          <div className={styles.turnBtn} onClick={this.backPage} />
         </div>
         <div className={styles.syetem_top}>
           <div className={styles.syetem_item}>
             <span className={styles.item}>关键词:</span>
-            <div className={styles.inSle}><Input onChange={this.handleInputChange} /></div>
+            <div className={styles.inSle}><Input onChange={this.handleInputChange} placeholder="请输入" /></div>
           </div>
           <div className={styles.syetem_item}>
             <span className={styles.item}>行政区:</span>

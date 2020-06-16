@@ -112,6 +112,8 @@ a {
         display: block;
     }
 }
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; }
+input[type="number"]{ -moz-appearance: textfield; }
 /* 地图reset */
 a.amap-logo img{
     display: none!important;
