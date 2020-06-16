@@ -3,7 +3,13 @@ $bor-color: #2e3440;
 .syetem_bg {
   background: #1f2531;
   padding: 0 40px;
-  height: 100%;
+  height: calc(100% - 134px);
+  position: absolute;
+  top:134px;
+  right:0;
+  bottom:0;
+  left:0;
+  z-index: 10;
   .syetem_title {
     height: 65px;
     display: flex;
@@ -12,13 +18,12 @@ $bor-color: #2e3440;
     .syetem_titleLeft {
       font-size: 30px;
     }
-    .syetem_titleRight {
-      width: 40px;
-      height: 40px;
+    .turnBtn{
+      width:32px;
+      height:32px;
+      background:url(../../../../images/icon_turn.png) no-repeat;
       cursor: pointer;
-      border: 1px solid $bor-color;
-      background-color: red;
-    }
+  }
   }
   .syetem_top {
     width: 100%;
@@ -117,6 +122,7 @@ $bor-color: #2e3440;
           height: 100%;
           text-align: center;
           line-height: 45px;
+          padding:0 10px;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
@@ -152,6 +158,9 @@ $bor-color: #2e3440;
             text-align: center;
             margin: 0 5px;
           }
+        }
+        &:hover{
+          background-color: #31869b;
         }
       }
       .noData {
