@@ -161,7 +161,7 @@ class SignalManagement extends Component {
     });
   };
   render() {
-    const {stepTwoFlag, stepThreeFlag, stepFourFlag, stepFiveFlag, stepSixFlag, stepSevenFlag, stepEightFlag, stepNineFlag, turnTab } = this.state
+    const {stepTwoFlag, stepThreeFlag, stepFourFlag, stepFiveFlag, stepSixFlag, stepSevenFlag, stepEightFlag, stepNineFlag, turnTab, baseMapFlag } = this.state
     const { Search } = Input
     return (
       <div className={styles.SignalManagement}>
