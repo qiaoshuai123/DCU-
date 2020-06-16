@@ -2,20 +2,33 @@ import React, { Component } from 'react'
 import { Input } from 'antd'
 import Header from '../../../components/Header/Header'
 import CustomTree from '../../../components/CustomTree/CustomTree'
+import MessagePage from './MessagePage/MessagePage'
 import styles from './EquipmentManagement.scss'
 
 class InterworkingHome extends Component {
   constructor(props) {
     super(props)
     this.state = {
-
+      isMessagePage: true,
     }
   }
   componentDidMount = () => {
 
   }
+  addPoint = () => {
+    this.roadId = ''
+    this.setState({
+      isMessagePage: true,
+    })
+  }
+  closePoint = () => {
+    this.setState({
+      isMessagePage: false,
+    })
+  }
   render() {
     const { Search } = Input
+    const { isMessagePage } = this.state
     return (
       <div className={styles.InterworkingHomeBox}>
         <Header {...this.props} />
@@ -31,10 +44,13 @@ class InterworkingHome extends Component {
             <span />DCU点位列表
           </div>
           <CustomTree />
-          <div className={styles.addPoint}>
+          <div onClick={this.addPoint} className={styles.addPoint}>
             添加点位
           </div>
         </div>
+        {
+          isMessagePage && <MessagePage closePoint={this.closePoint} roadId={this.roadId} />
+        }
       </div>
     )
   }
