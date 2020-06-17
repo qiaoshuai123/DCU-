@@ -41,7 +41,7 @@ class InterworkingList extends Component {
       <div className={styles.syetem_bg} ref={(input) => { this.userLimitBox = input }}>
         <div className={styles.syetem_title}>
           <div className={styles.syetem_titleLeft}>信号状态监视</div>
-          <div className={styles.turnBtn} onClick={this.backPage} />
+          <div title="切换视图" className={styles.turnBtn} onClick={this.backPage} />
         </div>
         <div className={styles.syetem_top}>
           <div className={styles.syetem_item}>

@@ -61,48 +61,30 @@ $stepBor_col: #393F4F;
             .typePic{
                 width:120px;
                 height:80px;
-                flex: 1;
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 flex-wrap: wrap;
-                > s{
-                    width:100%;
-                    height: 100%;
-                    border:1px solid #292a2d;
-                    display: flex; 
-                    justify-content: center;
-                    align-items: center;
-                    text-decoration: none;
-                    background-color: #181B20;
-                    color:#5D6164;
-                    font-size: 14px;
-                }
-                > img{
-                    width:100%;
-                    height: 100%;
-                    border:1px solid #292a2d;
-                }
-                > em{
+                position: relative;
+                > em {
                     width:80px;
                     line-height: 25px;
                     font-style: normal;
                     font-size: 12px;
                     display: inline-block;
                     text-align: center;
-                    margin: 15px auto 0;
+                    margin: -12.5px auto 0;
                     border:1px #838a9a solid;
+                    color:#838a9a;
+                    cursor: pointer;
+                    position: absolute;
+                    top:50%;
+                    right:0;
                     border-radius: 4px;
                     -webkit-border-radius: 4px;
                     -moz-border-radius: 4px;
                     -ms-border-radius: 4px;
                     -o-border-radius: 4px;
-                    color:#838a9a;
-                    cursor: pointer;
-                    &:hover{
-                        color:#38C4D1;
-                        background-color: #1F2531;
-                    }
                 }
                 :global(.ant-radio-wrapper){
                     color:#BBBDBC;
@@ -283,6 +265,7 @@ $stepBor_col: #393F4F;
                 width: 945px;
                 height: 780px;
                 margin:0 auto;
+                position: relative;
                 background: url(../../../images/intersectionBg.png) no-repeat;
                 background-position: center center;
                 background-size: contain;
@@ -498,6 +481,9 @@ $stepBor_col: #393F4F;
         left:8px;
         top:8px;
     }
+    :global(.content_box_title p.input-item span.greenFont) {
+        color: #03E307;
+    }
     :global(.content_box_title p.input-item span.paramsBtn) {
         width:120px;
         line-height: 30px;
@@ -517,7 +503,7 @@ $stepBor_col: #393F4F;
             color:#38C4D1;
             background-color: #1F2531;
         }
-}
+    }
     :global(.content_box_title p.input_button) {
         text-align: center;
         padding-top: 10px;
@@ -561,6 +547,67 @@ $stepBor_col: #393F4F;
     }
     :global(.marker-hoverline) {
         background-color:green;
+    }
+    :global(.ant-upload.ant-upload-select-picture-card){
+        width:120px!important;
+        height:80px!important;
+        background: #181B20!important;
+        border:1px solid #292a2d!important;
+        margin:0!important;
+    }
+    :global(.ant-upload.ant-upload-select-picture-card > .ant-upload){
+        padding:unset!important;
+    }
+    :global(.ant-upload){
+        position: relative!important;
+    }
+    :global(.ant-upload > s){
+        width:100%;
+        height: 100%;
+        display: flex; 
+        justify-content: center;
+        align-items: center;
+        text-decoration: none;
+        background-color: #181B20;
+        color:#5D6164;
+        font-size: 14px;
+    }
+    :global(.ant-upload > img){
+        width:100%;
+        height: 80px;
+    }
+    :global(.ant-upload > em){
+        width:80px;
+        line-height: 25px;
+        font-style: normal;
+        font-size: 12px;
+        display: inline-block;
+        text-align: center;
+        margin: -12.5px auto 0;
+        border:1px #838a9a solid;
+        color:#838a9a;
+        cursor: pointer;
+        position: absolute;
+        top:50%;
+        right:-100px;
+        border-radius: 4px;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        -ms-border-radius: 4px;
+        -o-border-radius: 4px;
+    }
+    :global(.ant-upload > em:hover){
+        color:#38C4D1;
+        background-color: #1F2531;
+    }
+    :global(.ant-upload > b.maskHigh){
+        position: absolute;
+        top:0;
+        right:0;
+        bottom:0;
+        left:0;
+        z-index: 99;
+        background-color: blue;
     }
     
 }
