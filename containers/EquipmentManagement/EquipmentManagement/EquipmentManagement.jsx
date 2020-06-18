@@ -3,18 +3,21 @@ import { Input } from 'antd'
 import Header from '../../../components/Header/Header'
 import CustomTree from '../../../components/CustomTree/CustomTree'
 import MessagePage from './MessagePage/MessagePage'
+import MapShow from '../../../components/MapShow/mapShow'
+import Information from '../Information/Information'
 import styles from './EquipmentManagement.scss'
 
-class InterworkingHome extends Component {
+class EquipmentManagement extends Component {
   constructor(props) {
     super(props)
     this.state = {
       isMessagePage: true,
+      isInformation: false,
     }
   }
   componentDidMount = () => {
-
   }
+
   addPoint = () => {
     this.roadId = ''
     this.setState({
@@ -28,9 +31,9 @@ class InterworkingHome extends Component {
   }
   render() {
     const { Search } = Input
-    const { isMessagePage } = this.state
+    const { isMessagePage, isInformation } = this.state
     return (
-      <div className={styles.InterworkingHomeBox}>
+      <div className={styles.EquipmentManagementBox}>
         <Header {...this.props} />
         <div className={styles.Interwork_left}>
           <div className={styles.InterworkLeft_search}>
@@ -51,9 +54,15 @@ class InterworkingHome extends Component {
         {
           isMessagePage && <MessagePage closePoint={this.closePoint} roadId={this.roadId} />
         }
+        <div className={styles.mapBox}>
+          <MapShow />
+        </div>
+        {
+          isInformation && <Information />
+        }
       </div>
     )
   }
 }
 
-export default InterworkingHome
+export default EquipmentManagement

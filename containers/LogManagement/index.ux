@@ -1,0 +1,667 @@
+<import name="my-popup" src="../popup/index.ux"></import>
+<import name="no-results-page" src="../noResultsPage/index.ux"></import>
+<import name="tao-password" src="../taoPassword/index.ux"></import>
+ 
+
+<template>
+  <div style="height:100%; flex:1; flex-direction:column;">
+    <div class="filter">
+      <div style="height:42px * @ratio;">
+        <div class="filter-recommend" onclick="changeSort(1)">
+          <text class="{{sort==1?'text-black40':'text-gray40'}}">推荐</text>
+        </div>
+        <div class="filter-sales" onclick="changeSort(sort==3?2:3)">
+          <text class="{{sort==3||sort==2?'text-black40':'text-gray40'}}">销量</text>
+          <image class="filter-sales-image" show="{{!(sort==3||sort==2)}}" src="../../images/sales.png"></image>
+          <image class="filter-sales-image" show="{{sort == 3}}" src="../../images/sales-up.png"></image>
+          <image class="filter-sales-image" show="{{sort == 2}}" src="../../images/sales-down.png"></image>
+        </div>
+        <div class="filter-price" onclick="changeSort(sort==5?4:5)">
+          <text class="{{sort==4||sort==5?'text-black40':'text-gray40'}}">价格</text>
+          <image class="filter-sales-image" show="{{!(sort==4||sort==5)}}" src="../../images/sales.png"></image>
+          <image class="filter-sales-image" show="{{sort == 5}}" src="../../images/sales-up.png"></image>
+          <image class="filter-sales-image" show="{{sort == 4}}" src="../../images/sales-down.png"></image>
+        </div>
+        <div class="filter-quan" onclick="changeQuan(filterQuan)">
+          <image class="filter-quan-image" show="{{!filterQuan}}" src="../../images/quan.png"></image>
+          <image class="filter-quan-image" show="{{filterQuan}}" src="../../images/quan-select.png"></image>
+          <text class="{{filterQuan?'text-black40':'text-gray40'}}">只看有券</text>
+        </div>
+        <div class="filter-type" onclick="changeType(filterType==2?1:2)">
+          <text class="{{filterType==2?'text-yellow40':'text-gray40'}}">筛选</text>
+          <image class="filter-type-image" show="{{filterType == 1}}" src="../../images/type.png"></image>
+          <image class="filter-type-image" show="{{filterType == 2}}" src="../../images/type-select.png"></image>
+        </div>
+      </div>
+    </div>
+    <stack style="height:100%; flex:1;">
+      <div class="searchResultPage">
+        <list id="list" class="{{listSwitch==1?'resultList':'resultList1'}}" onscrollbottom="loadData">
+          <list-item type="title" class="{{listSwitch==1?'resultListItem-title':'resultListItem-title1'}}">
+            <list class="suggest-list" if="suggestList && suggestList.length">
+              <block for="{{suggest in suggestList}}">
+                <list-item type="suggest" onclick="showSuggest(suggest)" class="suggest-item">
+                  <text class="text-garay33">{{suggest}}</text>
+                </list-item>
+              </block>
+          </list-item>
+          <block for="item in goodsList">
+            <list-item type="resultListItem" class="resultListItem" onclick="printItem(item)" if="{{listSwitch == 1}}">
+              <image class="resultListItem-img" src="{{item.imgUrl}}"></image>
+              <div class="resultListItem-content">
+                <div class="resultListItem-row1">
+                 <image class="moduleItem-logo"  src="{{item.goodsLogo}}" />
+                 <text class="text-black39 text-line2"  >1111{{item.name}}</text>
+                </div>
+                <div class="resultListItem-row2">
+                  <text class="{{item.goodsPrice?'resultListItem-couponPrice':''}} text-white33">{{item.goodsPrice}}</text>
+                  <text class="resultListItem-salesNum text-black30">{{item.monthlySales}}</text> 
+                </div>
+                <div class="resultListItem-row3">
+                  <div style="flex-shrink:0" if="{{item.goodsDecreasePriceArray}}">
+                    <text class="text-red33" style="margin-top:9px">{{item.goodsDecreasePriceArray[0]}}</text>
+                    <text class="text-red36" style="margin-top:9px">{{item.goodsDecreasePriceArray[1]}}</text>
+                    <text class="text-red54">{{item.goodsDecreasePriceArray[2]}}</text>
+                  </div>
+                  <text class="resultListItem-orginPrice text-black30 strickout text-line1">{{item.goodsOldPrice}}</text>
+                </div>
+              </div>
+            </list-item>
+            <list-item type="resultListItem1" class="resultListItem1" onclick="printItem(item)" if="{{listSwitch == 2}}">
+              <image class="resultListItem1-img" src="{{item.imgUrl}}"></image>
+              <div class="resultListItem1-content">
+                <div class="resultListItem1-row1">
+                  <image class="moduleItem-logo" src="{{item.goodsLogo}}" />
+                  <text class="resultListItem1-title text-black45 text-line1">{{item.name}}</text>
+                </div>
+                <text class="text-gray36 resultListItem1-subtitle text-line1">{{item.subName}}</text>
+                <div class="resultListItem1-couponPrice">
+                  <text class="{{item.goodsPrice?'resultListItem-couponPrice':''}} text-white33">{{item.goodsPrice}}</text>
+                </div>
+                <div class="resultListItem1-row4">
+                  <text class="text-garay33 strickout">{{item.goodsOldPrice}}</text>
+                  <text class="text-garay33" style="margin-right:10px * @ratio;">{{ item.monthlySales.replace('月销','')+'人付款' }}</text>
+                </div>
+                <div class="resultListItem1-row5 text-line1">
+                  <div if="{{item.goodsDecreasePriceArray}}">
+                    <text class="text-red33Bold" style="margin-top: 10px">{{item.goodsDecreasePriceArray[0]}}</text>
+                    <text class="text-red36Bold" style="margin-top: 10px">{{item.goodsDecreasePriceArray[1]}}</text>
+                    <text class="text-red54Bold">{{item.goodsDecreasePriceArray[2]}}</text>
+                  </div>
+                  <div class="resultListItem1-buy">
+                    <text class="text-red36" >立即购买</text>
+                  </div>
+                </div>
+              </div>
+            </list-item>
+          </block>
+          <list-item class="{{listSwitch==1?'resultListItem-title':'resultListItem-title1'}} load-more" type="loadMore">
+            <progress type="circular" show="{{hasMoreData}}"></progress>
+            <text show="{{hasMoreData}}">加载更多...</text>
+            <text show="{{!hasMoreData}}">到底了，我是有底线的</text>
+          </list-item>
+        </list>
+      </div>
+      <no-results-page id="noResult" onreload="refreshData"></no-results-page>
+      <div class="popup-content" if="showFilter">
+        <text class="popup-type-title text-black42-07">商家类型</text>
+        <div class="popup-type-row">
+          <text class="{{popupType==1?'popup-type-item-select':'popup-type-item'}} text-black36" onclick="selectPopupType(1)">天猫店</text>
+          <text class="{{popupType==2?'popup-type-item-select':'popup-type-item'}} text-black36" onclick="selectPopupType(2)">淘宝店</text>
+          <text class="{{popupType==3?'popup-type-item-select':'popup-type-item'}} text-black36" onclick="selectPopupType(3)">旗舰店</text>
+        </div>
+        <text class="popup-price-title text-black42-07">价格区间</text>
+        <div class="popup-price-row1">
+          <div class="popup-price">
+            <input type="number" style="text-align:center;font-weight:normal;" placeholder="最低价" value="{{minPrice}}" onchange="changeMinPrice"></text>
+          </div>
+          <text class="popup-price-text" style="color:rgba(0, 0, 0, 0.4)">-</text>
+          <div class="popup-price">
+            <input type="number" style="text-align:center;font-weight:normal;" placeholder="最高价" value="{{maxPrice}}" onchange="changeMaxPrice"></text>
+          </div>
+        </div>
+        <div class="popup-price-row2">
+          <text onclick="changePriceRange(1)" class="{{priceType==1?'popup-price-item-select':'popup-price-item'}}">0-10</text>
+          <text onclick="changePriceRange(2)" class="{{priceType==2?'popup-price-item-select':'popup-price-item'}}">10-25</text>
+          <text onclick="changePriceRange(3)" class="{{priceType==3?'popup-price-item-select':'popup-price-item'}}">25-50</text>
+          <text onclick="changePriceRange(4)" class="{{priceType==4?'popup-price-item-select':'popup-price-item'}}">50-80</text>
+          <text onclick="changePriceRange(5)" class="{{priceType==5?'popup-price-item-select':'popup-price-item'}}">80以上</text>
+        </div>
+        <div class="popup-button">
+          <text class="popup-reset text-black45-07" onclick="resetFilter">重置</text>
+          <text class="popup-summit text-black45" onclick="summitFilter">确认</text>
+        </div>
+      </div>
+      <tao-password></tao-password>
+    </stack>
+  </div>
+</template>
+
+<script>
+import prompt from '@system.prompt'
+import webview from '@system.webview'
+export default {
+  props: {
+    listSwitch: {
+      default: ''
+    },
+    hotWord: {
+      default: ''
+    }
+  },
+  data: {
+    suggestList: [],
+    goodsList: [],
+    filterQuan: false,
+    filterType: 1,
+    showFilter: false,
+    sort: 1,
+    popupType: 0,
+    priceType: 0,
+    minPrice: '',
+    maxPrice: '',
+    pageNum: 0,
+    sortField: 'base',
+    sortBy: '2',
+    hasMoreData: true
+  },
+  onInit() {
+    this.loadData();
+  },
+  refreshData(t, query) {
+    this.pageNum = 0;
+    this.loadData(t, query);
+  },
+  loadData(t, query) {
+    let that = this
+    let content = this.$app.$def;
+    let request = {
+      query: query || this.hotWord,
+      pageNum: this.pageNum,
+      sortField: this.sortField,
+      sortBy: this.sortBy,
+      onlyCoupon: this.filterQuan,
+      shopFilter: this.popupType,
+      floorPrice: this.minPrice,
+      ceilingPrice: this.maxPrice
+    }
+    console.log(request);
+    content.TeddyNetServer.requestSearchResult(content, request).then(res => {
+      console.log('----------requestSearchResult-------------', res.data.length, res.data && res.data.length, JSON.stringify(res));
+      this.hasMoreData = true
+      if (!res.data || res.data.length < 20) {
+        this.hasMoreData = false
+      }
+      if (this.pageNum) {
+        if (res.data && res.data.length) {
+          this.goodsList.push(...res.data);
+        }
+      } else {
+
+        if (res.data && res.data.length) {
+          this.hideNoResult();
+          this.suggestList = res.suggest;
+          this.goodsList = res.data;
+        } else {
+
+          this.showNoResult({
+            code: 52003,
+            msg: '无数据'
+          });
+        }
+      }
+      this.pageNum++;
+    }, err => {
+      console.log('----------requestSearchResult=err-------------', JSON.stringify(err));
+      setTimeout(() => {
+        that.showNoResult(err);
+      }, 37);
+    })
+  },
+  printItem(item) {
+    APP_STATISTICS.track_event('search_result_product')
+    this.$app.$def.appConfigService.changeOpenMethods(this, this.$app.$def, item, 'search', item.extra.appUrl)
+  },
+
+
+  changeSort(sort) {
+    this.sort = sort
+    switch (sort) {
+      case 1:
+        this.sortField = 'base';
+        this.sortBy = '2';
+        APP_STATISTICS.track_event('search_result_recommend');
+        break;
+      case 2:
+        this.sortField = 'volume';
+        this.sortBy = '1';
+        APP_STATISTICS.track_event('search_result_sales');
+        break;
+      case 3:
+        this.sortField = 'volume';
+        this.sortBy = '0';
+        APP_STATISTICS.track_event('search_result_sales');
+        break;
+      case 4:
+        this.sortField = 'price';
+        this.sortBy = '1';
+        APP_STATISTICS.track_event('search_result_price');
+        break;
+      case 5:
+        this.sortField = 'price';
+        this.sortBy = '0';
+        APP_STATISTICS.track_event('search_result_price');
+        break;
+      default:
+        this.sortField = 'base';
+        this.sortBy = '2';
+        APP_STATISTICS.track_event('search_result_recommend');
+        break;
+    }
+    this.refreshData();
+  },
+  changeQuan(quan) {
+    console.log('search_result_coupon')
+    APP_STATISTICS.track_event('search_result_coupon');
+    this.filterQuan = !quan
+    this.refreshData();
+  },
+  selectPopupType(type) {
+    this.popupType = type
+  },
+  changeType(type) {
+    this.filterType = type
+    if (this.filterType == 1) {
+      APP_STATISTICS.track_event('search_result_button_filter_on');
+    } else {
+      APP_STATISTICS.track_event('search_result_button_filter_off');
+    }
+    this.showFilter = !this.showFilter
+  },
+  resetFilter() {
+    console.log('重置按钮点击')
+    APP_STATISTICS.track_event('search_result_reset');
+    this.showFilter = !this.showFilter
+    this.popupType = 0
+    this.priceType = 0
+    this.minPrice = ''
+    this.maxPrice = ''
+    //参数
+    this.refreshData();
+    this.goIndex(0);
+  },
+  summitFilter() {
+    console.log('确定按钮点击')
+    APP_STATISTICS.track_event('search_result_define');
+    this.showFilter = !this.showFilter
+    this.refreshData();
+    this.goIndex(0);
+  },
+  goIndex(item) {
+    this.$element('list').scrollTo({ index: item })
+  },
+  changeMinPrice(price) {
+    this.minPrice = price.value;
+  },
+  changeMaxPrice(price) {
+    this.maxPrice = price.value;
+  },
+  changePriceRange(type) {
+    switch (type) {
+      case 1:
+        this.minPrice = 0;
+        this.maxPrice = 10;
+        this.priceType = 1;
+        break;
+      case 2:
+        this.minPrice = 10;
+        this.maxPrice = 25;
+        this.priceType = 2;
+        break;
+      case 3:
+        this.minPrice = 25;
+        this.maxPrice = 50;
+        this.priceType = 3;
+        break;
+      case 4:
+        this.minPrice = 50;
+        this.maxPrice = 80;
+        this.priceType = 4;
+        break;
+      case 5:
+        this.minPrice = 80;
+        this.maxPrice = '';
+        this.priceType = 5;
+        break;
+    }
+    let str = type.toString()
+    console.log('search_result_price' + str)
+    APP_STATISTICS.track_event('search_result_price' + str);
+  },
+  showSuggest(item) {
+    console.log('showSuggest', item, '延展词点击');
+    APP_STATISTICS.track_event('search_result_extension');
+    if (item) {
+      this.$app.$def.storage.getHistoryWords().then(res => {
+        console.log('historyWords', res);
+        res.unshift(item);
+        res = Array.from(new Set(res)).slice(0, 10);
+        this.$app.$def.storage.setHistoryWords(res)
+        this.$emit('search', { word: item })
+        this.refreshData(null, item);
+      }, err => {
+        this.$emit('search', { word: item });
+        this.refreshData(null, item);
+      });
+    }
+  },
+  showNoResult(ret) {
+    this.$child('noResult').show(ret);
+  },
+  hideNoResult() {
+    this.$child('noResult').hide();
+  }
+}
+</script>
+
+<style lang="less">
+@import "../../styles/base.less";
+.moduleItem-logo {
+  width: 16px * @ratio;
+  height: 16px * @ratio;
+  margin-top: 5px * @ratio;
+  margin-right: 20px * @ratio;
+}
+.popup-content {
+  padding-left: 42px * @ratio;
+  border-radius: 20px;
+  background-color: @background-color-white;
+  flex-direction: column;
+  width: 792px * @ratio;
+  height: 963px * @ratio;
+  position: absolute;
+  right: 42px * @ratio;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  top: 22px * @ratio;
+}
+.popup-type-title {
+  margin-top: 40px * @ratio;
+}
+.popup-type-row {
+  padding-right: 42px * @ratio;
+  margin-top: 36px * @ratio;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.popup-type-item {
+  padding: 18px * @ratio 54px * @ratio;
+  background-color: @background-color-type;
+  border-radius: 43px;
+}
+.popup-type-item-select {
+  padding: 18px * @ratio 54px * @ratio;
+  background-color: @background-color-type-select;
+  border-radius: 43px;
+}
+.popup-price-title {
+  margin-top: 72px * @ratio;
+}
+.popup-price-row1 {
+  padding-right: 42px * @ratio;
+  justify-content: space-between;
+  margin-top: 36px * @ratio;
+}
+.popup-price {
+  align-items: center;
+  justify-content: center;
+  height: 84px * @ratio;
+  width: 330px * @ratio;
+  border-radius: 43px;
+  border: 2px * @ratio solid rgba(0, 0, 0, 0.5);
+  font-weight:normal;
+}
+.popup-price-row2 {
+  flex-wrap: wrap;
+}
+.popup-price-item {
+  margin-top: 30px * @ratio;
+  text-align: center;
+  width: 216px * @ratio;
+  height: 84px * @ratio;
+  background-color: @background-color-type;
+  border-radius: 43px * @ratio;
+  margin-right: 30px * @ratio;
+  color:rgba(0,0,0,1);
+}
+.popup-price-item-select {
+  margin-top: 30px * @ratio;
+  text-align: center;
+  width: 216px * @ratio;
+  height: 84px * @ratio;
+  background-color: @background-color-type-select;
+  border-radius: 43px * @ratio;
+  margin-right: 30px * @ratio;
+  color:rgba(0,0,0,1);
+}
+.popup-button {
+  margin-top: 90px * @ratio;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  justify-content: space-between;
+  padding-top: 42px * @ratio;
+  padding-right: 42px * @ratio;
+}
+.popup-reset {
+  border-radius: 52px;
+  border: 2px solid rgba(0, 0, 0, 0.4);
+  width: 330px * @ratio;
+  height: 96px * @ratio;
+  text-align: center;
+}
+.popup-summit {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 233, 0, 1) 0%,
+    rgba(251, 212, 0, 1) 100%
+  );
+  border-radius: 64px;
+  height: 96px * @ratio;
+  width: 330px * @ratio;
+  text-align: center;
+}
+.searchResultPage {
+  padding: 0 30px * @ratio;
+  flex-direction: column;
+  background-color: @background-color-doufu;
+  flex: 1;
+  height: 100%;
+}
+.filter {
+  height: 126px * @ratio;
+  width: 100%;
+  padding: 0 30px * @ratio;
+  background-color: @background-color-doufu;
+  border-top-right-radius: 40px;
+  border-top-left-radius: 40px;
+  align-items: center;
+}
+.filter-recommend {
+  margin-left: 27px * @ratio;
+  margin-right: 27px * @ratio;
+}
+.filter-sales {
+  margin-left: 45px * @ratio;
+  margin-right: 45px * @ratio;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.filter-sales-image {
+  margin-left: 9px;
+  width: 16px * @ratio;
+  height: 22px * @ratio;
+}
+.filter-price {
+  margin-left: 45px * @ratio;
+  margin-right: 42px * @ratio;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.filter-quan-image {
+  width: 42px * @ratio;
+  height: 42px * @ratio;
+  margin-right: 9px * @ratio;
+}
+.filter-quan {
+  margin-left: 42px * @ratio;
+  padding-right: 45px * @ratio;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  border-right: 1px solid black;
+}
+.filter-type {
+  margin-left: 45px * @ratio;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.filter-type-image {
+  width: 22px * @ratio;
+  height: 12px * @ratio;
+  margin-left: 9px * @ratio;
+}
+.suggest-list {
+  height: 88px * @ratio;
+  margin-left: 24px * @ratio;
+  flex-direction: row;
+  padding-bottom: 30px * @ratio;
+}
+.suggest-item {
+  padding: 12px * @ratio 24px * @ratio;
+  background-color: @background-color-base;
+  margin-right: 30px * @ratio;
+  border-radius: 37px * @ratio;
+}
+.resultList {
+  flex-direction: column;
+  columns: 2;
+  flex: 1;
+}
+.resultList1 {
+  flex-direction: column;
+  columns: 1;
+  flex: 1;
+}
+
+.resultListItem {
+  flex-direction: column;
+  width: 50%;
+  margin-bottom: 30px * @ratio;
+}
+.resultListItem-title {
+  column-span: 2;
+}
+.resultListItem-title1 {
+  column-span: 1;
+}
+.resultListItem-content {
+  height: 306px * @ratio;
+  width: 500px * @ratio;
+  padding-top: 24px * @ratio;
+  padding-left: 30px * @ratio;
+  padding-right: 30px * @ratio;
+  flex-direction: column;
+  background-color: @background-color-white;
+}
+
+.resultListItem-img {
+  width: 500px * @ratio;
+  height: 480px * @ratio;
+  border-top-right-radius: 16px 16px 0px 0px;
+  border-top-left-radius: 16px 16px 0px 0px;
+}
+.resultListItem-row1 {
+  height: 100px * @ratio;
+  word-break: break-all;
+  text-indent: -5px;
+}
+.resultListItem-row2 {
+  margin-top: 30px * @ratio;
+  justify-content: space-between;
+  height: 48px * @ratio;
+}
+.resultListItem-row3 {
+  margin-top: 20px * @ratio;
+  justify-content: space-between;
+  height: 72px * @ratio;
+}
+.resultListItem-couponPrice {
+  background-image: url(../../../assets/images/discount.9.png);
+}
+.resultListItem-salesNum {
+}
+.resultListItem-discountPrice {
+}
+.resultListItem-discount {
+}
+.resultListItem-orginPrice {
+}
+.resultListItem1 {
+  flex-direction: row;
+  align-items: center;
+  height: 450px * @ratio;
+  justify-content: space-between;
+}
+.resultListItem1-img {
+  width: 366px * @ratio;
+  height: 366px * @ratio;
+}
+.resultListItem1-content {
+  height: 450px * @ratio;
+  flex-direction: column;
+  width: 620px * @ratio;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: rgba(0, 0, 0, 0.1);
+}
+.resultListItem1-row1 {
+  flex-direction: row;
+  justify-content: space-between;
+}
+.resultListItem1-title {
+  width: 560 * @ratio;
+}
+.resultListItem1-subtitle {
+  margin-top: 6px * @ratio;
+  line-height:48px;
+}
+.resultListItem1-couponPrice {
+  margin-top: 36px * @ratio;
+}
+.resultListItem1-row4 {
+  margin-top: 66px * @ratio;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.resultListItem1-row5 {
+  margin-top: 6px * @ratio;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.resultListItem1-buy {
+  width: 210px * @ratio;
+  height: 66px * @ratio;
+  align-items: center;
+  justify-content: center;
+  border-radius: 33px * @ratio;
+  border: 2px * @ratio solid rgba(254, 70, 70, 1);
+}
+.load-more {
+  text-align: center;
+  justify-content: center;
+  padding-bottom: 40px * @ratio;
+  padding-top: 40px * @ratio;
+}
+</style>
