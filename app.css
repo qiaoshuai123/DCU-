@@ -112,6 +112,9 @@ a {
         display: block;
     }
 }
+html {
+    --antd-wave-shadow-color: unset!important;
+}
 input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; }
 input[type="number"]{ -moz-appearance: textfield; }
 /* 地图reset */

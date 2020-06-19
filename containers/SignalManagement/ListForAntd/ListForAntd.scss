@@ -1,0 +1,45 @@
+.conBox{
+  padding:0 20px;
+  font-size: 12px;
+  color:#BBBDBC;
+  // 列表类
+  .rList{
+      width: 100%;
+      .listItem{
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-wrap: nowrap;
+          > em, > span{
+              flex: 1;
+              font-style: normal;
+              line-height:35px;
+              padding:0 10px;
+              text-align: center;
+          }
+          > em{
+              background-color: #26394A;
+              :global(.ant-select-selection){
+                  background:transparent !important;
+                  border:unset !important;
+                  color:#BBBDBC;
+                  display: flex!important;
+                  justify-content: center;
+              }
+              :global(.ant-select-arrow){
+                  color:#fff !important;
+              }
+          }
+          > span{
+              border-bottom: 1px solid #26394A;
+          }
+          &:hover span{
+              background-color: #153a61;
+          }
+      }
+      .hover{
+          background-color: #153a61;
+      }
+  }
+}
