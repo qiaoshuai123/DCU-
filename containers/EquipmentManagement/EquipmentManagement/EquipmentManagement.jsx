@@ -12,7 +12,7 @@ class EquipmentManagement extends Component {
     super(props)
     this.state = {
       isMessagePage: true,
-      isInformation: false,
+      isInformation: true,
     }
   }
   componentDidMount = () => {

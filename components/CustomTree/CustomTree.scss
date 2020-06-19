@@ -11,11 +11,12 @@
         .treeLi {
             position: relative;
             margin-top: 7px;
+            padding-left: 25px;
             .treeIcon {
                 width: 24px;
                 height: 24px;
                 position: absolute;
-                right: 30px;
+                right: 5px;
                 margin: 0;
                 line-height: 24px;
                 text-align: center;
@@ -28,21 +29,24 @@
             }
             .treeNode {
                 display: inline-block;
+                font-size: 15px;
                 height: 24px;
-                margin-left: 70px;
-                padding: 0 10px;
+                width: 170px;
                 color: #f1f1fb;
+                text-align: center;
                 line-height: 24px;
                 text-decoration: none;
                 vertical-align: top;
                 border-radius: 2px;
                 cursor: pointer;
                 transition: all 0.3s;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
             }
             .childTree {
                 margin: 0;
-                padding: 0 0 0 25px;
-                transition: height ease .2s;
+                transition: height ease 0.2s;
                 overflow: hidden;
                 .childLi {
                     position: relative;
@@ -61,14 +65,16 @@
                     border: 0 none;
                     outline: none;
                     font-size: 20px;
-                    color: #15AEE5;
+                    color: #15aee5;
                     cursor: pointer;
                 }
                 .childNode {
                     display: inline-block;
+                    font-size: 14px;
                     height: 24px;
+                    width: 145px;
                     margin: 0;
-                    padding: 0 5px 0 15px;
+                    padding-left: 5px;
                     color: #f1f1fb;
                     line-height: 24px;
                     text-decoration: none;
@@ -76,6 +82,9 @@
                     border-radius: 2px;
                     cursor: pointer;
                     transition: all 0.3s;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
                 }
             }
         }
@@ -89,5 +98,5 @@
 }
 :global(.ant-tree.ant-tree-show-line li span.ant-tree-switcher) {
     background-color: transparent;
-    color: #15AEE5;
+    color: #15aee5;
 }
