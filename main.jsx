@@ -5,9 +5,11 @@ import { HashRouter, Route, BrowserHistory, Redirect, Switch } from 'react-route
 import { AppContainer } from 'react-hot-loader'
 import './app.css'
 import LoadingPage from './components/LoadingPage/LoadingPage'
-
 import { ConfigProvider } from 'antd'
+import { Provider } from 'react-redux'
+import { PersistGate } from 'redux-persist/lib/integration/react'
 import zhCN from 'antd/es/locale/zh_CN'
+import { store, persistore } from './reactRedux/configureStore'
 
 const Loading = () => <LoadingPage />
 const Login = Loadable({
@@ -126,13 +128,17 @@ const Parent = () => (
 reactDom.render(
   <AppContainer>
     <ConfigProvider locale={zhCN}>
-      <HashRouter basename="" history={BrowserHistory}>
-        <Switch>
-          <Redirect exact from="/" to="/interworkingHome" />
-          <Route exact path="/interworkingHome" component={InterworkingHome} />
-          <Route path="/" component={Parent} />
-        </Switch>
-      </HashRouter>
+      <Provider store={store}>
+        <PersistGate loading="null" persistor={persistore}>
+          <HashRouter basename="" history={BrowserHistory}>
+            <Switch>
+              <Redirect exact from="/" to="/interworkingHome" />
+              <Route exact path="/interworkingHome" component={InterworkingHome} />
+              <Route path="/" component={Parent} />
+            </Switch>
+          </HashRouter>
+        </PersistGate>
+      </Provider>
     </ConfigProvider>
   </AppContainer>
   , document.getElementById('content'),

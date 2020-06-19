@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import classNames from 'classnames'
-import { Select } from 'antd'
+import { Select, message } from 'antd'
 import styles from './ListForAntd.scss'
 const { Option } = Select;
 
@@ -8,6 +8,7 @@ class ListForAntd extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      rowSelect: null,
       dataSourse: [
         {'name': '小明', 'age': 38, 'like': 'play', 'sex': '男', 'job': '不知道'},
         {'name': '小亮', 'age': 18, 'like': 'play', 'sex': '女', 'job': '不知道'},
@@ -22,13 +23,16 @@ class ListForAntd extends Component {
     }
     this.selectIndex = null
   }
-  componentWillMount = () => {
-    
+  componentDidUpdate = (prevState) => {
+    // 数据更新
+    // const { loadPlanTree, loadChildTree } = this.props.data
+    // if (prevState.data.loadPlanTree !== loadPlanTree) {
+    //   this.getPlanTree(loadPlanTree)
+    // }
   }
   componentDidMount = () => {
     // 根据数据源填充到显示与隐藏的列表
     const listNames = [], showListDatas = [], hideListDatas = [];
-
     for (let prop in this.state.dataSourse[0]) {
       const obj ={
         key: prop,
@@ -51,6 +55,16 @@ class ListForAntd extends Component {
   getIndex = index => {
     this.selectIndex = index
   }
+  update = (e) => {
+    e.stopPropagation();
+    console.log('我是操作栏')
+  }
+  handleClick = index => {
+    message.info("当前点击的是第"+Number(index+1)+"行")
+    this.setState({
+      rowSelect: index,
+    })
+  }
   handleChange = (value, index) => {
     const hideListDatas = JSON.parse(JSON.stringify(this.state.hideListDatas)) // 副本隐藏的下拉
     const showListDatas = JSON.parse(JSON.stringify(this.state.showListDatas))
@@ -70,7 +84,7 @@ class ListForAntd extends Component {
     })
   }
   render() {
-    const { dataSourse, showListDatas, hideListDatas, handleFlag } = this.state
+    const { rowSelect, dataSourse, showListDatas, hideListDatas, handleFlag } = this.state
     return (
       <div className={styles.SignalManagement}>
         <div className={styles.stepBoxContent}>
@@ -80,7 +94,7 @@ class ListForAntd extends Component {
                 <div className={styles.listItem}>
                   {
                     !!showListDatas && showListDatas.map((item, i) => {
-                          return <em>
+                          return <em key={"emTit"+i}>
                           <Select
                             labelInValue
                             defaultValue={{ key: item.label }}
@@ -88,7 +102,7 @@ class ListForAntd extends Component {
                             onChange={(e) => {this.handleChange(e, i)}}>
                             {
                               !!hideListDatas && hideListDatas.map((items, key) => {
-                                return <Option value={items.key} onClick={()=>{this.getIndex(key)}}>{items.label}</Option>
+                                return <Option key={"optionList"+ key} value={items.key} onClick={()=>{this.getIndex(key)}}>{items.label}</Option>
                               })
                             }
                           </Select>
@@ -100,12 +114,12 @@ class ListForAntd extends Component {
                 </div>
                 {
                   !!dataSourse && dataSourse.map((item, i) => {
-                    return <div key={'phaseList'+i} className={classNames(styles.listItem)}>
-                      {!!showListDatas && showListDatas.map((val) => {
-                          return <span>{item[val.key]}</span>
+                    return <div key={'phaseList'+i} className={classNames(styles.listItem, rowSelect === i ? styles.hover : null)} onClick={()=>{this.handleClick(i)}}>
+                      {!!showListDatas && showListDatas.map((val, k) => {
+                          return <span key={"spanText"+ k}>{item[val.key]}</span>
                         })
                       }
-                      {handleFlag ? <span>删除</span> : null}
+                      {handleFlag ? <span><b onClick={(e)=>{this.update(e)}}>修改</b><b onClick={(e)=>{this.update(e)}}>删除</b><b onClick={(e)=>{this.update(e)}}>查看</b></span> : null}
                           </div>
                   })
                 }

@@ -1,13 +1,17 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { Input, Icon, Radio, Upload, Modal, message, Select } from 'antd'
 import classNames from 'classnames'
 import Header from '../../../components/Header/Header'
 import markerIcon from '../../../images/markerGreen.png'
 import markerRedIcon from '../../../images/markerRed.png'
 import CustomTree from '../../../components/CustomTree/CustomTree'
+import ListForAntd from '../ListForAntd/ListForAntd'
 import InterworkingList from './InterworkingList/InterworkingList'
 import styles from './SignalManagement.scss'
-
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+// import {  } from '../../../actions/public'
+// import {  } from '../../../actions/SignalManagement'
 const { Option } = Select
 const pointArr = [
   [120.113369,30.234277],
@@ -33,7 +37,7 @@ function beforeUpload(file) {
   }
   return isJpgOrPng && isLt2M;
 }
-class SignalManagement extends Component {
+class SignalManagement extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
@@ -65,20 +69,34 @@ class SignalManagement extends Component {
     // 初始化地图
     this.loadingMap()
     window.showHidePop = this.showHidePop
+    window.setGetParams = this.setGetParams
+  }
+  // 更新参数
+  setGetParams = params => {
+    console.log(params, '更新名称')
+    this.setState({
+      stepOneText: params,
+    },()=>{
+      this.showHidePop("stepTwoFlag", true);
+    })
   }
   // 显示与隐藏step
   showHidePop = (name, flag) => {
     const stepArr = ['stepOneFlag', 'stepTwoFlag', 'stepRoadFlag', 'stepThreeFlag', 'stepFourFlag', 'stepFiveFlag', 'stepSixFlag', 'stepSevenFlag', 'stepEightFlag', 'stepNineFlag', 'turnTab']
-    for (let i in stepArr) {
-      if (stepArr[i] === name) {
-        this.setState({
-          [name]: flag,
-        })
-      } else {
-        this.setState({
-          [stepArr[i]]: null,
-        })
+    if (this.state.stepOneText !== '请选择路口'){
+      for (let i in stepArr) {
+        if (stepArr[i] === name) {
+          this.setState({
+            [name]: flag,
+          })
+        } else {
+          this.setState({
+            [stepArr[i]]: null,
+          })
+        }
       }
+    } else {
+      message.info("请选择路口！");
     }
   }
   // 显示隐藏弹层
@@ -169,7 +187,7 @@ class SignalManagement extends Component {
     info.push(`<p class='input-item'>信号运行方案：<span class='greenFont'>` + '早高峰' + `</span></p>`);
     info.push(`<p class='input-item'>信号控制方式：<span class='greenFont'>` + '实时优化控制' + `</span></p>`);
     info.push(`<p class='input-item' style='height:15px;'></p>`);  
-    info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='showHidePop("stepTwoFlag", true)'>参数配置</span></p>`);
+    info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams("我是路口")'>参数配置</span></p>`);
     const infoWindow = new AMap.InfoWindow({
       content: info.join("")  //使用默认信息窗体框样式，显示信息内容
     });
@@ -280,8 +298,7 @@ class SignalManagement extends Component {
                   </div></div> : null
                   }
                   {/* 灯组回显 */}
-                  {
-                  lights.map((item,i) => {
+                  { stepThreeFlag && lights && lights.map((item,i) => {
                     return <div onDoubleClick={()=>{message.info("双击操作")}} onMouseDown={() => {console.log("鼠标按下")}} key={'light'+i} style={{position:'absolute',display:'block',background:'url('+item.src+') no-repeat', left: item.left, top: item.top,width:item.width,height:item.height,border:'1px border yellow' }} title={item.name}>{item.name}</div>
                   })
                 }
@@ -323,7 +340,7 @@ class SignalManagement extends Component {
                     </div>
                   </div>
                   {/* 列表 */}
-                  <div className={styles.rList}>
+                  {/* <div className={styles.rList}>
                     <div className={styles.listItem}>
                       <em>灯组序号</em>
                       <em>方向</em>
@@ -336,7 +353,8 @@ class SignalManagement extends Component {
                       <span>圆灯</span>
                       <span>删除</span>
                     </div>
-                  </div>
+                  </div> */}
+                  <ListForAntd />
                 </div> : stepRoadFlag ? 
                 <div className={styles.conBox}>
                 <div className={styles.rTit}>车道列表<em>添加</em></div>
@@ -528,7 +546,7 @@ class SignalManagement extends Component {
           }
         <div className={styles.navContent}>
           <div className={styles.navBoxMenu}>
-            <span className={classNames(stepOneFlag ? styles.hover : null, stepOneText !== '请选择路口' ? styles.link : null)} onClick={ ()=>{ this.showHidePop("stepOneFlag", true) } }>{ stepOneText }</span>
+            <span className={classNames(stepOneFlag ? styles.hover : null, stepOneText !== '请选择路口' ? styles.link : null)} onClick={ ()=>{ this.showHidePop("stepOneFlag", true) } } title={stepOneText}>{ stepOneText }</span>
             <s className={stepTwoFlag || stepRoadFlag || stepThreeFlag || stepFourFlag || stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag ? styles.hover : ""}></s>
             <span className={stepTwoFlag ? styles.hover : null} onClick={ ()=>{ this.showHidePop("stepTwoFlag", true) } }>基础信息配置</span>
             <s className={stepRoadFlag || stepThreeFlag || stepFourFlag || stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag ? styles.hover : ""}></s>
@@ -579,5 +597,14 @@ class SignalManagement extends Component {
     )
   }
 }
-
-export default SignalManagement
+const mapStateToProps = (state) => {
+  return {
+    data: { ...state.SignalManagement },
+  }
+}
+const mapDisPatchToProps = (dispatch) => {
+  return {
+    // getInterList: bindActionCreators(getInterList, dispatch),
+  }
+}
+export default connect(mapStateToProps, mapDisPatchToProps)(SignalManagement)

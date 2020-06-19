@@ -1,5 +1,4 @@
 .conBox{
-  padding:0 20px;
   font-size: 12px;
   color:#BBBDBC;
   // 列表类
@@ -33,6 +32,16 @@
           }
           > span{
               border-bottom: 1px solid #26394A;
+              cursor: pointer;
+              > b{
+                  font-weight: lighter;
+                  padding:0 10px;
+                  display: inline-block;
+                  cursor: pointer;
+                  &:hover{
+                      text-decoration: underline;
+                  }
+              }
           }
           &:hover span{
               background-color: #153a61;
