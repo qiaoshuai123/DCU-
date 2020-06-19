@@ -18,8 +18,13 @@ class InterworkingList extends Component {
         },
         {
           id: 4,
-        }
+        },
       ],
+    }
+    this.objs = {
+      keyword: '',
+      regions: '',
+      names: '',
     }
   }
   componentDidMount = () => {
@@ -30,6 +35,21 @@ class InterworkingList extends Component {
   }
   backPage = () => {
     this.props.showInterworkingList(false)
+  }
+  // 更改查询关键字
+  handleChange = (e, optios) => {
+    if (optios) {
+      const { pname } = optios.props
+      this.objs[pname] = e
+    } else {
+      const names = e.target.getAttribute('pname')
+      const { value } = e.target
+      this.objs[names] = value
+    }
+  }
+  // 点击查询
+  handlePaginatiosn = () => {
+    console.log(this.objs, '内容')
   }
   render() {
     const { systemList } = this.state
@@ -43,14 +63,14 @@ class InterworkingList extends Component {
         <div className={styles.syetem_top}>
           <div className={styles.syetem_item}>
             <span className={styles.item}>关键词:</span>
-            <div className={styles.inSle}><Input onChange={this.handleInputChange} /></div>
+            <div className={styles.inSle}><Input pname="keyword" onChange={this.handleChange} /></div>
           </div>
           <div className={styles.syetem_item}>
             <span className={styles.item}>行政区:</span>
             <div className={styles.inSle}>
               <Select defaultValue="行政一" style={{ width: 200, margin: 0 }} onChange={this.handleChange}>
-                <Option value="行政一">行政一</Option>
-                <Option value="行政二">行政二</Option>
+                <Option pname="regions" value="行政一">行政一</Option>
+                <Option pname="regions" value="行政二">行政二</Option>
               </Select>
             </div>
           </div>
@@ -59,13 +79,13 @@ class InterworkingList extends Component {
             <div className={styles.inSle}>
               <div className={styles.inSle}>
                 <Select defaultValue="点位一" style={{ width: 200, margin: 0 }} onChange={this.handleChange}>
-                  <Option value="点位一">点位一</Option>
-                  <Option value="点位二">点位二</Option>
+                  <Option pname="names" value="点位一">点位一</Option>
+                  <Option pname="names" value="点位二">点位二</Option>
                 </Select>
               </div>
             </div>
           </div>
-          <span className={styles.searchBtn} onClick={() => { this.handlePagination('1') }} limitid="13">查询</span>
+          <span className={styles.searchBtn} onClick={this.handlePaginatiosn}>查询</span>
         </div>
         <div className={styles.equipmentList}>
           设备列表

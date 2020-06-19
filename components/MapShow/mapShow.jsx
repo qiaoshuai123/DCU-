@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import styles from './mapShow.scss'
 import markerIcon from '../../images/markerGreen.png'
+
 class mapShow extends Component {
   constructor(props) {
     super(props)
@@ -26,17 +27,13 @@ class mapShow extends Component {
     })
     this.map.on('complete', () => {
       console.log('地图加载完毕', '安装点位')
-      this.pointArr.forEach((marker, i) => {
+      this.pointArr.forEach((marker) => {
         const markers = new AMap.Marker({
           map: this.map,
           icon: markerIcon,
           position: [marker[0], marker[1]],
           offset: new AMap.Pixel(-13, -30),
         })
-        markers.on('click', showInfoM);
-        function showInfoM() {
-          
-        }
       })
     })
   }

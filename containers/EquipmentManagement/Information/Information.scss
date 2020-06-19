@@ -17,6 +17,124 @@ $stepBor_col: #393f4f;
     justify-content: center;
     align-items: center;
     position: relative;
+    .maskBg {
+      width: 100%;
+      height: 100%;
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background-color: rgba(19, 27, 37, 0.6);
+      z-index: 99;
+      .popBox {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        background-color: rgba(19, 19, 19, 0.9);
+        transform: translate(-50%, -50%);
+        -webkit-transform: translate(-50%, -50%);
+        -moz-transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+        -o-transform: translate(-50%, -50%);
+        z-index: 100;
+        padding: 0 20px 20px;
+        .popTit {
+          height: 35px;
+          line-height: 35px;
+          font-size: 12px;
+          border-bottom: 1px solid #292a2d;
+          color: #bbbdbc;
+          position: relative;
+          .Close {
+            font-size: 16px;
+            position: absolute;
+            right: 0;
+            top: 50%;
+            margin-top: -8.5px;
+            cursor: pointer;
+            color: #bbbdbc;
+            & svg:hover {
+              transition: all 0.5s;
+              transform: rotate(180deg);
+              color: #bbbdbc;
+            }
+          }
+        }
+        .popCon {
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+          padding: 15px 0;
+          margin-bottom: 10px;
+          border-bottom: 1px solid #292a2d;
+          // 路口底图
+          .typePic {
+            width: 120px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            position: relative;
+            > em {
+              width: 80px;
+              line-height: 25px;
+              font-style: normal;
+              font-size: 12px;
+              display: inline-block;
+              text-align: center;
+              margin: -12.5px auto 0;
+              border: 1px #838a9a solid;
+              color: #838a9a;
+              cursor: pointer;
+              position: absolute;
+              top: 50%;
+              right: 0;
+              border-radius: 4px;
+              -webkit-border-radius: 4px;
+              -moz-border-radius: 4px;
+              -ms-border-radius: 4px;
+              -o-border-radius: 4px;
+            }
+            :global(.ant-radio-wrapper) {
+              color: #bbbdbc;
+              font-size: 12px;
+              padding: 10px 0;
+            }
+            :global(.ant-radio-inner) {
+              background-color: transparent !important;
+            }
+          }
+        }
+        .popBottom {
+          display: flex;
+          justify-content: center;
+          > em {
+            width: 80px;
+            line-height: 25px;
+            display: inline-block;
+            text-align: center;
+            font-size: 12px;
+            margin: 5px 5px 0;
+            border: 1px #318592 solid;
+            border-radius: 4px;
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+            -ms-border-radius: 4px;
+            -o-border-radius: 4px;
+            color: #318592;
+            cursor: pointer;
+            font-style: normal;
+            background-color: #293644;
+            &:hover {
+              color: #38c4d1;
+              background-color: #1f2531;
+            }
+          }
+        }
+      }
+    }
     .leftItemCon {
       width: 945px;
       height: 780px;
@@ -63,10 +181,12 @@ $stepBor_col: #393f4f;
         line-height: 35px;
         font-size: 14px;
         position: relative;
+        span {
+          font-size: 15px;
+        }
         > em {
-          position: absolute;
-          top: 2px;
-          right: 0;
+          float: right;
+          margin-right: 5px;
           font-size: 12px;
           font-style: normal;
           color: #338495;
@@ -80,7 +200,7 @@ $stepBor_col: #393f4f;
       .rCon {
         border: 1px solid $stepBor_col;
         padding: 15px;
-        display: none;
+        display: block;
         .itemInputBox {
           display: flex;
           justify-content: center;
@@ -104,36 +224,69 @@ $stepBor_col: #393f4f;
           }
         }
       }
-      // 列表类
-      .rList {
-        width: 100%;
-        .listItem {
-          width: 100%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          > em,
-          > span {
-            flex: 1;
-            font-style: normal;
-            line-height: 35px;
-            padding: 0 10px;
-            text-align: center;
-          }
-          > em {
-            background-color: #26394a;
-          }
-          > span {
-            border-bottom: 1px solid #26394a;
-          }
-          &:hover span {
-            background-color: #153a61;
-          }
-        }
-        .hover {
-          background-color: #153a61;
-        }
-      }
     }
+  }
+}
+.Information {
+  :global(.ant-upload.ant-upload-select-picture-card) {
+    width: 120px !important;
+    height: 80px !important;
+    background: #181b20 !important;
+    border: 1px solid #292a2d !important;
+    margin: 0 !important;
+  }
+  :global(.ant-upload.ant-upload-select-picture-card > .ant-upload) {
+    padding: unset !important;
+  }
+  :global(.ant-upload) {
+    position: relative !important;
+  }
+  :global(.ant-upload > s) {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    background-color: #181b20;
+    color: #5d6164;
+    font-size: 14px;
+  }
+  :global(.ant-upload > img) {
+    width: 100%;
+    height: 80px;
+  }
+  :global(.ant-upload > em) {
+    width: 80px;
+    line-height: 25px;
+    font-style: normal;
+    font-size: 12px;
+    display: inline-block;
+    text-align: center;
+    margin: -12.5px auto 0;
+    border: 1px #838a9a solid;
+    color: #838a9a;
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    right: -100px;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+  }
+  :global(.ant-upload > em:hover) {
+    color: #38c4d1;
+    background-color: #1f2531;
+  }
+  :global(.ant-upload > b.maskHigh) {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 99;
+    background-color: blue;
   }
 }
