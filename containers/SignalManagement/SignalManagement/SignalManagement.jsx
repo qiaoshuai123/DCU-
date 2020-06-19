@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Input, Icon, Radio, Upload, Modal, message } from 'antd'
+import { Input, Icon, Radio, Upload, Modal, message, Select } from 'antd'
 import classNames from 'classnames'
 import Header from '../../../components/Header/Header'
 import markerIcon from '../../../images/markerGreen.png'
@@ -8,6 +8,7 @@ import CustomTree from '../../../components/CustomTree/CustomTree'
 import InterworkingList from './InterworkingList/InterworkingList'
 import styles from './SignalManagement.scss'
 
+const { Option } = Select
 const pointArr = [
   [120.113369,30.234277],
   [120.421673,30.271644],
@@ -36,8 +37,9 @@ class SignalManagement extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      stepOneFlag: null,
+      stepOneFlag: true,
       stepTwoFlag: null,
+      stepRoadFlag: null,
       stepThreeFlag: null,
       stepFourFlag: null,
       stepFiveFlag: null,
@@ -66,14 +68,13 @@ class SignalManagement extends Component {
   }
   // 显示与隐藏step
   showHidePop = (name, flag) => {
-    const stepArr = ['stepTwoFlag', 'stepThreeFlag', 'stepFourFlag', 'stepFiveFlag', 'stepSixFlag', 'stepSevenFlag', 'stepEightFlag', 'stepNineFlag', 'turnTab']
+    const stepArr = ['stepOneFlag', 'stepTwoFlag', 'stepRoadFlag', 'stepThreeFlag', 'stepFourFlag', 'stepFiveFlag', 'stepSixFlag', 'stepSevenFlag', 'stepEightFlag', 'stepNineFlag', 'turnTab']
     for (let i in stepArr) {
       if (stepArr[i] === name) {
         this.setState({
           [name]: flag,
         })
       } else {
-        console.log(typeof(stepArr[i]))
         this.setState({
           [stepArr[i]]: null,
         })
@@ -223,7 +224,7 @@ class SignalManagement extends Component {
     message.info("添加成功！")
   }
   render() {
-    const {stepTwoFlag, stepThreeFlag, stepFourFlag, stepFiveFlag, stepSixFlag, stepSevenFlag, stepEightFlag, stepNineFlag, turnTab, baseMapFlag, stepOneText, imageUrl, interRoadBg,
+    const {stepOneFlag, stepTwoFlag, stepRoadFlag, stepThreeFlag, stepFourFlag, stepFiveFlag, stepSixFlag, stepSevenFlag, stepEightFlag, stepNineFlag, turnTab, baseMapFlag, stepOneText, imageUrl, interRoadBg,
     lights, } = this.state
     const { Search } = Input
     const uploadButton = (
@@ -236,13 +237,13 @@ class SignalManagement extends Component {
         {/* <div className={styles.maskBg}> </div> 遮罩底层*/}
         
         {/* step 2 基础信息配置 */}
-        { stepTwoFlag ?
+        { stepTwoFlag || stepRoadFlag || stepThreeFlag || stepFourFlag || stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag ?
           <div className={styles.stepBoxContent}>
             <div className={styles.stepLeftCon}>
               {/* <div className={styles.leftItemCon}> */}
               <div className={styles.leftItemCon} style={interRoadBg !== '' ? { background: 'url('+ interRoadBg +') no-repeat',backgroundPosition:'center center',
                 backgroundSize:'contain'} : {}}>
-                {/* 内部变化内容 */}
+                {/* 内部变化内容 之 路口底图弹层*/}
                 {  baseMapFlag ?
                   <div className={styles.maskBg}><div className={styles.popBox} style={{top: '75%'}} >
                     <div className={styles.popTit}>选择底图<Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("baseMapFlag", null)} } /></div>
@@ -278,109 +279,94 @@ class SignalManagement extends Component {
                     </div>
                   </div></div> : null
                   }
-                <div className={styles.turnBgBtn} onClick={ () => {this.popLayerShowHide("baseMapFlag", true)} }>路口底图</div>
-              </div>
-            </div>
-            <div className={styles.stepRightCon}>
-              <div className={styles.conBox}>
-                <div className={styles.rTit}>信号机基础信息<em>添加</em></div>
-                {/* 表单 */}
-                <div className={styles.rCon}>
-                  <div className={styles.itemInputBox}>
-                    <span>信号机编号：</span><Input placeholder="请输入编号" />
-                  </div>
-                  <div className={styles.itemInputBox}>
-                    <span>信号机IP：</span><Input placeholder="请输入IP" />
-                  </div>
-                  <div className={styles.itemInputBox}>
-                    <span>子网掩码：</span><Input placeholder="请输入掩码" />
-                  </div>
-                  <div className={styles.itemInputBox}>
-                    <span>网 关：</span><Input placeholder="请输入网关" />
-                  </div>
-                  <div className={styles.itemInputBox}>
-                    <span>上位机IP：</span><Input placeholder="请输入IP" />
-                  </div>
-                  <div className={styles.itemInputBox}>
-                    <span>通讯端口：</span><Input placeholder="请输入端口" />
-                  </div>
-                  <div className={styles.itemInputBox}>
-                    <span>信号机时区：</span><Input placeholder="请输入时区" />
-                  </div>
-                  <div className={styles.itemInputBox}>
-                    <span>控制路口数：</span><Input type="number" placeholder="请输入数量" />
-                  </div>
-                  <div className={styles.itemInputBox}>
-                    <span>GPS时钟标志：</span><Input placeholder="请输入标志" />
-                  </div>
-                </div>
-                {/* 列表 */}
-                <div className={styles.rList}>
-                  <div className={styles.listItem}>
-                    <em>灯组序号</em>
-                    <em>方向</em>
-                    <em>灯组类型</em>
-                    <em>操作</em>
-                  </div>
-                  <div className={classNames(styles.listItem)}>
-                    <span>1</span>
-                    <span>东</span>
-                    <span>圆灯</span>
-                    <span>删除</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div> : null
-        }
-        {/* step 3 灯组配置 */}
-        { stepThreeFlag ?
-          <div className={styles.stepBoxContent}>
-            <div className={styles.stepLeftCon}>
-              <div className={styles.leftItemCon}>
-                {/* 内部变化内容 */}
-                {
+                  {/* 灯组回显 */}
+                  {
                   lights.map((item,i) => {
                     return <div onDoubleClick={()=>{message.info("双击操作")}} onMouseDown={() => {console.log("鼠标按下")}} key={'light'+i} style={{position:'absolute',display:'block',background:'url('+item.src+') no-repeat', left: item.left, top: item.top,width:item.width,height:item.height,border:'1px border yellow' }} title={item.name}>{item.name}</div>
                   })
                 }
+                <div className={styles.turnBgBtn} onClick={ () => {this.popLayerShowHide("baseMapFlag", true)} }>路口底图</div>
               </div>
             </div>
             <div className={styles.stepRightCon}>
-              <div className={styles.conBox}>
-                <div className={styles.rTit}>灯组列表<em onClick={this.addLight}>添加</em></div>
-                {/* 列表 */}
-                <div className={styles.rList}>
-                  <div className={styles.listItem}>
-                    <em>灯组序号</em>
-                    <em>方向</em>
-                    <em>灯组类型</em>
-                    <em>操作</em>
+                {stepTwoFlag ? 
+                  <div className={styles.conBox}>
+                  <div className={styles.rTit}>信号机基础信息<em>添加</em></div>
+                  {/* 表单 */}
+                  <div className={styles.rCon}>
+                    <div className={styles.itemInputBox}>
+                      <span>信号机编号：</span><Input placeholder="请输入编号" />
+                    </div>
+                    <div className={styles.itemInputBox}>
+                      <span>信号机IP：</span><Input placeholder="请输入IP" />
+                    </div>
+                    <div className={styles.itemInputBox}>
+                      <span>子网掩码：</span><Input placeholder="请输入掩码" />
+                    </div>
+                    <div className={styles.itemInputBox}>
+                      <span>网 关：</span><Input placeholder="请输入网关" />
+                    </div>
+                    <div className={styles.itemInputBox}>
+                      <span>上位机IP：</span><Input placeholder="请输入IP" />
+                    </div>
+                    <div className={styles.itemInputBox}>
+                      <span>通讯端口：</span><Input placeholder="请输入端口" />
+                    </div>
+                    <div className={styles.itemInputBox}>
+                      <span>信号机时区：</span><Input placeholder="请输入时区" />
+                    </div>
+                    <div className={styles.itemInputBox}>
+                      <span>控制路口数：</span><Input type="number" placeholder="请输入数量" />
+                    </div>
+                    <div className={styles.itemInputBox}>
+                      <span>GPS时钟标志：</span><Input placeholder="请输入标志" />
+                    </div>
                   </div>
-                  <div className={classNames(styles.listItem)}>
-                    <span>1</span>
-                    <span>东</span>
-                    <span>圆灯</span>
-                    <span>删除</span>
+                  {/* 列表 */}
+                  <div className={styles.rList}>
+                    <div className={styles.listItem}>
+                      <em>灯组序号</em>
+                      <em>方向</em>
+                      <em>灯组类型</em>
+                      <em>操作</em>
+                    </div>
+                    <div className={classNames(styles.listItem)}>
+                      <span>1</span>
+                      <span>东</span>
+                      <span>圆灯</span>
+                      <span>删除</span>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </div>
-          </div> : null
-        }
-        {/* step 4 检测器配置 */}
-        { stepFourFlag ?
-          <div className={styles.stepBoxContent}>
-            <div className={styles.stepLeftCon}>
-              <div className={styles.leftItemCon}>
-                {/* 内部变化内容 */}
+                </div> : stepRoadFlag ? 
+                <div className={styles.conBox}>
+                <div className={styles.rTit}>车道列表<em>添加</em></div>
                 
-              </div>
-            </div>
-            <div className={styles.stepRightCon}>
-              <div className={styles.conBox}>
-                <div className={styles.rTit}>检测器列表<em>添加</em></div>
-                {/* 列表 */}
+                <div className={styles.rList}>
+                  <div className={styles.listItem}>
+                    <em>车道号</em>
+                    <em>外部车道号</em>
+                    <em>通行方向描述</em>
+                    <em>进口道路编号</em>
+                    <em>进口方向4编码</em>
+                    <em>进口方向8编码</em>
+                    <em>转向</em>
+                    <em>操作</em>
+                  </div>
+                  <div className={classNames(styles.listItem)}>
+                    <span>1</span>
+                    <span>东</span>
+                    <span>圆灯</span>
+                    <span>1</span>
+                    <span>1</span>
+                    <span>东</span>
+                    <span>圆灯</span>
+                    <span>删除</span>
+                  </div>
+                </div>
+              </div> : stepThreeFlag ? 
+                <div className={styles.conBox}>
+                <div className={styles.rTit}>灯组列表<em onClick={this.addLight}>添加</em></div>
+                
                 <div className={styles.rList}>
                   <div className={styles.listItem}>
                     <em>灯组序号</em>
@@ -395,57 +381,71 @@ class SignalManagement extends Component {
                     <span>删除</span>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div> : null
-        }
-        {/* step 5 相位配置 */}
-        { stepFiveFlag ?
-          <div className={styles.stepBoxContent}>
-            <div className={styles.stepLeftCon}>
-              <div className={styles.leftItemCon}>
-                {/* 内部变化内容 */}
-              </div>
-            </div>
-            <div className={styles.stepRightCon}>
-              <div className={styles.conBox}>
+              </div> : stepFourFlag ? 
+                <div className={styles.conBox}>
+                  <div className={styles.rTit}>检测器列表<em>添加</em></div>
+                
+                  <div className={styles.rList}>
+                    <div className={styles.listItem}>
+                      <em>检测器编号</em>
+                      <em>检测器类型</em>
+                      <em>流量采集周期</em>
+                      <em>占有率采集周期</em>
+                      <em>操作</em>
+                    </div>
+                    <div className={classNames(styles.listItem)}>
+                      <span>1</span>
+                      <span>东</span>
+                      <span>东</span>
+                      <span>圆灯</span>
+                      <span>删除</span>
+                    </div>
+                  </div>
+                </div> : stepFiveFlag ?
+                <div className={styles.conBox}>
                 <div className={styles.rTit}>相位列表<em>添加</em></div>
-                {/* 列表 */}
+                
                 <div className={styles.rList}>
                   <div className={styles.listItem}>
-                    <em>灯组序号</em>
-                    <em>方向</em>
-                    <em>灯组类型</em>
+                    <em>相位编号</em>
+                    <em>相位名称</em>
+                    <em>相位包含灯组</em>
+                    <em>失去路权过渡参数</em>
+                    <em>获得路权过渡参数</em>
+                    <em>开机失去路权过渡参数</em>
+                    <em>开机获得路权过渡参数</em>
+                    <em>最小绿时间</em>
+                    <em>延迟绿时间</em>
+                    <em>需求检测器</em>
+                    <em>相位屏蔽</em>
+                    <em>相位禁止</em>
                     <em>操作</em>
                   </div>
                   <div className={classNames(styles.listItem)}>
                     <span>1</span>
                     <span>东</span>
                     <span>圆灯</span>
+                    <span>2</span>
+                    <span>1</span>
+                    <span>东</span>
+                    <span>圆灯</span>
+                    <span>23</span>
+                    <span>1</span>
+                    <span>东</span>
+                    <span>圆灯</span>
+                    <span>圆灯</span>
                     <span>删除</span>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div> : null
-        }
-        {/* step 6 阶段配置 */}
-        { stepSixFlag ?
-          <div className={styles.stepBoxContent}>
-            <div className={styles.stepLeftCon}>
-              <div className={styles.leftItemCon}>
-                {/* 内部变化内容 */}
-              </div>
-            </div>
-            <div className={styles.stepRightCon}>
+              </div> : stepSixFlag ?
               <div className={styles.conBox}>
                 <div className={styles.rTit}>阶段列表<em>添加</em></div>
-                {/* 列表 */}
+                
                 <div className={styles.rList}>
                   <div className={styles.listItem}>
-                    <em>灯组序号</em>
-                    <em>方向</em>
-                    <em>灯组类型</em>
+                    <em>阶段编号</em>
+                    <em>放行相位</em>
+                    <em>阶段图示</em>
                     <em>操作</em>
                   </div>
                   <div className={classNames(styles.listItem)}>
@@ -455,97 +455,71 @@ class SignalManagement extends Component {
                     <span>删除</span>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div> : null
-        }
-        {/* step 7 配时方案配置 */}
-        { stepSevenFlag ?
-          <div className={styles.stepBoxContent}>
-            <div className={styles.stepLeftCon}>
-              <div className={styles.leftItemCon}>
-                {/* 内部变化内容 */}
-              </div>
-            </div>
-            <div className={styles.stepRightCon}>
+              </div> : stepSevenFlag ?
               <div className={styles.conBox}>
                 <div className={styles.rTit}>配时方案列表<em>添加</em></div>
-                {/* 列表 */}
+                
                 <div className={styles.rList}>
                   <div className={styles.listItem}>
-                    <em>灯组序号</em>
-                    <em>方向</em>
-                    <em>灯组类型</em>
+                    <em>方案编号</em>
+                    <em>放行阶段列表</em>
+                    <em>方案周期</em>
+                    <em>协调阶段</em>
+                    <em>协调时间</em>
                     <em>操作</em>
                   </div>
                   <div className={classNames(styles.listItem)}>
                     <span>1</span>
                     <span>东</span>
                     <span>圆灯</span>
+                    <span>东</span>
+                    <span>圆灯</span>
                     <span>删除</span>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div> : null
-        }
-        {/* step 8 日计划配置 */}
-        { stepEightFlag ?
-          <div className={styles.stepBoxContent}>
-            <div className={styles.stepLeftCon}>
-              <div className={styles.leftItemCon}>
-                {/* 内部变化内容 */}
-              </div>
-            </div>
-            <div className={styles.stepRightCon}>
+              </div> : stepEightFlag ?
               <div className={styles.conBox}>
                 <div className={styles.rTit}>日计划列表<em>添加</em></div>
-                {/* 列表 */}
+               
                 <div className={styles.rList}>
                   <div className={styles.listItem}>
-                    <em>灯组序号</em>
-                    <em>方向</em>
-                    <em>灯组类型</em>
+                    <em>计划编号</em>
+                    <em>时段开始时间</em>
+                    <em>时段执行方案</em>
+                    <em>时段运行模式</em>
                     <em>操作</em>
                   </div>
                   <div className={classNames(styles.listItem)}>
                     <span>1</span>
                     <span>东</span>
                     <span>圆灯</span>
+                    <span>1灯</span>
                     <span>删除</span>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div> : null
-        }
-        {/* step 9 调度配置 */}
-        { stepNineFlag ?
-          <div className={styles.stepBoxContent}>
-            <div className={styles.stepLeftCon}>
-              <div className={styles.leftItemCon}>
-                {/* 内部变化内容 */}
-              </div>
-            </div>
-            <div className={styles.stepRightCon}>
-              <div className={styles.conBox}>
+              </div> : stepNineFlag ?
+            <div className={styles.conBox}>
                 <div className={styles.rTit}>调度配置列表<em>添加</em></div>
-                {/* 列表 */}
+                
                 <div className={styles.rList}>
                   <div className={styles.listItem}>
-                    <em>灯组序号</em>
-                    <em>方向</em>
-                    <em>灯组类型</em>
+                    <em>调度方案编号</em>
+                    <em>调度类型</em>
+                    <em>优先级</em>
+                    <em>调度类型值</em>
+                    <em>日计划编号</em>
                     <em>操作</em>
                   </div>
                   <div className={classNames(styles.listItem)}>
                     <span>1</span>
                     <span>东</span>
                     <span>圆灯</span>
+                    <span>东</span>
+                    <span>灯</span>
                     <span>删除</span>
                   </div>
                 </div>
-              </div>
+              </div> : null}
             </div>
           </div> : null
         }
@@ -554,9 +528,11 @@ class SignalManagement extends Component {
           }
         <div className={styles.navContent}>
           <div className={styles.navBoxMenu}>
-            <span className={styles.hover} onClick={ ()=>{ this.showHidePop("", true) } }>{ stepOneText }</span>
-            <s className={stepTwoFlag || stepThreeFlag || stepFourFlag || stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag ? styles.hover : ""}></s>
+            <span className={classNames(stepOneFlag ? styles.hover : null, stepOneText !== '请选择路口' ? styles.link : null)} onClick={ ()=>{ this.showHidePop("stepOneFlag", true) } }>{ stepOneText }</span>
+            <s className={stepTwoFlag || stepRoadFlag || stepThreeFlag || stepFourFlag || stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag ? styles.hover : ""}></s>
             <span className={stepTwoFlag ? styles.hover : null} onClick={ ()=>{ this.showHidePop("stepTwoFlag", true) } }>基础信息配置</span>
+            <s className={stepRoadFlag || stepThreeFlag || stepFourFlag || stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag ? styles.hover : ""}></s>
+            <span className={stepRoadFlag ? styles.hover : null} onClick={ ()=>{ this.showHidePop("stepRoadFlag", true) } }>车道配置</span>
             <s className={stepThreeFlag || stepFourFlag || stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag  ? styles.hover : ""}></s>
             <span className={stepThreeFlag ? styles.hover : null} onClick={ ()=>{ this.showHidePop("stepThreeFlag", true) } }>灯组配置</span>
             <s className={stepFourFlag || stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag  ? styles.hover : ""}></s>

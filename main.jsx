@@ -45,6 +45,11 @@ const SignalManagement = Loadable({
   loading: Loading,
   delay: 0,
 })
+const Demo = Loadable({
+  loader: () => import('./containers/SignalManagement/SignalManagement/demo'),
+  loading: Loading,
+  delay: 0,
+})
 const JurManagement = Loadable({
   loader: () => import('./containers/SysteManagement/JurManagement/JurManagement'),
   loading: Loading,
@@ -115,6 +120,7 @@ const Parent = () => (
     <Route path="/functionfault" component={FunctionFault} />
     {/* 设备参数管理 */}
     <Route path="/equipmentManagement" component={EquipmentManagement} />
+    <Route path="/demo" component={Demo} />
   </React.Fragment>
 )
 reactDom.render(
