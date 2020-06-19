@@ -1,0 +1,139 @@
+$stepBor_col: #393f4f;
+.Information {
+  width: 100%;
+  height: calc(100% - 60px);
+  position: absolute;
+  top: 60px;
+  z-index: 10;
+  padding: 0 20px 20px;
+  background-color: #1f2531;
+  display: flex;
+  justify-content: space-between;
+  .stepLeftCon {
+    width: calc(66% - 2px);
+    height: 100%;
+    border-right: 2px solid $stepBor_col;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    .leftItemCon {
+      width: 945px;
+      height: 780px;
+      margin: 0 auto;
+      position: relative;
+      background: url(../../../images/intersectionBg.png) no-repeat;
+      background-position: center center;
+      background-size: contain;
+    }
+    .turnBgBtn {
+      width: 80px;
+      line-height: 25px;
+      display: inline-block;
+      text-align: center;
+      font-size: 12px;
+      margin: 5px 5px 0;
+      border: 1px #318592 solid;
+      border-radius: 4px;
+      -webkit-border-radius: 4px;
+      -moz-border-radius: 4px;
+      -ms-border-radius: 4px;
+      -o-border-radius: 4px;
+      color: #318592;
+      cursor: pointer;
+      font-style: normal;
+      background-color: #293644;
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      &:hover {
+        color: #38c4d1;
+        background-color: #1f2531;
+      }
+    }
+  }
+  .stepRightCon {
+    width: 34%;
+    height: 100%;
+    .conBox {
+      padding: 0 20px;
+      font-size: 12px;
+      color: #bbbdbc;
+      .rTit {
+        line-height: 35px;
+        font-size: 14px;
+        position: relative;
+        > em {
+          position: absolute;
+          top: 2px;
+          right: 0;
+          font-size: 12px;
+          font-style: normal;
+          color: #338495;
+          cursor: pointer;
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+      // 表单类
+      .rCon {
+        border: 1px solid $stepBor_col;
+        padding: 15px;
+        display: none;
+        .itemInputBox {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-wrap: nowrap;
+          margin-bottom: 6px;
+          > span {
+            line-height: 30px;
+            flex: 1;
+            text-align: right;
+          }
+          :global(.ant-input) {
+            flex: 4;
+            height: 30px;
+            line-height: 30px;
+            color: #bbbdbc;
+            background-color: #1b2d2f;
+            border: none;
+            outline: none;
+            border: 1px solid $stepBor_col;
+          }
+        }
+      }
+      // 列表类
+      .rList {
+        width: 100%;
+        .listItem {
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          > em,
+          > span {
+            flex: 1;
+            font-style: normal;
+            line-height: 35px;
+            padding: 0 10px;
+            text-align: center;
+          }
+          > em {
+            background-color: #26394a;
+          }
+          > span {
+            border-bottom: 1px solid #26394a;
+          }
+          &:hover span {
+            background-color: #153a61;
+          }
+        }
+        .hover {
+          background-color: #153a61;
+        }
+      }
+    }
+  }
+}
