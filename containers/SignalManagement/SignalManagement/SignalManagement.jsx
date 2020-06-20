@@ -10,15 +10,15 @@ import InterworkingList from './InterworkingList/InterworkingList'
 import styles from './SignalManagement.scss'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-// import {  } from '../../../actions/public'
+import { getInterInfoList } from '../../../reactRedux/actions/publicActions'
 // import {  } from '../../../actions/SignalManagement'
 const { Option } = Select
-const pointArr = [
-  [120.113369,30.234277],
-  [120.421673,30.271644],
-  [120.251385,30.405574],
-  [120.208126,30.106052]
-]
+// const pointArr = [
+//   [120.113369,30.234277],
+//   [120.421673,30.271644],
+//   [120.251385,30.405574],
+//   [120.208126,30.106052]
+// ]
 // 图片转64位
 function getBase64(img, callback) {
   const reader = new FileReader();
@@ -51,12 +51,13 @@ class SignalManagement extends PureComponent {
       stepSevenFlag: null,
       stepEightFlag: null,
       stepNineFlag: null,
-      stepOneText: '请选择路口',
+      stepOneText: '我的路口',
       baseMapFlag: null, //是否显示
       baseMapValue: 1, //选择底图
       baseLoading: false,
       imageUrl: '',
       interRoadBg: '',
+      mapPointsData: null, // 地图中所有的点
       lights: [
         {name: '红', left: '200px', top: '200px', width: '32px', height: '32px', src: require('../../../images/markerRed.png')},
         {name: '绿', left: '100px', top: '100px', width: '32px', height: '32px', src: markerIcon},
@@ -65,11 +66,29 @@ class SignalManagement extends PureComponent {
     }
     this.map = null
   }
+  componentDidUpdate = (prevState) => {
+    const { mapPointsData } = this.props.data
+    if (prevState.data !== this.props.data) {
+      console.log(this.props.data, "data中所有的数据")
+    }
+    if (prevState.data.mapPointsData !== mapPointsData) {
+      console.log(mapPointsData, '点数据')
+      this.setState({
+        mapPointsData: mapPointsData,
+      },()=>{
+        this.loadingMap()
+      })
+    }
+  }
   componentDidMount = () => {
     // 初始化地图
     this.loadingMap()
     window.showHidePop = this.showHidePop
     window.setGetParams = this.setGetParams
+    this.props.getInterInfoList()
+    // setTimeout(()=>{
+    //   console.log(this.props, '看看吧')
+    // },2000)
   }
   // 更新参数
   setGetParams = params => {
@@ -129,7 +148,9 @@ class SignalManagement extends PureComponent {
       console.log(e.lnglat.getLng() + ',' + e.lnglat.getLat())
     })
     this.createLayerGroup('pointLayers') // map中显示点的图层
-    this.drawMarkers(pointArr, markerIcon, 'pointLayers') // 初始化点
+    if (this.state.mapPointsData !== null) {
+      this.drawMarkers(this.state.mapPointsData, 'pointLayers') // 初始化点
+    }
   }
   // 创建地图层 > 对应元素层
   createLayerGroup = (name) => {
@@ -139,7 +160,7 @@ class SignalManagement extends PureComponent {
     });
   }
   //批量添加点
-  drawMarkers = (positions, imgIcon, layer) => {
+  drawMarkers = (positions, layer) => {
     const map = this.map
     if (window[layer]) {
       window[layer].removeLayers(this[layer])
@@ -150,10 +171,10 @@ class SignalManagement extends PureComponent {
     }
     if (map) {
       for (let i = 0; i < positions.length; i++) {
-        const latlng = positions[i]
+        // const latlng = positions[i]
         // const latlng = positions[i].latlng
         const marker = new AMap.Marker({
-          position: new AMap.LngLat(latlng[0], latlng[1]),
+          position: new AMap.LngLat(positions[i].lng, positions[i].lat),
           offset: new AMap.Pixel(-16, -16),
           content: "<div class='marker-online'></div>",
         })
@@ -163,7 +184,7 @@ class SignalManagement extends PureComponent {
           })
           marker.setContent("<div class='drawCircle'><div class='inner'></div><div class='marker-online'></div></div>");
           const nowZoom = map.getZoom()
-          map.setZoomAndCenter(nowZoom, positions[i]); //同时设置地图层级与中心点
+          map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
           this.openInfoWin(map, positions[i], marker)
         })
         this[layer].push(marker)
@@ -191,7 +212,7 @@ class SignalManagement extends PureComponent {
     const infoWindow = new AMap.InfoWindow({
       content: info.join("")  //使用默认信息窗体框样式，显示信息内容
     });
-    infoWindow.open(map, dataItem);
+    infoWindow.open(map, [dataItem.lng, dataItem.lat]);
     this.infoWindow = infoWindow
     window.infoWindowClose = infoWindow
     map.on('click', (e) => {
@@ -251,10 +272,13 @@ class SignalManagement extends PureComponent {
     return (
       <div className={styles.SignalManagement}>
         <Header {...this.props} />
-        {/* 弹层 > 切换底图 */}
-        {/* <div className={styles.maskBg}> </div> 遮罩底层*/}
-        
-        {/* step 2 基础信息配置 */}
+        {/* 弹层 > 添加编辑 */}
+        {/* {
+          <div className={styles.maskBg}> 
+
+          </div>
+        } */}
+        {/* step 步骤 content 显示层 */}
         { stepTwoFlag || stepRoadFlag || stepThreeFlag || stepFourFlag || stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag ?
           <div className={styles.stepBoxContent}>
             <div className={styles.stepLeftCon}>
@@ -365,8 +389,7 @@ class SignalManagement extends PureComponent {
                     <em>外部车道号</em>
                     <em>通行方向描述</em>
                     <em>进口道路编号</em>
-                    <em>进口方向4编码</em>
-                    <em>进口方向8编码</em>
+                    <em>进口方向编码</em>
                     <em>转向</em>
                     <em>操作</em>
                   </div>
@@ -374,7 +397,6 @@ class SignalManagement extends PureComponent {
                     <span>1</span>
                     <span>东</span>
                     <span>圆灯</span>
-                    <span>1</span>
                     <span>1</span>
                     <span>东</span>
                     <span>圆灯</span>
@@ -599,12 +621,12 @@ class SignalManagement extends PureComponent {
 }
 const mapStateToProps = (state) => {
   return {
-    data: { ...state.SignalManagement },
+    data: { ...state.publicData, ...state.SignalManagement },
   }
 }
 const mapDisPatchToProps = (dispatch) => {
   return {
-    // getInterList: bindActionCreators(getInterList, dispatch),
+    getInterInfoList: bindActionCreators(getInterInfoList, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(SignalManagement)
