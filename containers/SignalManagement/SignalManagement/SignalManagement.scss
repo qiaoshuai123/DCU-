@@ -1,5 +1,5 @@
 $bor_color: #27343b;
-$stepBor_col: #393F4F;
+$stepBor_col: #393f4f;
 .SignalManagement {
     width: 100%;
     height: 100%;
@@ -8,120 +8,120 @@ $stepBor_col: #393F4F;
         cursor: move!important;
     }
     /* 弹层start */
-    .maskBg{
+    .maskBg {
         width: 100%;
         height: 100%;
         position: fixed;
-        top:0;
-        right:0;
-        bottom:0;
-        left:0;
-        background-color:rgba(19, 27, 37, .6);
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-color: rgba(19, 27, 37, 0.6);
         z-index: 99;
     }
-    .popBox{
+    .popBox {
         position: absolute;
-        top:50%;
-        left:50%;
+        top: 50%;
+        left: 50%;
         background-color: rgba(19, 19, 19, 0.9);
-        transform: translate(-50%,-50%);
-        -webkit-transform: translate(-50%,-50%);
-        -moz-transform: translate(-50%,-50%);
-        -ms-transform: translate(-50%,-50%);
-        -o-transform: translate(-50%,-50%);
+        transform: translate(-50%, -50%);
+        -webkit-transform: translate(-50%, -50%);
+        -moz-transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+        -o-transform: translate(-50%, -50%);
         z-index: 100;
-        padding:0 20px 20px;
-        .popTit{
+        padding: 0 20px 20px;
+        .popTit {
             height: 35px;
             line-height: 35px;
             font-size: 12px;
             border-bottom: 1px solid #292a2d;
-            color: #BBBDBC;
+            color: #bbbdbc;
             position: relative;
             .Close {
                 font-size: 16px;
                 position: absolute;
                 right: 0;
                 top: 50%;
-                margin-top:-8.5px;
+                margin-top: -8.5px;
                 cursor: pointer;
-                color: #BBBDBC;
+                color: #bbbdbc;
                 & svg:hover {
-                  transition: all 0.5s;
-                  transform: rotate(180deg);
-                  color: #BBBDBC;
+                    transition: all 0.5s;
+                    transform: rotate(180deg);
+                    color: #bbbdbc;
                 }
-              }
+            }
         }
-        .popCon{
+        .popCon {
             display: flex;
             justify-content: space-around;
             align-items: center;
-            padding:15px 0;
-            margin-bottom:10px;
+            padding: 15px 0;
+            margin-bottom: 10px;
             border-bottom: 1px solid #292a2d;
             // 路口底图
-            .typePic{
-                width:120px;
-                height:80px;
+            .typePic {
+                width: 120px;
+                height: 80px;
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 flex-wrap: wrap;
                 position: relative;
                 > em {
-                    width:80px;
+                    width: 80px;
                     line-height: 25px;
                     font-style: normal;
                     font-size: 12px;
                     display: inline-block;
                     text-align: center;
                     margin: -12.5px auto 0;
-                    border:1px #838a9a solid;
-                    color:#838a9a;
+                    border: 1px #838a9a solid;
+                    color: #838a9a;
                     cursor: pointer;
                     position: absolute;
-                    top:50%;
-                    right:0;
+                    top: 50%;
+                    right: 0;
                     border-radius: 4px;
                     -webkit-border-radius: 4px;
                     -moz-border-radius: 4px;
                     -ms-border-radius: 4px;
                     -o-border-radius: 4px;
                 }
-                :global(.ant-radio-wrapper){
-                    color:#BBBDBC;
+                :global(.ant-radio-wrapper) {
+                    color: #bbbdbc;
                     font-size: 12px;
-                    padding:10px 0;
+                    padding: 10px 0;
                 }
-                :global(.ant-radio-inner){
-                    background-color: transparent!important;
+                :global(.ant-radio-inner) {
+                    background-color: transparent !important;
                 }
             }
         }
-        .popBottom{
+        .popBottom {
             display: flex;
             justify-content: center;
-            > em{
-                width:80px;
+            > em {
+                width: 80px;
                 line-height: 25px;
                 display: inline-block;
                 text-align: center;
                 font-size: 12px;
                 margin: 5px 5px 0;
-                border:1px #318592 solid;
+                border: 1px #318592 solid;
                 border-radius: 4px;
                 -webkit-border-radius: 4px;
                 -moz-border-radius: 4px;
                 -ms-border-radius: 4px;
                 -o-border-radius: 4px;
-                color:#318592;
+                color: #318592;
                 cursor: pointer;
                 font-style: normal;
                 background-color: #293644;
-                &:hover{
-                    color:#38C4D1;
-                    background-color: #1F2531;
+                &:hover {
+                    color: #38c4d1;
+                    background-color: #1f2531;
                 }
             }
         }
@@ -141,138 +141,140 @@ $stepBor_col: #393F4F;
         border-top: 1px solid $bor_color;
         background-color: rgba(28, 33, 39, 0.7);
         position: absolute;
-        left:0;
-        bottom:0;
+        left: 0;
+        bottom: 0;
         z-index: 9;
         .InterworkLeft_search {
-          border-top: 1px solid $bor_color;
-          border-bottom: 1px solid $bor_color;
-          height: 60px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+            border-top: 1px solid $bor_color;
+            border-bottom: 1px solid $bor_color;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .InterworkLeft_Title {
-          height: 110px;
-          border-bottom: 1px solid $bor_color;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 16px;
-          font-weight: bold;
-          span {
-            width: 28px;
-            height: 18px;
-            margin-right: 5px;
-            background: url("../../../images/03.png") no-repeat;
-            background-size: 100% 100%;
-          }
+            height: 110px;
+            border-bottom: 1px solid $bor_color;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            span {
+                width: 28px;
+                height: 18px;
+                margin-right: 5px;
+                background: url("../../../images/03.png") no-repeat;
+                background-size: 100% 100%;
+            }
         }
         :global(.ant-input) {
             color: #fff;
             background-color: #1b2d2f;
             border: none;
             outline: none;
-          }
-          .InterworkLeft_search {
+        }
+        .InterworkLeft_search {
             :global(path) {
-              color: white;
+                color: white;
             }
-          }
-      }
+        }
+    }
     /* step box menu*/
-    .navContent{
+    .navContent {
         height: 38px;
-        background-color:#1F2531;
-        padding:15px 0 21px 0;
+        position: absolute;
+        top: 60px;
+        background-color: #1f2531;
+        padding: 15px 0 21px 0;
         box-sizing: content-box;
-        user-select:none;
-        .navBoxMenu{
+        user-select: none;
+        .navBoxMenu {
             margin: 0 20px;
             height: 38px;
-            font-size:14px;
-            color:$stepBor_col;
+            font-size: 14px;
+            color: $stepBor_col;
             border-bottom: 2px solid $stepBor_col;
             display: flex;
             justify-content: space-around;
             align-items: center;
-            > s{
-                height:2px;
-                width:70px;
-                margin:0 7px;
+            > s {
+                height: 2px;
+                width: 70px;
+                margin: 0 7px;
                 background-color: $stepBor_col;
             }
-            > s.hover{
-                background-color: #38C4D1;
+            > s.hover {
+                background-color: #38c4d1;
             }
-            > span:first-child{
+            > span:first-child {
                 max-width: 122px;
                 display: block;
                 white-space: nowrap;
                 text-overflow: ellipsis;
                 overflow: hidden;
             }
-            > span{
-                padding-left:25px;
-                background:url(../../../images/icon_gray.png) no-repeat;
+            > span {
+                padding-left: 25px;
+                background: url(../../../images/icon_gray.png) no-repeat;
                 cursor: pointer;
             }
-            > span.link{
-                color:#38C4D1;
-                background:url(../../../images/icon_link.png) no-repeat;
+            > span.link {
+                color: #38c4d1;
+                background: url(../../../images/icon_link.png) no-repeat;
             }
-            > span.hover{
-                color:#38C4D1;
-                background:url(../../../images/icon_hover.png) no-repeat;
+            > span.hover {
+                color: #38c4d1;
+                background: url(../../../images/icon_hover.png) no-repeat;
             }
-            .controlBtnBox{
+            .controlBtnBox {
                 position: relative;
-                top:-3px;
-                > em{
-                    width:80px;
+                top: -3px;
+                > em {
+                    width: 80px;
                     line-height: 25px;
                     display: inline-block;
                     text-align: center;
                     font-size: 12px;
                     margin: 5px 5px 0;
-                    border:1px #318592 solid;
+                    border: 1px #318592 solid;
                     border-radius: 4px;
                     -webkit-border-radius: 4px;
                     -moz-border-radius: 4px;
                     -ms-border-radius: 4px;
                     -o-border-radius: 4px;
-                    color:#318592;
+                    color: #318592;
                     cursor: pointer;
                     font-style: normal;
                     background-color: #293644;
-                    &:hover{
-                        color:#38C4D1;
-                        background-color: #1F2531;
+                    &:hover {
+                        color: #38c4d1;
+                        background-color: #1f2531;
                     }
                 }
             }
         }
     }
     /* step box content */
-    .stepBoxContent{
+    .stepBoxContent {
         width: 100%;
         height: calc(100% - 134px);
         position: absolute;
         top: 134px;
-        padding:0 20px 20px;
+        padding: 0 20px 20px;
         z-index: 10;
-        background-color:#1F2531;
+        background-color: #1f2531;
         display: flex;
         justify-content: space-between;
-        .stepLeftCon{
-            width:980px;
+        .stepLeftCon {
+            width: 980px;
             height: 100%;
             border-right: 2px solid $stepBor_col;
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
-            .leftItemCon{
+            .leftItemCon {
                 width: 100%;
                 height: 780px;
                 user-select: none;
@@ -282,53 +284,53 @@ $stepBor_col: #393F4F;
                 background-position: center center;
                 background-size: contain;
             }
-            .turnBgBtn{
-                width:80px;
+            .turnBgBtn {
+                width: 80px;
                 line-height: 25px;
                 display: inline-block;
                 text-align: center;
                 font-size: 12px;
                 margin: 5px 5px 0;
-                border:1px #318592 solid;
+                border: 1px #318592 solid;
                 border-radius: 4px;
                 -webkit-border-radius: 4px;
                 -moz-border-radius: 4px;
                 -ms-border-radius: 4px;
                 -o-border-radius: 4px;
-                color:#318592;
+                color: #318592;
                 cursor: pointer;
                 font-style: normal;
                 background-color: #293644;
                 position: absolute;
-                bottom:20px;
-                right:20px;
-                &:hover{
-                    color:#38C4D1;
-                    background-color: #1F2531;
+                bottom: 20px;
+                right: 20px;
+                &:hover {
+                    color: #38c4d1;
+                    background-color: #1f2531;
                 }
             }
         }
-        .stepRightCon{
-            width:calc(100% - 982px);
+        .stepRightCon {
+            width: calc(100% - 982px);
             height: 100%;
             overflow-y: auto;
-            .conBox{
-                padding:0 20px;
+            .conBox {
+                padding: 0 20px;
                 font-size: 12px;
-                color:#BBBDBC;
-                .rTit{
+                color: #bbbdbc;
+                .rTit {
                     line-height: 35px;
-                    font-size:14px;
+                    font-size: 14px;
                     position: relative;
-                    > em{
+                    > em {
                         position: absolute;
-                        top:2px;
-                        right:0;
-                        font-size:12px;
+                        top: 2px;
+                        right: 0;
+                        font-size: 12px;
                         font-style: normal;
-                        color:#338495;
+                        color: #338495;
                         cursor: pointer;
-                        &:hover{
+                        &:hover {
                             text-decoration: underline;
                         }
                     }
@@ -343,114 +345,114 @@ $stepBor_col: #393F4F;
                         justify-content: center;
                         align-items: center;
                         flex-wrap: nowrap;
-                        margin-bottom:6px;
-                        > span{
+                        margin-bottom: 6px;
+                        > span {
                             line-height: 30px;
-                            flex:1;
+                            flex: 1;
                             text-align: right;
                         }
-                        :global(.ant-input){
+                        :global(.ant-input) {
                             flex: 4;
                             height: 30px;
                             line-height: 30px;
-                            color: #BBBDBC;
+                            color: #bbbdbc;
                             background-color: #1b2d2f;
                             border: none;
                             outline: none;
-                            border:1px solid $stepBor_col;
+                            border: 1px solid $stepBor_col;
                         }
                     }
                 }
                 // 列表类
-                .rList{
+                .rList {
                     width: 100%;
-                    .listItem{
+                    .listItem {
                         width: 100%;
                         display: flex;
                         justify-content: center;
                         align-items: center;
                         flex-wrap: nowrap;
-                        > em, > span{
+                        > em,
+                        > span {
                             flex: 1;
                             font-style: normal;
-                            line-height:35px;
-                            padding:0 10px;
+                            line-height: 35px;
+                            padding: 0 10px;
                             text-align: center;
                         }
-                        > em{
-                            background-color: #26394A;
-                            :global(.ant-select-selection){
-                                background:transparent !important;
-                                border:unset !important;
-                                color:#BBBDBC;
-                                display: flex!important;
+                        > em {
+                            background-color: #26394a;
+                            :global(.ant-select-selection) {
+                                background: transparent !important;
+                                border: unset !important;
+                                color: #bbbdbc;
+                                display: flex !important;
                                 justify-content: center;
                             }
-                            :global(.ant-select-arrow){
-                                color:#fff !important;
+                            :global(.ant-select-arrow) {
+                                color: #fff !important;
                             }
                         }
-                        > span{
-                            border-bottom: 1px solid #26394A;
+                        > span {
+                            border-bottom: 1px solid #26394a;
                         }
-                        &:hover span{
+                        &:hover span {
                             background-color: #153a61;
                         }
                     }
-                    .hover{
+                    .hover {
                         background-color: #153a61;
                     }
                 }
             }
-
         }
     }
-    
+
     /* 地图 */
-    .mapContent{
+    .mapContent {
         width: 100%;
         height: calc(100% - 134px);
         position: absolute;
         top: 134px;
         z-index: 8;
-        .tagMarker{
+        .tagMarker {
             height: 30px;
             display: flex;
             justify-content: space-around;
             align-items: center;
             position: absolute;
-            top:10px;
-            right:20px;
+            top: 10px;
+            right: 20px;
             z-index: 9;
-            .statusBox{
+            .statusBox {
                 display: flex;
                 justify-content: space-around;
                 align-items: center;
                 background-color: rgba(28, 33, 39, 0.9);
-                border:1px #353c46 solid;
-                padding:6px 0 6px 5px;
-                margin-right:5px;
-                > span{
-                    line-height:18px;
+                border: 1px #353c46 solid;
+                padding: 6px 0 6px 5px;
+                margin-right: 5px;
+                > span {
+                    line-height: 18px;
                     display: inline-block;
-                    padding-left:35px;
-                    margin-right:15px;
+                    padding-left: 35px;
+                    margin-right: 15px;
                 }
-                > span.tagOnLine{
-                    background:url(../../../images/markerGreen.png) no-repeat;
+                > span.tagOnLine {
+                    background: url(../../../images/markerGreen.png) no-repeat;
                     background-position: 10px center;
                     background-size: 18px 18px;
                 }
-                > span.tagOffLine{
-                    background:url(../../../images/markerRed.png) no-repeat;
+                > span.tagOffLine {
+                    background: url(../../../images/markerRed.png) no-repeat;
                     background-position: 10px center;
                     background-size: 18px 18px;
                 }
             }
-            .turnBtn{
-                width:32px;
-                height:32px;
-                background:url(../../../images/icon_turn.png) no-repeat;
+            .turnBtn {
+                width: 32px;
+                height: 32px;
+                background: url(../../../images/icon_turn.png) no-repeat;
                 cursor: pointer;
             }
         }
@@ -458,7 +460,7 @@ $stepBor_col: #393F4F;
     /* 地图弹层 */
     :global(.amap-info-contentContainer) {
         width: 410px;
-        height:350px;
+        height: 350px;
     }
     :global(.amap-info-content) {
         position: relative;
@@ -469,14 +471,14 @@ $stepBor_col: #393F4F;
     }
 
     :global(.content_box) {
-        background: rgba(9, 9, 9, .8) !important;
+        background: rgba(9, 9, 9, 0.8) !important;
         padding: 0px !important;
     }
 
     :global(.content_box_title) {
         line-height: 30px;
         color: #fff;
-        background: rgba(19, 27, 37, .6) !important;
+        background: rgba(19, 27, 37, 0.6) !important;
         padding: 35px 30px 15px;
     }
 
@@ -494,7 +496,7 @@ $stepBor_col: #393F4F;
     :global(.content_box_title p.input-item) {
         line-height: 25px;
         font-size: 12px;
-        padding:0 30px;
+        padding: 0 30px;
     }
     :global(.content_box_title p.input-item span b.icon_phase) {
         width: 24px;
@@ -502,30 +504,30 @@ $stepBor_col: #393F4F;
         display: inline-block;
         background: url(../../../images/icon_phase.png) no-repeat;
         position: relative;
-        left:8px;
-        top:8px;
+        left: 8px;
+        top: 8px;
     }
     :global(.content_box_title p.input-item span.greenFont) {
-        color: #03E307;
+        color: #03e307;
     }
     :global(.content_box_title p.input-item span.paramsBtn) {
-        width:120px;
+        width: 120px;
         line-height: 30px;
         display: block;
         text-align: center;
         font-size: 14px;
         margin: 15px auto 0;
-        border:1px #838a9a solid;
+        border: 1px #838a9a solid;
         border-radius: 4px;
         -webkit-border-radius: 4px;
         -moz-border-radius: 4px;
         -ms-border-radius: 4px;
         -o-border-radius: 4px;
-        color:#838a9a;
+        color: #838a9a;
         cursor: pointer;
-        &:hover{
-            color:#38C4D1;
-            background-color: #1F2531;
+        &:hover {
+            color: #38c4d1;
+            background-color: #1f2531;
         }
     }
     :global(.content_box_title p.input_button) {
@@ -557,81 +559,80 @@ $stepBor_col: #393F4F;
     }
 
     :global(.amap-info-sharp) {
-        border-top-color: rgba(9, 9, 9, .8) !important;
-        bottom: unset!important;
+        border-top-color: rgba(9, 9, 9, 0.8) !important;
+        bottom: unset !important;
     }
     :global(.marker-online) {
         width: 32px;
-        height:32px;
+        height: 32px;
         display: block;
-        background:url(../../../images/markerGreen.png) no-repeat;
+        background: url(../../../images/markerGreen.png) no-repeat;
     }
     :global(.marker-offline) {
-        background:url(../../../images/markerRed.png) no-repeat;
+        background: url(../../../images/markerRed.png) no-repeat;
     }
     :global(.marker-hoverline) {
-        background-color:green;
+        background-color: green;
     }
-    :global(.ant-upload.ant-upload-select-picture-card){
-        width:120px!important;
-        height:80px!important;
-        background: #181B20!important;
-        border:1px solid #292a2d!important;
-        margin:0!important;
+    :global(.ant-upload.ant-upload-select-picture-card) {
+        width: 120px !important;
+        height: 80px !important;
+        background: #181b20 !important;
+        border: 1px solid #292a2d !important;
+        margin: 0 !important;
     }
-    :global(.ant-upload.ant-upload-select-picture-card > .ant-upload){
-        padding:unset!important;
+    :global(.ant-upload.ant-upload-select-picture-card > .ant-upload) {
+        padding: unset !important;
     }
-    :global(.ant-upload){
-        position: relative!important;
+    :global(.ant-upload) {
+        position: relative !important;
     }
-    :global(.ant-upload > s){
-        width:100%;
+    :global(.ant-upload > s) {
+        width: 100%;
         height: 100%;
-        display: flex; 
+        display: flex;
         justify-content: center;
         align-items: center;
         text-decoration: none;
-        background-color: #181B20;
-        color:#5D6164;
+        background-color: #181b20;
+        color: #5d6164;
         font-size: 14px;
     }
-    :global(.ant-upload > img){
-        width:100%;
+    :global(.ant-upload > img) {
+        width: 100%;
         height: 80px;
     }
-    :global(.ant-upload > em){
-        width:80px;
+    :global(.ant-upload > em) {
+        width: 80px;
         line-height: 25px;
         font-style: normal;
         font-size: 12px;
         display: inline-block;
         text-align: center;
         margin: -12.5px auto 0;
-        border:1px #838a9a solid;
-        color:#838a9a;
+        border: 1px #838a9a solid;
+        color: #838a9a;
         cursor: pointer;
         position: absolute;
-        top:50%;
-        right:-100px;
+        top: 50%;
+        right: -100px;
         border-radius: 4px;
         -webkit-border-radius: 4px;
         -moz-border-radius: 4px;
         -ms-border-radius: 4px;
         -o-border-radius: 4px;
     }
-    :global(.ant-upload > em:hover){
-        color:#38C4D1;
-        background-color: #1F2531;
+    :global(.ant-upload > em:hover) {
+        color: #38c4d1;
+        background-color: #1f2531;
     }
-    :global(.ant-upload > b.maskHigh){
+    :global(.ant-upload > b.maskHigh) {
         position: absolute;
-        top:0;
-        right:0;
-        bottom:0;
-        left:0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
         z-index: 99;
         background-color: blue;
     }
-    
 }

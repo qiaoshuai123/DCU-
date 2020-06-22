@@ -70,9 +70,9 @@ class SignalManagement extends PureComponent {
       mapPointsData: null, // 地图中所有的点
       dcuTreeData: null, // 地图中所有的点
       lights: [
-        {name: '红', left: '200px', top: '200px', width: '32px', height: '32px', src: require('../../../images/markerRed.png')},
-        {name: '绿', left: '100px', top: '100px', width: '32px', height: '32px', src: markerIcon},
-        {name: '黄', left: '300px', top: '300px', width: '32px', height: '32px', src: markerIcon}
+        { name: '红', left: '200px', top: '200px', width: '32px', height: '32px', src: require('../../../images/markerRed.png') },
+        { name: '绿', left: '100px', top: '100px', width: '32px', height: '32px', src: markerIcon },
+        { name: '黄', left: '300px', top: '300px', width: '32px', height: '32px', src: markerIcon }
       ], // 灯组排列
     }
     this.map = null
@@ -234,14 +234,14 @@ class SignalManagement extends PureComponent {
     console.log(params, '更新名称')
     this.setState({
       stepOneText: params,
-    },()=>{
+    }, () => {
       this.showHidePop("stepTwoFlag", true);
     })
   }
   // 显示与隐藏step
   showHidePop = (name, flag) => {
     const stepArr = ['stepOneFlag', 'stepTwoFlag', 'stepRoadFlag', 'stepThreeFlag', 'stepFourFlag', 'stepFiveFlag', 'stepSixFlag', 'stepSevenFlag', 'stepEightFlag', 'stepNineFlag', 'turnTab']
-    if (this.state.stepOneText !== '请选择路口'){
+    if (this.state.stepOneText !== '请选择路口') {
       for (let i in stepArr) {
         if (stepArr[i] === name) {
           this.setState({
@@ -284,7 +284,7 @@ class SignalManagement extends PureComponent {
       zoom: 11,
     })
     this.map = map
-    map.on("click",function(e){
+    map.on("click", function (e) {
       console.log(e.lnglat.getLng() + ',' + e.lnglat.getLat())
     })
     this.createLayerGroup('pointLayers') // map中显示点的图层
@@ -321,7 +321,7 @@ class SignalManagement extends PureComponent {
         // marker.id =
         marker.on('click', () => {
           map.emit('click', {
-            lnglat : map.getCenter()
+            lnglat: map.getCenter()
           })
           marker.setContent("<div class='drawCircle'><div class='inner'></div><div id='roadKey"+positions[i].id+"' class='marker-online'></div></div>");
           const nowZoom = map.getZoom()
@@ -340,16 +340,16 @@ class SignalManagement extends PureComponent {
     var info = [];
     // this.dataItem = JSON.parse(JSON.stringify(dataItem))
     info.push(`<div class='content_box'>`);
-    info.push(`<div class='content_box_title'><h4>点位详情</h4>`);  
-    info.push(`<p class='input-item' style='border-top: 1px #838a9a solid;margin-top:-10px;padding-top:15px;'>点位名称：<span>` + '路口1' + `</span></p>`);    
+    info.push(`<div class='content_box_title'><h4>点位详情</h4>`);
+    info.push(`<p class='input-item' style='border-top: 1px #838a9a solid;margin-top:-10px;padding-top:15px;'>点位名称：<span>` + '路口1' + `</span></p>`);
     info.push(`<p class='input-item'>信号机编号：<span>` + '1000010' + `</span></p>`);
     info.push(`<p class='input-item'>信号机品牌：<span>` + '海信' + `</span></p>`);
     info.push(`<p class='input-item'>设备IP：<span>` + '192.168.1.88' + `</span></p>`);
     info.push(`<p class='input-item'>维护电话：<span>` + '01086861234' + `</span></p>`);
-    info.push(`<p class='input-item'>信号运行阶段：<span class='greenFont'>` + '东西直行' +`<b class='icon_phase'></b></span></p>`);
+    info.push(`<p class='input-item'>信号运行阶段：<span class='greenFont'>` + '东西直行' + `<b class='icon_phase'></b></span></p>`);
     info.push(`<p class='input-item'>信号运行方案：<span class='greenFont'>` + '早高峰' + `</span></p>`);
     info.push(`<p class='input-item'>信号控制方式：<span class='greenFont'>` + '实时优化控制' + `</span></p>`);
-    info.push(`<p class='input-item' style='height:15px;'></p>`);  
+    info.push(`<p class='input-item' style='height:15px;'></p>`);
     info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams("我是路口")'>参数配置</span></p>`);
     const infoWindow = new AMap.InfoWindow({
       content: info.join("")  //使用默认信息窗体框样式，显示信息内容
@@ -564,12 +564,14 @@ class SignalManagement extends PureComponent {
           <div className={styles.stepBoxContent}>
             <div className={styles.stepLeftCon}>
               {/* <div className={styles.leftItemCon}> */}
-              <div className={styles.leftItemCon} style={interRoadBg !== '' ? { background: 'url('+ interRoadBg +') no-repeat',backgroundPosition:'center center',
-                backgroundSize:'contain'} : {}}>
+              <div className={styles.leftItemCon} style={interRoadBg !== '' ? {
+                background: 'url(' + interRoadBg + ') no-repeat', backgroundPosition: 'center center',
+                backgroundSize: 'contain'
+              } : {}}>
                 {/* 内部变化内容 之 路口底图弹层*/}
-                {  baseMapFlag ?
-                  <div className={styles.maskBg}><div className={styles.popBox} style={{top: '75%'}} >
-                    <div className={styles.popTit}>选择底图<Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("baseMapFlag", null)} } /></div>
+                {baseMapFlag ?
+                  <div className={styles.maskBg}><div className={styles.popBox} style={{ top: '75%' }} >
+                    <div className={styles.popTit}>选择底图<Icon className={styles.Close} type="close" onClick={() => { this.popLayerShowHide("baseMapFlag", null) }} /></div>
                     <div className={styles.popCon}>
                       <div className={styles.typePic}>
                         <Radio.Group name="radiogroup" onChange={this.onChangeBaseMap} value={this.state.baseMapValue}>
@@ -577,7 +579,7 @@ class SignalManagement extends PureComponent {
                           <Radio value={2}>上传底图</Radio>
                         </Radio.Group>
                       </div>
-                      <div className={styles.typePic} style={{width:'220px'}}>
+                      <div className={styles.typePic} style={{ width: '220px' }}>
                         <Upload
                           name="avatar"
                           listType="picture-card"
@@ -587,18 +589,18 @@ class SignalManagement extends PureComponent {
                           beforeUpload={beforeUpload}
                           onChange={this.handleChangeBaseMap}
                         >
-                          {imageUrl ? 
+                          {imageUrl ?
                             <img src={imageUrl} alt="底图" style={{ width: "100%" }} /> : <s>图片预览</s>
                           }
                           {this.state.baseMapValue === 2 ? uploadButton : null}
                         </Upload>
                         {this.state.baseMapValue === 2 ? null : <em>选 择</em>}
-                        
+
                       </div>
                     </div>
                     <div className={styles.popBottom}>
-                      <em onClick={ () => {this.handleClickBaseMap()}}>确 定</em>
-                      <em onClick={ () => {this.popLayerShowHide("baseMapFlag", null)} }>取 消</em>
+                      <em onClick={() => { this.handleClickBaseMap() }}>确 定</em>
+                      <em onClick={() => { this.popLayerShowHide("baseMapFlag", null) }}>取 消</em>
                     </div>
                   </div></div> : null
                   }
@@ -828,30 +830,30 @@ class SignalManagement extends PureComponent {
             </div>
           </div> : null
         }
-        { turnTab ?
-            <InterworkingList showInterworkingList={this.showInterworkingList} /> : null
-          }
+        {turnTab ?
+          <InterworkingList showInterworkingList={this.showInterworkingList} /> : null
+        }
         <div className={styles.navContent}>
           <div className={styles.navBoxMenu}>
-            <span className={classNames(stepOneFlag ? styles.hover : null, stepOneText !== '请选择路口' ? styles.link : null)} onClick={ ()=>{ this.showHidePop("stepOneFlag", true) } } title={stepOneText}>{ stepOneText }</span>
+            <span className={classNames(stepOneFlag ? styles.hover : null, stepOneText !== '请选择路口' ? styles.link : null)} onClick={() => { this.showHidePop("stepOneFlag", true) }} title={stepOneText}>{stepOneText}</span>
             <s className={stepTwoFlag || stepRoadFlag || stepThreeFlag || stepFourFlag || stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag ? styles.hover : ""}></s>
-            <span className={stepTwoFlag ? styles.hover : null} onClick={ ()=>{ this.showHidePop("stepTwoFlag", true) } }>基础信息配置</span>
+            <span className={stepTwoFlag ? styles.hover : null} onClick={() => { this.showHidePop("stepTwoFlag", true) }}>基础信息配置</span>
             <s className={stepRoadFlag || stepThreeFlag || stepFourFlag || stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag ? styles.hover : ""}></s>
-            <span className={stepRoadFlag ? styles.hover : null} onClick={ ()=>{ this.showHidePop("stepRoadFlag", true) } }>车道配置</span>
-            <s className={stepThreeFlag || stepFourFlag || stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag  ? styles.hover : ""}></s>
-            <span className={stepThreeFlag ? styles.hover : null} onClick={ ()=>{ this.showHidePop("stepThreeFlag", true) } }>灯组配置</span>
-            <s className={stepFourFlag || stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag  ? styles.hover : ""}></s>
-            <span className={classNames(stepFourFlag ? styles.hover : null, styles.link)} onClick={ ()=>{ this.showHidePop("stepFourFlag", true) } }>检测器配置</span>
-            <s className={stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag  ? styles.hover : ""}></s>
-            <span className={stepFiveFlag ? styles.hover : null} onClick={ ()=>{ this.showHidePop("stepFiveFlag", true) } }>相位配置</span>
-            <s className={stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag  ? styles.hover : ""}></s>
-            <span className={stepSixFlag ? styles.hover : null} onClick={ ()=>{ this.showHidePop("stepSixFlag", true) } }>阶段配置</span>
-            <s className={stepSevenFlag || stepEightFlag || stepNineFlag  ? styles.hover : ""}></s>
-            <span className={stepSevenFlag ? styles.hover : null} onClick={ ()=>{ this.showHidePop("stepSevenFlag", true) } }>配时方案配置</span>
+            <span className={stepRoadFlag ? styles.hover : null} onClick={() => { this.showHidePop("stepRoadFlag", true) }}>车道配置</span>
+            <s className={stepThreeFlag || stepFourFlag || stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag ? styles.hover : ""}></s>
+            <span className={stepThreeFlag ? styles.hover : null} onClick={() => { this.showHidePop("stepThreeFlag", true) }}>灯组配置</span>
+            <s className={stepFourFlag || stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag ? styles.hover : ""}></s>
+            <span className={classNames(stepFourFlag ? styles.hover : null, styles.link)} onClick={() => { this.showHidePop("stepFourFlag", true) }}>检测器配置</span>
+            <s className={stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag ? styles.hover : ""}></s>
+            <span className={stepFiveFlag ? styles.hover : null} onClick={() => { this.showHidePop("stepFiveFlag", true) }}>相位配置</span>
+            <s className={stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag ? styles.hover : ""}></s>
+            <span className={stepSixFlag ? styles.hover : null} onClick={() => { this.showHidePop("stepSixFlag", true) }}>阶段配置</span>
+            <s className={stepSevenFlag || stepEightFlag || stepNineFlag ? styles.hover : ""}></s>
+            <span className={stepSevenFlag ? styles.hover : null} onClick={() => { this.showHidePop("stepSevenFlag", true) }}>配时方案配置</span>
             <s className={stepEightFlag || stepNineFlag ? styles.hover : ""}></s>
-            <span className={stepEightFlag ? styles.hover : null} onClick={ ()=>{ this.showHidePop("stepEightFlag", true) } }>日计划配置</span>
+            <span className={stepEightFlag ? styles.hover : null} onClick={() => { this.showHidePop("stepEightFlag", true) }}>日计划配置</span>
             <s className={stepNineFlag ? styles.hover : ""}></s>
-            <span className={stepNineFlag ? styles.hover : null} onClick={ ()=>{ this.showHidePop("stepNineFlag", true) } }>调度配置</span>
+            <span className={stepNineFlag ? styles.hover : null} onClick={() => { this.showHidePop("stepNineFlag", true) }}>调度配置</span>
             <div className={styles.controlBtnBox}>
               <em>上传配置</em>
               <em>下发配置</em>
