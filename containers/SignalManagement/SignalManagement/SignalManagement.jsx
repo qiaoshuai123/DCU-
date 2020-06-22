@@ -10,14 +10,14 @@ import InterworkingList from './InterworkingList/InterworkingList'
 import styles from './SignalManagement.scss'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-// import {  } from '../../../actions/public'
+import { getInterInfoList } from '../../../reactRedux/actions/publicActions'
 // import {  } from '../../../actions/SignalManagement'
 const { Option } = Select
 const pointArr = [
   [120.113369, 30.234277],
   [120.421673, 30.271644],
   [120.251385, 30.405574],
-  [120.208126, 30.106052]
+  [120.208126, 30.106052],
 ]
 // 图片转64位
 function getBase64(img, callback) {
@@ -51,12 +51,13 @@ class SignalManagement extends PureComponent {
       stepSevenFlag: null,
       stepEightFlag: null,
       stepNineFlag: null,
-      stepOneText: '请选择路口',
+      stepOneText: '我的路口',
       baseMapFlag: null, //是否显示
       baseMapValue: 1, //选择底图
       baseLoading: false,
       imageUrl: '',
       interRoadBg: '',
+      mapPointsData: null, // 地图中所有的点
       lights: [
         { name: '红', left: '200px', top: '200px', width: '32px', height: '32px', src: require('../../../images/markerRed.png') },
         { name: '绿', left: '100px', top: '100px', width: '32px', height: '32px', src: markerIcon },
@@ -64,6 +65,20 @@ class SignalManagement extends PureComponent {
       ], // 灯组排列
     }
     this.map = null
+  }
+  componentDidUpdate = (prevState) => {
+    const { mapPointsData } = this.props.data
+    if (prevState.data !== this.props.data) {
+      console.log(this.props.data, "data中所有的数据")
+    }
+    if (prevState.data.mapPointsData !== mapPointsData) {
+      console.log(mapPointsData, '点数据')
+      this.setState({
+        mapPointsData: mapPointsData,
+      }, () => {
+        this.loadingMap()
+      })
+    }
   }
   componentDidMount = () => {
     // 初始化地图
@@ -601,12 +616,12 @@ class SignalManagement extends PureComponent {
 }
 const mapStateToProps = (state) => {
   return {
-    data: { ...state.SignalManagement },
+    data: { ...state.publicData, ...state.SignalManagement },
   }
 }
 const mapDisPatchToProps = (dispatch) => {
   return {
-    // getInterList: bindActionCreators(getInterList, dispatch),
+    getInterInfoList: bindActionCreators(getInterInfoList, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(SignalManagement)

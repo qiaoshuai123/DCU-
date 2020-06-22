@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Icon } from 'antd'
 import styles from './RoadDetail.scss'
 import RoadImg from './img/road.jpg'
+import Equipment from './Equipment/Equipment'
 
 class RoadDetail extends Component {
   constructor(props) {
@@ -37,6 +38,7 @@ class RoadDetail extends Component {
     return (
       <div className={styles.RoadDetail}>
         <img src={RoadImg} alt="" />
+        <Equipment />
         <div className={styles.roadName}>
           <div className={styles.roadNameTitle}>路口1</div>
           <div>所属区域:海淀区</div>
@@ -45,10 +47,10 @@ class RoadDetail extends Component {
         </div>
         <div className={styles.DeviceStatus}>
           <ul className={styles.DeviceStatus_left}>
-            <li><span className={styles.fontColor}>设备状态 :</span><span>&nbsp;正常在线</span></li>
-            <li><span className={styles.fontColor}>控制状态 :</span>本地多时段</li>
+            <li>设备状态:<span className={styles.fontColor}>&nbsp;正常在线</span></li>
+            <li>控制状态:<span className={styles.fontColor}></span>本地多时段</li>
             <li>
-              <span className={styles.fontColor}>当前时段 :</span>&nbsp;
+              当前时段:<span className={styles.fontColor}></span>
               东西左转
               {/* {
                 sinaglInfo &&
@@ -58,8 +60,8 @@ class RoadDetail extends Component {
               }&nbsp;
               {sinaglInfo ? sinaglInfo.STAGE_CODE : '--'} */}
             </li>
-            <li><span className={styles.fontColor}>当前方案 : </span>方案10</li>
-            <li><span className={styles.fontColorTwo}>2019/12/02 22:43:20</span></li>
+            <li>当前方案:<span className={styles.fontColor}></span>方案10</li>
+            <li>2019/12/02 22:43:20</li>
           </ul>
           <div className={styles.DeviceStatus_right}>
             <dl className={styles.deviceControlBtn}>

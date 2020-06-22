@@ -57,8 +57,8 @@ class InterworkingHome extends Component {
   // 创建地图层 > 对应元素层
   createLayerGroup = (name) => {
     window[name] = new AMap.LayerGroup({
-      'autoRefresh': true,     //是否自动刷新，默认为false
-      'interval': 180,         //刷新间隔，默认180s
+      autoRefresh: true, // 是否自动刷新，默认为false
+      interval: 180, // 刷新间隔，默认180s
     });
   }
   //批量添加点
@@ -122,14 +122,6 @@ class InterworkingHome extends Component {
       marker.setContent("<div class='marker-online'></div>");
       infoWindow.close()
     })
-  }
-  // step3 添加灯
-  addLight = () => {
-    const obj = { name: 'new', left: '50%', top: '50%', width: '32px', height: '32px', src: markerIcon }
-    const lights = JSON.parse(JSON.stringify(this.state.lights))
-    lights.push(obj)
-    this.setState({ lights })
-    message.info("添加成功！")
   }
   render() {
     const { Search } = Input

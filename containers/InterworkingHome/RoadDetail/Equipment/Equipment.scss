@@ -1,0 +1,28 @@
+.Equipment {
+    position: absolute;
+    left: 50px;
+    top: 80px;
+    .messageBox {
+        width: 310px;
+        background: rgba(31, 37, 49, 0.7);
+        padding: 30px;
+        position: absolute;
+        .IconClose {
+            position: absolute;
+            font-size: 16px;
+            cursor: pointer;
+            right: 10px;
+            top: 10px;
+        }
+        > div {
+            height: 25px;
+            line-height: 25px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            > span {
+                color: green;
+            }
+        }
+    }
+}
