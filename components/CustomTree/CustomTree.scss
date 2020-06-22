@@ -1,57 +1,71 @@
 .treeWrapper {
-    font-size: 15px;
     .treeList {
+        margin:10px 0 0;
         li {
-            margin: 0;
-            padding: 4px 0;
-            white-space: nowrap;
+            margin: 0 0 0 10px;
+            padding: 5px 0;
             list-style: none;
             outline: 0;
         }
         .treeLi {
             position: relative;
-            margin-top: 7px;
-            padding-left: 25px;
+            white-space: nowrap;
+            &:last-child::before {
+                height: 0;
+            }
             .treeIcon {
-                width: 24px;
-                height: 24px;
-                position: absolute;
-                right: 5px;
+                display: inline-block;
+                width: 20px;
+                height: 20px;
                 margin: 0;
-                line-height: 24px;
+                line-height: 20px;
                 text-align: center;
                 vertical-align: top;
                 border: 0 none;
                 outline: none;
-                font-size: 12px;
-                color: #fff;
+                font-size: 20px;
+                color: #15AEE5;
                 cursor: pointer;
-            }
-            .treeNode {
-                display: inline-block;
-                font-size: 15px;
-                height: 24px;
-                width: 170px;
-                color: #f1f1fb;
-                text-align: center;
-                line-height: 24px;
-                text-decoration: none;
-                vertical-align: top;
-                border-radius: 2px;
-                cursor: pointer;
-                transition: all 0.3s;
-                overflow: hidden;
-                white-space: nowrap;
-                text-overflow: ellipsis;
+                &::before {
+                    position: absolute;
+                    left: 25px;
+                    width: 10px;
+                    height: 1px;
+                    margin: 12px 0 0;
+                    border-top: 1px dashed #15AEE5;
+                    content: ' ';
+                }
             }
             .childTree {
                 margin: 0;
-                transition: height ease 0.2s;
-                overflow: hidden;
+                padding: 0 0 0 25px;
+                transition: height ease .2s;
+                // overflow: hidden;
+                &::after {
+                    position: absolute;
+                    top: 25px;
+                    left: 37px;
+                    width: 1px;
+                    height: 10px;
+                    // margin: -22px 0 0;
+                    border-left: 1px dashed #15AEE5;
+                    content: ' ';
+                }
                 .childLi {
                     position: relative;
-                    &:first-child {
-                        margin-top: 7px;
+                    white-space: nowrap;
+                    &::before {
+                        position: absolute;
+                        left: 12px;
+                        width: 1px;
+                        height: 100%;
+                        height: calc(100% - 20px);
+                        margin: 22px 0 0;
+                        border-left: 1px dashed #15AEE5;
+                        content: ' ';
+                    }
+                    &:last-child::before {
+                        height: 0;
                     }
                 }
                 .childIcon {
@@ -65,27 +79,35 @@
                     border: 0 none;
                     outline: none;
                     font-size: 20px;
-                    color: #15aee5;
+                    color: #15AEE5;
                     cursor: pointer;
+                    &::before {
+                        position: absolute;
+                        left: 25px;
+                        width: 10px;
+                        height: 1px;
+                        margin: 12px 0 0;
+                        border-top: 1px dashed #15AEE5;
+                        content: ' ';
+                    }
                 }
-                .childNode {
-                    display: inline-block;
-                    font-size: 14px;
-                    height: 24px;
-                    width: 145px;
-                    margin: 0;
-                    padding-left: 5px;
-                    color: #f1f1fb;
-                    line-height: 24px;
-                    text-decoration: none;
-                    vertical-align: top;
-                    border-radius: 2px;
-                    cursor: pointer;
-                    transition: all 0.3s;
-                    overflow: hidden;
-                    white-space: nowrap;
-                    text-overflow: ellipsis;
-                }
+            }
+            .childNode {
+                display: inline-block;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                width: 80%;
+                height: 24px;
+                margin: 0;
+                padding: 0 5px 0 15px;
+                color: #f1f1fb;
+                line-height: 24px;
+                text-decoration: none;
+                vertical-align: top;
+                border-radius: 2px;
+                cursor: pointer;
+                transition: all 0.3s;
             }
         }
     }
@@ -98,5 +120,8 @@
 }
 :global(.ant-tree.ant-tree-show-line li span.ant-tree-switcher) {
     background-color: transparent;
-    color: #15aee5;
+    color: #15AEE5;
+}
+:global(.ant-tree.ant-tree-show-line li:not(:last-child)::before) {
+    border: 1px dashed #15AEE5;
 }

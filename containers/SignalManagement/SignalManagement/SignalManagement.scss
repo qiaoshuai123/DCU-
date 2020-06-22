@@ -4,6 +4,9 @@ $stepBor_col: #393F4F;
     width: 100%;
     height: 100%;
     background-color: #021035;
+    .mouseStatus{
+        cursor: move!important;
+    }
     /* 弹层start */
     .maskBg{
         width: 100%;
@@ -272,6 +275,7 @@ $stepBor_col: #393F4F;
             .leftItemCon{
                 width: 100%;
                 height: 780px;
+                user-select: none;
                 margin:0 auto;
                 position: relative;
                 background: url(../../../images/intersectionBg.png) no-repeat;
@@ -333,7 +337,7 @@ $stepBor_col: #393F4F;
                 .rCon{
                     border:1px solid $stepBor_col;
                     padding:15px;
-                    display: none;
+                    // display: none;
                     .itemInputBox{
                         display: flex;
                         justify-content: center;
