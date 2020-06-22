@@ -10,15 +10,15 @@ import InterworkingList from './InterworkingList/InterworkingList'
 import styles from './SignalManagement.scss'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { getInterInfoList } from '../../../reactRedux/actions/publicActions'
+// import {  } from '../../../actions/public'
 // import {  } from '../../../actions/SignalManagement'
 const { Option } = Select
-// const pointArr = [
-//   [120.113369,30.234277],
-//   [120.421673,30.271644],
-//   [120.251385,30.405574],
-//   [120.208126,30.106052]
-// ]
+const pointArr = [
+  [120.113369, 30.234277],
+  [120.421673, 30.271644],
+  [120.251385, 30.405574],
+  [120.208126, 30.106052]
+]
 // 图片转64位
 function getBase64(img, callback) {
   const reader = new FileReader();
@@ -51,13 +51,12 @@ class SignalManagement extends PureComponent {
       stepSevenFlag: null,
       stepEightFlag: null,
       stepNineFlag: null,
-      stepOneText: '我的路口',
+      stepOneText: '请选择路口',
       baseMapFlag: null, //是否显示
       baseMapValue: 1, //选择底图
       baseLoading: false,
       imageUrl: '',
       interRoadBg: '',
-      mapPointsData: null, // 地图中所有的点
       lights: [
         { name: '红', left: '200px', top: '200px', width: '32px', height: '32px', src: require('../../../images/markerRed.png') },
         { name: '绿', left: '100px', top: '100px', width: '32px', height: '32px', src: markerIcon },
@@ -66,29 +65,11 @@ class SignalManagement extends PureComponent {
     }
     this.map = null
   }
-  componentDidUpdate = (prevState) => {
-    const { mapPointsData } = this.props.data
-    if (prevState.data !== this.props.data) {
-      console.log(this.props.data, "data中所有的数据")
-    }
-    if (prevState.data.mapPointsData !== mapPointsData) {
-      console.log(mapPointsData, '点数据')
-      this.setState({
-        mapPointsData: mapPointsData,
-      },()=>{
-        this.loadingMap()
-      })
-    }
-  }
   componentDidMount = () => {
     // 初始化地图
     this.loadingMap()
     window.showHidePop = this.showHidePop
     window.setGetParams = this.setGetParams
-    this.props.getInterInfoList()
-    // setTimeout(()=>{
-    //   console.log(this.props, '看看吧')
-    // },2000)
   }
   // 更新参数
   setGetParams = params => {
@@ -148,9 +129,7 @@ class SignalManagement extends PureComponent {
       console.log(e.lnglat.getLng() + ',' + e.lnglat.getLat())
     })
     this.createLayerGroup('pointLayers') // map中显示点的图层
-    if (this.state.mapPointsData !== null) {
-      this.drawMarkers(this.state.mapPointsData, 'pointLayers') // 初始化点
-    }
+    this.drawMarkers(pointArr, markerIcon, 'pointLayers') // 初始化点
   }
   // 创建地图层 > 对应元素层
   createLayerGroup = (name) => {
@@ -160,7 +139,7 @@ class SignalManagement extends PureComponent {
     });
   }
   //批量添加点
-  drawMarkers = (positions, layer) => {
+  drawMarkers = (positions, imgIcon, layer) => {
     const map = this.map
     if (window[layer]) {
       window[layer].removeLayers(this[layer])
@@ -171,10 +150,10 @@ class SignalManagement extends PureComponent {
     }
     if (map) {
       for (let i = 0; i < positions.length; i++) {
-        // const latlng = positions[i]
+        const latlng = positions[i]
         // const latlng = positions[i].latlng
         const marker = new AMap.Marker({
-          position: new AMap.LngLat(positions[i].lng, positions[i].lat),
+          position: new AMap.LngLat(latlng[0], latlng[1]),
           offset: new AMap.Pixel(-16, -16),
           content: "<div class='marker-online'></div>",
         })
@@ -184,7 +163,7 @@ class SignalManagement extends PureComponent {
           })
           marker.setContent("<div class='drawCircle'><div class='inner'></div><div class='marker-online'></div></div>");
           const nowZoom = map.getZoom()
-          map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
+          map.setZoomAndCenter(nowZoom, positions[i]); //同时设置地图层级与中心点
           this.openInfoWin(map, positions[i], marker)
         })
         this[layer].push(marker)
@@ -212,7 +191,7 @@ class SignalManagement extends PureComponent {
     const infoWindow = new AMap.InfoWindow({
       content: info.join("")  //使用默认信息窗体框样式，显示信息内容
     });
-    infoWindow.open(map, [dataItem.lng, dataItem.lat]);
+    infoWindow.open(map, dataItem);
     this.infoWindow = infoWindow
     window.infoWindowClose = infoWindow
     map.on('click', (e) => {
@@ -272,14 +251,11 @@ class SignalManagement extends PureComponent {
     return (
       <div className={styles.SignalManagement}>
         <Header {...this.props} />
-        {/* 弹层 > 添加编辑 */}
-        {/* {
-          <div className={styles.maskBg}> 
+        {/* 弹层 > 切换底图 */}
+        {/* <div className={styles.maskBg}> </div> 遮罩底层*/}
 
-          </div>
-        } */}
-        {/* step 步骤 content 显示层 */}
-        { stepTwoFlag || stepRoadFlag || stepThreeFlag || stepFourFlag || stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag ?
+        {/* step 2 基础信息配置 */}
+        {stepTwoFlag || stepRoadFlag || stepThreeFlag || stepFourFlag || stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag ?
           <div className={styles.stepBoxContent}>
             <div className={styles.stepLeftCon}>
               {/* <div className={styles.leftItemCon}> */}
@@ -381,66 +357,31 @@ class SignalManagement extends PureComponent {
                     </div>
                   </div> */}
                   <ListForAntd />
-                </div> : stepRoadFlag ? 
-                <div className={styles.conBox}>
-                <div className={styles.rTit}>车道列表<em>添加</em></div>
-                
-                <div className={styles.rList}>
-                  <div className={styles.listItem}>
-                    <em>车道号</em>
-                    <em>外部车道号</em>
-                    <em>通行方向描述</em>
-                    <em>进口道路编号</em>
-                    <em>进口方向编码</em>
-                    <em>转向</em>
-                    <em>操作</em>
-                  </div>
-                  <div className={classNames(styles.listItem)}>
-                    <span>1</span>
-                    <span>东</span>
-                    <span>圆灯</span>
-                    <span>1</span>
-                    <span>东</span>
-                    <span>圆灯</span>
-                    <span>删除</span>
-                  </div>
-                </div>
-              </div> : stepThreeFlag ? 
-                <div className={styles.conBox}>
-                <div className={styles.rTit}>灯组列表<em onClick={this.addLight}>添加</em></div>
-                
-                <div className={styles.rList}>
-                  <div className={styles.listItem}>
-                    <em>灯组序号</em>
-                    <em>方向</em>
-                    <em>灯组类型</em>
-                    <em>操作</em>
-                  </div>
-                  <div className={classNames(styles.listItem)}>
-                    <span>1</span>
-                    <span>东</span>
-                    <span>圆灯</span>
-                    <span>删除</span>
-                  </div>
-                </div>
-              </div> : stepFourFlag ? 
-                <div className={styles.conBox}>
-                  <div className={styles.rTit}>检测器列表<em>添加</em></div>
-                
-                  <div className={styles.rList}>
-                    <div className={styles.listItem}>
-                      <em>检测器编号</em>
-                      <em>检测器类型</em>
-                      <em>流量采集周期</em>
-                      <em>占有率采集周期</em>
-                      <em>操作</em>
-                    </div>
-                    <div className={classNames(styles.listItem)}>
-                      <span>1</span>
-                      <span>东</span>
-                      <span>东</span>
-                      <span>圆灯</span>
-                      <span>删除</span>
+                </div> : stepRoadFlag ?
+                  <div className={styles.conBox}>
+                    <div className={styles.rTit}>车道列表<em>添加</em></div>
+
+                    <div className={styles.rList}>
+                      <div className={styles.listItem}>
+                        <em>车道号</em>
+                        <em>外部车道号</em>
+                        <em>通行方向描述</em>
+                        <em>进口道路编号</em>
+                        <em>进口方向4编码</em>
+                        <em>进口方向8编码</em>
+                        <em>转向</em>
+                        <em>操作</em>
+                      </div>
+                      <div className={classNames(styles.listItem)}>
+                        <span>1</span>
+                        <span>东</span>
+                        <span>圆灯</span>
+                        <span>1</span>
+                        <span>1</span>
+                        <span>东</span>
+                        <span>圆灯</span>
+                        <span>删除</span>
+                      </div>
                     </div>
                   </div> : stepThreeFlag ?
                     <div className={styles.conBox}>
@@ -660,12 +601,12 @@ class SignalManagement extends PureComponent {
 }
 const mapStateToProps = (state) => {
   return {
-    data: { ...state.publicData, ...state.SignalManagement },
+    data: { ...state.SignalManagement },
   }
 }
 const mapDisPatchToProps = (dispatch) => {
   return {
-    getInterInfoList: bindActionCreators(getInterInfoList, dispatch),
+    // getInterList: bindActionCreators(getInterList, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(SignalManagement)
