@@ -119,7 +119,7 @@ class ListForAntd extends Component {
                           return <span key={"spanText"+ k}>{item[val.key]}</span>
                         })
                       }
-                      {handleFlag ? <span><b onClick={(e)=>{this.update(e)}}>修改</b><b onClick={(e)=>{this.update(e)}}>删除</b><b onClick={(e)=>{this.update(e)}}>查看</b></span> : null}
+                      {handleFlag ? <span><b onClick={(e)=>{this.update(e)}}>删除</b></span> : null}
                           </div>
                   })
                 }

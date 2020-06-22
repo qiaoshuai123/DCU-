@@ -5,6 +5,8 @@ const publics = (state = {}, action) => {
   switch (type) {
     case types.GET_UNIT_INFO_LIST:
       return Object.assign({}, state, { mapPointsData: payload })
+    case types.GET_UNIT_TREE:
+      return Object.assign({}, state, { dcuTreeData: payload })
     default:
       return state
   }
