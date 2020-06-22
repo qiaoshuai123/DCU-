@@ -10,15 +10,9 @@ import InterworkingList from './InterworkingList/InterworkingList'
 import styles from './SignalManagement.scss'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { getUnitInfoList, getUnitTree } from '../../../reactRedux/actions/publicActions'
+import { getUnitInfoList } from '../../../reactRedux/actions/publicActions'
 // import {  } from '../../../actions/SignalManagement'
 const { Option } = Select
-// const pointArr = [
-//   [120.113369,30.234277],
-//   [120.421673,30.271644],
-//   [120.251385,30.405574],
-//   [120.208126,30.106052]
-// ]
 // 图片转64位
 function getBase64(img, callback) {
   const reader = new FileReader();
@@ -68,7 +62,6 @@ class SignalManagement extends PureComponent {
       imageUrl: '',
       interRoadBg: '',
       mapPointsData: null, // 地图中所有的点
-      dcuTreeData: null, // 地图中所有的点
       lights: [
         { name: '红', left: '200px', top: '200px', width: '32px', height: '32px', src: require('../../../images/markerRed.png') },
         { name: '绿', left: '100px', top: '100px', width: '32px', height: '32px', src: markerIcon },
@@ -79,7 +72,7 @@ class SignalManagement extends PureComponent {
     this.moveFlag = false // 是否是移动状态
   }
   componentDidUpdate = (prevState) => {
-    const { mapPointsData, dcuTreeData } = this.props.data
+    const { mapPointsData } = this.props.data
     if (prevState.data !== this.props.data) {
       console.log(this.props.data, "data中所有的数据")
     }
@@ -89,12 +82,6 @@ class SignalManagement extends PureComponent {
         mapPointsData: mapPointsData,
       },()=>{
         this.loadingMap()
-      })
-    }
-    if (prevState.data.dcuTreeData !== dcuTreeData) {
-      console.log(dcuTreeData, '点数据')
-      this.setState({
-        dcuTreeData: dcuTreeData,
       })
     }
   }
@@ -135,7 +122,6 @@ class SignalManagement extends PureComponent {
     window.showHidePop = this.showHidePop
     window.setGetParams = this.setGetParams
     this.props.getUnitInfoList()
-    this.props.getUnitTree()
     // setTimeout(()=>{
     //   console.log(this.props, '看看吧')
     // },2000)
@@ -899,7 +885,6 @@ const mapStateToProps = (state) => {
 const mapDisPatchToProps = (dispatch) => {
   return {
     getUnitInfoList: bindActionCreators(getUnitInfoList, dispatch),
-    getUnitTree: bindActionCreators(getUnitTree, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(SignalManagement)

@@ -2,7 +2,9 @@ import React from 'react'
 import { Icon, Tooltip } from 'antd'
 
 import styles from './CustomTree.scss'
-
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { getUnitTree } from '../../reactRedux/actions/publicActions'
 class CustomTree extends React.Component {
   constructor(props) {
     super(props)
@@ -10,9 +12,20 @@ class CustomTree extends React.Component {
       expendsKey: [],
       visible: 0, // 右键菜单
       treeChecked: null,
+      dcuTreeData: null,
     }
   }
   componentDidMount = () => {
+    this.props.getUnitTree()
+  }
+  componentDidUpdate = (prevState) => {
+    const { dcuTreeData } = this.props.data
+    if (prevState.data.dcuTreeData !== dcuTreeData) {
+      console.log(dcuTreeData, '点数据')
+      this.setState({
+        dcuTreeData: dcuTreeData,
+      })
+    }
   }
   btns = (id) => {
     // console.log(id)
@@ -131,4 +144,14 @@ class CustomTree extends React.Component {
   }
 }
 
-export default CustomTree
+const mapStateToProps = (state) => {
+  return {
+    data: { ...state.publicData },
+  }
+}
+const mapDisPatchToProps = (dispatch) => {
+  return {
+    getUnitTree: bindActionCreators(getUnitTree, dispatch),
+  }
+}
+export default connect(mapStateToProps, mapDisPatchToProps)(CustomTree)
