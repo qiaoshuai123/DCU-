@@ -1,5 +1,8 @@
 import React, { Component } from 'react'
-import { Input } from 'antd'
+import { Input, message } from 'antd'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { getUnitInfoList } from '../../../reactRedux/actions/publicActions'
 import Header from '../../../components/Header/Header'
 import CustomTree from '../../../components/CustomTree/CustomTree'
 import InterworkingList from './InterworkingList/InterworkingList'
@@ -18,15 +21,85 @@ class SignalStatus extends Component {
     super(props)
     this.state = {
       isInterworkingList: false,
+      mapPointsData: null, // 地图中所有的点s
     }
   }
   componentDidMount = () => {
     this.loadingMap()
+    window.showHidePop = this.showHidePop
     window.setGetParams = this.setGetParams
+    this.props.getUnitInfoList()
+    document.addEventListener('click', (e) => {
+      this.visibleShowLeft('', '', false)
+    })
+  }
+  componentDidUpdate = (prevState) => {
+    const { mapPointsData } = this.props.data
+    if (prevState.data !== this.props.data) {
+      console.log(this.props.data, "data中所有的数据")
+    }
+    if (prevState.data.mapPointsData !== mapPointsData) {
+      console.log(mapPointsData, '点数据')
+      this.getmapPointsData(mapPointsData)
+    }
+  }
+  // 从子集获取区域id和index 请求路口
+  getSelectTreeId = (id) => {
+    this.props.getVipRouteChild(id)
+  }
+  // 获取子id, 路口id
+  getSelectChildId = (childId, index) => {
+    const _this = this
+    let marker, lng, lat
+    const childrenArr = this.props.data.dcuTreeData
+    childrenArr[index].units && childrenArr[index].units.map((item) => {
+      if (childId === item.id) {
+        lng = item.lng
+        lat = item.lat
+        marker = new AMap.Marker({
+          position: new AMap.LngLat(item.lng, item.lat),
+          offset: new AMap.Pixel(-16, -16),
+          content: "<div id='roadKey" + item.id + "'></div>",
+        })
+        marker.on('click', function () {
+          _this.openInfoWin(_this.map, { lng: lng, lat: lat }, marker)
+        })
+      }
+    })
+    if (marker && this.map) {
+      this.map.setCenter([lng, lat])
+      marker.emit('click', {
+        lnglat: this.map.getCenter()
+      })
+    } else {
+      message.info('该路口尚未接入')
+    }
+  }
+  getmapPointsData = (mapPointsData) => {
+    this.setState({
+      mapPointsData,
+    }, () => {
+      this.loadingMap()
+    })
   }
   setGetParams = (params) => {
     console.log(params, 'sffsfsf')
     window.open(`#roaddetail/1`)
+  }
+  visibleShowLeft = (top, id, show) => { // 框的跳转与位置
+    if (top || id) {
+      this.setState({
+        visible: show,
+        visibleTop: top,
+        vipId: id,
+      }, () => {
+        console.log(id, '显示右键信息')
+      })
+    } else {
+      this.setState({
+        visible: show,
+      })
+    }
   }
   showInterworkingList = (isShow) => {
     if (isShow) {
@@ -52,7 +125,9 @@ class SignalStatus extends Component {
       console.log(e.lnglat.getLng() + ',' + e.lnglat.getLat())
     })
     this.createLayerGroup('pointLayers') // map中显示点的图层
-    this.drawMarkers(pointArr, 'pointLayers') // 初始化点
+    if (this.state.mapPointsData !== null) {
+      this.drawMarkers(this.state.mapPointsData, 'pointLayers') // 初始化点
+    }
   }
   // 创建地图层 > 对应元素层
   createLayerGroup = (name) => {
@@ -73,20 +148,21 @@ class SignalStatus extends Component {
     }
     if (map) {
       for (let i = 0; i < positions.length; i++) {
-        const latlng = positions[i]
+        // const latlng = positions[i]
         // const latlng = positions[i].latlng
         const marker = new AMap.Marker({
-          position: new AMap.LngLat(latlng[0], latlng[1]),
+          position: new AMap.LngLat(positions[i].lng, positions[i].lat),
           offset: new AMap.Pixel(-16, -16),
-          content: "<div class='marker-online'></div>",
+          content: "<div id='roadKey" + positions[i].id + "' class='marker-online'></div>",
         })
+        // marker.id =
         marker.on('click', () => {
           map.emit('click', {
             lnglat: map.getCenter()
           })
-          marker.setContent('<div class=\'drawCircle\'><div class=\'inner\'></div><div class=\'marker-online\'></div></div>')
+          marker.setContent("<div class='drawCircle'><div class='inner'></div><div id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
           const nowZoom = map.getZoom()
-          map.setZoomAndCenter(nowZoom, positions[i]) // 同时设置地图层级与中心点
+          map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
           this.openInfoWin(map, positions[i], marker)
         })
         this[layer].push(marker)
@@ -97,25 +173,25 @@ class SignalStatus extends Component {
   }
   //在指定位置打开信息窗体
   openInfoWin = (map, dataItem, marker) => {
+    debugger
     var info = [];
     // this.dataItem = JSON.parse(JSON.stringify(dataItem))
     info.push(`<div class='content_box'>`);
     info.push(`<div class='content_box_title'><h4>点位详情</h4>`);
     info.push(`<p class='input-item' style='border-top: 1px #838a9a solid;margin-top:-10px;padding-top:15px;'>点位名称：<span>` + '路口1' + `</span></p>`);
-    info.push(`<p class='input-item'>设备编号：<span>` + '1000010' + `</span></p>`);
-    info.push(`<p class='input-item'>设备型号：<span>` + '海信' + `</span></p>`);
+    info.push(`<p class='input-item'>信号机编号：<span>` + '1000010' + `</span></p>`);
+    info.push(`<p class='input-item'>信号机品牌：<span>` + '海信' + `</span></p>`);
     info.push(`<p class='input-item'>设备IP：<span>` + '192.168.1.88' + `</span></p>`);
-    info.push(`<p class='input-item'>生产厂商：<span>` + '01086861234' + `</span></p>`);
-    info.push(`<p class='input-item'>维护电话<span class='greenFont'>` + '东西直行' + `</span></p>`);
-    info.push(`<p class='input-item'>设备状态：<span class='greenFont'>` + '早高峰' + `</span></p>`);
-    info.push(`<p class='input-item'>信号接入状态：<span class='greenFont'>` + '实时优化控制' + `</span></p>`);
-    info.push(`<p class='input-item'>发布服务状态：<span class='greenFont'>` + '实时优化控制' + `</span></p>`);
+    info.push(`<p class='input-item'>维护电话：<span>` + '01086861234' + `</span></p>`);
+    info.push(`<p class='input-item'>信号运行阶段：<span class='greenFont'>` + '东西直行' + `<b class='icon_phase'></b></span></p>`);
+    info.push(`<p class='input-item'>信号运行方案：<span class='greenFont'>` + '早高峰' + `</span></p>`);
+    info.push(`<p class='input-item'>信号控制方式：<span class='greenFont'>` + '实时优化控制' + `</span></p>`);
     info.push(`<p class='input-item' style='height:15px;'></p>`);
-    info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams("我是路口")'>路口监视</span></p>`);
+    info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams("我是路口")'>参数配置</span></p>`);
     const infoWindow = new AMap.InfoWindow({
       content: info.join("")  //使用默认信息窗体框样式，显示信息内容
     });
-    infoWindow.open(map, dataItem);
+    infoWindow.open(map, [dataItem.lng, dataItem.lat]);
     this.infoWindow = infoWindow
     window.infoWindowClose = infoWindow
     map.on('click', (e) => {
@@ -127,7 +203,7 @@ class SignalStatus extends Component {
     const { Search } = Input
     const { isInterworkingList } = this.state
     return (
-      <div className={styles.SignalStatus} id="mapContent">
+      <div className={styles.SignalStatus}>
         <Header {...this.props} />
         <div className={styles.Interwork_left}>
           <div className={styles.InterworkLeft_search}>
@@ -140,7 +216,12 @@ class SignalStatus extends Component {
           <div className={styles.InterworkLeft_Title}>
             <span />信号机实时状态
           </div>
-          <CustomTree />
+          <CustomTree
+            {...this.props}
+            getSelectTreeId={this.getSelectTreeId}
+            getSelectChildId={this.getSelectChildId}
+            visibleShowLeft={this.visibleShowLeft}
+          />
         </div>
         <div className={styles.promptBox}>
           <div><span className={styles.spanTop} />本地多时段控制0处</div>
@@ -156,9 +237,20 @@ class SignalStatus extends Component {
             <InterworkingList showInterworkingList={this.showInterworkingList} />
           </div>
         }
+        <div className={styles.mapContent} id="mapContent" />
       </div>
     )
   }
 }
 
-export default SignalStatus
+const mapStateToProps = (state) => {
+  return {
+    data: { ...state.publicData, ...state.SignalManagement },
+  }
+}
+const mapDisPatchToProps = (dispatch) => {
+  return {
+    getUnitInfoList: bindActionCreators(getUnitInfoList, dispatch),
+  }
+}
+export default connect(mapStateToProps, mapDisPatchToProps)(SignalStatus)
