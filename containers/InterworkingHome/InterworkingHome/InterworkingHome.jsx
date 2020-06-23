@@ -1,21 +1,12 @@
 import React, { Component } from 'react'
 import { Input, message } from 'antd'
-
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { getUnitInfoList } from '../../../reactRedux/actions/publicActions'
 import Header from '../../../components/Header/Header'
 import CustomTree from '../../../components/CustomTree/CustomTree'
 import InterworkingList from './InterworkingList/InterworkingList'
-import markerIcon from '../../../images/markerGreen.png'
 import styles from './InterworkingHome.scss'
-
-// const pointArr = [
-//   [120.113369, 30.234277],
-//   [120.421673, 30.271644],
-//   [120.251385, 30.405574],
-//   [120.208126, 30.106052],
-// ]
 
 class InterworkingHome extends Component {
   constructor(props) {
@@ -176,7 +167,6 @@ class InterworkingHome extends Component {
   }
   //在指定位置打开信息窗体
   openInfoWin = (map, dataItem, marker) => {
-    debugger
     var info = [];
     // this.dataItem = JSON.parse(JSON.stringify(dataItem))
     info.push(`<div class='content_box'>`);

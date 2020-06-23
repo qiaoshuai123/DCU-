@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Icon } from 'antd'
 import styles from './Equipment.scss'
+import imgs from '../../../../images/03.png'
 
 class Equipment extends Component {
   constructor(props) {
@@ -14,11 +15,16 @@ class Equipment extends Component {
       isMeessage: false,
     })
   }
+  showImg = () => {
+    this.setState({
+      isMeessage: true,
+    })
+  }
   render() {
     const { isMeessage } = this.state
     return (
       <div className={styles.Equipment}>
-        <img src="" alt="" />
+        <img src={imgs} alt="" onClick={this.showImg} />
         {
           isMeessage &&
           <div className={styles.messageBox}>
