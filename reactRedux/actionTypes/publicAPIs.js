@@ -4,5 +4,5 @@
 // 例
 export const API_UNIT_INFO_LIST = '/DCU/unitInfo/unitInfoList'   // 查询全部路口 地图中所有的点
 export const API_UNIT_TREE = '/DCU/unitInfo/unitTree'  // DCU点位树查询
-export const API_SIGNAL_BY_UNIT_ID = '/DCU/signalInfo/signalByUnitId'  // DCU点位弹层信息
+export const API_SIGNAL_BY_UNIT_ID = '/DCU/dcuInfo/dcuByInterId'  // DCU点位弹层信息
 

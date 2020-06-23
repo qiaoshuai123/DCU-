@@ -42,10 +42,10 @@ export const getUnitTree = () => {
 }
 
 // DCU点位弹层信息
-export const getUnitPop = (unitId) => {
+export const getUnitPop = (interId) => {
   return async (dispatch) => {
     try {
-      const result = await RestUtil.get(`${API_SIGNAL_BY_UNIT_ID}?unitId=${unitId}`)
+      const result = await RestUtil.get(`${API_SIGNAL_BY_UNIT_ID}?interId=${interId}`)
       if (result.data.code === 0) {
         dispatch({ type: types.GET_SIGNAL_BY_UNIT_ID, payload: result.data.data })
       } else {

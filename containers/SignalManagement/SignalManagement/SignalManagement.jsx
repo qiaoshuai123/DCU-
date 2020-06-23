@@ -12,24 +12,26 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { getUnitInfoList, getUnitPop } from '../../../reactRedux/actions/publicActions'
 import { getStepStatus } from '../../../reactRedux/actions/signalmanagementActions'
+import StepNavMenu from './StepNavMenu/StepNavMenu'
+import BasicInfoLeft from './StepConfigLeft/BasicInfoLeft'
+import LaneConfigLeft from './StepConfigLeft/LaneConfigLeft'
+import LightConfigLeft from './StepConfigLeft/LightConfigLeft'
+import DetectorConfigLeft from './StepConfigLeft/DetectorConfigLeft'
+import BasicInfoRight from './StepConfigRight/BasicInfoRight'
+import LaneConfigRight from './StepConfigRight/LaneConfigRight'
+import LightConfigRight from './StepConfigRight/LightConfigRight'
+import DetectorConfigRight from './StepConfigRight/DetectorConfigRight'
+import PhaseConfigRight from './StepConfigRight/PhaseConfigRight'
+import StageConfigRight from './StepConfigRight/StageConfigRight'
+import PlanConfigRight from './StepConfigRight/PlanConfigRight'
+import DayPlanConfigRight from './StepConfigRight/DayPlanConfigRight'
+import DispatchConfigRight from './StepConfigRight/DispatchConfigRight'
 const { Option } = Select
 // 图片转64位
 function getBase64(img, callback) {
   const reader = new FileReader();
   reader.addEventListener("load", () => callback(reader.result));
   reader.readAsDataURL(img);
-}
-// 上传图片的格式及大小
-function beforeUpload(file) {
-  const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
-  if (!isJpgOrPng) {
-    message.info("You can only upload JPG/PNG file!");
-  }
-  const isLt2M = file.size / 1024 / 1024 < 2;
-  if (!isLt2M) {
-    message.info("图片大小不能大于2MB!");
-  }
-  return isJpgOrPng && isLt2M;
 }
 class SignalManagement extends PureComponent {
   constructor(props) {
@@ -55,20 +57,56 @@ class SignalManagement extends PureComponent {
       stepEightAddEdit: null,
       stepNineFlag: null,
       stepNineAddEdit: null,
-      stepOneText: '我的路口',
+      stepOneText: '请选择路口',
       baseMapFlag: null, //是否显示
-      baseMapValue: 1, //选择底图
       baseLoading: false,
       imageUrl: '',
       interRoadBg: '',
       mapPointsData: null, // 地图中所有的点
       dcuPopData: null, // 弹层数据
       stepStatusData: null, // step数据
+      lanes: [
+        {
+          UI_WIDTH: 66,
+          DEVICE_NAME: "车道",
+          P_TOP: 343,
+          UI_HIGHT: 20,
+          UI_IMAGE_NAME: "westleft_23.gif",
+          DETAIL: "无",
+          DEVICE_CODE: 1,
+          P_LEFT: 485,
+          DEVICE_ID: 9370224,
+          UI_TYPE_ID: 3
+        },
+      ],// 车道
       lights: [
-        { name: '红', left: '200px', top: '200px', width: '32px', height: '32px', src: require('../../../images/markerRed.png') },
-        { name: '绿', left: '100px', top: '100px', width: '32px', height: '32px', src: markerIcon },
-        { name: '黄', left: '300px', top: '300px', width: '32px', height: '32px', src: markerIcon }
-      ], // 灯组排列
+        {
+          UI_WIDTH: 85,
+          DEVICE_NAME: "灯",
+          P_TOP: 343,
+          UI_HIGHT: 31,
+          UI_IMAGE_NAME: "arrow42_21.gif",
+          DETAIL: "无",
+          DEVICE_CODE: 1,
+          P_LEFT: 485,
+          DEVICE_ID: 9370224,
+          UI_TYPE_ID: 4
+        },
+      ],// 灯组排列
+      detectors: [
+        {
+          UI_WIDTH: 24,
+          DEVICE_NAME: "检测器",
+          P_TOP: 343,
+          UI_HIGHT: 23,
+          UI_IMAGE_NAME: "detector_1.png",
+          DETAIL: "无",
+          DEVICE_CODE: 1,
+          P_LEFT: 485,
+          DEVICE_ID: 9370224,
+          UI_TYPE_ID: 2
+        },
+      ], // 检测器
     }
     this.map = null
     this.moveFlag = false // 是否是移动状态
@@ -76,7 +114,7 @@ class SignalManagement extends PureComponent {
   componentDidUpdate = (prevState) => {
     const { mapPointsData, dcuPopData, stepStatusData } = this.props.data
     if (prevState.data !== this.props.data) {
-      console.log(this.props.data, "data中所有的数据")
+      console.log(this.props,this.props.data, "data中所有的数据")
     }
     if (prevState.data.mapPointsData !== mapPointsData) {
       // console.log(mapPointsData, '点数据')
@@ -150,7 +188,7 @@ class SignalManagement extends PureComponent {
     let marker, lng, lat;
     const childrenArr = this.props.data.dcuTreeData
     childrenArr[index].units && childrenArr[index].units.map((item) => {
-      if (childInterId === item.id) {
+      if (childInterId === item.interId) {
         lng = item.lng
         lat = item.lat
         marker = new AMap.Marker({
@@ -159,10 +197,10 @@ class SignalManagement extends PureComponent {
           content: "<div id='roadKey"+item.id+"'></div>",
         })
         marker.on('click',function(){
-          _this.props.getUnitPop(childInterId)
-          setTimeout(()=>{
-          _this.openInfoWin(_this.map, item, marker, item.interName)
-          },100)
+          const resultP = Promise.resolve(_this.props.getUnitPop(childInterId))
+          resultP.then(()=>{
+            _this.openInfoWin(_this.map, item, marker, item.interName)
+          })
         })
       }
     })
@@ -234,7 +272,7 @@ class SignalManagement extends PureComponent {
   // }
   // 更新参数
   setGetParams = params => {
-    debugger
+    // debugger
     console.log(params, '更新名称')
     this.setState({
       stepOneText: params.interName,
@@ -265,6 +303,7 @@ class SignalManagement extends PureComponent {
   }
   // 显示隐藏弹层
   popLayerShowHide = (name, flag, eventType) => {
+    debugger
     this.setState({
       [name]: flag,
       popAddEditText: eventType ? '编辑' : '添加',
@@ -332,10 +371,10 @@ class SignalManagement extends PureComponent {
           marker.setContent("<div class='drawCircle'><div class='inner'></div><div id='roadKey"+positions[i].id+"' class='marker-online'></div></div>");
           const nowZoom = map.getZoom()
           map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
-          this.props.getUnitPop(positions[i].id)
-          setTimeout(()=>{
+          const resultP = Promise.resolve(this.props.getUnitPop(positions[i].interId))
+          resultP.then(()=>{
             this.openInfoWin(map, positions[i], marker, positions[i].interName)
-          }, 100)
+          })
         })
         this[layer].push(marker)
       }
@@ -345,6 +384,7 @@ class SignalManagement extends PureComponent {
   }
   //在指定位置打开信息窗体
   openInfoWin = (map, dataItem, marker, name) => {
+    // debugger
     console.log(this.props.data.dcuPopData, '弹层所需数据')
     var info = [];
     let itemData = JSON.parse(JSON.stringify(this.props.data.dcuPopData))
@@ -371,14 +411,8 @@ class SignalManagement extends PureComponent {
       infoWindow.close()
     })
   }
-  // step2 底图选择
-  onChangeBaseMap = e => {
-    console.log('radio checked', e.target.value);
-    this.setState({
-      baseMapValue: e.target.value,
-    })
-  }
-  handleChangeBaseMap = info => {
+  handleChangeBaseMap = (info) => {
+    // debugger
     if (info.file.status === "uploading") {
       this.setState({ baseLoading: true });
       return;
@@ -404,10 +438,6 @@ class SignalManagement extends PureComponent {
         this.popLayerShowHide("baseMapFlag", null)
       })
     }
-  }
-  // step 2 基础信息配置保存
-  stepTwoAddForList = () => {
-    message.info("信号机基础信息保存成功！")
   }
   // step road 车道添加
   stepRoadAddForList = () => {
@@ -455,19 +485,17 @@ class SignalManagement extends PureComponent {
   }
   
   render() {
-    const { popAddEditText, moveFlag, stepOneFlag, stepTwoFlag, stepRoadFlag, stepRoadAddEdit, 
-      stepThreeFlag, stepThreeAddEdit,
-      stepFourFlag, stepFourAddEdit, lights,
+    const { popAddEditText, moveFlag, stepOneFlag, stepTwoFlag, 
+      stepRoadFlag, stepRoadAddEdit, lanes,
+      stepThreeFlag, stepThreeAddEdit, lights,
+      stepFourFlag, stepFourAddEdit, detectors,
       stepFiveFlag, stepFiveAddEdit,
       stepSixFlag, stepSixAddEdit,
       stepSevenFlag, stepSevenAddEdit,
       stepEightFlag, stepEightAddEdit,
       stepNineFlag, stepNineAddEdit,
-      turnTab, baseMapFlag, stepOneText, imageUrl, interRoadBg } = this.state
+      turnTab, baseMapFlag, stepOneText, imageUrl, interRoadBg, baseLoading } = this.state
     const { Search } = Input
-    const uploadButton = (
-      <em>{this.state.baseLoading ? <span><Icon type="loading" /> loading</span> : '上 传'}</em>
-    );
     return (
       <div className={styles.SignalManagement}>
         <Header {...this.props} />
@@ -577,298 +605,99 @@ class SignalManagement extends PureComponent {
                 background: 'url(' + interRoadBg + ') no-repeat', backgroundPosition: 'center center',
                 backgroundSize: 'contain'
               } : {}}>
-                {/* 内部变化内容 之 路口底图弹层*/}
-                {baseMapFlag ?
-                  <div className={styles.maskBg}><div className={styles.popBox} style={{ top: '75%' }} >
-                    <div className={styles.popTit}>选择底图<Icon className={styles.Close} type="close" onClick={() => { this.popLayerShowHide("baseMapFlag", null) }} /></div>
-                    <div className={styles.popCon}>
-                      <div className={styles.typePic}>
-                        <Radio.Group name="radiogroup" onChange={this.onChangeBaseMap} value={this.state.baseMapValue}>
-                          <Radio value={1}>选择底图</Radio>
-                          <Radio value={2}>上传底图</Radio>
-                        </Radio.Group>
-                      </div>
-                      <div className={styles.typePic} style={{ width: '220px' }}>
-                        <Upload
-                          name="avatar"
-                          listType="picture-card"
-                          className="avatar-uploader"
-                          showUploadList={false}
-                          action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                          beforeUpload={beforeUpload}
-                          onChange={this.handleChangeBaseMap}
-                        >
-                          {imageUrl ?
-                            <img src={imageUrl} alt="底图" style={{ width: "100%" }} /> : <s>图片预览</s>
-                          }
-                          {this.state.baseMapValue === 2 ? uploadButton : null}
-                        </Upload>
-                        {this.state.baseMapValue === 2 ? null : <em>选 择</em>}
-
-                      </div>
-                    </div>
-                    <div className={styles.popBottom}>
-                      <em onClick={() => { this.handleClickBaseMap() }}>确 定</em>
-                      <em onClick={() => { this.popLayerShowHide("baseMapFlag", null) }}>取 消</em>
-                    </div>
-                  </div></div> : null
-                  }
-                  {/* 灯组回显 */}
-                  { stepThreeFlag && lights && lights.map((item,i) => {
-                    return <div className={moveFlag ? styles.mouseStatus : null } onDoubleClick={()=>{ this.popLayerShowHide("stepThreeAddEdit", true, true) }} onMouseDown={this.mouseDownEvent} key={'light'+i} style={{cursor:'pointer', position:'absolute',display:'block',background:'url('+item.src+') no-repeat', left: item.left, top: item.top,width:item.width,height:item.height,border:'1px border yellow' }} title={item.name}>{item.name}</div>
-                  })
-                }
+                {/* 左侧基础信息回显 */}
                 {stepTwoFlag ? <div className={styles.turnBgBtn} onClick={ () => {this.popLayerShowHide("baseMapFlag", true)} }>路口底图</div> : null }
+                {baseMapFlag ?
+                  <BasicInfoLeft {...this.props} 
+                    popLayerShowHide={this.popLayerShowHide} 
+                    handleClickBaseMap={this.handleClickBaseMap} 
+                    handleChangeBaseMap={this.handleChangeBaseMap}
+                    imageUrl={imageUrl}
+                    baseLoading={baseLoading}
+                  /> : null
+                }
+                {/* 左侧车道回显 */}
+                {stepRoadFlag ? 
+                  <LaneConfigLeft  {...this.props} 
+                    popLayerShowHide={this.popLayerShowHide} 
+                    lanes={lanes}
+                    isMoveFlag={stepRoadFlag} /> : null
+                }
+                {/* 左侧灯组回显 */}
+                { stepThreeFlag ?
+                  <div>
+                    <LaneConfigLeft  {...this.props} 
+                      popLayerShowHide={this.popLayerShowHide} 
+                      lanes={lanes}
+                      isMoveFlag={stepRoadFlag} />
+                    <LightConfigLeft {...this.props} 
+                      popLayerShowHide={this.popLayerShowHide} 
+                      lights={lights}
+                      isMoveFlag={stepThreeFlag}
+                    />
+                  </div> : null
+                }
+                {/* 左侧检测器回显 */}
+                { stepFourFlag ?
+                  <div>
+                    <LaneConfigLeft  {...this.props} 
+                      popLayerShowHide={this.popLayerShowHide} 
+                      lanes={lanes}
+                      isMoveFlag={stepRoadFlag} />
+                    <LightConfigLeft {...this.props} 
+                      popLayerShowHide={this.popLayerShowHide} 
+                      lights={lights}
+                      isMoveFlag={stepThreeFlag}
+                    />
+                    <DetectorConfigLeft {...this.props} 
+                      popLayerShowHide={this.popLayerShowHide} 
+                      detectors={detectors}
+                      isMoveFlag={stepFourFlag}
+                    />
+                  </div> : null
+                }
               </div>
             </div>
             <div className={styles.stepRightCon}>
-                {stepTwoFlag ? 
-                  <div className={styles.conBox}>
-                  <div className={styles.rTit}>信号机基础信息<em onClick={ () =>{this.stepTwoAddForList()} }>保存</em></div>
-                  {/* 表单 */}
-                  <div className={styles.rCon}>
-                    <div className={styles.itemInputBox}>
-                      <span>信号机编号：</span><Input placeholder="请输入编号" />
-                    </div>
-                    <div className={styles.itemInputBox}>
-                      <span>信号机IP：</span><Input placeholder="请输入IP" />
-                    </div>
-                    <div className={styles.itemInputBox}>
-                      <span>子网掩码：</span><Input placeholder="请输入掩码" />
-                    </div>
-                    <div className={styles.itemInputBox}>
-                      <span>网 关：</span><Input placeholder="请输入网关" />
-                    </div>
-                    <div className={styles.itemInputBox}>
-                      <span>上位机IP：</span><Input placeholder="请输入IP" />
-                    </div>
-                    <div className={styles.itemInputBox}>
-                      <span>通讯端口：</span><Input placeholder="请输入端口" />
-                    </div>
-                    <div className={styles.itemInputBox}>
-                      <span>信号机时区：</span><Input placeholder="请输入时区" />
-                    </div>
-                    <div className={styles.itemInputBox}>
-                      <span>控制路口数：</span><Input type="number" placeholder="请输入数量" />
-                    </div>
-                    <div className={styles.itemInputBox}>
-                      <span>GPS时钟标志：</span><Input placeholder="请输入标志" />
-                    </div>
-                  </div>
-                </div> : stepRoadFlag ? 
-                <div className={styles.conBox}>
-                <div className={styles.rTit}>车道配置列表<em onClick={ () => {this.popLayerShowHide("stepRoadAddEdit", true)} }>添加</em></div>
-                
-                <div className={styles.rList}>
-                  <div className={styles.listItem}>
-                    <em>车道号</em>
-                    <em>外部车道号</em>
-                    <em>通行方向描述</em>
-                    <em>进口道路编号</em>
-                    <em>进口方向编码</em>
-                    <em>转向</em>
-                    <em>操作</em>
-                  </div>
-                  <div className={classNames(styles.listItem)}>
-                    <span>1</span>
-                    <span>东</span>
-                    <span>圆灯</span>
-                    <span>1</span>
-                    <span>东</span>
-                    <span>圆灯</span>
-                    <span>删除</span>
-                  </div>
-                </div>
-              </div> : stepThreeFlag ? 
-                <div className={styles.conBox}>
-                <div className={styles.rTit}>灯组配置列表<em onClick={ () => {this.popLayerShowHide("stepThreeAddEdit", true)} }>添加</em></div>
-                
-                <div className={styles.rList}>
-                  <div className={styles.listItem}>
-                    <em>灯组序号</em>
-                    <em>方向</em>
-                    <em>灯组类型</em>
-                    <em>操作</em>
-                  </div>
-                  <div className={classNames(styles.listItem)}>
-                    <span>1</span>
-                    <span>东</span>
-                    <span>圆灯</span>
-                    <span>删除</span>
-                  </div>
-                </div>
-              </div> : stepFourFlag ? 
-                <div className={styles.conBox}>
-                  <div className={styles.rTit}>检测器配置列表<em onClick={ () => {this.popLayerShowHide("stepFourAddEdit", true)} }>添加</em></div>
-                
-                  <div className={styles.rList}>
-                    <div className={styles.listItem}>
-                      <em>检测器编号</em>
-                      <em>检测器类型</em>
-                      <em>流量采集周期</em>
-                      <em>占有率采集周期</em>
-                      <em>操作</em>
-                    </div>
-                    <div className={classNames(styles.listItem)}>
-                      <span>1</span>
-                      <span>东</span>
-                      <span>东</span>
-                      <span>圆灯</span>
-                      <span>删除</span>
-                    </div>
-                  </div>
-                </div> : stepFiveFlag ?
-                <div className={styles.conBox}>
-                <div className={styles.rTit}>相位配置列表<em onClick={ () => {this.popLayerShowHide("stepFiveAddEdit", true)} }>添加</em></div>
-                
-                <div className={styles.rList}>
-                  <div className={styles.listItem}>
-                    <em>相位编号</em>
-                    <em>相位名称</em>
-                    <em>相位包含灯组</em>
-                    <em>失去路权过渡参数</em>
-                    <em>获得路权过渡参数</em>
-                    <em>开机失去路权过渡参数</em>
-                    <em>开机获得路权过渡参数</em>
-                    <em>最小绿时间</em>
-                    <em>延迟绿时间</em>
-                    <em>需求检测器</em>
-                    <em>相位屏蔽</em>
-                    <em>相位禁止</em>
-                    <em>操作</em>
-                  </div>
-                  <div className={classNames(styles.listItem)}>
-                    <span>1</span>
-                    <span>东</span>
-                    <span>圆灯</span>
-                    <span>2</span>
-                    <span>1</span>
-                    <span>东</span>
-                    <span>圆灯</span>
-                    <span>23</span>
-                    <span>1</span>
-                    <span>东</span>
-                    <span>圆灯</span>
-                    <span>圆灯</span>
-                    <span>删除</span>
-                  </div>
-                </div>
-              </div> : stepSixFlag ?
-              <div className={styles.conBox}>
-                <div className={styles.rTit}>阶段配置列表<em onClick={ () => {this.popLayerShowHide("stepSixAddEdit", true)} }>添加</em></div>
-                
-                <div className={styles.rList}>
-                  <div className={styles.listItem}>
-                    <em>阶段编号</em>
-                    <em>放行相位</em>
-                    <em>阶段图示</em>
-                    <em>操作</em>
-                  </div>
-                  <div className={classNames(styles.listItem)}>
-                    <span>1</span>
-                    <span>东</span>
-                    <span>圆灯</span>
-                    <span>删除</span>
-                  </div>
-                </div>
-              </div> : stepSevenFlag ?
-              <div className={styles.conBox}>
-                <div className={styles.rTit}>配时方案配置列表<em onClick={ () => {this.popLayerShowHide("stepSevenAddEdit", true)} }>添加</em></div>
-                
-                <div className={styles.rList}>
-                  <div className={styles.listItem}>
-                    <em>方案编号</em>
-                    <em>放行阶段列表</em>
-                    <em>方案周期</em>
-                    <em>协调阶段</em>
-                    <em>协调时间</em>
-                    <em>操作</em>
-                  </div>
-                  <div className={classNames(styles.listItem)}>
-                    <span>1</span>
-                    <span>东</span>
-                    <span>圆灯</span>
-                    <span>东</span>
-                    <span>圆灯</span>
-                    <span>删除</span>
-                  </div>
-                </div>
-              </div> : stepEightFlag ?
-              <div className={styles.conBox}>
-                <div className={styles.rTit}>日计划配置列表<em onClick={ () => {this.popLayerShowHide("stepEightAddEdit", true)} }>添加</em></div>
-               
-                <div className={styles.rList}>
-                  <div className={styles.listItem}>
-                    <em>计划编号</em>
-                    <em>时段开始时间</em>
-                    <em>时段执行方案</em>
-                    <em>时段运行模式</em>
-                    <em>操作</em>
-                  </div>
-                  <div className={classNames(styles.listItem)}>
-                    <span>1</span>
-                    <span>东</span>
-                    <span>圆灯</span>
-                    <span>1灯</span>
-                    <span>删除</span>
-                  </div>
-                </div>
-              </div> : stepNineFlag ?
-            <div className={styles.conBox}>
-                <div className={styles.rTit}>调度配置列表<em onClick={ () => {this.popLayerShowHide("stepNineAddEdit", true)} }>添加</em></div>
-                
-                <div className={styles.rList}>
-                  <div className={styles.listItem}>
-                    <em>调度方案编号</em>
-                    <em>调度类型</em>
-                    <em>优先级</em>
-                    <em>调度类型值</em>
-                    <em>日计划编号</em>
-                    <em>操作</em>
-                  </div>
-                  <div className={classNames(styles.listItem)}>
-                    <span>1</span>
-                    <span>东</span>
-                    <span>圆灯</span>
-                    <span>东</span>
-                    <span>灯</span>
-                    <span>删除</span>
-                  </div>
-                </div>
-              </div> : null}
+                {
+                  stepTwoFlag ? 
+                    <BasicInfoRight popLayerShowHide={this.popLayerShowHide} /> : 
+                  stepRoadFlag ? 
+                    <LaneConfigRight popLayerShowHide={this.popLayerShowHide} /> : 
+                  stepThreeFlag ?
+                    <LightConfigRight popLayerShowHide={this.popLayerShowHide} /> : 
+                  stepFourFlag ? 
+                    <DetectorConfigRight popLayerShowHide={this.popLayerShowHide} /> : 
+                  stepFiveFlag ?  
+                    <PhaseConfigRight popLayerShowHide={this.popLayerShowHide} /> :
+                  stepSixFlag ?
+                    <StageConfigRight popLayerShowHide={this.popLayerShowHide} /> : 
+                  stepSevenFlag ?
+                    <PlanConfigRight popLayerShowHide={this.popLayerShowHide} /> : 
+                  stepEightFlag ?
+                    <DayPlanConfigRight popLayerShowHide={this.popLayerShowHide} /> : 
+                  stepNineFlag ?
+                    <DispatchConfigRight popLayerShowHide={this.popLayerShowHide} /> : null}
             </div>
           </div> : null
         }
         {turnTab ?
           <InterworkingList showInterworkingList={this.showInterworkingList} /> : null
         }
-        <div className={styles.navContent}>
-          <div className={styles.navBoxMenu}>
-            <span className={classNames(stepOneFlag ? styles.hover : null, stepOneText !== '请选择路口' ? styles.link : null)} onClick={() => { this.showHidePop("stepOneFlag", true) }} title={stepOneText}>{stepOneText}</span>
-            <s className={stepTwoFlag || stepRoadFlag || stepThreeFlag || stepFourFlag || stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag ? styles.hover : ""}></s>
-            <span className={stepTwoFlag ? styles.hover : null} onClick={() => { this.showHidePop("stepTwoFlag", true) }}>基础信息配置</span>
-            <s className={stepRoadFlag || stepThreeFlag || stepFourFlag || stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag ? styles.hover : ""}></s>
-            <span className={stepRoadFlag ? styles.hover : null} onClick={() => { this.showHidePop("stepRoadFlag", true) }}>车道配置</span>
-            <s className={stepThreeFlag || stepFourFlag || stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag ? styles.hover : ""}></s>
-            <span className={stepThreeFlag ? styles.hover : null} onClick={() => { this.showHidePop("stepThreeFlag", true) }}>灯组配置</span>
-            <s className={stepFourFlag || stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag ? styles.hover : ""}></s>
-            <span className={classNames(stepFourFlag ? styles.hover : null, styles.link)} onClick={() => { this.showHidePop("stepFourFlag", true) }}>检测器配置</span>
-            <s className={stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag ? styles.hover : ""}></s>
-            <span className={stepFiveFlag ? styles.hover : null} onClick={() => { this.showHidePop("stepFiveFlag", true) }}>相位配置</span>
-            <s className={stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag ? styles.hover : ""}></s>
-            <span className={stepSixFlag ? styles.hover : null} onClick={() => { this.showHidePop("stepSixFlag", true) }}>阶段配置</span>
-            <s className={stepSevenFlag || stepEightFlag || stepNineFlag ? styles.hover : ""}></s>
-            <span className={stepSevenFlag ? styles.hover : null} onClick={() => { this.showHidePop("stepSevenFlag", true) }}>配时方案配置</span>
-            <s className={stepEightFlag || stepNineFlag ? styles.hover : ""}></s>
-            <span className={stepEightFlag ? styles.hover : null} onClick={() => { this.showHidePop("stepEightFlag", true) }}>日计划配置</span>
-            <s className={stepNineFlag ? styles.hover : ""}></s>
-            <span className={stepNineFlag ? styles.hover : null} onClick={() => { this.showHidePop("stepNineFlag", true) }}>调度配置</span>
-            <div className={styles.controlBtnBox}>
-              <em>上传配置</em>
-              <em>下发配置</em>
-            </div>
-          </div>
-        </div>
+        {/* step 导示 */}
+        <StepNavMenu {...this.props }
+          stepOneText={stepOneText}
+          stepOneFlag={stepOneFlag}
+          stepRoadFlag={stepRoadFlag}
+          stepTwoFlag={stepTwoFlag}
+          stepThreeFlag={stepThreeFlag}
+          stepFourFlag={stepFourFlag}
+          stepFiveFlag={stepFiveFlag}
+          stepSixFlag={stepSixFlag}
+          stepSevenFlag={stepSevenFlag}
+          stepEightFlag={stepEightFlag}
+          stepNineFlag={stepNineFlag}
+        showHidePop={this.showHidePop} />
         <div className={styles.Interwork_left}>
           <div className={styles.InterworkLeft_search}>
             <Search
