@@ -10,8 +10,8 @@ import InterworkingList from './InterworkingList/InterworkingList'
 import styles from './SignalManagement.scss'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { getUnitInfoList } from '../../../reactRedux/actions/publicActions'
-// import {  } from '../../../actions/SignalManagement'
+import { getUnitInfoList, getUnitPop } from '../../../reactRedux/actions/publicActions'
+import { getStepStatus } from '../../../reactRedux/actions/signalmanagementActions'
 const { Option } = Select
 // 图片转64位
 function getBase64(img, callback) {
@@ -62,6 +62,8 @@ class SignalManagement extends PureComponent {
       imageUrl: '',
       interRoadBg: '',
       mapPointsData: null, // 地图中所有的点
+      dcuPopData: null, // 弹层数据
+      stepStatusData: null, // step数据
       lights: [
         { name: '红', left: '200px', top: '200px', width: '32px', height: '32px', src: require('../../../images/markerRed.png') },
         { name: '绿', left: '100px', top: '100px', width: '32px', height: '32px', src: markerIcon },
@@ -72,16 +74,28 @@ class SignalManagement extends PureComponent {
     this.moveFlag = false // 是否是移动状态
   }
   componentDidUpdate = (prevState) => {
-    const { mapPointsData } = this.props.data
+    const { mapPointsData, dcuPopData, stepStatusData } = this.props.data
     if (prevState.data !== this.props.data) {
       console.log(this.props.data, "data中所有的数据")
     }
     if (prevState.data.mapPointsData !== mapPointsData) {
-      console.log(mapPointsData, '点数据')
+      // console.log(mapPointsData, '点数据')
       this.setState({
         mapPointsData: mapPointsData,
       },()=>{
         this.loadingMap()
+      })
+    }
+    if (prevState.data.dcuPopData !== dcuPopData) {
+      // console.log(dcuPopData, '弹层数据')
+      this.setState({
+        dcuPopData: dcuPopData,
+      })
+    }
+    if (prevState.data.stepStatusData !== stepStatusData) {
+      console.log(stepStatusData, 'step数据')
+      this.setState({
+        stepStatusData: stepStatusData,
       })
     }
   }
@@ -131,12 +145,12 @@ class SignalManagement extends PureComponent {
     this.props.getVipRouteChild(id)
   }
   // 获取子id, 路口id
-  getSelectChildId = (childId, index) => {
+  getSelectChildId = (childInterId, index) => {
     const _this = this;
     let marker, lng, lat;
     const childrenArr = this.props.data.dcuTreeData
     childrenArr[index].units && childrenArr[index].units.map((item) => {
-      if (childId === item.id) {
+      if (childInterId === item.id) {
         lng = item.lng
         lat = item.lat
         marker = new AMap.Marker({
@@ -145,7 +159,10 @@ class SignalManagement extends PureComponent {
           content: "<div id='roadKey"+item.id+"'></div>",
         })
         marker.on('click',function(){
-          _this.openInfoWin(_this.map, {lng:lng,lat:lat}, marker)
+          _this.props.getUnitPop(childInterId)
+          setTimeout(()=>{
+          _this.openInfoWin(_this.map, item, marker, item.interName)
+          },100)
         })
       }
     })
@@ -217,12 +234,15 @@ class SignalManagement extends PureComponent {
   // }
   // 更新参数
   setGetParams = params => {
+    debugger
     console.log(params, '更新名称')
     this.setState({
-      stepOneText: params,
+      stepOneText: params.interName,
     }, () => {
+      this.props.getStepStatus(params.id)
       this.showHidePop("stepTwoFlag", true);
     })
+
   }
   // 显示与隐藏step
   showHidePop = (name, flag) => {
@@ -312,7 +332,10 @@ class SignalManagement extends PureComponent {
           marker.setContent("<div class='drawCircle'><div class='inner'></div><div id='roadKey"+positions[i].id+"' class='marker-online'></div></div>");
           const nowZoom = map.getZoom()
           map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
-          this.openInfoWin(map, positions[i], marker)
+          this.props.getUnitPop(positions[i].id)
+          setTimeout(()=>{
+            this.openInfoWin(map, positions[i], marker, positions[i].interName)
+          }, 100)
         })
         this[layer].push(marker)
       }
@@ -321,22 +344,22 @@ class SignalManagement extends PureComponent {
     }
   }
   //在指定位置打开信息窗体
-  openInfoWin = (map, dataItem, marker) => {
-    debugger
+  openInfoWin = (map, dataItem, marker, name) => {
+    console.log(this.props.data.dcuPopData, '弹层所需数据')
     var info = [];
-    // this.dataItem = JSON.parse(JSON.stringify(dataItem))
+    let itemData = JSON.parse(JSON.stringify(this.props.data.dcuPopData))
     info.push(`<div class='content_box'>`);
     info.push(`<div class='content_box_title'><h4>点位详情</h4>`);
-    info.push(`<p class='input-item' style='border-top: 1px #838a9a solid;margin-top:-10px;padding-top:15px;'>点位名称：<span>` + '路口1' + `</span></p>`);
-    info.push(`<p class='input-item'>信号机编号：<span>` + '1000010' + `</span></p>`);
-    info.push(`<p class='input-item'>信号机品牌：<span>` + '海信' + `</span></p>`);
-    info.push(`<p class='input-item'>设备IP：<span>` + '192.168.1.88' + `</span></p>`);
-    info.push(`<p class='input-item'>维护电话：<span>` + '01086861234' + `</span></p>`);
+    info.push(`<p class='input-item' style='border-top: 1px #838a9a solid;margin-top:-10px;padding-top:15px;'>点位名称：<span>` + name + `</span></p>`);
+    info.push(`<p class='input-item'>信号机编号：<span>` + itemData.deviceId + `</span></p>`);
+    info.push(`<p class='input-item'>信号机品牌：<span>` + itemData.brand + `</span></p>`);
+    info.push(`<p class='input-item'>设备IP：<span>` + itemData.ip + `</span></p>`);
+    info.push(`<p class='input-item'>维护电话：<span>` + itemData.maintainPhone + `</span></p>`);
     info.push(`<p class='input-item'>信号运行阶段：<span class='greenFont'>` + '东西直行' + `<b class='icon_phase'></b></span></p>`);
     info.push(`<p class='input-item'>信号运行方案：<span class='greenFont'>` + '早高峰' + `</span></p>`);
     info.push(`<p class='input-item'>信号控制方式：<span class='greenFont'>` + '实时优化控制' + `</span></p>`);
     info.push(`<p class='input-item' style='height:15px;'></p>`);
-    info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams("我是路口")'>参数配置</span></p>`);
+    info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(`+JSON.stringify(dataItem)+`)'>参数配置</span></p>`);
     const infoWindow = new AMap.InfoWindow({
       content: info.join("")  //使用默认信息窗体框样式，显示信息内容
     });
@@ -864,7 +887,7 @@ class SignalManagement extends PureComponent {
             visibleShowLeft={this.visibleShowLeft}
           />
         </div>
-        <div className={styles.mapContent} id='mapContent'>
+        <div className={styles.mapContent}>
           <div className={styles.tagMarker}>
             <div className={styles.statusBox}>
               <span className={styles.tagOnLine}>在线设备9处</span>
@@ -872,6 +895,7 @@ class SignalManagement extends PureComponent {
             </div>
             <div title="切换视图" className={styles.turnBtn} onClick={() => this.showInterworkingList(true)} />
           </div>
+          <div style={{position:'absolute', top:'0', right:'0', bottom:'0', left: '0'}} id='mapContent' />
         </div>
       </div>
     )
@@ -885,6 +909,8 @@ const mapStateToProps = (state) => {
 const mapDisPatchToProps = (dispatch) => {
   return {
     getUnitInfoList: bindActionCreators(getUnitInfoList, dispatch),
+    getUnitPop: bindActionCreators(getUnitPop, dispatch),
+    getStepStatus: bindActionCreators(getStepStatus, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(SignalManagement)

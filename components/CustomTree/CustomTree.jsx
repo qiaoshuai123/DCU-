@@ -21,7 +21,6 @@ class CustomTree extends React.Component {
   componentDidUpdate = (prevState) => {
     const { dcuTreeData } = this.props.data
     if (prevState.data.dcuTreeData !== dcuTreeData) {
-      console.log(dcuTreeData, '点数据')
       this.setState({
         dcuTreeData: dcuTreeData,
       })
