@@ -11,7 +11,7 @@ import {
 } from '../actionTypes/publicAPIs'
 
 // 查询全部路口 地图中所有的点
-export const getUnitInfoList = () => {
+export const getMapUnitInfoList = () => {
   return async (dispatch) => {
     try {
       const result = await RestUtil.get(`${API_UNIT_INFO_LIST}`)

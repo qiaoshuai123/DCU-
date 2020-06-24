@@ -27,21 +27,17 @@ class StageConfigRight extends PureComponent {
   render() {
     return (
       <div className={styles.conBox}>
-        <div className={styles.rTit}>配时方案配置列表<em onClick={() => { this.popLayerShowHide("stepSevenAddEdit", true) }}>添加</em></div>
+        <div className={styles.rTit}>阶段配置列表<em onClick={() => { this.popLayerShowHide("stepSixAddEdit", true) }}>添加</em></div>
 
         <div className={styles.rList}>
           <div className={styles.listItem}>
-            <em>方案编号</em>
-            <em>放行阶段列表</em>
-            <em>方案周期</em>
-            <em>协调阶段</em>
-            <em>协调时间</em>
+            <em>阶段编号</em>
+            <em>放行相位</em>
+            <em>阶段图示</em>
             <em>操作</em>
           </div>
           <div className={classNames(styles.listItem)}>
             <span>1</span>
-            <span>东</span>
-            <span>圆灯</span>
             <span>东</span>
             <span>圆灯</span>
             <span>删除</span>

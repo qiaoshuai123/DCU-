@@ -10,8 +10,8 @@ import InterworkingList from './InterworkingList/InterworkingList'
 import styles from './SignalManagement.scss'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { getUnitInfoList, getUnitPop } from '../../../reactRedux/actions/publicActions'
-import { getStepStatus } from '../../../reactRedux/actions/signalmanagementActions'
+import { getMapUnitInfoList, getUnitPop } from '../../../reactRedux/actions/publicActions'
+import { getStepStatus, getBgLists, postBgBySelect, postBgByUpload } from '../../../reactRedux/actions/signalmanagementActions'
 import StepNavMenu from './StepNavMenu/StepNavMenu'
 import BasicInfoLeft from './StepConfigLeft/BasicInfoLeft'
 import LaneConfigLeft from './StepConfigLeft/LaneConfigLeft'
@@ -141,42 +141,13 @@ class SignalManagement extends PureComponent {
     document.addEventListener('click', (e) => {
       this.visibleShowLeft('', '', false)
     })
-    // 移动事件
-    // document.addEventListener('mousemove', (e) => {
-    //   if (this.moveFlag) {
-    //     const movePageX = e.pageX
-    //     const movePageY = e.pageY
-    //     this.ImgLeft = `${this.defaultLeft + (movePageX - this.defaultX)}`
-    //     this.ImgTop = `${this.defaultTop + (movePageY - this.defaultY)}`
-    //     const PrimitWidth = 1000 - this.imgBox.offsetWidth
-    //     const PrimitHeight = 800 - this.imgBox.offsetHeight
-    //     if (this.ImgLeft < 0) {
-    //       this.ImgLeft = 0
-    //     }
-    //     if (this.ImgTop < 0) {
-    //       this.ImgTop = 0
-    //     }
-    //     if (this.ImgLeft > PrimitWidth) {
-    //       this.ImgLeft = PrimitWidth
-    //     }
-    //     if (this.ImgTop > PrimitHeight) {
-    //       this.ImgTop = PrimitHeight
-    //     }
-    //     this.imgBox.style.left = `${this.ImgLeft}px`
-    //     this.imgBox.style.top = `${this.ImgTop}px`
-    //   }
-    // })
-    // document.addEventListener('mouseup', () => {
-    //   this.moveFlag = false
-    // })
     // 初始化地图
     this.loadingMap()
     window.showHidePop = this.showHidePop
     window.setGetParams = this.setGetParams
-    this.props.getUnitInfoList()
-    // setTimeout(()=>{
-    //   console.log(this.props, '看看吧')
-    // },2000)
+    this.props.getMapUnitInfoList()
+    this.props.getStepStatus(1,)
+
   }
   // 从子集获取区域id和index 请求路口
   getSelectTreeId = (id) => {
@@ -257,19 +228,7 @@ class SignalManagement extends PureComponent {
       })
     })
   }
-  // 鼠标释放
-  // mouseUpEvent = (event) => {
-  //   this.moveFlag = false
-  //   this.imgBox.style.cursor = 'default'
-  //   console.log(event, '弹起方法')
-  //   const {
-  //     ID,
-  //     DEVICE_ID,
-  //     DETAIL,
-  //     UI_WIDTH,
-  //     UI_HIGHT,
-  //   } = this.props.imgMsg
-  // }
+
   // 更新参数
   setGetParams = params => {
     // debugger
@@ -737,9 +696,12 @@ const mapStateToProps = (state) => {
 }
 const mapDisPatchToProps = (dispatch) => {
   return {
-    getUnitInfoList: bindActionCreators(getUnitInfoList, dispatch),
-    getUnitPop: bindActionCreators(getUnitPop, dispatch),
     getStepStatus: bindActionCreators(getStepStatus, dispatch),
+    getMapUnitInfoList: bindActionCreators(getMapUnitInfoList, dispatch),
+    getUnitPop: bindActionCreators(getUnitPop, dispatch),
+    getBgLists: bindActionCreators(getBgLists, dispatch),
+    postBgBySelect: bindActionCreators(postBgBySelect, dispatch),
+    postBgByUpload: bindActionCreators(postBgByUpload, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(SignalManagement)
