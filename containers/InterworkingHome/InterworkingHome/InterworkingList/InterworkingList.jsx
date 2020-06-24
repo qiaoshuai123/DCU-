@@ -51,6 +51,10 @@ class InterworkingList extends Component {
   backPage = () => {
     this.props.showInterworkingList(false)
   }
+  // 更改底部分页器
+  pageChange = (page, pageSize) => {
+    console.log(page, pageSize)
+  }
   render() {
     const { systemList } = this.state
     const { Option } = Select
@@ -130,7 +134,7 @@ class InterworkingList extends Component {
             }
           </div>
           <div className={styles.paginations}>
-            <Pagination showQuickJumper defaultCurrent={2} total={500} />
+            <Pagination showQuickJumper onChange={this.pageChange} defaultCurrent={2} total={500} />
           </div>
         </div>
       </div>

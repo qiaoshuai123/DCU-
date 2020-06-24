@@ -1,4 +1,6 @@
 .treeWrapper {
+    height: calc(100% - 300px);
+    overflow-y: auto;
     .treeList {
         margin:10px 0 0;
         li {

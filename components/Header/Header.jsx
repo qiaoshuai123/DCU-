@@ -21,6 +21,7 @@ class Header extends React.Component {
     super(props)
     this.state = {
       selectNum: 1,
+      navItem: [],
     }
     this.paths = this.props.match.url
     this.navItems = [
@@ -124,14 +125,30 @@ class Header extends React.Component {
       },
       { id: 6, name: '关于系统', role: 6, path: '/aboutSystemt' },
     ]
+    // 获取用户权限
+    // this.getUser = localStorage.getItem('')
   }
   componentDidMount = () => {
+    // 筛选符合条件数据
+    // const myMenu = this.filterMenu(this.navItems, this.getUser)
     this.pageRouter()
   }
   pageRouter = () => {
     this.pageRouters(this.paths, this.navItems)
     this.setState({
       selectNum: this.num,
+      navItem: this.navItems,
+    })
+  }
+  filterMenu = (menuList, menuCode) => {
+    return menuList.filter((item) => {
+      return item.role.includes(menuCode)
+    }).map((item) => {
+      item = Object.assign({}, item)
+      if (item.children) {
+        item.children = this.filterMenu(item.children, menuCode)
+      }
+      return item
     })
   }
   pageRouters = (paths, nav) => {
@@ -155,7 +172,7 @@ class Header extends React.Component {
     this.props.history.push(item.path)
   }
   render() {
-    const { selectNum } = this.state
+    const { selectNum, navItem } = this.state
     return (
       <div className={styles.headerWrapper}>
         <div className={styles.header_left}>
@@ -164,7 +181,7 @@ class Header extends React.Component {
         </div>
         <div className={styles.header_center}>
           {
-            this.navItems.map(item =>
+            navItem.map(item =>
               (
                 <div className={selectNum === item.id ? styles.active : ''} onClick={() => this.SelectButton(item)} key={item.id}>
                   {item.name}
