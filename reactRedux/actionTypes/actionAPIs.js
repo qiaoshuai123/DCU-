@@ -61,3 +61,8 @@ export const API_DISPATCH_INFO_LISTS = '/DCU/schedule/scheduleList' //调度配�
 export const API_ADD_DISPATCH_OTHERS = '/DCU/schedule/addSchedule' //调度配置新增
 export const API_UPDATE_DISPATCH_OTHERS = '/DCU/schedule/updateSchedule' //调度配置修改
 export const API_DEL_DISPATCH_INFO = '/DCU/schedule/deleteSchedule' //调度配置删除
+
+/************* 设备参数管理模块 **************/
+export const API_DCU_INTERCHECK_INFO = '/DCU/unitInfo/interCheck' // 添加点位
+export const API_DCU_ADDDCU_INFO = '/DCU/dcuInfo/addDcu' // 添加点位
+export const API_DEL_UPDATEDCU_INFO = '/dcuInfo/updateDcu' // 修改点位

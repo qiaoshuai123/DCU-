@@ -51,8 +51,11 @@ $bor_color: #27343b;
       left: 30px;
     }
   }
-  .mapBox {
+  .mapContent {
     height: calc(100% - 60px);
+    width: 100%;
+    position: absolute;
+    top: 60px;
   }
 }
 .Interwork_left {
@@ -66,5 +69,123 @@ $bor_color: #27343b;
     :global(path) {
       color: white;
     }
+  }
+}
+.EquipmentManagementBox{
+  :global(.amap-info-contentContainer) {
+    width: 410px;
+    height: 350px;
+  }
+  :global(.amap-info-content) {
+    position: relative;
+    background: transparent;
+    padding: 0;
+    line-height: 1.4;
+    overflow: auto;
+  }
+
+  :global(.content_box) {
+    background: rgba(9, 9, 9, 0.8) !important;
+    padding: 0px !important;
+  }
+
+  :global(.content_box_title) {
+    line-height: 30px;
+    color: #fff;
+    background: rgba(19, 27, 37, 0.6) !important;
+    padding: 35px 30px 15px;
+  }
+
+  :global(.content_box_title h4) {
+    color: #fff;
+    line-height: 35px;
+    font-size: 14px;
+    position: absolute;
+    padding-left: 30px;
+    left: 0;
+    right: 0;
+    top: 0;
+  }
+
+  :global(.content_box_title p.input-item) {
+    line-height: 25px;
+    font-size: 12px;
+    padding: 0 30px;
+  }
+  :global(.content_box_title p.input-item span b.icon_phase) {
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    background: url(../../../images/icon_phase.png) no-repeat;
+    position: relative;
+    left: 8px;
+    top: 8px;
+  }
+  :global(.content_box_title p.input-item span.greenFont) {
+    color: #03e307;
+  }
+  :global(.content_box_title p.input-item span.paramsBtn) {
+    width: 120px;
+    line-height: 30px;
+    display: block;
+    text-align: center;
+    font-size: 14px;
+    margin: 15px auto 0;
+    border: 1px #838a9a solid;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+    color: #838a9a;
+    cursor: pointer;
+    &:hover {
+      color: #38c4d1;
+      background-color: #1f2531;
+    }
+  }
+  :global(.content_box_title p.input_button) {
+    text-align: center;
+    padding-top: 10px;
+  }
+
+  :global(.content_box_title .input-item-button) {
+    background: #153a61;
+    color: #fff;
+    border: 1px #838a9a solid;
+    cursor: pointer;
+    width: 82%;
+  }
+
+  :global(.amap-info-close) {
+    position: absolute;
+    right: 30px !important;
+    top: 10px;
+    cursor: pointer;
+  }
+
+  :global(.amap-info-close:hover) {
+    transition: all 0.5s;
+    transform: rotate(180deg);
+    color: #26ff6d !important;
+    background: none !important;
+    border: none !important;
+  }
+
+  :global(.amap-info-sharp) {
+    border-top-color: rgba(9, 9, 9, 0.8) !important;
+    bottom: unset !important;
+  }
+  :global(.marker-online) {
+    width: 32px;
+    height: 32px;
+    display: block;
+    background: url(../../../images/markerGreen.png) no-repeat;
+  }
+  :global(.marker-offline) {
+    background: url(../../../images/markerRed.png) no-repeat;
+  }
+  :global(.marker-hoverline) {
+    background-color: green;
   }
 }
