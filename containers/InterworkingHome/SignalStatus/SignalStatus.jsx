@@ -2,19 +2,11 @@ import React, { Component } from 'react'
 import { Input, message } from 'antd'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { getUnitInfoList } from '../../../reactRedux/actions/publicActions'
+import { getMapUnitInfoList } from '../../../reactRedux/actions/publicActions'
 import Header from '../../../components/Header/Header'
 import CustomTree from '../../../components/CustomTree/CustomTree'
 import InterworkingList from './InterworkingList/InterworkingList'
 import styles from './SignalStatus.scss'
-
-const pointArr = [
-  [120.113369, 30.234277],
-  [120.421673, 30.271644],
-  [120.251385, 30.405574],
-  [120.208126, 30.106052],
-]
-
 
 class SignalStatus extends Component {
   constructor(props) {
@@ -28,7 +20,7 @@ class SignalStatus extends Component {
     this.loadingMap()
     window.showHidePop = this.showHidePop
     window.setGetParams = this.setGetParams
-    this.props.getUnitInfoList()
+    this.props.getMapUnitInfoList()
     document.addEventListener('click', (e) => {
       this.visibleShowLeft('', '', false)
     })
@@ -250,7 +242,7 @@ const mapStateToProps = (state) => {
 }
 const mapDisPatchToProps = (dispatch) => {
   return {
-    getUnitInfoList: bindActionCreators(getUnitInfoList, dispatch),
+    getMapUnitInfoList: bindActionCreators(getMapUnitInfoList, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(SignalStatus)

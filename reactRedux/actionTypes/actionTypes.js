@@ -60,3 +60,6 @@ export const GET_DISPATCH_INFO_LISTS = 'GET_DISPATCH_INFO_LISTS' //调度配置�
 export const POST_ADD_DISPATCH_OTHERS = 'POST_ADD_DISPATCH_OTHERS' //调度配置新增
 export const POST_UPDATE_DISPATCH_OTHERS = 'POST_UPDATE_DISPATCH_OTHERS' //调度配置修改
 export const GET_DEL_DISPATCH_INFO = 'GET_DEL_DISPATCH_INFO' //调度配置删除
+
+/***************设备参数管理**************/
+export const My_num = 'My_num' //修改添加弹窗

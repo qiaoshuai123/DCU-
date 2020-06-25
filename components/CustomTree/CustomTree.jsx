@@ -5,6 +5,8 @@ import styles from './CustomTree.scss'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { getUnitTree } from '../../reactRedux/actions/publicActions'
+import { getRegionNum } from '../../reactRedux/actions/equipmentManagement'
+
 class CustomTree extends React.Component {
   constructor(props) {
     super(props)
@@ -36,16 +38,29 @@ class CustomTree extends React.Component {
     }
     this.setState({ expendsKey: this.state.expendsKey })
   }
-  handleTreeSelect = (e) => {
+  handleTreeSelect = (e, name, code) => {
     e.stopPropagation()
     e.preventDefault()
     const id = Number(e.currentTarget.getAttribute('id'))
-    this.treeIndex = Number(e.currentTarget.getAttribute('itemindex'))
     const index = this.state.expendsKey.indexOf(id)
     if (index >= 0) {
       this.state.expendsKey.splice(index, 1)
+      if (this.state.expendsKey.length < 1) {
+        const objs = {
+          codeName: '',
+          dictCode: '',
+        }
+        this.props.getRegionNum(objs)
+      }
     } else {
       this.state.expendsKey.push(id)
+      if (name) {
+        const objs = {
+          codeName: name,
+          dictCode: code,
+        }
+        this.props.getRegionNum(objs)
+      }
     }
     if (!this.props.rightDownNone) {
       this.props.visibleShowLeft('', '', false)
@@ -107,7 +122,7 @@ class CustomTree extends React.Component {
             id={item.id}
             lng={item.lng}
             lat={item.lat}
-            onClick={(e)=>{this.handleTreeChildSelect(e, index)}}
+            onClick={(e) => { this.handleTreeChildSelect(e, index) }}
           >
             <span className={styles.childIcon}><Icon type="environment" theme="filled" /></span>
             <span title={item.interName} className={styles.childNode}>{item.interName}</span>
@@ -122,7 +137,7 @@ class CustomTree extends React.Component {
             this.props.data.dcuTreeData && this.props.data.dcuTreeData.map((item) => {
               const isOpen = expendsKey.indexOf(item.id) >= 0
               return (
-                <li className={styles.treeLi} key={item.id} id={item.id} onContextMenu={this.noShow} onClick={this.handleTreeSelect}>
+                <li className={styles.treeLi} key={item.id} id={item.id} onContextMenu={this.noShow} onClick={e => this.handleTreeSelect(e, item.codeName, item.dictCode)}>
                   <span className={styles.treeIcon}>
                     <span className={styles.childIcon}><Icon type={isOpen ? 'minus-circle' : 'plus-circle'} /></span>
                   </span>
@@ -151,6 +166,7 @@ const mapStateToProps = (state) => {
 const mapDisPatchToProps = (dispatch) => {
   return {
     getUnitTree: bindActionCreators(getUnitTree, dispatch),
+    getRegionNum: bindActionCreators(getRegionNum, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(CustomTree)
