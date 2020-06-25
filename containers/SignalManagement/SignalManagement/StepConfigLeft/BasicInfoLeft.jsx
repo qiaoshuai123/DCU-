@@ -3,7 +3,7 @@ import { Icon, Radio, Upload, message } from 'antd'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 // import { getUnitInfoList, getUnitPop } from '../../../../reactRedux/actions/publicActions'
-// import { getStepStatus } from '../../../../reactRedux/actions/signalmanagementActions'
+import { getBgLists } from '../../../../reactRedux/actions/signalmanagementActions'
 import styles from '../SignalManagement.scss'
 
 
@@ -24,6 +24,7 @@ class BasicInfoLeft extends PureComponent {
     super(props)
     this.state = {
       baseMapValue: 1, //选择底图
+      bgListFlag: null,
     }
   }
   // step2 底图选择
@@ -31,6 +32,14 @@ class BasicInfoLeft extends PureComponent {
     console.log('radio checked', e.target.value);
     this.setState({
       baseMapValue: e.target.value,
+    })
+  }
+  componentDidMount = () => {
+    document.addEventListener('click', () => {
+      // this.setState({
+      //   bgListFlag: false,
+      // })
+      console.log('哈哈哈...')
     })
   }
   handleChangeBaseMap = (info) => {
@@ -42,17 +51,44 @@ class BasicInfoLeft extends PureComponent {
   handleClickBaseMap = () => {
     this.props.handleClickBaseMap()
   }
+  showListBg = () => {
+    // this.props.postBgBySelect({id: this.props.roadId, background: item})
+    this.setState({
+      bgListFlag: true,
+    }, ()=>{
+      this.props.getBgLists()
+    })
+  }
+  handleUpdateImageUrl = (imageName) => {
+    this.setState({
+      bgListFlag: false,
+    }, () => {
+      this.props.handleUpdateImageUrl(imageName)
+    })
+  }
   render() {
+    const { basicBgLists } = this.props.data
+    const { bgListFlag } = this.state
     const uploadButton = (
       <em>{this.props.baseLoading ? <span><Icon type="loading" /> loading</span> : '上 传'}</em>
     );
     return (
       <div className={styles.maskBg}>
-        <div className={styles.popBox}>
-          <div className={styles.popTit}>请点击图片 > 已选中当前图片为底图<Icon className={styles.Close} type="close" onClick={() => { this.popLayerShowHide("baseMapFlag", null) }} /></div>
-          <div className={styles.popCon}>这里显示图片</div>
-        </div>
-        <div className={styles.popBox} style={{ top: '75%' }} >
+        { bgListFlag ? <div className={styles.popBox}>
+          <div className={styles.popTit}>请点击图片 > 已选中当前图片为底图</div>
+          <div className={styles.popCon} style={{width: '464px', maxHeight: '464px', overflowY: 'auto', flexWrap: 'wrap'}}>
+            {
+              !!basicBgLists && basicBgLists.map((item, i)=>{
+                return <div key={"bg"+i} className={styles.bgImgBox} onClick={()=>{ this.handleUpdateImageUrl(item) }} style={{background:`url(${this.props.bgIpUrl}${item})`, backgroundSize: 'contain'}}></div>
+              })
+            }
+          </div>
+          <div className={styles.popBottom}>
+            <em onClick={()=>{this.setState({ bgListFlag: false })}}>返 回</em>
+          </div>
+        </div> : null
+        }
+        { !bgListFlag ? <div className={styles.popBox} style={{ top: '75%' }} >
           <div className={styles.popTit}>选择底图<Icon className={styles.Close} type="close" onClick={() => { this.popLayerShowHide("baseMapFlag", null) }} /></div>
           <div className={styles.popCon}>
             <div className={styles.typePic}>
@@ -71,20 +107,19 @@ class BasicInfoLeft extends PureComponent {
                 beforeUpload={beforeUpload}
                 onChange={this.handleChangeBaseMap}
               >
-                {this.props.imageUrl ?
-                  <img src={this.props.imageUrl} alt="底图" style={{ width: "100%" }} /> : <s>图片预览</s>
-                }
+              { this.state.baseMapValue === 2 ? <s>图片预览</s> :
+                ( this.props.imageUrl ? <img src={this.props.imageUrl} alt="底图" style={{ width: "100%" }} /> : <s>图片预览</s> )
+              }
                 {this.state.baseMapValue === 2 ? uploadButton : null}
               </Upload>
-              {this.state.baseMapValue === 2 ? null : <em>选 择</em>}
-
+              {this.state.baseMapValue === 2 ? null : <em onClick={this.showListBg}><p/>选 择</em>}
             </div>
           </div>
           <div className={styles.popBottom}>
             <em onClick={this.handleClickBaseMap}>确 定</em>
             <em onClick={() => { this.popLayerShowHide("baseMapFlag", null) }}>取 消</em>
           </div>
-        </div>
+        </div> : null}
       </div>
     )
   }
@@ -97,9 +132,7 @@ const mapStateToProps = (state) => {
 }
 const mapDisPatchToProps = (dispatch) => {
   return {
-    // getUnitInfoList: bindActionCreators(getUnitInfoList, dispatch),
-    // getUnitPop: bindActionCreators(getUnitPop, dispatch),
-    // getStepStatus: bindActionCreators(getStepStatus, dispatch),
+    getBgLists: bindActionCreators(getBgLists, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(BasicInfoLeft)

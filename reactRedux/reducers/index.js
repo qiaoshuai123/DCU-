@@ -5,11 +5,11 @@
 import { combineReducers } from 'redux'
 
 import publicData from './public'
-import signalmanagement from './signalmanagement'
+import SignalManagement from './signalmanagement'
 
 const rootReducer = combineReducers({
   publicData,
-  signalmanagement,
+  SignalManagement,
 })
 
 export default rootReducer

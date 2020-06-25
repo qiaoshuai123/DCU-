@@ -7,16 +7,17 @@ import * as types from '../actionTypes/actionTypes'
 import RestUtil from '../RestUtil'
 
 import * as APIs from '../actionTypes/actionAPIs'
+// import { API_UNIT_STATUS } from '../actionTypes/actionAPIs'
 
 // DCU信号参数据管理 step
-export const getStepStatus = (unitId) => {
+export const getStepStatus = (interId, nodeNo) => {
   return async (dispatch) => {
     try {
-      const result = await RestUtil.get(`${APIs.API_UNIT_STATUS}?unitId=${unitId}`)
+      const result = await RestUtil.get(`${APIs.API_UNIT_STATUS}?interId=${interId}&nodeNo=${nodeNo}`)
       if (result.data.code === 0) {
         dispatch({ type: types.GET_UNIT_STATUS, payload: result.data.data })
       } else {
-        console.error(result.data.message)
+        console.error(result.data.msg)
       }
     } catch (e) {
       console.log(e)
@@ -32,7 +33,7 @@ export const getBgLists = () => {
       if (result.data.code === 0) {
         dispatch({ type: types.GET_BG_LIST, payload: result.data.data })
       } else {
-        console.error(result.data.message)
+        console.error(result.data.msg)
       }
     } catch (e) {
       console.log(e)
@@ -47,7 +48,7 @@ export const postBgBySelect = (params) => {
       if (result.data.code === 0) {
         dispatch({ type: types.POST_DCU_BY_INTERID, payload: result.data.data })
       } else {
-        console.error(result.data.message)
+        console.error(result.data.msg)
       }
     } catch (e) {
       console.log(e)
@@ -62,7 +63,7 @@ export const postBgByUpload = (unitId, uploadFile) => {
       if (result.data.code === 0) {
         dispatch({ type: types.POST_UPDATE_DCU, payload: result.data.data })
       } else {
-        console.error(result.data.message)
+        console.error(result.data.msg)
       }
     } catch (e) {
       console.log(e)
@@ -74,16 +75,6 @@ export const postBgByUpload = (unitId, uploadFile) => {
   类型: type
        (车道:'LANE',灯组:'LIGHT',检测器:'DETECTOR', 相位:'PHASE', 阶段:'STAGE', 配时方案:'PLAN', 日计划:'DAYPLAN', 调度:'DISPATCH') 
 } */
-
-// export const POST_ADD_LANEPIC = 'POST_ADD_LANEPIC' //新增车道坐标、图片、旋转角度
-// export const POST_ADD_LANE_OTHERS = 'POST_ADD_LANE_OTHERS' //新增车道其它信息
-// export const GET_DEL_LANEPIC = 'GET_DEL_LANEPIC' //删除车道详细
-// export const GET_DEL_LANEINFO = 'GET_DEL_LANEINFO' //删除车道当前一条
-// export const GET_LANEPIC_LISTS = 'GET_LANEPIC_LISTS' //根据interId 路口序号查询图上的车道
-// export const GET_LANEINFO_LISTS = 'GET_LANEINFO_LISTS' //根据interId查询路口下所有车道列表
-// export const POST_UPDATE_LANEPIC = 'POST_UPDATE_LANEPIC' //修改车道坐标、图片、旋转角度
-// export const POST_UPDATE_LANE_OTHERS = 'POST_UPDATE_LANE_OTHERS' //修改车道其它信息
-// 新增坐标、图片、旋转角度 以type类型为准
 export const postAddPicType = (params, stepType) => {
   let thisAPI, thisTYPE;
   switch(stepType){
@@ -106,7 +97,7 @@ export const postAddPicType = (params, stepType) => {
       if (result.data.code === 0) {
         dispatch({ type: thisTYPE, payload: result.data.data })
       } else {
-        console.error(result.data.message)
+        console.error(result.data.msg)
       }
     } catch (e) {
       console.log(e)
@@ -156,7 +147,7 @@ export const postAddOthersType = (params, stepType) => {
       if (result.data.code === 0) {
         dispatch({ type: thisTYPE, payload: result.data.data })
       } else {
-        console.error(result.data.message)
+        console.error(result.data.msg)
       }
     } catch (e) {
       console.log(e)
@@ -186,7 +177,7 @@ export const postDelPicType = (id, stepType) => {
       if (result.data.code === 0) {
         dispatch({ type: thisTYPE, payload: result.data.data })
       } else {
-        console.error(result.data.message)
+        console.error(result.data.msg)
       }
     } catch (e) {
       console.log(e)
@@ -236,7 +227,7 @@ export const postDelInfoType = (id, stepType) => {
       if (result.data.code === 0) {
         dispatch({ type: thisTYPE, payload: result.data.data })
       } else {
-        console.error(result.data.message)
+        console.error(result.data.msg)
       }
     } catch (e) {
       console.log(e)
@@ -266,7 +257,7 @@ export const getPicListsType = (interId, nodeNo, stepType) => {
       if (result.data.code === 0) {
         dispatch({ type: thisTYPE, payload: result.data.data })
       } else {
-        console.error(result.data.message)
+        console.error(result.data.msg)
       }
     } catch (e) {
       console.log(e)
@@ -316,7 +307,7 @@ export const getInfoListsType = (interId, stepType) => {
       if (result.data.code === 0) {
         dispatch({ type: thisTYPE, payload: result.data.data })
       } else {
-        console.error(result.data.message)
+        console.error(result.data.msg)
       }
     } catch (e) {
       console.log(e)
@@ -346,7 +337,7 @@ export const postUpdatePicType = (uploadFile, stepType) => {
       if (result.data.code === 0) {
         dispatch({ type: thisTYPE, payload: result.data.data })
       } else {
-        console.error(result.data.message)
+        console.error(result.data.msg)
       }
     } catch (e) {
       console.log(e)
@@ -396,7 +387,7 @@ export const postUpdateOthersType = (uploadFile, stepType) => {
       if (result.data.code === 0) {
         dispatch({ type: thisTYPE, payload: result.data.data })
       } else {
-        console.error(result.data.message)
+        console.error(result.data.msg)
       }
     } catch (e) {
       console.log(e)

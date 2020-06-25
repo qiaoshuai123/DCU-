@@ -7,7 +7,7 @@ import * as types from '../actionTypes/publicTypes'
 import RestUtil from '../RestUtil'
 
 import {
-  API_UNIT_INFO_LIST, API_UNIT_TREE, API_SIGNAL_BY_UNIT_ID
+  API_UNIT_INFO_LIST, API_UNIT_TREE, API_SIGNAL_BY_INTERID
 } from '../actionTypes/publicAPIs'
 
 // 查询全部路口 地图中所有的点
@@ -18,7 +18,7 @@ export const getMapUnitInfoList = () => {
       if (result.data.code === 0) {
         dispatch({ type: types.GET_UNIT_INFO_LIST, payload: result.data.data })
       } else {
-        console.error(result.data.message)
+        console.error(result.data.msg)
       }
     } catch (e) {
       console.log(e)
@@ -33,7 +33,7 @@ export const getUnitTree = () => {
       if (result.data.code === 0) {
         dispatch({ type: types.GET_UNIT_TREE, payload: result.data.data })
       } else {
-        console.error(result.data.message)
+        console.error(result.data.msg)
       }
     } catch (e) {
       console.log(e)
@@ -45,11 +45,11 @@ export const getUnitTree = () => {
 export const getUnitPop = (interId) => {
   return async (dispatch) => {
     try {
-      const result = await RestUtil.get(`${API_SIGNAL_BY_UNIT_ID}?interId=${interId}`)
+      const result = await RestUtil.get(`${API_SIGNAL_BY_INTERID}?interId=${interId}`)
       if (result.data.code === 0) {
-        dispatch({ type: types.GET_SIGNAL_BY_UNIT_ID, payload: result.data.data })
+        dispatch({ type: types.GET_SIGNAL_BY_INTERID, payload: result.data.data })
       } else {
-        console.error(result.data.message)
+        console.error(result.data.msg)
       }
     } catch (e) {
       console.log(e)

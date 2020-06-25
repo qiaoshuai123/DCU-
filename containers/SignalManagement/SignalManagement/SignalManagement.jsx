@@ -11,7 +11,7 @@ import styles from './SignalManagement.scss'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { getMapUnitInfoList, getUnitPop } from '../../../reactRedux/actions/publicActions'
-import { getStepStatus, getBgLists, postBgBySelect, postBgByUpload } from '../../../reactRedux/actions/signalmanagementActions'
+import { getStepStatus, postBgBySelect, postBgByUpload } from '../../../reactRedux/actions/signalmanagementActions'
 import StepNavMenu from './StepNavMenu/StepNavMenu'
 import BasicInfoLeft from './StepConfigLeft/BasicInfoLeft'
 import LaneConfigLeft from './StepConfigLeft/LaneConfigLeft'
@@ -61,10 +61,14 @@ class SignalManagement extends PureComponent {
       baseMapFlag: null, //是否显示
       baseLoading: false,
       imageUrl: '',
+      imageFile: null,
+      imageName: '',
       interRoadBg: '',
       mapPointsData: null, // 地图中所有的点
       dcuPopData: null, // 弹层数据
       stepStatusData: null, // step数据
+      roadId: null, // 路的ID
+      roadInterId: null, // 路的interId
       lanes: [
         {
           UI_WIDTH: 66,
@@ -110,31 +114,30 @@ class SignalManagement extends PureComponent {
     }
     this.map = null
     this.moveFlag = false // 是否是移动状态
+    this.bgIpUrl = 'http://192.168.1.213:20203/DCU/dcuImage/background/'
   }
   componentDidUpdate = (prevState) => {
-    const { mapPointsData, dcuPopData, stepStatusData } = this.props.data
+    const { mapPointsData, dcuPopData, stepStatusData, basicBgLists, basicUplSuccess } = this.props.data
     if (prevState.data !== this.props.data) {
       console.log(this.props,this.props.data, "data中所有的数据")
     }
     if (prevState.data.mapPointsData !== mapPointsData) {
       // console.log(mapPointsData, '点数据')
-      this.setState({
-        mapPointsData: mapPointsData,
-      },()=>{
+      this.setState({ mapPointsData },()=>{
         this.loadingMap()
       })
     }
     if (prevState.data.dcuPopData !== dcuPopData) {
       // console.log(dcuPopData, '弹层数据')
-      this.setState({
-        dcuPopData: dcuPopData,
-      })
+      this.setState({ dcuPopData })
     }
     if (prevState.data.stepStatusData !== stepStatusData) {
       console.log(stepStatusData, 'step数据')
-      this.setState({
-        stepStatusData: stepStatusData,
-      })
+      this.setState({ stepStatusData })
+    }
+    if (prevState.data.basicBgLists !== basicBgLists) {
+      console.log(basicBgLists, '子弹层')
+      this.setState({ basicBgLists })
     }
   }
   componentDidMount = () => {
@@ -146,8 +149,6 @@ class SignalManagement extends PureComponent {
     window.showHidePop = this.showHidePop
     window.setGetParams = this.setGetParams
     this.props.getMapUnitInfoList()
-    this.props.getStepStatus(1,)
-
   }
   // 从子集获取区域id和index 请求路口
   getSelectTreeId = (id) => {
@@ -204,39 +205,17 @@ class SignalManagement extends PureComponent {
     e.stopPropagation()
     e.preventDefault()
   }
-  // 鼠标按下
-  mouseDownEvent = (event) => {
-    const _this = this
-    this.moveFlag = true
-    this.setState({
-      moveFlag: true,
-    })
-    this.defaultX = event.pageX
-    this.defaultY = event.pageY
-    document.addEventListener('mousemove', (e) => {
-      const movePageX = e.pageX
-      const movePageY = e.pageY
-      this.DomLeft = this.defaultX + Number(movePageX - this.defaultX)
-      this.DomTop = this.defaultY + Number(movePageY - this.defaultY)
-    })
-    document.addEventListener('mouseup', () => {
-      console.log(`${this.DomLeft}px`, `${this.DomTop}px`)
-      const leftVal = `${this.DomLeft}px`
-      const topVal = `${this.DomTop}px`
-      _this.setState({
-        moveFlag: null,
-      })
-    })
-  }
-
   // 更新参数
   setGetParams = params => {
     // debugger
     console.log(params, '更新名称')
     this.setState({
       stepOneText: params.interName,
+      roadId: params.id,
+      roadInterId: params.interId,
+      interRoadBg: !params.background ? null : this.bgIpUrl + params.background,
     }, () => {
-      this.props.getStepStatus(params.id)
+      this.props.getStepStatus(params.id, params.nodeId)
       this.showHidePop("stepTwoFlag", true);
     })
 
@@ -380,21 +359,30 @@ class SignalManagement extends PureComponent {
       getBase64(info.file.originFileObj, imageUrl =>
         this.setState({
           imageUrl,
+          imageFile: info.file,
           baseLoading: false
         })
       )
     }
   }
+  handleUpdateImageUrl = (imageUrl) => {
+    this.setState({
+      imageUrl: this.bgIpUrl + imageUrl,
+      imageName: imageUrl,
+    })
+  }
   handleClickBaseMap = () => {
     console.log(this.state.imageUrl)
-    if (this.state.imageUrl === '' && this.state.baseMapValue === 2) {
-      message.info("请选择底图！");
+    if (this.state.imageFile === null && this.state.baseMapValue === 2) {
+      message.info("请上传底图！");
+      // imageFile
     } else {
       message.info("底图设置成功！");
       this.setState({
         interRoadBg: this.state.imageUrl,
       }, () => {
         this.popLayerShowHide("baseMapFlag", null)
+        this.props.postBgBySelect({id: this.state.roadId, background: this.state.imageName})
       })
     }
   }
@@ -444,7 +432,7 @@ class SignalManagement extends PureComponent {
   }
   
   render() {
-    const { popAddEditText, moveFlag, stepOneFlag, stepTwoFlag, 
+    const { stepStatusData, popAddEditText, moveFlag, stepOneFlag, stepTwoFlag, 
       stepRoadFlag, stepRoadAddEdit, lanes,
       stepThreeFlag, stepThreeAddEdit, lights,
       stepFourFlag, stepFourAddEdit, detectors,
@@ -453,7 +441,7 @@ class SignalManagement extends PureComponent {
       stepSevenFlag, stepSevenAddEdit,
       stepEightFlag, stepEightAddEdit,
       stepNineFlag, stepNineAddEdit,
-      turnTab, baseMapFlag, stepOneText, imageUrl, interRoadBg, baseLoading } = this.state
+      turnTab, baseMapFlag, stepOneText, imageUrl, interRoadBg, baseLoading, roadId, roadInterId } = this.state
     const { Search } = Input
     return (
       <div className={styles.SignalManagement}>
@@ -560,10 +548,7 @@ class SignalManagement extends PureComponent {
           <div className={styles.stepBoxContent}>
             <div className={styles.stepLeftCon}>
               {/* <div className={styles.leftItemCon}> */}
-              <div className={styles.leftItemCon} style={interRoadBg !== '' ? {
-                background: 'url(' + interRoadBg + ') no-repeat', backgroundPosition: 'center center',
-                backgroundSize: 'contain'
-              } : {}}>
+              <div className={styles.leftItemCon} style={interRoadBg !== '' ? { background: `url(${interRoadBg}) center center / 100% 100% no-repeat` } : {}}>
                 {/* 左侧基础信息回显 */}
                 {stepTwoFlag ? <div className={styles.turnBgBtn} onClick={ () => {this.popLayerShowHide("baseMapFlag", true)} }>路口底图</div> : null }
                 {baseMapFlag ?
@@ -571,8 +556,11 @@ class SignalManagement extends PureComponent {
                     popLayerShowHide={this.popLayerShowHide} 
                     handleClickBaseMap={this.handleClickBaseMap} 
                     handleChangeBaseMap={this.handleChangeBaseMap}
+                    handleUpdateImageUrl={this.handleUpdateImageUrl}
                     imageUrl={imageUrl}
                     baseLoading={baseLoading}
+                    roadId={roadId}
+                    bgIpUrl={this.bgIpUrl}
                   /> : null
                 }
                 {/* 左侧车道回显 */}
@@ -656,7 +644,7 @@ class SignalManagement extends PureComponent {
           stepSevenFlag={stepSevenFlag}
           stepEightFlag={stepEightFlag}
           stepNineFlag={stepNineFlag}
-        showHidePop={this.showHidePop} />
+        showHidePop={this.showHidePop} stepStatusData={stepStatusData} />
         <div className={styles.Interwork_left}>
           <div className={styles.InterworkLeft_search}>
             <Search
@@ -699,7 +687,6 @@ const mapDisPatchToProps = (dispatch) => {
     getStepStatus: bindActionCreators(getStepStatus, dispatch),
     getMapUnitInfoList: bindActionCreators(getMapUnitInfoList, dispatch),
     getUnitPop: bindActionCreators(getUnitPop, dispatch),
-    getBgLists: bindActionCreators(getBgLists, dispatch),
     postBgBySelect: bindActionCreators(postBgBySelect, dispatch),
     postBgByUpload: bindActionCreators(postBgByUpload, dispatch),
   }
