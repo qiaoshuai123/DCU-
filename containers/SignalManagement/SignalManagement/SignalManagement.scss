@@ -382,6 +382,12 @@ $stepBor_col: #393f4f;
                             outline: none;
                             border: 1px solid $stepBor_col;
                         }
+                        :global(.ant-calendar-picker) {
+                            flex: 4.2;
+                        }
+                        :global(.ant-calendar-picker-icon) {
+                            color:white;
+                        }
                     }
                 }
                 // 列表类

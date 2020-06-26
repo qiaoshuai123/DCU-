@@ -69,20 +69,7 @@ class SignalManagement extends PureComponent {
       stepStatusData: null, // step数据
       roadId: null, // 路的ID
       roadInterId: null, // 路的interId
-      lanes: [
-        {
-          UI_WIDTH: 66,
-          DEVICE_NAME: "车道",
-          P_TOP: 343,
-          UI_HIGHT: 20,
-          UI_IMAGE_NAME: "westleft_23.gif",
-          DETAIL: "无",
-          DEVICE_CODE: 1,
-          P_LEFT: 485,
-          DEVICE_ID: 9370224,
-          UI_TYPE_ID: 3
-        },
-      ],// 车道
+      roadNodeNo: null,
       lights: [
         {
           UI_WIDTH: 85,
@@ -213,6 +200,7 @@ class SignalManagement extends PureComponent {
       stepOneText: params.interName,
       roadId: params.id,
       roadInterId: params.interId,
+      roadNodeNo: params.nodeId,
       interRoadBg: !params.background ? null : this.bgIpUrl + params.background,
     }, () => {
       this.props.getStepStatus(params.id, params.nodeId)
@@ -356,12 +344,15 @@ class SignalManagement extends PureComponent {
       return;
     }
     if (info.file.status === "done") {
-      getBase64(info.file.originFileObj, imageUrl =>
+      getBase64(info.file.originFileObj, imageUrl =>{
+        const formData = new FormData()
+        formData.append('file', info.file.originFileObj)
         this.setState({
           imageUrl,
-          imageFile: info.file,
+          imageFile: formData,
           baseLoading: false
         })
+      }
       )
     }
   }
@@ -373,10 +364,17 @@ class SignalManagement extends PureComponent {
   }
   handleClickBaseMap = () => {
     console.log(this.state.imageUrl)
-    if (this.state.imageFile === null && this.state.baseMapValue === 2) {
-      message.info("请上传底图！");
-      // imageFile
-    } else {
+    debugger
+    if (this.state.imageFile !== null) {
+      debugger
+      message.info("底图设置成功！");
+      this.setState({
+        interRoadBg: this.state.imageUrl,
+      }, () => {
+        this.popLayerShowHide("baseMapFlag", null)
+        this.props.postBgByUpload(this.state.roadId, this.state.imageFile)
+      })
+    } else if(!!this.state.imageUrl){
       message.info("底图设置成功！");
       this.setState({
         interRoadBg: this.state.imageUrl,
@@ -384,6 +382,8 @@ class SignalManagement extends PureComponent {
         this.popLayerShowHide("baseMapFlag", null)
         this.props.postBgBySelect({id: this.state.roadId, background: this.state.imageName})
       })
+    } else if(this.state.imageFile === null || !this.state.imageUrl) {
+      message.info("请上传或选择底图!");
     }
   }
   // step road 车道添加
@@ -433,7 +433,7 @@ class SignalManagement extends PureComponent {
   
   render() {
     const { stepStatusData, popAddEditText, moveFlag, stepOneFlag, stepTwoFlag, 
-      stepRoadFlag, stepRoadAddEdit, lanes,
+      stepRoadFlag, stepRoadAddEdit,
       stepThreeFlag, stepThreeAddEdit, lights,
       stepFourFlag, stepFourAddEdit, detectors,
       stepFiveFlag, stepFiveAddEdit,
@@ -441,7 +441,7 @@ class SignalManagement extends PureComponent {
       stepSevenFlag, stepSevenAddEdit,
       stepEightFlag, stepEightAddEdit,
       stepNineFlag, stepNineAddEdit,
-      turnTab, baseMapFlag, stepOneText, imageUrl, interRoadBg, baseLoading, roadId, roadInterId } = this.state
+      turnTab, baseMapFlag, stepOneText, imageUrl, interRoadBg, baseLoading, roadId, roadInterId, roadNodeNo } = this.state
     const { Search } = Input
     return (
       <div className={styles.SignalManagement}>
@@ -567,7 +567,8 @@ class SignalManagement extends PureComponent {
                 {stepRoadFlag ? 
                   <LaneConfigLeft  {...this.props} 
                     popLayerShowHide={this.popLayerShowHide} 
-                    lanes={lanes}
+                    roadInterId={roadInterId}
+                    roadNodeNo={roadNodeNo}
                     isMoveFlag={stepRoadFlag} /> : null
                 }
                 {/* 左侧灯组回显 */}
@@ -575,7 +576,6 @@ class SignalManagement extends PureComponent {
                   <div>
                     <LaneConfigLeft  {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
-                      lanes={lanes}
                       isMoveFlag={stepRoadFlag} />
                     <LightConfigLeft {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
@@ -589,7 +589,6 @@ class SignalManagement extends PureComponent {
                   <div>
                     <LaneConfigLeft  {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
-                      lanes={lanes}
                       isMoveFlag={stepRoadFlag} />
                     <LightConfigLeft {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
@@ -610,7 +609,9 @@ class SignalManagement extends PureComponent {
                   stepTwoFlag ? 
                     <BasicInfoRight popLayerShowHide={this.popLayerShowHide} /> : 
                   stepRoadFlag ? 
-                    <LaneConfigRight popLayerShowHide={this.popLayerShowHide} /> : 
+                    <LaneConfigRight 
+                    roadInterId={roadInterId}
+                    popLayerShowHide={this.popLayerShowHide} /> : 
                   stepThreeFlag ?
                     <LightConfigRight popLayerShowHide={this.popLayerShowHide} /> : 
                   stepFourFlag ? 

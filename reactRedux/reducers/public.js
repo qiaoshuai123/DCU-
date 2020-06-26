@@ -9,6 +9,8 @@ const publics = (state = {}, action) => {
       return Object.assign({}, state, { dcuTreeData: payload })
     case types.GET_SIGNAL_BY_INTERID:
       return Object.assign({}, state, { dcuPopData: payload })
+    case types.POST_UPDATE_SIGNAL:
+      return Object.assign({}, state, { savePopData: payload })
     default:
       return state
   }

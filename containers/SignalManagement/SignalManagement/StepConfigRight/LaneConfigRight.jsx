@@ -3,28 +3,32 @@ import { Input, Icon, message } from 'antd'
 import classNames from 'classnames'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-// import { getUnitInfoList, getUnitPop } from '../../../../reactRedux/actions/publicActions'
-// import { getStepStatus } from '../../../../reactRedux/actions/signalmanagementActions'
+import { getInfoListsType } from '../../../../reactRedux/actions/signalmanagementActions'
 import styles from '../SignalManagement.scss'
 
 class LaneConfigRight extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-
+      laneLists: null,
     }
   }
-  componentDidUpdate = () => {
-
+  componentDidUpdate = (prevState) => {
+    const { laneLists } = this.props.data
+    if (prevState.data.laneLists !== laneLists) {
+      this.setState({ laneLists })
+    }
   }
   componentDidMount = () => {
-
+    console.log(this.props.isMoveFlag, '状态')
+    this.props.getInfoListsType(this.props.roadInterId, 'LANE')
   }
   popLayerShowHide = (name, flag) => {
     this.props.popLayerShowHide(name, flag)
   }
 
   render() {
+    const { laneLists } = this.state
     return (
       <div className={styles.conBox}>
         <div className={styles.rTit}>车道配置列表<em onClick={() => { this.popLayerShowHide("stepRoadAddEdit", true) }}>添加</em></div>
@@ -60,7 +64,7 @@ const mapStateToProps = (state) => {
 }
 const mapDisPatchToProps = (dispatch) => {
   return {
-
+    getInfoListsType: bindActionCreators(getInfoListsType, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(LaneConfigRight)

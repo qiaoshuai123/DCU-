@@ -4,10 +4,11 @@
 
 
 import * as types from '../actionTypes/actionTypes'
+// import * as publictypes from '../actionTypes/publicTypes'
 import RestUtil from '../RestUtil'
 
 import * as APIs from '../actionTypes/actionAPIs'
-// import { API_UNIT_STATUS } from '../actionTypes/actionAPIs'
+// import { API_SIGNAL_BY_INTERID, API_UPDATE_SIGNAL } from '../actionTypes/publicAPIs'
 
 // DCU信号参数据管理 step
 export const getStepStatus = (interId, nodeNo) => {
@@ -40,6 +41,7 @@ export const getBgLists = () => {
     }
   }
 }
+
 // 基础信息配置 之 选中底图 > 更新
 export const postBgBySelect = (params) => {
   return async (dispatch) => {
@@ -75,6 +77,7 @@ export const postBgByUpload = (unitId, uploadFile) => {
   类型: type
        (车道:'LANE',灯组:'LIGHT',检测器:'DETECTOR', 相位:'PHASE', 阶段:'STAGE', 配时方案:'PLAN', 日计划:'DAYPLAN', 调度:'DISPATCH') 
 } */
+// 新增坐标、图片、旋转角度 以type类型为准
 export const postAddPicType = (params, stepType) => {
   let thisAPI, thisTYPE;
   switch(stepType){
@@ -303,7 +306,7 @@ export const getInfoListsType = (interId, stepType) => {
   }
   return async (dispatch) => {
     try {
-      const result = await RestUtil.post(`${thisAPI}?interId=${interId}`)
+      const result = await RestUtil.get(`${thisAPI}?interId=${interId}`)
       if (result.data.code === 0) {
         dispatch({ type: thisTYPE, payload: result.data.data })
       } else {
