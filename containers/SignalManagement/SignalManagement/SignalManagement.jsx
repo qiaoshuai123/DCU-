@@ -422,7 +422,11 @@ class SignalManagement extends PureComponent {
           <div className={styles.maskBg}> 
             <div className={styles.popBox}>
               <div className={styles.popTit}>{popAddEditText}车道<Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepRoadAddEdit", null)} } /></div>
-              <div className={styles.popCon}> 车道的内容 </div>
+              <div className={styles.popCon}> 
+              {
+                popAddEditText === '编辑' ? '车道内容回显' : '车道的新增'
+              }
+              </div>
               <div className={styles.popBottom}>
                 <em onClick={ () => {this.stepRoadAddForList()}}>确 定</em>
                 <em onClick={ () => {this.popLayerShowHide("stepRoadAddEdit", null)} }>取 消</em>
@@ -547,9 +551,13 @@ class SignalManagement extends PureComponent {
                   <div>
                     <LaneConfigLeft  {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
+                      roadInterId={roadInterId}
+                      roadNodeNo={roadNodeNo}
                       isMoveFlag={stepRoadFlag} />
                     <LightConfigLeft {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
+                      roadInterId={roadInterId}
+                      roadNodeNo={roadNodeNo}
                       isMoveFlag={stepThreeFlag}
                     />
                   </div> : null
@@ -557,15 +565,21 @@ class SignalManagement extends PureComponent {
                 {/* 左侧检测器回显 */}
                 { stepFourFlag ?
                   <div>
-                    <LaneConfigLeft  {...this.props} 
+                  <LaneConfigLeft  {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
+                      roadInterId={roadInterId}
+                      roadNodeNo={roadNodeNo}
                       isMoveFlag={stepRoadFlag} />
                     <LightConfigLeft {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
+                      roadInterId={roadInterId}
+                      roadNodeNo={roadNodeNo}
                       isMoveFlag={stepThreeFlag}
                     />
                     <DetectorConfigLeft {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
+                      roadInterId={roadInterId}
+                      roadNodeNo={roadNodeNo}
                       isMoveFlag={stepFourFlag}
                     />
                   </div> : null
@@ -578,22 +592,52 @@ class SignalManagement extends PureComponent {
                     <BasicInfoRight popLayerShowHide={this.popLayerShowHide} /> : 
                   stepRoadFlag ? 
                     <LaneConfigRight 
+                    roadId={roadId}
                     roadInterId={roadInterId}
+                    roadNodeNo={roadNodeNo}
                     popLayerShowHide={this.popLayerShowHide} /> : 
                   stepThreeFlag ?
-                    <LightConfigRight popLayerShowHide={this.popLayerShowHide} /> : 
+                    <LightConfigRight
+                    roadId={roadId}
+                    roadInterId={roadInterId}
+                    roadNodeNo={roadNodeNo}
+                    popLayerShowHide={this.popLayerShowHide} /> : 
                   stepFourFlag ? 
-                    <DetectorConfigRight popLayerShowHide={this.popLayerShowHide} /> : 
+                    <DetectorConfigRight
+                    roadId={roadId}
+                    roadInterId={roadInterId}
+                    roadNodeNo={roadNodeNo}
+                    popLayerShowHide={this.popLayerShowHide} /> : 
                   stepFiveFlag ?  
-                    <PhaseConfigRight popLayerShowHide={this.popLayerShowHide} /> :
+                    <PhaseConfigRight 
+                    roadId={roadId}
+                    roadInterId={roadInterId}
+                    roadNodeNo={roadNodeNo}
+                    popLayerShowHide={this.popLayerShowHide} /> :
                   stepSixFlag ?
-                    <StageConfigRight popLayerShowHide={this.popLayerShowHide} /> : 
+                    <StageConfigRight 
+                    roadId={roadId}
+                    roadInterId={roadInterId}
+                    roadNodeNo={roadNodeNo}
+                    popLayerShowHide={this.popLayerShowHide} /> : 
                   stepSevenFlag ?
-                    <PlanConfigRight popLayerShowHide={this.popLayerShowHide} /> : 
+                    <PlanConfigRight 
+                    roadId={roadId}
+                    roadInterId={roadInterId}
+                    roadNodeNo={roadNodeNo}
+                    popLayerShowHide={this.popLayerShowHide} /> : 
                   stepEightFlag ?
-                    <DayPlanConfigRight popLayerShowHide={this.popLayerShowHide} /> : 
+                    <DayPlanConfigRight 
+                    roadId={roadId}
+                    roadInterId={roadInterId}
+                    roadNodeNo={roadNodeNo}
+                    popLayerShowHide={this.popLayerShowHide} /> : 
                   stepNineFlag ?
-                    <DispatchConfigRight popLayerShowHide={this.popLayerShowHide} /> : null}
+                    <DispatchConfigRight 
+                    roadId={roadId}
+                    roadInterId={roadInterId}
+                    roadNodeNo={roadNodeNo}
+                    popLayerShowHide={this.popLayerShowHide} /> : null}
             </div>
           </div> : null
         }

@@ -38,6 +38,7 @@ class LaneConfigLeft extends PureComponent {
     this.props.getPicListsType(this.props.roadInterId, this.props.roadNodeNo, 'LANE')
   }
   popLayerShowHide = (name, flag, eventType) => {
+    // eventType ? 执行所有详情内容回显 ：null
     this.props.popLayerShowHide(name, flag, eventType)
   }
 
@@ -47,7 +48,7 @@ class LaneConfigLeft extends PureComponent {
       <div>
         {
           lanePicLists.length > 0 && lanePicLists.map((item, i) => {
-            return <ImgEvent isMoveFlag={this.props.isMoveFlag} key={item.DEVICE_CODE} imgMsg={item} popLayerShowHide={this.popLayerShowHide} />
+            return <ImgEvent key={'lane'+item.id} isMoveFlag={this.props.isMoveFlag} imgMsg={item} typeUrl={'lane'} popLayerShowHide={this.popLayerShowHide} />
           })
         }
       </div>

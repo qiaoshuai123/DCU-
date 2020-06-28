@@ -269,6 +269,7 @@ export const getPicListsType = (interId, nodeNo, stepType) => {
 }
 // 右侧列表 以type类型为准
 export const getInfoListsType = (interId, stepType) => {
+  debugger
   let thisAPI, thisTYPE;
   switch(stepType){
     case "LANE":
@@ -318,7 +319,7 @@ export const getInfoListsType = (interId, stepType) => {
   }
 }
 // 修改坐标、图片、旋转角度 以type类型为准
-export const postUpdatePicType = (uploadFile, stepType) => {
+export const postUpdatePicType = (params, stepType) => {
   let thisAPI, thisTYPE;
   switch(stepType){
     case "LANE":
@@ -336,7 +337,7 @@ export const postUpdatePicType = (uploadFile, stepType) => {
   }
   return async (dispatch) => {
     try {
-      const result = await RestUtil.post(`${thisAPI}`, uploadFile)
+      const result = await RestUtil.post(`${thisAPI}`, params)
       if (result.data.code === 0) {
         dispatch({ type: thisTYPE, payload: result.data.data })
       } else {

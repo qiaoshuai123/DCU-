@@ -28,7 +28,6 @@ class LightConfigLeft extends PureComponent {
   componentDidUpdate = (prevState) => {
     const { lightPicLists } = this.props.data
     if (prevState.data.lightPicLists !== lightPicLists) {
-      // console.log(mapPointsData, '点数据')
       this.setState({ lightPicLists })
     }
   }
@@ -46,7 +45,7 @@ class LightConfigLeft extends PureComponent {
       <div>
         {
           lightPicLists.length > 0 && lightPicLists.map((item, i) => {
-            return <ImgEvent isMoveFlag={this.props.isMoveFlag} key={item.DEVICE_CODE} imgMsg={item} popLayerShowHide={this.popLayerShowHide} />
+            return <ImgEvent key={'light'+item.id} isMoveFlag={this.props.isMoveFlag} imgMsg={item} typeUrl={'lampgroup'} popLayerShowHide={this.popLayerShowHide} />
           })
         }
       </div>
