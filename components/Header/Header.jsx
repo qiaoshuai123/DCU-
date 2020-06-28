@@ -24,6 +24,7 @@ class Header extends React.Component {
       navItem: [],
     }
     this.paths = this.props.match.url
+    console.log(this.paths)
     this.navItems = [
       {
         id: 1,

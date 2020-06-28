@@ -5,13 +5,14 @@ import {
   API_DCU_ADDDCU_INFO,
   API_DEL_UPDATEDCU_INFO,
   API_DCU_INTERCHECK_INFO,
+  API_DEL_UNITINFO_INFO,
 } from '../actionTypes/actionAPIs'
 
 // 更改点位信息名称
 export const getRegionNum = (obj) => {
   return async (dispatch) => {
     try {
-      dispatch({ type: types.My_num, payload: obj })
+      dispatch({ type: types.GET_DELNUM, payload: obj })
     } catch (e) {
       console.log(e)
     }
@@ -31,11 +32,17 @@ export const postaddDcu = (params) => {
     return result
   }
 }
-
 // 修改点位
 export const postupdateDcu = (params) => {
   return async () => {
     const result = await RestUtil.post(`${API_DEL_UPDATEDCU_INFO}`, params)
+    return result
+  }
+}
+// 删除点位
+export const postdeleteUnit = (params) => {
+  return async () => {
+    const result = await RestUtil.get(`${API_DEL_UNITINFO_INFO}?unitId=${params}`)
     return result
   }
 }
