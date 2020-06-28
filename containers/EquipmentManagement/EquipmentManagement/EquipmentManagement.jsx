@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
-import { Input, message } from 'antd'
+import { Input, message, Modal } from 'antd'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { getMapUnitInfoList } from '../../../reactRedux/actions/publicActions'
+import { getMapUnitInfoList, getUnitTree } from '../../../reactRedux/actions/publicActions'
+import { postdeleteUnit } from '../../../reactRedux/actions/equipmentManagement'
 import Header from '../../../components/Header/Header'
 import CustomTree from '../../../components/CustomTree/CustomTree'
 import MessagePage from './MessagePage/MessagePage'
@@ -13,6 +14,8 @@ class EquipmentManagement extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      visible: false,
+      visibleTop: 0,
       isAddPoint: false,
       isMessagePage: false,
       isInformation: false,
@@ -33,10 +36,9 @@ class EquipmentManagement extends Component {
   componentDidUpdate = (prevState) => {
     const { mapPointsData, getObjNum } = this.props.data
     if (prevState.data !== this.props.data) {
-      console.log(this.props.data, "data中所有的数据")
+      // console.log(this.props.data, "data中所有的数据")
     }
     if (prevState.data.mapPointsData !== mapPointsData) {
-      console.log(mapPointsData, '点数据')
       this.getmapPointsData(mapPointsData)
     }
     if (prevState.data.getObjNum !== getObjNum) {
@@ -63,7 +65,9 @@ class EquipmentManagement extends Component {
     const _this = this
     let marker, lng, lat
     const childrenArr = this.props.data.dcuTreeData
+    console.log(childrenArr, index, 'qiaos')
     childrenArr[index].units && childrenArr[index].units.map((item) => {
+      console.log(12346798)
       if (childId === item.id) {
         lng = item.lng
         lat = item.lat
@@ -77,6 +81,7 @@ class EquipmentManagement extends Component {
         })
       }
     })
+    console.log(marker, '123')
     if (marker && this.map) {
       this.map.setCenter([lng, lat])
       marker.emit('click', {
@@ -97,20 +102,24 @@ class EquipmentManagement extends Component {
     console.log(params, 'sffsfsf')
     window.open(`#roaddetail/1`)
   }
-  visibleShowLeft = (top, id, show) => { // 框的跳转与位置
-    if (top || id) {
-      this.setState({
-        visible: show,
-        visibleTop: top,
-        vipId: id,
-      }, () => {
-        console.log(id, '显示右键信息')
-      })
-    } else {
-      this.setState({
-        visible: show,
-      })
+  visibleShowLeft = (top, id, show, objs) => { // 框的跳转与位置
+    if (objs) {
+      this.roadId = objs.id
+      this.AllList = objs
+      if (top || id) {
+        this.setState({
+          visible: show,
+          visibleTop: top,
+        }, () => {
+          console.log(id, '显示右键信息')
+        })
+      } else {
+        this.setState({
+          visible: show,
+        })
+      }
     }
+
   }
   // 创建地图层
   loadingMap = () => {
@@ -208,10 +217,55 @@ class EquipmentManagement extends Component {
       infoWindow.close()
     })
   }
+  // 禁止默认右键菜单
+  noShow = (e) => {
+    e.stopPropagation()
+    e.preventDefault()
+  }
+  // 查看回显
+  seeGo = () => {
+    // this.props.getsubeditDistrictInfoThing(this.roadId)
+    this.setState({
+      visible: false,
+      isMessagePage: true,
+    })
+  }
+  delectRoad = () => { // 删除路段
+    this.setState({
+      visible: false,
+    })
+    this.props.postdeleteUnit(this.roadId).then((res) => {
+      if (res.data.code === 0) {
+        this.setState({
+          visible: false,
+        })
+        this.props.getUnitTree()
+        this.props.getMapUnitInfoList()
+      }
+    })
+  }
   addPoint = () => {
-    this.roadId = ''
     this.setState({
       isMessagePage: true,
+    })
+    this.AllList = ''
+  }
+  showConfirm = () => {
+    const { confirm } = Modal
+    const that = this
+    confirm({
+      title: '确定要删除此点位?',
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk() {
+        that.delectRoad()
+      },
+      onCancel() {
+        this.setState({
+          visible: false,
+        })
+      },
     })
   }
   closePoint = () => {
@@ -221,7 +275,7 @@ class EquipmentManagement extends Component {
   }
   render() {
     const { Search } = Input
-    const { isAddPoint, isMessagePage, isInformation, lng, lat } = this.state
+    const { isAddPoint, isMessagePage, isInformation, lng, lat, visible, visibleTop } = this.state
     return (
       <div className={styles.EquipmentManagementBox}>
         <Header {...this.props} />
@@ -250,11 +304,18 @@ class EquipmentManagement extends Component {
           }
         </div>
         {
-          isMessagePage && <MessagePage closePoint={this.closePoint} lng={lng} lat={lat} roadId={this.roadId} />
+          isMessagePage && <MessagePage closePoint={this.closePoint} AllList={this.AllList} lng={lng} lat={lat} />
         }
         <div className={styles.mapContent} id="mapContent" />
         {
           isInformation && <Information />
+        }
+        {
+          visible &&
+          <ul style={{ top: `${visibleTop}px` }} onContextMenu={this.noShow} className={styles.contextMenu}>
+            <li onClick={this.seeGo}>查看</li>
+            <li onClick={this.showConfirm}>删除</li>
+          </ul>
         }
       </div>
     )
@@ -269,6 +330,8 @@ const mapStateToProps = (state) => {
 const mapDisPatchToProps = (dispatch) => {
   return {
     getMapUnitInfoList: bindActionCreators(getMapUnitInfoList, dispatch),
+    getUnitTree: bindActionCreators(getUnitTree, dispatch),
+    postdeleteUnit: bindActionCreators(postdeleteUnit, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(EquipmentManagement)

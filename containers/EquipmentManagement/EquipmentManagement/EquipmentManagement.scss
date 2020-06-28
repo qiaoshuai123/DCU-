@@ -3,6 +3,26 @@ $bor_color: #27343b;
   width: 100%;
   height: 100%;
   background-color: #021035;
+  .contextMenu{
+    width: 150px;
+    height: 50px;
+    position: absolute;
+    z-index: 999;
+    margin: 0;
+    background-color: #0d1133;
+    border:1px solid #55f9ff;
+    left: 145px;
+    li{
+      height: 25px;
+      margin: 0;
+      line-height: 25px;
+      padding-left: 15px;
+      cursor: pointer;
+      &:hover{
+        background-color: rgba(103,186,202,.6);
+      }
+    }
+  }
   .Interwork_left {
     width: 235px;
     height: calc(100% - 60px);

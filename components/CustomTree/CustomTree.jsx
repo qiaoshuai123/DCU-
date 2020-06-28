@@ -59,6 +59,7 @@ class CustomTree extends React.Component {
           codeName: name,
           dictCode: code,
         }
+        console.log(132)
         this.props.getRegionNum(objs)
       }
     }
@@ -77,15 +78,16 @@ class CustomTree extends React.Component {
       this.props.getSelectChildId(id, index, lng, lat)
     }
   }
-  rightDown = (e, id, boolean) => { // 鼠标右击
+  rightDown = (e, id, boolean, objs) => { // 鼠标右击
+    e.stopPropagation()
     if (this.props.rightDownNone) return false
     e.stopPropagation()
     e.preventDefault()
     const { visibleShowLeft } = this.props
-    if (boolean) {
+    if (!boolean) {
       const top = e.pageY
       if (e.button === 2) {
-        visibleShowLeft(top, id, true)
+        visibleShowLeft(top, id, true, objs)
       }
     } else {
       visibleShowLeft('', '', false)
@@ -117,7 +119,7 @@ class CustomTree extends React.Component {
         return (
           <li
             className={styles.childLi}
-            onMouseDown={(e) => { this.rightDown(e, '', false) }}
+            onMouseDown={(e) => { this.rightDown(e, item.interId, false, item) }}
             key={item.id}
             id={item.id}
             lng={item.lng}
@@ -141,7 +143,7 @@ class CustomTree extends React.Component {
                   <span className={styles.treeIcon}>
                     <span className={styles.childIcon}><Icon type={isOpen ? 'minus-circle' : 'plus-circle'} /></span>
                   </span>
-                  <span title={item.codeName} onClick={() => this.btns(item.id)} onMouseDown={e => this.rightDown(e, item.id, true)} className={styles.childNode}>{item.codeName}</span>
+                  <span title={item.codeName} onClick={() => this.btns(item.id)} onMouseDown={e => this.rightDown(e, '', true)} className={styles.childNode}>{item.codeName}</span>
                   {
                     isOpen &&
                     <ul className={styles.childTree} key={item.id}>
