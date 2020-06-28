@@ -262,6 +262,9 @@ class EquipmentManagement extends Component {
         that.delectRoad()
       },
       onCancel() {
+        this.setState({
+          visible: false,
+        })
       },
     })
   }
