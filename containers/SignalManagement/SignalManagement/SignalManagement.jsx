@@ -70,34 +70,6 @@ class SignalManagement extends PureComponent {
       roadId: null, // 路的ID
       roadInterId: null, // 路的interId
       roadNodeNo: null,
-      lights: [
-        {
-          UI_WIDTH: 85,
-          DEVICE_NAME: "灯",
-          P_TOP: 343,
-          UI_HIGHT: 31,
-          UI_IMAGE_NAME: "arrow42_21.gif",
-          DETAIL: "无",
-          DEVICE_CODE: 1,
-          P_LEFT: 485,
-          DEVICE_ID: 9370224,
-          UI_TYPE_ID: 4
-        },
-      ],// 灯组排列
-      detectors: [
-        {
-          UI_WIDTH: 24,
-          DEVICE_NAME: "检测器",
-          P_TOP: 343,
-          UI_HIGHT: 23,
-          UI_IMAGE_NAME: "detector_1.png",
-          DETAIL: "无",
-          DEVICE_CODE: 1,
-          P_LEFT: 485,
-          DEVICE_ID: 9370224,
-          UI_TYPE_ID: 2
-        },
-      ], // 检测器
     }
     this.map = null
     this.moveFlag = false // 是否是移动状态
@@ -147,7 +119,7 @@ class SignalManagement extends PureComponent {
     let marker, lng, lat;
     const childrenArr = this.props.data.dcuTreeData
     childrenArr[index].units && childrenArr[index].units.map((item) => {
-      if (childInterId === item.interId) {
+      if (childInterId === item.id) {
         lng = item.lng
         lat = item.lat
         marker = new AMap.Marker({
@@ -163,7 +135,6 @@ class SignalManagement extends PureComponent {
         })
       }
     })
-    
     if (marker && this.map) {
       this.map.setCenter([lng, lat])
       marker.emit('click', {
@@ -394,7 +365,7 @@ class SignalManagement extends PureComponent {
   // step 3 灯组添加
   stepThreeAddForList = () => {
     const obj = {name: 'new', left: '50%', top: '50%', width: '32px', height: '32px', src: markerIcon}
-    const lights = JSON.parse(JSON.stringify(this.state.lights))
+    const lights = JSON.parse(JSON.stringify(this.props.data.lightPicLists))
     lights.push(obj)
     this.setState({ lights })
     message.info("灯组添加成功！")
@@ -434,8 +405,8 @@ class SignalManagement extends PureComponent {
   render() {
     const { stepStatusData, popAddEditText, moveFlag, stepOneFlag, stepTwoFlag, 
       stepRoadFlag, stepRoadAddEdit,
-      stepThreeFlag, stepThreeAddEdit, lights,
-      stepFourFlag, stepFourAddEdit, detectors,
+      stepThreeFlag, stepThreeAddEdit,
+      stepFourFlag, stepFourAddEdit, 
       stepFiveFlag, stepFiveAddEdit,
       stepSixFlag, stepSixAddEdit,
       stepSevenFlag, stepSevenAddEdit,
@@ -579,7 +550,6 @@ class SignalManagement extends PureComponent {
                       isMoveFlag={stepRoadFlag} />
                     <LightConfigLeft {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
-                      lights={lights}
                       isMoveFlag={stepThreeFlag}
                     />
                   </div> : null
@@ -592,12 +562,10 @@ class SignalManagement extends PureComponent {
                       isMoveFlag={stepRoadFlag} />
                     <LightConfigLeft {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
-                      lights={lights}
                       isMoveFlag={stepThreeFlag}
                     />
                     <DetectorConfigLeft {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
-                      detectors={detectors}
                       isMoveFlag={stepFourFlag}
                     />
                   </div> : null
