@@ -12,13 +12,19 @@ class RoadDetail extends Component {
     }
   }
   componentWillMount = () => {
-    // 接收传递来的路口id
-    const { pathname } = this.props.location
-    const lengths = pathname.length
-    const start = pathname.lastIndexOf('/')
-    this.roadId = pathname.substring(start + 1, lengths)
+    this.getInter()
   }
   componentDidMount = () => {
+    // 接收传递来的路口id
+    this.getdcuByInterId()
+  }
+  getInter = () => {
+    const { search } = this.props.location
+    const nums = search.indexOf('&')
+    this.interId = search.substring(4, nums)
+    this.bac = search.substr(nums + 5)
+  }
+  getdcuByInterId = () => {
 
   }
   // 关闭控制窗口

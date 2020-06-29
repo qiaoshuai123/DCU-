@@ -67,3 +67,12 @@ export const API_DCU_INTERCHECK_INFO = '/DCU/unitInfo/interCheck' // 判断是�
 export const API_DCU_ADDDCU_INFO = '/DCU/unitInfo/addUnit' // 添加点位
 export const API_DEL_UPDATEDCU_INFO = '/DCU/unitInfo/updateUnit' // 修改点位
 export const API_DEL_UNITINFO_INFO = '/DCU/unitInfo/deleteUnit' // 删除点位
+// 设备基础配置
+export const API_DEL_DCUBYINTERID = '/DCU/dcuInfo/dcuByInterId' // DCU基础信息查询（根据interId查询
+export const API_DEL_UPDATEDCU = '/DCU/dcuInfo/updateDcu' // DCU修改
+export const API_DEL_SIGNALBYINTERID = '/DCU/signalInfo/signalByInterId' // 信号机基础信息查询（根据interId查询信号机）
+export const API_DEL_UPDATESIGNAL = '/DCU/signalInfo/updateSignal' // 修改信号机
+export const API_DEL_UPDATEUNIT = '/DCU/unitInfo/updateUnit' // 选择底图
+export const API_DEL_FILEUPLOAD = '/DCU/unitInfo/fileUpload' // 上传底图
+export const API_DEL_BACKGROUNDLIST = '/DCU/unitInfo/backgroundList' // 查询全部底图
+
