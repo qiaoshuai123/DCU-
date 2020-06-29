@@ -158,7 +158,7 @@ export const postAddOthersType = (params, stepType) => {
   }
 }
 // 删除左侧图标 以type类型为准
-export const postDelPicType = (id, stepType) => {
+export const getDelPicType = (id, stepType) => {
   let thisAPI, thisTYPE;
   switch(stepType){
     case "LANE":
@@ -188,7 +188,7 @@ export const postDelPicType = (id, stepType) => {
   }
 }
 // 删除右侧列表中一条 以type类型为准
-export const postDelInfoType = (id, stepType) => {
+export const getDelInfoType = (id, stepType) => {
   let thisAPI, thisTYPE;
   switch(stepType){
     case "LANE":
@@ -269,7 +269,6 @@ export const getPicListsType = (interId, nodeNo, stepType) => {
 }
 // 右侧列表 以type类型为准
 export const getInfoListsType = (interId, stepType) => {
-  debugger
   let thisAPI, thisTYPE;
   switch(stepType){
     case "LANE":
@@ -292,6 +291,24 @@ export const getInfoListsType = (interId, stepType) => {
       thisAPI = APIs.API_STAGE_INFO_LISTS
       thisTYPE = types.GET_STAGE_INFO_LISTS
       break;
+  }
+  return async (dispatch) => {
+    try {
+      const result = await RestUtil.get(`${thisAPI}?interId=${interId}`)
+      if (result.data.code === 0) {
+        dispatch({ type: thisTYPE, payload: result.data.data })
+      } else {
+        console.error(result.data.msg)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+}
+// 右侧列表 配时方案、日计划、调度的列表以此为准
+export const getInfoListsTypeMore = (interId, nodeNo, stepType) => {
+  let thisAPI, thisTYPE;
+  switch(stepType){
     case "PLAN":
       thisAPI = APIs.API_PLAN_INFO_LISTS
       thisTYPE = types.GET_PLAN_INFO_LISTS
@@ -307,7 +324,7 @@ export const getInfoListsType = (interId, stepType) => {
   }
   return async (dispatch) => {
     try {
-      const result = await RestUtil.get(`${thisAPI}?interId=${interId}`)
+      const result = await RestUtil.get(`${thisAPI}?interId=${interId}&nodeNo=${nodeNo}`)
       if (result.data.code === 0) {
         dispatch({ type: thisTYPE, payload: result.data.data })
       } else {

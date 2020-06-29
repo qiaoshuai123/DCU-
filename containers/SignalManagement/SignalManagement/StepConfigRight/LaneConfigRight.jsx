@@ -3,7 +3,7 @@ import { Input, Icon, message, Modal } from 'antd'
 import classNames from 'classnames'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { getStepStatus, getPicListsType, getInfoListsType, postDelInfoType } from '../../../../reactRedux/actions/signalmanagementActions'
+import { getStepStatus, getPicListsType, getInfoListsType, getDelInfoType } from '../../../../reactRedux/actions/signalmanagementActions'
 import styles from '../SignalManagement.scss'
 
 class LaneConfigRight extends PureComponent {
@@ -27,11 +27,8 @@ class LaneConfigRight extends PureComponent {
   popLayerShowHide = (name, flag) => {
     this.props.popLayerShowHide(name, flag)
   }
-  handleClickFind = () => {
-    this.setState({
-      clickFlag: true,
-    })
-    console.log('找到对应数据')
+  handleClickFind = (e) => {
+    this.props.tagToPicMark(e)
   }
   delListItem = (e, id) => {
     e.stopPropagation();
@@ -41,7 +38,7 @@ class LaneConfigRight extends PureComponent {
       cancelText: '取消',
       okText: '确认',
       onOk() {
-        const resultP = Promise.resolve(_this.props.postDelInfoType(id, 'LANE'))
+        const resultP = Promise.resolve(_this.props.getDelInfoType(id, 'LANE'))
         resultP.then((res)=>{
           _this.props.getStepStatus(_this.props.roadId, _this.props.roadNodeNo)
           _this.props.getPicListsType(_this.props.roadInterId, _this.props.roadNodeNo, 'LANE')
@@ -58,14 +55,14 @@ class LaneConfigRight extends PureComponent {
       <div className={styles.conBox}>
         <div className={styles.rTit}>车道配置列表<em onClick={() => { this.popLayerShowHide("stepRoadAddEdit", true) }}>添加</em></div>
         <div className={styles.rList}>
-          <div className={styles.listItem}>
+          { laneLists === null || laneLists.length === 0 ? <div className={styles.noData}>暂无数据</div> : <div className={styles.listItem}>
             <em>车道号</em>
             <em>道路编号</em>
             <em>转向</em>
             <em>通行方向描述</em>
             <em>外部车道号</em>
             <em>操作</em>
-          </div>
+          </div> }
           {
             laneLists && laneLists.map((item) => {
               return <div onClick={this.handleClickFind} key={'lane'+item.laneId} tag-mark={'lane'+item.laneId} className={classNames(styles.listItem, clickFlag ? styles.current : null)}>
@@ -78,7 +75,6 @@ class LaneConfigRight extends PureComponent {
                       </div>
             })
           }
-          
         </div>
       </div>
     )
@@ -95,7 +91,7 @@ const mapDisPatchToProps = (dispatch) => {
     getStepStatus: bindActionCreators(getStepStatus, dispatch),
     getPicListsType: bindActionCreators(getPicListsType, dispatch),
     getInfoListsType: bindActionCreators(getInfoListsType, dispatch),
-    postDelInfoType: bindActionCreators(postDelInfoType, dispatch),
+    getDelInfoType: bindActionCreators(getDelInfoType, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(LaneConfigRight)

@@ -10,6 +10,10 @@ $stepBor_col: #393f4f;
     width: 100%;
     height: 100%;
     background-color: #021035;
+    .imgCurrent{
+        padding:14px;
+        border:2px yellow dotted;
+    }
     .mouseStatus{
         cursor: move!important;
     }
@@ -345,6 +349,12 @@ $stepBor_col: #393f4f;
                 padding: 0 20px;
                 font-size: 12px;
                 color: #bbbdbc;
+                .noData{
+                    font-size: 16px;
+                    border: 2px solid #393f4f;
+                    padding: 50px 0;
+                    text-align: center;
+                }
                 .rTit {
                     line-height: 35px;
                     font-size: 14px;
@@ -430,9 +440,7 @@ $stepBor_col: #393f4f;
                         > span {
                             border-bottom: 1px solid #26394a;
                         }
-                        span.current {
-                            background-color: #153a61;
-                        }
+                        
                         &:hover span {
                             background-color: #153a61;
                         }

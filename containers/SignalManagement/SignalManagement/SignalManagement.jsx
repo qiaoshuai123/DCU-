@@ -163,6 +163,24 @@ class SignalManagement extends PureComponent {
     e.stopPropagation()
     e.preventDefault()
   }
+  tagToPicMark = (e) => {
+    const idStr = e.currentTarget.getAttribute("tag-mark");
+    if ($(e.currentTarget).hasClass(styles.hover)){
+      $(e.currentTarget).removeClass(styles.hover)
+      $('div[pic-mark]').map(( i, item ) => {
+        if (item.getAttribute('pic-mark') === idStr) {
+          $(item).removeClass(styles.imgCurrent)
+        }
+      })
+    } else {
+      $(e.currentTarget).addClass(styles.hover).siblings().removeClass(styles.hover)
+      $('div[pic-mark]').map(( i, item ) => {
+        if (item.getAttribute('pic-mark') === idStr) {
+          $(item).addClass(styles.imgCurrent).siblings().removeClass(styles.imgCurrent)
+        }
+      })
+    }
+  }
   // 更新参数
   setGetParams = params => {
     // debugger
@@ -544,7 +562,9 @@ class SignalManagement extends PureComponent {
                     popLayerShowHide={this.popLayerShowHide} 
                     roadInterId={roadInterId}
                     roadNodeNo={roadNodeNo}
-                    isMoveFlag={stepRoadFlag} /> : null
+                    isClick={stepRoadFlag}
+                    isMoveFlag={stepRoadFlag} 
+                  /> : null
                 }
                 {/* 左侧灯组回显 */}
                 { stepThreeFlag ?
@@ -553,11 +573,14 @@ class SignalManagement extends PureComponent {
                       popLayerShowHide={this.popLayerShowHide} 
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
-                      isMoveFlag={stepRoadFlag} />
+                      isClick={stepRoadFlag}
+                      isMoveFlag={stepRoadFlag} 
+                    />
                     <LightConfigLeft {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
+                      isClick={stepThreeFlag}
                       isMoveFlag={stepThreeFlag}
                     />
                   </div> : null
@@ -569,17 +592,151 @@ class SignalManagement extends PureComponent {
                       popLayerShowHide={this.popLayerShowHide} 
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
-                      isMoveFlag={stepRoadFlag} />
+                      isClick={stepRoadFlag} 
+                      isMoveFlag={stepRoadFlag} 
+                    />
                     <LightConfigLeft {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
+                      isClick={stepThreeFlag}
                       isMoveFlag={stepThreeFlag}
                     />
                     <DetectorConfigLeft {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
+                      isClick={stepFourFlag}
+                      isMoveFlag={stepFourFlag}
+                    />
+                  </div> : null
+                }
+                {/* 左侧相位回显 */}
+                { stepFiveFlag ?
+                  <div>
+                  <LaneConfigLeft  {...this.props} 
+                      popLayerShowHide={this.popLayerShowHide} 
+                      roadInterId={roadInterId}
+                      roadNodeNo={roadNodeNo}
+                      isClick={stepRoadFlag} 
+                      isMoveFlag={stepRoadFlag} 
+                    />
+                    <LightConfigLeft {...this.props} 
+                      popLayerShowHide={this.popLayerShowHide} 
+                      roadInterId={roadInterId}
+                      roadNodeNo={roadNodeNo}
+                      isClick={stepFiveFlag}
+                      isMoveFlag={stepThreeFlag}
+                    />
+                    <DetectorConfigLeft {...this.props} 
+                      popLayerShowHide={this.popLayerShowHide} 
+                      roadInterId={roadInterId}
+                      roadNodeNo={roadNodeNo}
+                      isClick={stepFourFlag}
+                      isMoveFlag={stepFourFlag}
+                    />
+                  </div> : null
+                }
+                {/* 左侧阶段回显 */}
+                { stepSixFlag ?
+                  <div>
+                  <LaneConfigLeft  {...this.props} 
+                      popLayerShowHide={this.popLayerShowHide} 
+                      roadInterId={roadInterId}
+                      roadNodeNo={roadNodeNo}
+                      isClick={stepRoadFlag} 
+                      isMoveFlag={stepRoadFlag} 
+                    />
+                    <LightConfigLeft {...this.props} 
+                      popLayerShowHide={this.popLayerShowHide} 
+                      roadInterId={roadInterId}
+                      roadNodeNo={roadNodeNo}
+                      isClick={stepThreeFlag}
+                      isMoveFlag={stepThreeFlag}
+                    />
+                    <DetectorConfigLeft {...this.props} 
+                      popLayerShowHide={this.popLayerShowHide} 
+                      roadInterId={roadInterId}
+                      roadNodeNo={roadNodeNo}
+                      isClick={stepFourFlag}
+                      isMoveFlag={stepFourFlag}
+                    />
+                  </div> : null
+                }
+                {/* 左侧配时方案回显 */}
+                { stepSevenFlag ?
+                  <div>
+                  <LaneConfigLeft  {...this.props} 
+                      popLayerShowHide={this.popLayerShowHide} 
+                      roadInterId={roadInterId}
+                      roadNodeNo={roadNodeNo}
+                      isClick={stepRoadFlag} 
+                      isMoveFlag={stepRoadFlag} 
+                    />
+                    <LightConfigLeft {...this.props} 
+                      popLayerShowHide={this.popLayerShowHide} 
+                      roadInterId={roadInterId}
+                      roadNodeNo={roadNodeNo}
+                      isClick={stepThreeFlag}
+                      isMoveFlag={stepThreeFlag}
+                    />
+                    <DetectorConfigLeft {...this.props} 
+                      popLayerShowHide={this.popLayerShowHide} 
+                      roadInterId={roadInterId}
+                      roadNodeNo={roadNodeNo}
+                      isClick={stepFourFlag}
+                      isMoveFlag={stepFourFlag}
+                    />
+                  </div> : null
+                }
+                {/* 左侧日计划回显 */}
+                { stepEightFlag ?
+                  <div>
+                  <LaneConfigLeft  {...this.props} 
+                      popLayerShowHide={this.popLayerShowHide} 
+                      roadInterId={roadInterId}
+                      roadNodeNo={roadNodeNo}
+                      isClick={stepRoadFlag} 
+                      isMoveFlag={stepRoadFlag} 
+                    />
+                    <LightConfigLeft {...this.props} 
+                      popLayerShowHide={this.popLayerShowHide} 
+                      roadInterId={roadInterId}
+                      roadNodeNo={roadNodeNo}
+                      isClick={stepThreeFlag}
+                      isMoveFlag={stepThreeFlag}
+                    />
+                    <DetectorConfigLeft {...this.props} 
+                      popLayerShowHide={this.popLayerShowHide} 
+                      roadInterId={roadInterId}
+                      roadNodeNo={roadNodeNo}
+                      isClick={stepFourFlag}
+                      isMoveFlag={stepFourFlag}
+                    />
+                  </div> : null
+                }
+                {/* 左侧调度回显 */}
+                { stepNineFlag ?
+                  <div>
+                  <LaneConfigLeft  {...this.props} 
+                      popLayerShowHide={this.popLayerShowHide} 
+                      roadInterId={roadInterId}
+                      roadNodeNo={roadNodeNo}
+                      isClick={stepRoadFlag} 
+                      isMoveFlag={stepRoadFlag} 
+                    />
+                    <LightConfigLeft {...this.props} 
+                      popLayerShowHide={this.popLayerShowHide} 
+                      roadInterId={roadInterId}
+                      roadNodeNo={roadNodeNo}
+                      isClick={stepThreeFlag}
+                      isMoveFlag={stepThreeFlag}
+                    />
+                    <DetectorConfigLeft {...this.props} 
+                      popLayerShowHide={this.popLayerShowHide} 
+                      roadInterId={roadInterId}
+                      roadNodeNo={roadNodeNo}
+                      isClick={stepFourFlag}
                       isMoveFlag={stepFourFlag}
                     />
                   </div> : null
@@ -595,18 +752,21 @@ class SignalManagement extends PureComponent {
                     roadId={roadId}
                     roadInterId={roadInterId}
                     roadNodeNo={roadNodeNo}
+                    tagToPicMark={this.tagToPicMark}
                     popLayerShowHide={this.popLayerShowHide} /> : 
                   stepThreeFlag ?
                     <LightConfigRight
                     roadId={roadId}
                     roadInterId={roadInterId}
                     roadNodeNo={roadNodeNo}
+                    tagToPicMark={this.tagToPicMark}
                     popLayerShowHide={this.popLayerShowHide} /> : 
                   stepFourFlag ? 
                     <DetectorConfigRight
                     roadId={roadId}
                     roadInterId={roadInterId}
                     roadNodeNo={roadNodeNo}
+                    tagToPicMark={this.tagToPicMark}
                     popLayerShowHide={this.popLayerShowHide} /> : 
                   stepFiveFlag ?  
                     <PhaseConfigRight 

@@ -48,7 +48,7 @@ class LaneConfigLeft extends PureComponent {
       <div>
         {
           lanePicLists.length > 0 && lanePicLists.map((item, i) => {
-            return <ImgEvent key={'lane'+item.id} isMoveFlag={this.props.isMoveFlag} imgMsg={item} typeUrl={'lane'} popLayerShowHide={this.popLayerShowHide} />
+            return <ImgEvent {...this.props} key={'lane'+item.id} isMoveFlag={this.props.isMoveFlag} isClick={this.props.isClick} imgMsg={item} typeUrl={'lane'} popLayerShowHide={this.popLayerShowHide} />
           })
         }
       </div>
