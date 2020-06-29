@@ -29,9 +29,9 @@ class EquipmentManagement extends Component {
     window.showHidePop = this.showHidePop
     window.setGetParams = this.setGetParams
     this.props.getMapUnitInfoList()
-    document.addEventListener('click', (e) => {
-      this.visibleShowLeft('', '', false)
-    })
+    // document.addEventListener('click', (e) => {
+    //   this.visibleShowLeft('', '', false)
+    // })
   }
   componentDidUpdate = (prevState) => {
     const { mapPointsData, getObjNum } = this.props.data
@@ -65,9 +65,7 @@ class EquipmentManagement extends Component {
     const _this = this
     let marker, lng, lat
     const childrenArr = this.props.data.dcuTreeData
-    console.log(childrenArr, index, 'qiaos')
     childrenArr[index].units && childrenArr[index].units.map((item) => {
-      console.log(12346798)
       if (childId === item.id) {
         lng = item.lng
         lat = item.lat
@@ -81,7 +79,6 @@ class EquipmentManagement extends Component {
         })
       }
     })
-    console.log(marker, '123')
     if (marker && this.map) {
       this.map.setCenter([lng, lat])
       marker.emit('click', {
@@ -98,9 +95,13 @@ class EquipmentManagement extends Component {
       this.loadingMap()
     })
   }
-  setGetParams = (params) => {
-    console.log(params, 'sffsfsf')
-    window.open(`#roaddetail/1`)
+  setGetParams = (id, bac) => {
+    console.log(123456789)
+    // window.open(`#roaddetail/1`)
+    window.open(`#roaddetail?id=${id}&bac=${bac}`)
+  }
+  btnClick = (e) => {
+    this.visibleShowLeft('', '', false)
   }
   visibleShowLeft = (top, id, show, objs) => { // 框的跳转与位置
     if (objs) {
@@ -111,15 +112,18 @@ class EquipmentManagement extends Component {
           visible: show,
           visibleTop: top,
         }, () => {
-          console.log(id, '显示右键信息')
+          // console.log(id, '显示右键信息')
         })
       } else {
         this.setState({
           visible: show,
         })
       }
+    } else {
+      this.setState({
+        visible: show,
+      })
     }
-
   }
   // 创建地图层
   loadingMap = () => {
@@ -205,7 +209,7 @@ class EquipmentManagement extends Component {
     info.push(`<p class='input-item'>信号运行方案：<span class='greenFont'>` + '早高峰' + `</span></p>`);
     info.push(`<p class='input-item'>信号控制方式：<span class='greenFont'>` + '实时优化控制' + `</span></p>`);
     info.push(`<p class='input-item' style='height:15px;'></p>`);
-    info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams("我是路口")'>参数配置</span></p>`);
+    info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(${dataItem.interId},${dataItem.background})'>参数配置</span></p>`);
     const infoWindow = new AMap.InfoWindow({
       content: info.join("")  //使用默认信息窗体框样式，显示信息内容
     });
@@ -279,7 +283,7 @@ class EquipmentManagement extends Component {
     return (
       <div className={styles.EquipmentManagementBox}>
         <Header {...this.props} />
-        <div className={styles.Interwork_left}>
+        <div onClick={this.btnClick} className={styles.Interwork_left}>
           <div className={styles.InterworkLeft_search}>
             <Search
               placeholder="关键词搜索"
