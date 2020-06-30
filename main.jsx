@@ -97,6 +97,11 @@ const EquipmentManagement = Loadable({
   loading: Loading,
   delay: 0,
 })
+const Information = Loadable({
+  loader: () => import('./containers/EquipmentManagement/Information/Information'),
+  loading: Loading,
+  delay: 0,
+})
 const Parent = () => (
   <React.Fragment>
     {/* <Route path="*" component={SystemMenu} /> */}
@@ -122,6 +127,7 @@ const Parent = () => (
     <Route path="/functionfault" component={FunctionFault} />
     {/* 设备参数管理 */}
     <Route path="/equipmentManagement" component={EquipmentManagement} />
+    <Route path="/information" component={Information} />
     <Route path="/demo" component={Demo} />
   </React.Fragment>
 )

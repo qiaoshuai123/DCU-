@@ -1,16 +1,13 @@
 $stepBor_col: #393f4f;
 .Information {
   width: 100%;
-  height: calc(100% - 60px);
-  position: absolute;
-  top: 60px;
-  z-index: 10;
+  height: 100%;
   padding: 0 20px 20px;
   background-color: #1f2531;
   display: flex;
   justify-content: space-between;
   .stepLeftCon {
-    width: calc(66% - 2px);
+    width: calc(100% - 635px);
     height: 100%;
     border-right: 2px solid $stepBor_col;
     display: flex;
@@ -136,8 +133,8 @@ $stepBor_col: #393f4f;
       }
     }
     .leftItemCon {
-      width: 945px;
-      height: 780px;
+      width: 90%;
+      height: 90%;
       margin: 0 auto;
       position: relative;
       background: url(../../../images/intersectionBg.png) no-repeat;
@@ -171,13 +168,17 @@ $stepBor_col: #393f4f;
     }
   }
   .stepRightCon {
-    width: 34%;
+    width: 635px;
     height: 100%;
     .conBox {
+      height: 100%;
       padding: 0 20px;
       font-size: 12px;
       color: #bbbdbc;
+      display: flex;
+      flex-direction: column;
       .rTit {
+        height: 35px;
         line-height: 35px;
         font-size: 14px;
         position: relative;
@@ -200,7 +201,8 @@ $stepBor_col: #393f4f;
       .rCon {
         border: 1px solid $stepBor_col;
         padding: 15px;
-        display: block;
+        flex: 1;
+        overflow: auto;
         .itemInputBox {
           display: flex;
           justify-content: center;

@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
 import { Input, Icon, Radio, message, Upload } from 'antd'
-import classNames from 'classnames'
+// import Websocket from 'react-websocket';
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { getdcuByInterId, getsignalByInterId } from '../../../reactRedux/actions/equipmentManagement'
 import styles from './Information.scss'
 
 // 图片转64位
@@ -25,10 +28,91 @@ class Information extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      interRoadBg: '',
-      baseMapFlag: false, // 是否显示
-      baseMapValue: 1, // 选择底图
-      imageUrl: '',
+      deviceIdDCU: '', // DCU设备编号
+      maintainPhoneDCU: '', // DCU维护电话
+      serverTimeZone: '', // DCU时区
+      interIdDCU: ' ', // 点位ID
+      manufactor: '', // DCU生产厂家  可能后端提供名称错误
+      deviceModel: '', // DCU设备型号
+      signalConnectIp: '', // DCU的IP1设置（信号机通讯）
+      signalConnectPort: '', // DCU的IP1端口号设置（信号机通讯）
+      signalContentMask: '', // DCU的ip1子网掩码（信号机通讯）
+      applicationConnectIp: '', //  DCU的IP2设置（平台系统通讯)
+      applicationConnectPort: '', // DCU的IP2端口号设置（平台系统通讯）
+      applicationConnectMask: '', // DCU的ip2子网掩码（平台系统通讯)
+      applicationIp: '', // 平台系统IP
+      applicationPort: '', // 平台系统端口号
+      signalIp: '', // 信号机IP
+      signalPort: '', // 信号机端口号
+      signalType: '', // 信号机类型
+      detectorType: '', // 检测器类型
+      interIdsignal: '', // 点位ID
+      brand: '', // 生产厂家
+      deviceVersion: '', // 设备版本
+      deviceIdsignal: '', // 设备ID
+      productionDate: '', // 出厂日期,
+      configurationDate: '', // 配置日期
+      serverIp: '', // 上位机IP
+      timeZone: '', // 时区
+      ip: '', // IP
+      port: '', // 端口号
+      gpsClockSign: '', // GPS时钟标志
+      subnetMask: '', // 子网掩码
+      gateway: '', // 网关
+      serverPort: '', // 通信端口
+      maintainPhonesignal: '', // 维护电话
+    }
+    this.formDcu = {
+      dcudeviceId: '设备编号', // DCU设备编号
+      maintainPhoneDCU: '维护电话', // DCU维护电话
+      serverTimeZone: '时区', // DCU时区
+      manufactor: '生产厂家', // DCU生产厂家
+      deviceModel: '设备型号', // DCU设备型号
+      signalConnectIp: 'IP1设置', // DCU的IP1设置（信号机通讯）
+      signalConnectPort: 'IP1端口号设置', // DCU的IP1端口号设置（信号机通讯）
+      signalContentMask: 'ip1子网掩码', // DCU的ip1子网掩码（信号机通讯）
+      applicationConnectIp: 'IP2设置', //  DCU的IP2设置（平台系统通讯)
+      applicationConnectPort: 'IP2端口号设置', // DCU的IP2端口号设置（平台系统通讯）
+      applicationConnectMask: 'ip2子网掩码', // DCU的ip2子网掩码（平台系统通讯)
+      applicationIp: '平台系统IP', // 平台系统IP
+      applicationPort: '平台系统端口号', // 平台系统端口号
+      signalIp: '信号机IP', // 信号机IP
+      signalPort: '信号机端口号', // 信号机端口号
+      signalType: '信号机类型', // 信号机类型
+      detectorType: '检测器类型', // 检测器类型
+    }
+    this.formsignal = {
+      brand: '生产厂家 ', // 生产厂家
+      deviceVersion: '设备版本', // 设备版本
+      deviceId: 'deviceId', // 设备ID
+      productionDate: 'productionDate', // 出厂日期,
+      configurationDate: 'configurationDate', // 配置日期
+      serverIp: '上位机IP', // 上位机IP
+      timeZone: '时区 ', // 时区
+      ip: 'IP', // IP
+      port: '端口号', // 端口号
+      gpsClockSign: 'GPS时钟标志', // GPS时钟标志
+      subnetMask: '子网掩码 ', // 子网掩码
+      gateway: '网关', // 网关
+      serverPort: '通信端口', // 通信端口
+      maintainPhonesignal: '维护电话', // 维护电话
+    }
+  }
+  componentWillMount = () => {
+    this.getInter()
+  }
+  componentDidMount = () => {
+    // 接收传递来的路口interId
+    this.props.getdcuByInterId(1)
+    this.props.getsignalByInterId(1)
+  }
+  componentDidUpdate = (prevState) => {
+    const { getInterId, signalByInterId } = this.props.data
+    if (prevState.data.getInterId !== getInterId) {
+      this.getgetInterId(getInterId)
+    }
+    if (prevState.data.signalByInterId !== signalByInterId) {
+      this.getsignalByInterId(signalByInterId)
     }
   }
   // step2 底图选择
@@ -37,6 +121,88 @@ class Information extends Component {
     this.setState({
       baseMapValue: e.target.value,
     })
+  }
+  getgetInterId = (getInterId) => {
+    console.log(getInterId, 'qiao')
+    const {
+      id, deviceId, interId, serverTimeZone, manufactor,
+      maintainPhone, deviceModel, signalConnectIp, signalConnectPort,
+      signalContentMask, applicationConnectIp, applicationConnectPort, applicationConnectMask,
+      applicationIp, applicationPort, signalIp, signalPort, signalType,
+      detectorType,
+    } = getInterId
+    this.id = id
+    this.setState({
+      interIdDCU: interId,
+      deviceIdDCU: deviceId,
+      serverTimeZone,
+      manufactor,
+      maintainPhoneDCU: maintainPhone,
+      deviceModel,
+      signalConnectIp,
+      signalConnectPort,
+      signalContentMask,
+      applicationConnectIp,
+      applicationConnectPort,
+      applicationConnectMask,
+      applicationIp,
+      applicationPort,
+      signalIp,
+      signalPort,
+      signalType,
+      detectorType,
+    })
+  }
+  getsignalByInterId = (signalByInterId) => {
+    console.log(signalByInterId, 'qiao')
+    const {
+      interId, brand, deviceVersion, deviceId, productionDate,
+      configurationDate, serverIp, timeZone, ip, port,
+      gpsClockSign, subnetMask, gateway, serverPort, maintainPhone,
+    } = signalByInterId
+    this.setState({
+      interIdsignal: interId,
+      brand,
+      deviceVersion,
+      deviceIdsignal: deviceId,
+      productionDate,
+      configurationDate,
+      serverIp,
+      timeZone,
+      port,
+      gpsClockSign,
+      subnetMask,
+      gateway,
+      serverPort,
+      maintainPhonesignal: maintainPhone,
+    })
+  }
+  getInter = () => {
+    const { search } = this.props.location
+    const nums = search.indexOf('&')
+    this.interId = search.substring(4, nums)
+    this.bac = search.substr(nums + 5)
+  }
+  // 更改input框内容
+  handleChangeValue = (e) => {
+    const interName = e.target.getAttribute('path')
+    const values = e.target.value
+    this.setState({
+      [interName]: values,
+    })
+    // if (optios) {
+    //   const { pname } = optios.props
+    //   this.setState({
+    //     [pname]: e,
+    //   })
+    //   this.interTypeNum = e
+    // } else {
+    //   const interName = e.target.getAttribute('paths')
+    //   const values = e.target.value
+    //   this.setState({
+    //     [interName]: values,
+    //   })
+    // }
   }
   handleChangeBaseMap = (info) => {
     if (info.file.status === 'uploading') {
@@ -70,14 +236,27 @@ class Information extends Component {
       [name]: flag,
     })
   }
+  // handleData = (a) => {
+  //   console.log(a, '1122')
+  // }
   render() {
-    const { Search } = Input
-    const { interRoadBg, baseMapFlag, imageUrl } = this.state
+    const {
+      interRoadBg, baseMapFlag, imageUrl, deviceIdDCU, serverTimeZone,
+      manufactor, maintainPhoneDCU, deviceModel, signalConnectIp,
+      signalConnectPort, signalContentMask, applicationConnectIp, applicationConnectPort,
+      applicationConnectMask, applicationIp, applicationPort, signalIp, signalPort,
+      signalType, detectorType, brand, deviceVersion, deviceIdsignal,
+      productionDate, configurationDate, serverIp, timeZone, ip,
+      port, gpsClockSign, subnetMask, gateway, serverPort, maintainPhonesignal,
+    } = this.state
     const uploadButton = (
       <em>{this.state.baseLoading ? <span><Icon type="loading" /> loading</span> : '上 传'}</em>
     )
     return (
       <div className={styles.Information}>
+        {/* <Websocket
+          url="ws://192.168.1.213:20203/DCU/websocket/interRunState/1/1/1"
+          onMessage={this.handleData.bind(this)} /> */}
         <div className={styles.stepLeftCon}>
           {/* <div className={styles.leftItemCon}> */}
           <div
@@ -134,62 +313,104 @@ class Information extends Component {
             {/* 表单 */}
             <div className={styles.rCon}>
               <div className={styles.itemInputBox}>
-                <span>信号机编号：</span><Input placeholder="请输入编号" />
+                <span>设备编号：</span><Input path="deviceIdDCU" onChange={this.handleChangeValue} value={deviceIdDCU} placeholder="请输入设备编号" />
               </div>
               <div className={styles.itemInputBox}>
-                <span>信号机IP：</span><Input placeholder="请输入IP" />
+                <span>信号机IP：</span><Input path="signalIp" onChange={this.handleChangeValue} value={signalIp} placeholder="请输入IP" />
               </div>
               <div className={styles.itemInputBox}>
-                <span>子网掩码：</span><Input placeholder="请输入掩码" />
+                <span>设备型号：</span><Input path="deviceModel" onChange={this.handleChangeValue} value={deviceModel} placeholder="请输入设备型号" />
               </div>
               <div className={styles.itemInputBox}>
-                <span>网 关：</span><Input placeholder="请输入网关" />
+                <span>时区：</span><Input path="serverTimeZone" onChange={this.handleChangeValue} value={serverTimeZone} placeholder="请输入时区" />
               </div>
               <div className={styles.itemInputBox}>
-                <span>上位机IP：</span><Input placeholder="请输入IP" />
+                <span>IP1设置：</span><Input path="signalConnectIp" onChange={this.handleChangeValue} value={signalConnectIp} placeholder="请输入IP1设置" />
               </div>
               <div className={styles.itemInputBox}>
-                <span>通讯端口：</span><Input placeholder="请输入端口" />
+                <span>IP1端口号设置：</span><Input path="signalConnectPort" onChange={this.handleChangeValue} value={signalConnectPort} placeholder="请输入IP1设置" />
               </div>
               <div className={styles.itemInputBox}>
-                <span>信号机时区：</span><Input placeholder="请输入时区" />
+                <span>IP1子网掩码：</span><Input path="signalContentMask" onChange={this.handleChangeValue} value={signalContentMask} placeholder="请输入IP子网掩码" />
               </div>
               <div className={styles.itemInputBox}>
-                <span>生产厂商：</span><Input type="number" placeholder="请输入数量" />
+                <span>IP2设置：</span><Input path="applicationConnectIp" onChange={this.handleChangeValue} value={applicationConnectIp} placeholder="请输入IP2" />
               </div>
               <div className={styles.itemInputBox}>
-                <span>维护电话：</span><Input placeholder="请输入标志" />
+                <span>IP2端口号设置：</span><Input path="applicationConnectPort" onChange={this.handleChangeValue} value={applicationConnectPort} placeholder="请输入IP2端口号" />
+              </div>
+              <div className={styles.itemInputBox}>
+                <span>IP2子网掩码：</span><Input path="applicationConnectMask" onChange={this.handleChangeValue} value={applicationConnectMask} placeholder="请输入IP2子网掩码" />
+              </div>
+              <div className={styles.itemInputBox}>
+                <span>平台系统IP：</span><Input path="applicationIp" onChange={this.handleChangeValue} value={applicationIp} placeholder="请输入端口平台系统IP" />
+              </div>
+              <div className={styles.itemInputBox}>
+                <span>平台系统端口号：</span><Input path="applicationPort" onChange={this.handleChangeValue} value={applicationPort} placeholder="请输入平台系统端口号" />
+              </div>
+              <div className={styles.itemInputBox}>
+                <span>信号机IP：</span><Input path="signalIp" onChange={this.handleChangeValue} value={signalIp} placeholder="请输入信号机IP" />
+              </div>
+              <div className={styles.itemInputBox}>
+                <span>信号机端口号：</span><Input path="signalPort" onChange={this.handleChangeValue} value={signalPort} placeholder="请输入信号机端口号" />
+              </div>
+              <div className={styles.itemInputBox}>
+                <span>信号机类型：</span><Input path="signalType" onChange={this.handleChangeValue} value={signalType} placeholder="请输入信号机类型" />
+              </div>
+              <div className={styles.itemInputBox}>
+                <span>检测器类型：</span><Input path="detectorType" onChange={this.handleChangeValue} value={detectorType} placeholder="请输入检测器类型" />
+              </div>
+              <div className={styles.itemInputBox}>
+                <span>生产厂家：</span><Input path="manufactor" onChange={this.handleChangeValue} value={manufactor} placeholder="请输入生产厂家" />
+              </div>
+              <div className={styles.itemInputBox}>
+                <span>维护电话：</span><Input path="maintainPhoneDCU" onChange={this.handleChangeValue} value={maintainPhoneDCU} type="number" placeholder="请输入维护电话" />
               </div>
             </div>
             {/* 列表 */}
             <div className={styles.rTit}><span>信号机基础信息</span><em>保存</em><em>设置重启</em></div>
             <div className={styles.rCon}>
               <div className={styles.itemInputBox}>
-                <span>信号机编号：</span><Input placeholder="请输入编号" />
+                <span>生产厂家：</span><Input path="brand" onChange={this.handleChangeValue} value={brand} placeholder="请输入生产厂家" />
               </div>
               <div className={styles.itemInputBox}>
-                <span>信号机IP：</span><Input placeholder="请输入IP" />
+                <span>设备版本</span><Input path="deviceVersion" onChange={this.handleChangeValue} value={deviceVersion} placeholder="请输入设备版本" />
               </div>
               <div className={styles.itemInputBox}>
-                <span>子网掩码：</span><Input placeholder="请输入掩码" />
+                <span>设备ID：</span><Input path="deviceIdsignal" onChange={this.handleChangeValue} value={deviceIdsignal} placeholder="请输入设备ID" />
               </div>
               <div className={styles.itemInputBox}>
-                <span>网 关：</span><Input placeholder="请输入网关" />
+                <span>上位机IP：</span><Input path="serverIp" onChange={this.handleChangeValue} value={serverIp} placeholder="请输入上位机IP" />
               </div>
               <div className={styles.itemInputBox}>
-                <span>上位机IP：</span><Input placeholder="请输入IP" />
+                <span>时区：</span><Input path="timeZone" onChange={this.handleChangeValue} value={timeZone} placeholder="请输入时区" />
               </div>
               <div className={styles.itemInputBox}>
-                <span>通讯端口：</span><Input placeholder="请输入端口" />
+                <span>端口号：</span><Input path="port" onChange={this.handleChangeValue} value={port} placeholder="请输入端口号" />
               </div>
               <div className={styles.itemInputBox}>
-                <span>信号机时区：</span><Input placeholder="请输入时区" />
+                <span>IP：</span><Input path="ip" onChange={this.handleChangeValue} value={ip} placeholder="请输入IP" />
               </div>
               <div className={styles.itemInputBox}>
-                <span>控制路口数：</span><Input type="number" placeholder="请输入数量" />
+                <span>GPS时钟标志：</span><Input path="gpsClockSign" onChange={this.handleChangeValue} value={gpsClockSign} placeholder="请输入GPS时钟标志" />
               </div>
               <div className={styles.itemInputBox}>
-                <span>GPS时钟标志：</span><Input placeholder="请输入标志" />
+                <span>出厂日期：</span><Input path="productionDate" onChange={this.handleChangeValue} value={productionDate} placeholder="请输入出厂日期" />
+              </div>
+              <div className={styles.itemInputBox}>
+                <span>配置日期：</span><Input path="configurationDate" onChange={this.handleChangeValue} value={configurationDate} placeholder="请输入配置日期" />
+              </div>
+              <div className={styles.itemInputBox}>
+                <span>子网掩码</span><Input path="subnetMask" onChange={this.handleChangeValue} value={subnetMask} placeholder="请输入子网掩码" />
+              </div>
+              <div className={styles.itemInputBox}>
+                <span>网关：</span><Input path="gateway" onChange={this.handleChangeValue} value={gateway} placeholder="请输入网关" />
+              </div>
+              <div className={styles.itemInputBox}>
+                <span>通信端口：</span><Input path="serverPort" onChange={this.handleChangeValue} value={serverPort} placeholder="请输入通信端口" />
+              </div>
+              <div className={styles.itemInputBox}>
+                <span>维护电话：</span><Input path="maintainPhonesignal" onChange={this.handleChangeValue} value={maintainPhonesignal} placeholder="请输入维护电话" />
               </div>
             </div>
           </div>
@@ -199,4 +420,15 @@ class Information extends Component {
   }
 }
 
-export default Information
+const mapStateToProps = (state) => {
+  return {
+    data: { ...state.equipmentManagement },
+  }
+}
+const mapDisPatchToProps = (dispatch) => {
+  return {
+    getdcuByInterId: bindActionCreators(getdcuByInterId, dispatch),
+    getsignalByInterId: bindActionCreators(getsignalByInterId, dispatch),
+  }
+}
+export default connect(mapStateToProps, mapDisPatchToProps)(Information)

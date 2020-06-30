@@ -59,7 +59,6 @@ class CustomTree extends React.Component {
           codeName: name,
           dictCode: code,
         }
-        console.log(132)
         this.props.getRegionNum(objs)
       }
     }
@@ -87,6 +86,7 @@ class CustomTree extends React.Component {
     if (!boolean) {
       const top = e.pageY
       if (e.button === 2) {
+        console.log(top, id, true, objs, '1111111')
         visibleShowLeft(top, id, true, objs)
       }
     } else {

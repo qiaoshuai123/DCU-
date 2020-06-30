@@ -63,3 +63,9 @@ export const GET_DEL_DISPATCH_INFO = 'GET_DEL_DISPATCH_INFO' //调度配置删�
 
 /** *************设备参数管理************* */
 export const GET_DELNUM = 'GET_DELNUM' // 修改添加弹窗
+export const GET_DEL_DCUBYINTERID = 'GET_DEL_DCUBYINTERID'
+export const GET_DEL_SIGNALBYINTERID = 'GET_DEL_SIGNALBYINTERID'
+
+export const POST_DEL_UPDATEUNIT = 'POST_DEL_UPDATEUNIT'
+export const POST_DEL_FILEUPLOAD = 'POST_DEL_FILEUPLOAD'
+export const GET_DEL_BACKGROUNDLIST = 'GET_DEL_BACKGROUNDLIST'

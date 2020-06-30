@@ -1,7 +1,10 @@
 import React, { Component } from 'react'
 import { Icon } from 'antd'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 import styles from './RoadDetail.scss'
 import RoadImg from './img/road.jpg'
+import { getdcuByInterId } from '../../../reactRedux/actions/equipmentManagement'
 import Equipment from './Equipment/Equipment'
 
 class RoadDetail extends Component {
@@ -16,16 +19,22 @@ class RoadDetail extends Component {
   }
   componentDidMount = () => {
     // 接收传递来的路口id
-    this.getdcuByInterId()
+    this.props.getdcuByInterId(1)
+  }
+  componentDidUpdate = (prevState) => {
+    const { getInterId } = this.props.data
+    if (prevState.data.getInterId !== getInterId) {
+      this.getgetInterId(getInterId)
+    }
+  }
+  getgetInterId = (getInterId) => {
+    console.log(getInterId, 'qiao')
   }
   getInter = () => {
     const { search } = this.props.location
     const nums = search.indexOf('&')
     this.interId = search.substring(4, nums)
     this.bac = search.substr(nums + 5)
-  }
-  getdcuByInterId = () => {
-
   }
   // 关闭控制窗口
   closeStage = () => {
@@ -124,4 +133,14 @@ class RoadDetail extends Component {
   }
 }
 
-export default RoadDetail
+const mapStateToProps = (state) => {
+  return {
+    data: { ...state.equipmentManagement },
+  }
+}
+const mapDisPatchToProps = (dispatch) => {
+  return {
+    getdcuByInterId: bindActionCreators(getdcuByInterId, dispatch),
+  }
+}
+export default connect(mapStateToProps, mapDisPatchToProps)(RoadDetail)

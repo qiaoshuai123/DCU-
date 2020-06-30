@@ -156,6 +156,7 @@ class MessagePage extends Component {
       if (!bos) {
         console.log(this.props.AllList)
         strMsg.id = this.id
+        strMsg.background = null
         this.props.postupdateDcu(strMsg).then((res) => {
           if (res.data.msg === '请求成功') {
             this.props.getUnitTree()
