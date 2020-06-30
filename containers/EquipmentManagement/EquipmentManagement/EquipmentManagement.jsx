@@ -18,7 +18,7 @@ class EquipmentManagement extends Component {
       visibleTop: 0,
       isAddPoint: false,
       isMessagePage: false,
-      isInformation: false,
+      // isInformation: true,
       mapPointsData: null, // 地图中所有的点
       lng: '',
       lat: '',
@@ -96,16 +96,16 @@ class EquipmentManagement extends Component {
     })
   }
   setGetParams = (id, bac) => {
-    console.log(123456789)
+    console.log(id, bac, '12346')
     // window.open(`#roaddetail/1`)
-    window.open(`#roaddetail?id=${id}&bac=${bac}`)
+    window.open(`#/information?id=${id}&bac=${bac}`)
   }
   btnClick = (e) => {
     this.visibleShowLeft('', '', false)
   }
   visibleShowLeft = (top, id, show, objs) => { // 框的跳转与位置
     if (objs) {
-      this.roadId = objs.id
+      this.roadId = id
       this.AllList = objs
       if (top || id) {
         this.setState({
@@ -159,7 +159,7 @@ class EquipmentManagement extends Component {
       interval: 180, // 刷新间隔，默认180s
     });
   }
-  //批量添加点
+  // 批量添加点
   drawMarkers = (positions, layer) => {
     const map = this.map
     if (window[layer]) {
@@ -196,6 +196,7 @@ class EquipmentManagement extends Component {
   }
   //在指定位置打开信息窗体
   openInfoWin = (map, dataItem, marker) => {
+    console.log(dataItem, marker, 'ssss')
     var info = [];
     // this.dataItem = JSON.parse(JSON.stringify(dataItem))
     info.push(`<div class='content_box'>`);
@@ -279,7 +280,7 @@ class EquipmentManagement extends Component {
   }
   render() {
     const { Search } = Input
-    const { isAddPoint, isMessagePage, isInformation, lng, lat, visible, visibleTop } = this.state
+    const { isAddPoint, isMessagePage, lng, lat, visible, visibleTop } = this.state
     return (
       <div className={styles.EquipmentManagementBox}>
         <Header {...this.props} />
@@ -311,9 +312,6 @@ class EquipmentManagement extends Component {
           isMessagePage && <MessagePage closePoint={this.closePoint} AllList={this.AllList} lng={lng} lat={lat} />
         }
         <div className={styles.mapContent} id="mapContent" />
-        {
-          isInformation && <Information />
-        }
         {
           visible &&
           <ul style={{ top: `${visibleTop}px` }} onContextMenu={this.noShow} className={styles.contextMenu}>
