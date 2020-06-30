@@ -143,6 +143,49 @@ class ImgEvent extends React.Component {
           }
         })
       }
+    } else if (!this.timeStep) {
+      const idStr = e.currentTarget.getAttribute("pic-mark");
+      let flagH;
+      if ($(e.currentTarget).hasClass(styles.imgCurrent)) {
+        $(e.currentTarget).removeClass(styles.imgCurrent)
+        $('div[tag-mark]').map(( i, item ) => {
+          if (item.getAttribute('tag-mark') === idStr) {
+            $(item).removeClass(styles.hover)
+          } else if (item.getAttribute('tag-mark') === idStr.replace('lampgroup', '')) {
+            $(item).removeClass(Liststyles.hover)
+          } else if (item.getAttribute('tag-mark') && item.getAttribute('tag-mark').indexOf(',') > -1) {
+            const picLeftArr = item.getAttribute('tag-mark').split(',')
+            for (let s = 0; s < picLeftArr.length; s++){
+              if ($(`div[pic-mark='lampgroup`+picLeftArr[s]+`']`).hasClass(styles.imgCurrent)){
+                flagH = true
+                break
+              } else {
+                if (picLeftArr.length - 1 === s) {
+                  flagH = $(`div[pic-mark='lampgroup`+picLeftArr[s]+`']`).hasClass(styles.imgCurrent)
+                }
+              }
+            }
+            // console.log(flagH, '看下最后状态')
+            flagH ? null : $(item).removeClass(Liststyles.hover)
+          }
+        })
+      } else {
+        $(e.currentTarget).addClass(styles.imgCurrent).siblings().removeClass(styles.imgCurrent)
+        $('div[tag-mark]').map(( i, item ) => {
+          $(item).removeClass(styles.hover)
+          $(item).removeClass(Liststyles.hover)
+          if (item.getAttribute('tag-mark') === idStr) {
+            $(item).addClass(styles.hover).siblings().removeClass(styles.hover)
+          } else if (item.getAttribute('tag-mark') === idStr.replace('lampgroup', '')) {
+            $(item).addClass(Liststyles.hover)
+          } else if (item.getAttribute('tag-mark') && item.getAttribute('tag-mark').indexOf(',') > -1) {
+            const newImgNo = idStr.replace('lampgroup', '')
+            if (item.getAttribute('tag-mark').indexOf(newImgNo) > -1 ) {
+              $(item).addClass(Liststyles.hover)
+            }
+          }
+        })
+      }
     }
   }
   handleDel = (e, id) => {

@@ -42,6 +42,9 @@ class StageConfigRight extends PureComponent {
         case 'phasestageNo':
           newObj = {key: p, label: '阶段编号'}
           break;
+        case 'phasestageName':
+          newObj = {key: p, label: '阶段名称'}
+          break;
         case 'phasestagePhase':
           newObj = {key: p, label: '阶段中包含相位'}
           break;
@@ -58,7 +61,7 @@ class StageConfigRight extends PureComponent {
           newObj = {key: p, label: '阶段中包含车道'}
           break;
         case 'phaseNames':
-          newObj = {key: p, label: '阶段中包含相位'}
+          newObj = {key: p, label: '阶段中包含相位名称'}
           break;     
       }
       if (newObj) listNames.push(newObj) 
@@ -71,14 +74,14 @@ class StageConfigRight extends PureComponent {
   handleClickFind = (e, itemData) => {
     if ($(e.currentTarget).hasClass(Liststyles.hover)){
       $(e.currentTarget).removeClass(Liststyles.hover)
-      if (itemData.phaseLampgroupId.indexOf(',') === -1) {
+      if (itemData.phasestageLampgroup.indexOf(',') === -1) {
         $('div[pic-mark]').map(( i, item ) => {
-          if (item.getAttribute('pic-mark') === ('lampgroup'+itemData.phaseLampgroupId)) {
+          if (item.getAttribute('pic-mark') === ('lampgroup'+itemData.phasestageLampgroup) || item.getAttribute('pic-mark') === ('lane'+itemData.phasestageLane)) {
             $(item).removeClass(styles.imgCurrent)
           }
         })
       } else {
-        const leftSelArr = itemData.phaseLampgroupId.split(',')
+        const leftSelArr = itemData.phasestageLampgroup.split(',')
         leftSelArr.map((items) => {
           $('div[pic-mark]').map(( i, item ) => {
             if (item.getAttribute('pic-mark') === ('lampgroup'+items)) {
@@ -86,20 +89,36 @@ class StageConfigRight extends PureComponent {
             }
           })
         })
+        const leftLaneArr = itemData.phasestageLane.split(',')
+        leftLaneArr.map((items) => {
+          $('div[pic-mark]').map(( i, item ) => {
+            if (item.getAttribute('pic-mark') === ('lane'+items)) {
+              $(item).removeClass(styles.imgCurrent)
+            }
+          })
+        })
       }
     } else {
       $(e.currentTarget).addClass(Liststyles.hover).siblings().removeClass(Liststyles.hover)
-      if (itemData.phaseLampgroupId.indexOf(',') === -1) {
-        $('div').map(( i, item ) => {
-          if (item.getAttribute('pic-mark') === ('lampgroup'+itemData.phaseLampgroupId)) {
+      if (itemData.phasestageLampgroup.indexOf(',') === -1) {
+        $('div[pic-mark]').map(( i, item ) => {
+          if (item.getAttribute('pic-mark') === ('lampgroup'+itemData.phasestageLampgroup) || item.getAttribute('pic-mark') === ('lane'+itemData.phasestageLane)) {
             $(item).addClass(styles.imgCurrent).siblings().removeClass(styles.imgCurrent)
           }
         })
       } else {
-        const leftSelArr = itemData.phaseLampgroupId.split(',')
+        const leftSelArr = itemData.phasestageLampgroup.split(',')
         leftSelArr.map((items) => {
-          $('div').map(( i, item ) => {
+          $('div[pic-mark]').map(( i, item ) => {
             if (item.getAttribute('pic-mark') === ('lampgroup'+items)) {
+              $(item).addClass(styles.imgCurrent)
+            }
+          })
+        })
+        const leftLaneArr = itemData.phasestageLane.split(',')
+        leftLaneArr.map((items) => {
+          $('div[pic-mark]').map(( i, item ) => {
+            if (item.getAttribute('pic-mark') === ('lane'+items)) {
               $(item).addClass(styles.imgCurrent)
             }
           })

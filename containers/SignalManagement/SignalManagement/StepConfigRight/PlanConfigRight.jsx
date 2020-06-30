@@ -15,6 +15,7 @@ class PlanConfigRight extends PureComponent {
       planLists: null,
       listNames: null,
     }
+    this.imgIconUrl = 'http://192.168.1.213:20203/DCU/dcuImage/phasestage/'
   }
   componentDidUpdate = (prevState) => {
     const { planLists } = this.props.data
@@ -41,6 +42,9 @@ class PlanConfigRight extends PureComponent {
       switch(p){     
         case 'schemeNodeNo':
           newObj = {key: p, label: '方案序号'}
+          break;
+        case 'schemeName':
+          newObj = {key: p, label: '方案名称'}
           break;
         case 'schemeCycle':
           newObj = {key: p, label: '方案周期'}
@@ -87,7 +91,7 @@ class PlanConfigRight extends PureComponent {
     } else {
       $(e.currentTarget).addClass(Liststyles.hover).siblings().removeClass(Liststyles.hover)
       if (itemData.phaseLampgroupId.indexOf(',') === -1) {
-        $('div').map(( i, item ) => {
+        $('div[pic-mark]').map(( i, item ) => {
           if (item.getAttribute('pic-mark') === ('lampgroup'+itemData.phaseLampgroupId)) {
             $(item).addClass(styles.imgCurrent).siblings().removeClass(styles.imgCurrent)
           }
@@ -95,7 +99,7 @@ class PlanConfigRight extends PureComponent {
       } else {
         const leftSelArr = itemData.phaseLampgroupId.split(',')
         leftSelArr.map((items) => {
-          $('div').map(( i, item ) => {
+          $('div[pic-mark]').map(( i, item ) => {
             if (item.getAttribute('pic-mark') === ('lampgroup'+items)) {
               $(item).addClass(styles.imgCurrent)
             }
@@ -127,7 +131,7 @@ class PlanConfigRight extends PureComponent {
     return (
       <div className={styles.conBox}>
         <div className={styles.rTit}>配时方案配置列表<em onClick={() => { this.popLayerShowHide("stepSevenAddEdit", true) }}>添加</em></div>
-        { !!planLists && !!listNames ? <ListForAntd {...this.props} dataSourse={planLists} listNames={listNames} showIndex={3} handleClickFind={this.handleClickFind} delListItem={this.delListItem} /> : <div className={styles.noData}>暂无数据</div> }
+        { !!planLists && !!listNames ? <ListForAntd {...this.props} dataSourse={planLists} listNames={listNames} listType={'PLAN'} imgIconUrl={this.imgIconUrl} showIndex={3} handleClickFind={this.handleClickFind} delListItem={this.delListItem} /> : <div className={styles.noData}>暂无数据</div> }
       </div>
     )
   }

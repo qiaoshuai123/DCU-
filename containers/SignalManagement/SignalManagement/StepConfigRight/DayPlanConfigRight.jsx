@@ -75,7 +75,7 @@ class DayPlanConfigRight extends PureComponent {
     } else {
       $(e.currentTarget).addClass(Liststyles.hover).siblings().removeClass(Liststyles.hover)
       if (itemData.phaseLampgroupId.indexOf(',') === -1) {
-        $('div').map(( i, item ) => {
+        $('div[pic-mark]').map(( i, item ) => {
           if (item.getAttribute('pic-mark') === ('lampgroup'+itemData.phaseLampgroupId)) {
             $(item).addClass(styles.imgCurrent).siblings().removeClass(styles.imgCurrent)
           }
@@ -83,7 +83,7 @@ class DayPlanConfigRight extends PureComponent {
       } else {
         const leftSelArr = itemData.phaseLampgroupId.split(',')
         leftSelArr.map((items) => {
-          $('div').map(( i, item ) => {
+          $('div[pic-mark]').map(( i, item ) => {
             if (item.getAttribute('pic-mark') === ('lampgroup'+items)) {
               $(item).addClass(styles.imgCurrent)
             }
@@ -115,7 +115,7 @@ class DayPlanConfigRight extends PureComponent {
     return (
       <div className={styles.conBox}>
         <div className={styles.rTit}>日计划配置列表<em onClick={() => { this.popLayerShowHide("stepEightAddEdit", true) }}>添加</em></div>
-        { !!dayPlanLists && !!listNames ? <ListForAntd {...this.props} dataSourse={dayPlanLists} listNames={listNames} showIndex={1} handleClickFind={this.handleClickFind} delListItem={this.delListItem} /> : <div className={styles.noData}>暂无数据</div> }
+        { !!dayPlanLists && !!listNames ? <ListForAntd {...this.props} dataSourse={dayPlanLists} listNames={listNames} showIndex={2} listType={'DAYPLAN'} handleClickFind={this.handleClickFind} delListItem={this.delListItem} /> : <div className={styles.noData}>暂无数据</div> }
       </div>
     )
   }

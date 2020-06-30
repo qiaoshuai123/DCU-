@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import classNames from 'classnames'
-import { Select, message } from 'antd'
+import { Select, message, Icon } from 'antd'
 import styles from './ListForAntd.scss'
 const { Option } = Select;
 
@@ -55,7 +55,18 @@ class ListForAntd extends Component {
   handleClick = (e, itemData) => {
     this.props.handleClickFind(e, itemData)
   }
-  
+  formatNumberStr = (str) => {
+    let arr = str.split(',')
+    let i = 0
+    let ret = []
+    for (let j = 1; j <= arr.length; j++) {
+      if (arr[j] - arr[j - 1] !== 1) {
+        ret.push(j - i === 1 ? arr[i] : `${arr[i]}~${arr[j - 1]}`)
+        i = j
+      }
+    }
+    return ret.join(',')
+}
   handleChange = (value, index) => {
     const hideListDatas = JSON.parse(JSON.stringify(this.state.hideListDatas)) // 副本隐藏的下拉
     const showListDatas = JSON.parse(JSON.stringify(this.state.showListDatas))
@@ -107,10 +118,42 @@ class ListForAntd extends Component {
                   !!dataSourse && dataSourse.map((item, i) => {
                     return <div key={'List' + i} className={classNames(styles.listItem)} tag-mark={item.phaseLampgroupId} onClick={ e => this.handleClick(e, item) }>
                       {!!showListDatas && showListDatas.map((val, k) => {
-                        return <span key={"spanText" + k}>{item[val.key]}</span>
+                        return <span key={"spanText" + k}>
+                        { item[val.key] instanceof Array && this.props.listType === 'PLAN'? 
+                            item[val.key].map((items, d) => {
+                              return <div className={styles.stageImgText} key={'ListItem' + d}>
+                                      <s>{!items.imagePath ? '暂无' : <img style={{width: '30px', height: '30px'}} src={`${this.props.imgIconUrl}${items.imagePath}`} /> }</s>
+                                      <s>{!items.schemePhaseTime ? '暂无' : items.schemePhaseTime }</s>
+                                      <Icon type="arrow-right" />
+                                    </div>
+                            }) : 
+                            item[val.key] instanceof Array && this.props.listType === 'DAYPLAN' ? 
+                            item[val.key].map((items, d) => {
+                              return <div className={styles.dayPlanBox} key={'ListItem' + d}>
+                                      { d === 0 ? <div><b>开始时间</b><b>执行方案</b><b>运行模式</b></div> : null }
+                                      <s>{!items.timeintervalStarttime ? '暂无' : items.timeintervalStarttime }</s>
+                                      <s>{!items.timeintervalScheme ? '暂无' : items.timeintervalScheme }</s>
+                                      <s>{!items.timeintervalModelName ? '暂无' : items.timeintervalModelName }</s>
+                                    </div>
+                            }) : 
+                            item[val.key] instanceof Array && this.props.listType === 'DISPATCH' ? 
+                            item[val.key].map((items, d) => {
+                              return <div className={styles.dayPlanBox} key={'ListItem' + d}>
+                                      { d === 0 ? <div><b>调度类型</b><b>优先级</b><b>调度类型值</b><b>日计划编号</b></div> : null }
+                                      <s>{items.dateTypeName ? items.dateTypeName : '' }</s>
+                                      <s>{items.priority ? items.priority : '' }</s>
+                                      {/* dateType 1 日期 星期 dataValueCodes  monthValueCodes */}
+                                      <s>{items.dataValueNames ? (items.monthValueCodes !== '' ? ( "（" +this.formatNumberStr(items.monthValueCodes) +"）" + "月" + "（" + this.formatNumberStr(items.dataValueCodes) +" ）日" ) : "星期：（"+this.formatNumberStr(items.dataValueCodes)+ "）" )  : '' }</s>
+                                      <s>{items.dailyPlanId ? items.dailyPlanId : '' }</s>
+                                    </div>
+                            }) : 
+                            val.key === 'coordinationImagePath' && !!item[val.key] ? <img style={{width: '30px', height: '30px'}} src={`${this.props.imgIconUrl}${item[val.key]}`} /> :
+                            !item[val.key] ? '暂无' : item[val.key]
+                        }
+                        </span>
                       })
                       }
-                      {handleFlag ? <span><b onClick={(e) => { this.update(e, item.id) }}>删除</b></span> : null}
+                      {handleFlag ? <span>{/* <b onClick={(e) => { this.updates(e, item.id) }}>修改</b> */}<b onClick={(e) => { this.update(e, item.id) }}>删除</b></span> : null}
                     </div>
                   })
                 }

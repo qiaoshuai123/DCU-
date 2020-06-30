@@ -26,6 +26,7 @@ import StageConfigRight from './StepConfigRight/StageConfigRight'
 import PlanConfigRight from './StepConfigRight/PlanConfigRight'
 import DayPlanConfigRight from './StepConfigRight/DayPlanConfigRight'
 import DispatchConfigRight from './StepConfigRight/DispatchConfigRight'
+// import Websocket from 'react-websocket';
 const { Option } = Select
 // 图片转64位
 function getBase64(img, callback) {
@@ -74,6 +75,8 @@ class SignalManagement extends PureComponent {
     this.map = null
     this.moveFlag = false // 是否是移动状态
     this.bgIpUrl = 'http://192.168.1.213:20203/DCU/dcuImage/background/'
+    this.socketPointStatusUrl = 'http://192.168.1.213:20203/DCU/websocket/dcuState/0/0/0' // 实时请求地图点的状态
+    this.socketPointPopUrl = 'http://192.168.1.213:20203/DCU/websocket/interRunState/' // 点击显示实时弹层
   }
   componentDidUpdate = (prevState) => {
     const { mapPointsData, dcuPopData, stepStatusData, basicBgLists, basicUplSuccess } = this.props.data
@@ -81,7 +84,7 @@ class SignalManagement extends PureComponent {
       console.log(this.props,this.props.data, "data中所有的数据")
     }
     if (prevState.data.mapPointsData !== mapPointsData) {
-      // console.log(mapPointsData, '点数据')
+      console.log(mapPointsData, '点数据')
       this.setState({ mapPointsData },()=>{
         this.loadingMap()
       })
@@ -276,14 +279,14 @@ class SignalManagement extends PureComponent {
         const marker = new AMap.Marker({
           position: new AMap.LngLat(positions[i].lng, positions[i].lat),
           offset: new AMap.Pixel(-16, -16),
-          content: "<div id='roadKey"+positions[i].id+"' class='marker-online'></div>",
+          content: "<div inter-id='"+positions[i].interId+"' id='roadKey"+positions[i].id+"' class='marker-online'></div>",
         })
         // marker.id =
         marker.on('click', () => {
           map.emit('click', {
             lnglat: map.getCenter()
           })
-          marker.setContent("<div class='drawCircle'><div class='inner'></div><div id='roadKey"+positions[i].id+"' class='marker-online'></div></div>");
+          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='"+positions[i].interId+"' id='roadKey"+positions[i].id+"' class='marker-online'></div></div>");
           const nowZoom = map.getZoom()
           map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
           const resultP = Promise.resolve(this.props.getUnitPop(positions[i].interId))
@@ -419,7 +422,11 @@ class SignalManagement extends PureComponent {
     message.info("调度添加成功！")
     this.popLayerShowHide("stepNineAddEdit", null)
   }
-  
+  handleData(data) {
+    let result = JSON.parse(data);
+    console.log(result,'socket 数据')
+    // this.setState({count: this.state.count + result.movement});
+  }
   render() {
     const { stepStatusData, popAddEditText, moveFlag, stepOneFlag, stepTwoFlag, 
       stepRoadFlag, stepRoadAddEdit,
@@ -839,6 +846,8 @@ class SignalManagement extends PureComponent {
         <div className={styles.mapContent}>
           <div className={styles.tagMarker}>
             <div className={styles.statusBox}>
+            {/* <Websocket url='ws://192.168.1.213:20203/DCU/websocket/dcuState/0/0/0'
+              onMessage={this.handleData.bind(this)}/> */}
               <span className={styles.tagOnLine}>在线设备9处</span>
               <span className={styles.tagOffLine}>离线设备3处</span>
             </div>

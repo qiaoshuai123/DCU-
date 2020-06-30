@@ -48,6 +48,7 @@
     "axios": "^0.19.0",
     "classnames": "^2.2.6",
     "clean-webpack-plugin": "^2.0.2",
+    "cnpm": "^6.1.1",
     "echarts": "^4.6.0",
     "echarts-for-react": "^2.0.15-beta.0",
     "eslint": "^4.19.1",

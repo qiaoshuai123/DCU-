@@ -11,8 +11,9 @@
           width: 100%;
           display: flex;
           justify-content: center;
-          align-items: center;
+          align-items: stretch;
           flex-wrap: nowrap;
+          border-bottom: 1px solid #26394A;
           > em, > span{
               flex: 1;
               font-style: normal;
@@ -34,8 +35,12 @@
               }
           }
           > span{
-              border-bottom: 1px solid #26394A;
               cursor: pointer;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              flex-wrap: wrap;
+              padding: 6px 0;
               > b{
                   font-weight: lighter;
                   padding:0 10px;
@@ -45,6 +50,63 @@
                       text-decoration: underline;
                   }
               }
+              .stageImgText{
+                  width: 30px;
+                  display: flex;
+                  margin-right: 26px;
+                  justify-content: flex-start;
+                  flex-wrap: wrap;
+                  position: relative;
+                  s{
+                    width: 30px;
+                    line-height: 20px;
+                      font-size: 16px;
+                      font-weight: bold;
+                      color:#0de20d;
+                      text-decoration: none;
+                      >img{
+                          width: 30px;
+                          height:30px;
+                          display:inline-block;
+                      }
+                  }
+                  i{
+                      position: absolute;
+                      right:-20px;
+                      top:9px;
+                  }
+              }
+              .stageImgText:last-child{
+                  overflow:hidden;
+                  margin-right: 0;
+                  i{
+                      display: none;
+                  }
+              }
+              .dayPlanBox{
+                width: 400px;
+                display: flex;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+                position: relative;
+                >div{
+                    width: 100%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    b{
+                        flex:1;
+                        line-height: 25px;
+                    }
+                }
+                s{
+                  flex: 1;
+                  color:#0de20d;
+                  line-height: 20px;
+                    font-size: 14px;
+                    text-decoration: none;
+                }
+            }
           }
           &:hover span{
               background-color: #153a61;
