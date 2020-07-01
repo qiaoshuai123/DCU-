@@ -26,7 +26,7 @@ import StageConfigRight from './StepConfigRight/StageConfigRight'
 import PlanConfigRight from './StepConfigRight/PlanConfigRight'
 import DayPlanConfigRight from './StepConfigRight/DayPlanConfigRight'
 import DispatchConfigRight from './StepConfigRight/DispatchConfigRight'
-// import Websocket from 'react-websocket';
+import Websocket from 'react-websocket';
 const { Option } = Select
 // 图片转64位
 function getBase64(img, callback) {
@@ -71,20 +71,26 @@ class SignalManagement extends PureComponent {
       roadId: null, // 路的ID
       roadInterId: null, // 路的interId
       roadNodeNo: null,
+      onlineNum: 0, //实时在线数
+      offlineNum: 0, //实时离线数
+      popParam1: null,
+      popParam2: null,
+      popParam3: null,
+      popParam4: null,
     }
     this.map = null
     this.moveFlag = false // 是否是移动状态
     this.bgIpUrl = 'http://192.168.1.213:20203/DCU/dcuImage/background/'
-    this.socketPointStatusUrl = 'http://192.168.1.213:20203/DCU/websocket/dcuState/0/0/0' // 实时请求地图点的状态
-    this.socketPointPopUrl = 'http://192.168.1.213:20203/DCU/websocket/interRunState/' // 点击显示实时弹层
+    this.socketPointStatusUrl = 'ws://192.168.1.213:20203/DCU/websocket/dcuState/0/0/0' // 实时请求地图点的状态
+    this.socketPointPopUrl = 'ws://192.168.1.213:20203/DCU/websocket/interRunState/' // 点击显示实时弹层
   }
   componentDidUpdate = (prevState) => {
     const { mapPointsData, dcuPopData, stepStatusData, basicBgLists, basicUplSuccess } = this.props.data
     if (prevState.data !== this.props.data) {
-      console.log(this.props,this.props.data, "data中所有的数据")
+      // console.log(this.props,this.props.data, "data中所有的数据")
     }
     if (prevState.data.mapPointsData !== mapPointsData) {
-      console.log(mapPointsData, '点数据')
+      // console.log(mapPointsData, '点数据')
       this.setState({ mapPointsData },()=>{
         this.loadingMap()
       })
@@ -94,11 +100,11 @@ class SignalManagement extends PureComponent {
       this.setState({ dcuPopData })
     }
     if (prevState.data.stepStatusData !== stepStatusData) {
-      console.log(stepStatusData, 'step数据')
+      // console.log(stepStatusData, 'step数据')
       this.setState({ stepStatusData })
     }
     if (prevState.data.basicBgLists !== basicBgLists) {
-      console.log(basicBgLists, '子弹层')
+      // console.log(basicBgLists, '子弹层')
       this.setState({ basicBgLists })
     }
   }
@@ -131,6 +137,11 @@ class SignalManagement extends PureComponent {
           content: "<div id='roadKey"+item.id+"'></div>",
         })
         marker.on('click',function(){
+          _this.setState({
+            roadUnitId: item.id,
+            roadInterId: item.interId,
+            roadNodeNo: item.nodeId,
+          })
           const resultP = Promise.resolve(_this.props.getUnitPop(childInterId))
           resultP.then(()=>{
             _this.openInfoWin(_this.map, item, marker, item.interName)
@@ -286,12 +297,19 @@ class SignalManagement extends PureComponent {
           map.emit('click', {
             lnglat: map.getCenter()
           })
+          
           marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='"+positions[i].interId+"' id='roadKey"+positions[i].id+"' class='marker-online'></div></div>");
           const nowZoom = map.getZoom()
           map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
-          const resultP = Promise.resolve(this.props.getUnitPop(positions[i].interId))
-          resultP.then(()=>{
-            this.openInfoWin(map, positions[i], marker, positions[i].interName)
+          this.setState({
+            roadUnitId: positions[i].id,
+            roadInterId: positions[i].interId,
+            roadNodeNo: positions[i].nodeId,
+          }, ()=>{
+            const resultP = Promise.resolve(this.props.getUnitPop(positions[i].interId))
+            resultP.then(()=>{
+              this.openInfoWin(map, positions[i], marker, positions[i].interName)
+            })
           })
         })
         this[layer].push(marker)
@@ -313,9 +331,9 @@ class SignalManagement extends PureComponent {
     info.push(`<p class='input-item'>信号机品牌：<span>` + itemData.brand + `</span></p>`);
     info.push(`<p class='input-item'>设备IP：<span>` + itemData.ip + `</span></p>`);
     info.push(`<p class='input-item'>维护电话：<span>` + itemData.maintainPhone + `</span></p>`);
-    info.push(`<p class='input-item'>信号运行阶段：<span class='greenFont'>` + '东西直行' + `<b class='icon_phase'></b></span></p>`);
-    info.push(`<p class='input-item'>信号运行方案：<span class='greenFont'>` + '早高峰' + `</span></p>`);
-    info.push(`<p class='input-item'>信号控制方式：<span class='greenFont'>` + '实时优化控制' + `</span></p>`);
+    info.push(`<p class='input-item'>信号运行阶段：<span class='greenFont'><span id='phasestageName'>暂无</span><img id='phasestageImage' style='display:none' src='' /></span></p>`);
+    info.push(`<p class='input-item'>信号运行方案：<span class='greenFont' id='schemeName'>暂无</span></p>`);
+    info.push(`<p class='input-item'>信号控制方式：<span class='greenFont' id='nodeModelName'>暂无</span></p>`);
     info.push(`<p class='input-item' style='height:15px;'></p>`);
     info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(`+JSON.stringify(dataItem)+`)'>参数配置</span></p>`);
     const infoWindow = new AMap.InfoWindow({
@@ -422,10 +440,37 @@ class SignalManagement extends PureComponent {
     message.info("调度添加成功！")
     this.popLayerShowHide("stepNineAddEdit", null)
   }
+  updateMapPonitsColor = (data) => {
+    for (let i = 0; i < $('div[inter-id]').length; i++){
+      const timeDiv = $($('div[inter-id]')[i])
+      data.map((item) => {
+        if (item.interId === timeDiv.attr('inter-id') && !!item.state){
+          timeDiv.removeClass('marker-offline')
+        }else{
+          timeDiv.addClass('marker-offline')
+        }
+      })
+    }
+  }
   handleData(data) {
     let result = JSON.parse(data);
-    console.log(result,'socket 数据')
-    // this.setState({count: this.state.count + result.movement});
+    // console.log(result,'socket 数据')
+    this.setState({
+      onlineNum: result.onlineNum,
+      offlineNum: result.offlineNum,
+    });
+    this.updateMapPonitsColor(result.dcuStateList)
+  }
+  handlePopData(data) {
+    let result = JSON.parse(data);
+    console.log(result,this,'socket POP数据')
+    $('#phasestageName').text(result.phasestageName).attr("tag-src",'http://192.168.1.213:20203/DCU/dcuImage/phasestage/' + result.phasestageImage)
+    $('#schemeName').text(result.schemeName)
+    $('#nodeModelName').text(result.nodeModelName)
+    $('#phasestageImage').prop('src', 'http://192.168.1.213:20203/DCU/dcuImage/phasestage/' + result.phasestageImage).attr('style','width:30px;height:30px;margin-left:8px;')
+    this.setState({
+      roadUnitId: false,
+    })
   }
   render() {
     const { stepStatusData, popAddEditText, moveFlag, stepOneFlag, stepTwoFlag, 
@@ -437,10 +482,13 @@ class SignalManagement extends PureComponent {
       stepSevenFlag, stepSevenAddEdit,
       stepEightFlag, stepEightAddEdit,
       stepNineFlag, stepNineAddEdit,
-      turnTab, baseMapFlag, stepOneText, imageUrl, interRoadBg, baseLoading, roadId, roadInterId, roadNodeNo } = this.state
+      turnTab, baseMapFlag, stepOneText, imageUrl, interRoadBg, baseLoading, roadId, roadUnitId, roadInterId, roadNodeNo,
+      onlineNum, offlineNum, popParam1, popParam2, popParam3, popParam4 } = this.state
     const { Search } = Input
     return (
       <div className={styles.SignalManagement}>
+      <Websocket url={this.socketPointStatusUrl} onMessage={this.handleData.bind(this)}/>
+      { !!roadUnitId && !!roadInterId && !!roadNodeNo ? <Websocket url={`${this.socketPointPopUrl}${roadUnitId}/${roadInterId}/${roadNodeNo}`} onMessage={ this.handlePopData.bind(this)} /> : null }
         <Header {...this.props} />
         {/* 弹层 > 添加编辑 */}
         { stepRoadAddEdit ?  // 车道配置添加编辑弹层
@@ -846,10 +894,8 @@ class SignalManagement extends PureComponent {
         <div className={styles.mapContent}>
           <div className={styles.tagMarker}>
             <div className={styles.statusBox}>
-            {/* <Websocket url='ws://192.168.1.213:20203/DCU/websocket/dcuState/0/0/0'
-              onMessage={this.handleData.bind(this)}/> */}
-              <span className={styles.tagOnLine}>在线设备9处</span>
-              <span className={styles.tagOffLine}>离线设备3处</span>
+              <span className={styles.tagOnLine}>在线设备{onlineNum}处</span>
+              <span className={styles.tagOffLine}>离线设备{offlineNum}处</span>
             </div>
             <div title="切换视图" className={styles.turnBtn} onClick={() => this.showInterworkingList(true)} />
           </div>
