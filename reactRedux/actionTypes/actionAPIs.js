@@ -5,6 +5,8 @@
 export const API_UNIT_STATUS = '/DCU/unitInfo/unitStatus'  // 信号参数据管理 step
 
 /************* 信号参数管理模块 **************/
+// 切换视图
+export const API_SIGNAL_lIST_BY_PAGE = '/DCU/signalInfo/signalListByPage' // 切换视图
 // 基础信息配置
 export const API_BG_LIST = '/DCU/unitInfo/backgroundList' // 查询全部底图
 export const API_DCU_BY_INTERID = '/DCU/unitInfo/updateUnit' //选中底图 > 更新底图
@@ -18,6 +20,9 @@ export const API_UPDATE_LANE_OTHERS = '/DCU/laneInfo/updateLaneInfo' //修改车
 export const API_UPDATE_LANE_PIC = '/DCU/laneInfo/updateLaneDetail' //修改车道坐标、图片、旋转角度
 export const API_DEL_LANE_INFO = '/DCU/laneInfo/deleteLaneInfo' //删除车道当前一条
 export const API_DEL_LANE_PIC = '/DCU/laneInfo/deleteLaneDetail' //删除车道详细
+export const API_LANE_INFO_AND_DETAIL = '/DCU/laneInfo/laneInfoAndDetail' //回显内容
+export const API_ADD_LANE_INFO_AND_DETAIL = '/DCU/laneInfo/addLaneInfoAndDetail' //新增内容图标和列表
+export const API_UPDATE_LANE_INFO_AND_DETAIL = '/DCU/laneInfo/updateLaneInfoAndDetail' //修改内容图标和列表
 // 灯组配置
 export const API_LIGHT_INFO_LISTS = '/DCU/lampgroupInfo/lampgroupInfoList' //根据interId查询路口下所有灯组列表
 export const API_LIGHT_PIC_LISTS = '/DCU/lampgroupInfo/lampgroupDetailList' //根据interId 路口序号查询图上的灯
@@ -27,6 +32,9 @@ export const API_UPDATE_LIGHT_OTHERS = '/DCU/lampgroupInfo/updateLampgroupInfo' 
 export const API_UPDATE_LIGHT_PIC = '/DCU/lampgroupInfo/updateLampgroupDetail' //修改灯组坐标、图片、旋转角度
 export const API_DEL_LIGHT_INFO = '/DCU/lampgroupInfo/deleteLampgroupInfo' //右侧删除灯组当前一条
 export const API_DEL_LIGHT_PIC = '/DCU/lampgroupInfo/deleteLampgroupDetail' //删除灯组图片
+export const API_LIGHT_INFO_AND_DETAIL = '/DCU/laneInfo/laneInfoAndDetail' //回显内容
+export const API_ADD_LIGHT_INFO_AND_DETAIL = '/DCU/laneInfo/addLaneInfoAndDetail' //新增内容图标和列表
+export const API_UPDATE_LIGHT_INFO_AND_DETAIL = '/DCU/laneInfo/updateLaneInfoAndDetail' //修改内容图标和列表
 // 检测器配置
 export const API_DETECTOR_INFO_LISTS = '/DCU/detectorInfo/detectorInfoList' //根据interId查询路口下所有检测器列表
 export const API_DETECTOR_PIC_LISTS = '/DCU/detectorInfo/detectorDetailList' //根据interId 路口序号查询图上的检测器
@@ -36,6 +44,9 @@ export const API_UPDATE_DETECTOR_OTHERS = '/DCU/detectorInfo/updateDetectorInfo'
 export const API_UPDATE_DETECTOR_PIC = '/DCU/detectorInfo/updateDetectorDetail' //修改检测器坐标、图片、旋转角度
 export const API_DEL_DETECTOR_INFO = '/DCU/detectorInfo/deleteDetectorInfo' //删除检测器当前一条
 export const API_DEL_DETECTOR_PIC = '/DCU/detectorInfo/deleteDetectorDetail' //删除检测器图片
+export const API_DETECTOR_INFO_AND_DETAIL = '/DCU/laneInfo/laneInfoAndDetail' //回显内容
+export const API_ADD_DETECTOR_INFO_AND_DETAIL = '/DCU/laneInfo/addLaneInfoAndDetail' //新增内容图标和列表
+export const API_UPDATE_DETECTOR_INFO_AND_DETAIL = '/DCU/laneInfo/updateLaneInfoAndDetail' //修改内容图标和列表
 // 相位配置
 export const API_PHASE_INFO_LISTS = '/DCU/phaseInfo/phaseInfoList' //相位查询列表
 export const API_ADD_PHASE_OTHERS = '/DCU/phaseInfo/addPhaseInfo' //相位新增

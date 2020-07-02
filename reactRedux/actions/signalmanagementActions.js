@@ -157,6 +157,36 @@ export const postAddOthersType = (params, stepType) => {
     }
   }
 }
+// 新增图标和列表一条数据
+export const postAddAllType = (params, stepType) => {
+  let thisAPI, thisTYPE;
+  switch(stepType){
+    case "LANE":
+      thisAPI = APIs.API_ADD_LANE_INFO_AND_DETAIL
+      thisTYPE = types.POST_ADD_LANE_INFO_AND_DETAIL
+      break;
+    case "LIGHT":
+      thisAPI = APIs.API_ADD_LIGHT_INFO_AND_DETAIL
+      thisTYPE = types.POST_ADD_LIGHT_INFO_AND_DETAIL
+      break;
+    case "DETECTOR":
+      thisAPI = APIs.API_ADD_DETECTOR_INFO_AND_DETAIL
+      thisTYPE = types.POST_ADD_DETECTOR_INFO_AND_DETAIL
+      break;
+  }
+  return async (dispatch) => {
+    try {
+      const result = await RestUtil.post(`${thisAPI}`, params)
+      if (result.data.code === 0) {
+        dispatch({ type: thisTYPE, payload: result.data.data })
+      } else {
+        console.error(result.data.msg)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+}
 // 删除左侧图标 以type类型为准
 export const getDelPicType = (id, stepType) => {
   let thisAPI, thisTYPE;
@@ -405,6 +435,66 @@ export const postUpdateOthersType = (uploadFile, stepType) => {
   return async (dispatch) => {
     try {
       const result = await RestUtil.post(`${thisAPI}`, uploadFile)
+      if (result.data.code === 0) {
+        dispatch({ type: thisTYPE, payload: result.data.data })
+      } else {
+        console.error(result.data.msg)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+}
+// 修改图标和列表一条数据
+export const postUpdateAllType = (params, stepType) => {
+  let thisAPI, thisTYPE;
+  switch(stepType){
+    case "LANE":
+      thisAPI = APIs.API_UPDATE_LANE_INFO_AND_DETAIL
+      thisTYPE = types.POST_UPDATE_LANE_INFO_AND_DETAIL
+      break;
+    case "LIGHT":
+      thisAPI = APIs.API_UPDATE_LIGHT_INFO_AND_DETAIL
+      thisTYPE = types.POST_UPDATE_LIGHT_INFO_AND_DETAIL
+      break;
+    case "DETECTOR":
+      thisAPI = APIs.API_UPDATE_DETECTOR_INFO_AND_DETAIL
+      thisTYPE = types.POST_UPDATE_DETECTOR_INFO_AND_DETAIL
+      break;
+  }
+  return async (dispatch) => {
+    try {
+      const result = await RestUtil.post(`${thisAPI}`, params)
+      if (result.data.code === 0) {
+        dispatch({ type: thisTYPE, payload: result.data.data })
+      } else {
+        console.error(result.data.msg)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+}
+// 回显图标所有内容
+export const getUpdateAllType = (interId, nodeNo, stepType) => {
+  let thisAPI, thisTYPE;
+  switch(stepType){
+    case "LANE":
+      thisAPI = APIs.API_LANE_INFO_AND_DETAIL
+      thisTYPE = types.GET_LANE_INFO_AND_DETAIL
+      break;
+    case "LIGHT":
+      thisAPI = APIs.API_LIGHT_INFO_AND_DETAIL
+      thisTYPE = types.GET_LIGHT_INFO_AND_DETAIL
+      break;
+    case "DETECTOR":
+      thisAPI = APIs.API_DETECTOR_INFO_AND_DETAIL
+      thisTYPE = types.GET_DETECTOR_INFO_AND_DETAIL
+      break;
+  }
+  return async (dispatch) => {
+    try {
+      const result = await RestUtil.get(`${thisAPI}?interId=${interId}&nodeNo=${nodeNo}`)
       if (result.data.code === 0) {
         dispatch({ type: thisTYPE, payload: result.data.data })
       } else {

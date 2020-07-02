@@ -88,7 +88,6 @@ class SignalManagement extends PureComponent {
     this.bgIpUrl = 'http://192.168.1.213:20203/DCU/dcuImage/background/'
     this.socketPointStatusUrl = 'ws://192.168.1.213:20203/DCU/websocket/dcuState/0/0/0' // 实时请求地图点的状态
     this.socketPointPopUrl = 'ws://192.168.1.213:20203/DCU/websocket/interRunState/' // 点击显示实时弹层
-    this.statePointPopUrl = 'ws://192.168.1.213:20203/DCU/websocket/allInterRunState/0/0/0' // 点击显示实时弹层
     this.searchInterList = []
   }
   componentDidUpdate = (prevState) => {
@@ -546,11 +545,6 @@ class SignalManagement extends PureComponent {
       })
     }
   }
-  handleLookData(data) {
-    let result = JSON.parse(data);
-    console.log(result,'实时监控socket 数据')
-    
-  }
   handleData(data) {
     let result = JSON.parse(data);
     // console.log(result,'socket 数据')
@@ -588,7 +582,6 @@ class SignalManagement extends PureComponent {
     return (
       <div className={styles.SignalManagement}>
       <Websocket url={this.socketPointStatusUrl} onMessage={this.handleData.bind(this)}/>
-      {/* <Websocket url={this.statePointPopUrl} onMessage={this.handleLookData.bind(this)}/> */}
       { !!roadUnitId && !!roadInterId && !!roadNodeNo ? <Websocket url={`${this.socketPointPopUrl}${roadUnitId}/${roadInterId}/${roadNodeNo}`} onMessage={ this.handlePopData.bind(this)} /> : null }
         <Header {...this.props} />
         {/* 弹层 > 添加编辑 */}

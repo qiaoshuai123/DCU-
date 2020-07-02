@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Input, Pagination, Select } from 'antd'
 import styles from './InterworkingList.scss'
-
+import Websocket from 'react-websocket';
 class InterworkingList extends Component {
   constructor(props) {
     super(props)
@@ -21,6 +21,7 @@ class InterworkingList extends Component {
         }
       ],
     }
+    this.statePointPopUrl = 'ws://192.168.1.213:20203/DCU/websocket/allInterRunState/0/0/0' // 切换视图
   }
   componentDidMount = () => {
 
@@ -31,6 +32,10 @@ class InterworkingList extends Component {
   handleChange = () => {
 
   }
+  handleLookData(data) {
+    let result = JSON.parse(data);
+    console.log(result,'实时监控socket 数据')
+  }
   backPage = () => {
     this.props.showInterworkingList(null)
   }
@@ -39,6 +44,7 @@ class InterworkingList extends Component {
     const { Option } = Select
     return (
       <div className={styles.syetem_bg} ref={(input) => { this.userLimitBox = input }}>
+        <Websocket url={this.statePointPopUrl} onMessage={this.handleLookData.bind(this)}/>
         <div className={styles.syetem_title}>
           <div className={styles.syetem_titleLeft}>信号状态监视</div>
           <div title="切换视图" className={styles.turnBtn} onClick={this.backPage} />
@@ -57,17 +63,6 @@ class InterworkingList extends Component {
               </Select>
             </div>
           </div>
-          <div className={styles.syetem_item}>
-            <span className={styles.item}>点位名称:</span>
-            <div className={styles.inSle}>
-              <div className={styles.inSle}>
-                <Select defaultValue="点位一" style={{ width: 200, margin: 0 }} onChange={this.handleChange}>
-                  <Option value="点位一">点位一</Option>
-                  <Option value="点位二">点位二</Option>
-                </Select>
-              </div>
-            </div>
-          </div>
           <span className={styles.searchBtn} onClick={() => { this.handlePagination('1') }} limitid="13">查询</span>
         </div>
         <div className={styles.equipmentList}>
@@ -77,16 +72,14 @@ class InterworkingList extends Component {
           <div className={styles.listBox}>
             <div className={styles.listItems}>
               <div className={styles.listTd} >点位名称</div>
-              <div className={styles.listTd} >设备编号</div>
-              <div className={styles.listTd} >设备型号</div>
+              <div className={styles.listTd} >信号机编号</div>
+              <div className={styles.listTd} >信号品牌</div>
               <div className={styles.listTd} >设备IP</div>
-              <div className={styles.listTd} >生产厂商</div>
               <div className={styles.listTd} >经纬度</div>
               <div className={styles.listTd} >维护电话</div>
               <div className={styles.listTd} >设备状态</div>
-              <div className={styles.listTd} >信号接入状态</div>
-              <div className={styles.listTd} >数据接入状态</div>
-              <div className={styles.listTd} >发布服务状态</div>
+              <div className={styles.listTd} >信号控制状态</div>
+              <div className={styles.listTd} >运行阶段</div>
               <div className={styles.listTd} >操作</div>
             </div>
             {systemList && systemList.map((item, index) => {
@@ -102,10 +95,9 @@ class InterworkingList extends Component {
                   <div className={styles.listTd} >8</div>
                   <div className={styles.listTd} >9</div>
                   <div className={styles.listTd} >10</div>
-                  <div className={styles.listTd} >11</div>
                   <div className={styles.listTd} >
                     <span className={styles.delectName} onClick={() => { this.getresetPwd(item.id) }}>
-                      路口监视
+                      参数配置
                     </span>
                   </div>
                 </div>)

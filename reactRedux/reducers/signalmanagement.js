@@ -11,6 +11,9 @@ const signalmanagement = (state = {}, action) => {
       return Object.assign({}, state, { basicSelSuccess: payload })
     case types.POST_UPDATE_DCU:
       return Object.assign({}, state, { basicUplSuccess: payload })
+    // 切换视图
+    case types.GET_SIGNAL_lIST_BY_PAGE:
+      return Object.assign({}, state, { signalDataList: payload })
     // 车道配置
     case types.GET_LANE_INFO_LISTS:
       return Object.assign({}, state, { laneLists: payload })
@@ -28,6 +31,12 @@ const signalmanagement = (state = {}, action) => {
       return Object.assign({}, state, { laneDelInfo: payload })
     case types.GET_DEL_LANE_PIC:
       return Object.assign({}, state, { laneDelPic: payload })
+    case types.GET_LANE_INFO_AND_DETAIL:
+      return Object.assign({}, state, { laneShowDetail: payload })
+    case types.POST_ADD_LANE_INFO_AND_DETAIL:
+      return Object.assign({}, state, { laneAddMore: payload })
+    case types.POST_UPDATE_LANE_INFO_AND_DETAIL:
+      return Object.assign({}, state, { laneUpdateMore: payload })
     // 灯组配置
     case types.GET_LIGHT_INFO_LISTS:
       return Object.assign({}, state, { lightLists: payload })
@@ -45,6 +54,12 @@ const signalmanagement = (state = {}, action) => {
       return Object.assign({}, state, { lightDelInfo: payload })
     case types.GET_DEL_LIGHT_PIC:
       return Object.assign({}, state, { lightDelPic: payload })
+    case types.GET_LIGHT_INFO_AND_DETAIL:
+      return Object.assign({}, state, { lightShowDetail: payload })
+    case types.POST_ADD_LIGHT_INFO_AND_DETAIL:
+      return Object.assign({}, state, { lightAddMore: payload })
+    case types.POST_UPDATE_LIGHT_INFO_AND_DETAIL:
+      return Object.assign({}, state, { lightUpdateMore: payload })      
     // 检测器配置
     case types.GET_DETECTOR_INFO_LISTS:
       return Object.assign({}, state, { detectorLists: payload })
@@ -62,6 +77,12 @@ const signalmanagement = (state = {}, action) => {
       return Object.assign({}, state, { detectorDelInfo: payload })
     case types.GET_DEL_DETECTOR_PIC:
       return Object.assign({}, state, { detectorDelPic: payload })
+    case types.GET_DETECTOR_INFO_AND_DETAIL:
+      return Object.assign({}, state, { detectorShowDetail: payload })
+    case types.POST_ADD_DETECTOR_INFO_AND_DETAIL:
+      return Object.assign({}, state, { detectorAddMore: payload })
+    case types.POST_UPDATE_DETECTOR_INFO_AND_DETAIL:
+      return Object.assign({}, state, { detectorUpdateMore: payload })      
     // 相位配置
     case types.GET_PHASE_INFO_LISTS:
       return Object.assign({}, state, { phaseLists: payload })
