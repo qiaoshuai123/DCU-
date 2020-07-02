@@ -213,31 +213,33 @@ class SignalManagement extends PureComponent {
     
   }
   // 获取子id, 路口id
-  getSelectChildId = (childInterId, index) => {
+  getSelectChildId = (childInterId) => {
     const _this = this;
     var marker, lng, lat;
     const childrenArr = this.state.treeListBackups
-    childrenArr[index].units && childrenArr[index].units.map((item) => {
-      if (childInterId === item.id) {
-        lng = item.lng
-        lat = item.lat
-        marker = new AMap.Marker({
-          position: new AMap.LngLat(item.lng, item.lat),
-          offset: new AMap.Pixel(-16, -16),
-          content: "<div id='roadKey"+item.id+"'></div>",
-        })
-        marker.on('click',function(){
-          _this.setState({
-            roadUnitId: item.id,
-            roadInterId: item.interId,
-            roadNodeNo: item.nodeId,
+    childrenArr.map((data) => {
+      data.units && data.units.map((item) => {
+        if (childInterId === item.id) {
+          lng = item.lng
+          lat = item.lat
+          marker = new AMap.Marker({
+            position: new AMap.LngLat(item.lng, item.lat),
+            offset: new AMap.Pixel(-16, -16),
+            content: "<div id='roadKey"+item.id+"'></div>",
           })
-          const resultP = Promise.resolve(_this.props.getUnitPop(childInterId))
-          resultP.then(()=>{
-            _this.openInfoWin(_this.map, item, marker, item.interName)
+          marker.on('click',function(){
+            _this.setState({
+              roadUnitId: item.id,
+              roadInterId: item.interId,
+              roadNodeNo: item.nodeId,
+            })
+            const resultP = Promise.resolve(_this.props.getUnitPop(childInterId))
+            resultP.then(()=>{
+              _this.openInfoWin(_this.map, item, marker, item.interName)
+            })
           })
-        })
-      }
+        }
+      })
     })
     if (marker && this.map) {
       this.map.setCenter([lng, lat])

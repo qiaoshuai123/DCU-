@@ -39,7 +39,7 @@ class CustomTree extends React.Component {
     }
     this.setState({ expendsKey: this.state.expendsKey })
   }
-  handleTreeSelect = (e, name, code, arrIndex) => {
+  handleTreeSelect = (e, name, code) => {
     e.stopPropagation()
     e.preventDefault()
     const id = Number(e.currentTarget.getAttribute('id'))
@@ -75,7 +75,7 @@ class CustomTree extends React.Component {
     const lng = Number(e.currentTarget.getAttribute('lng'))
     const lat = Number(e.currentTarget.getAttribute('lat'))
     if (id) {
-      this.props.getSelectChildId(id, this.state.arrIndex, lng, lat)
+      this.props.getSelectChildId(id, lng, lat)
     }
   }
   rightDown = (e, id, boolean, objs) => { // 鼠标右击
