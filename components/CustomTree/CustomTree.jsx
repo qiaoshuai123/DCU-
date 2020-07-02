@@ -15,6 +15,7 @@ class CustomTree extends React.Component {
       visible: 0, // 右键菜单
       treeChecked: null,
       dcuTreeData: null,
+      arrIndex: null,
     }
   }
   componentDidMount = () => {
@@ -38,7 +39,7 @@ class CustomTree extends React.Component {
     }
     this.setState({ expendsKey: this.state.expendsKey })
   }
-  handleTreeSelect = (e, name, code) => {
+  handleTreeSelect = (e, name, code, arrIndex) => {
     e.stopPropagation()
     e.preventDefault()
     const id = Number(e.currentTarget.getAttribute('id'))
@@ -65,16 +66,16 @@ class CustomTree extends React.Component {
     if (!this.props.rightDownNone) {
       this.props.visibleShowLeft('', '', false)
     }
-    this.setState({ expendsKey: this.state.expendsKey })
+    this.setState({ expendsKey: this.state.expendsKey, arrIndex })
     // this.props.getSelectTreeId(id)
   }
-  handleTreeChildSelect = (e, index) => {
+  handleTreeChildSelect = (e) => {
     e.stopPropagation()
     const id = Number(e.currentTarget.getAttribute('id'))
     const lng = Number(e.currentTarget.getAttribute('lng'))
     const lat = Number(e.currentTarget.getAttribute('lat'))
     if (id) {
-      this.props.getSelectChildId(id, index, lng, lat)
+      this.props.getSelectChildId(id, this.state.arrIndex, lng, lat)
     }
   }
   rightDown = (e, id, boolean, objs) => { // 鼠标右击
@@ -124,7 +125,7 @@ class CustomTree extends React.Component {
             id={item.id}
             lng={item.lng}
             lat={item.lat}
-            onClick={(e) => { this.handleTreeChildSelect(e, index) }}
+            onClick={(e) => { this.handleTreeChildSelect(e) }}
           >
             <span className={styles.childIcon}><Icon type="environment" theme="filled" /></span>
             <span title={item.interName} className={styles.childNode}>{item.interName}</span>
@@ -136,10 +137,10 @@ class CustomTree extends React.Component {
       <div className={styles.treeWrapper}>
         <ul className={styles.treeList}>
           {
-            this.props.data.dcuTreeData && this.props.data.dcuTreeData.map((item) => {
+            this.props.data.dcuTreeData && this.props.data.dcuTreeData.map((item, i) => {
               const isOpen = expendsKey.indexOf(item.id) >= 0
               return (
-                <li className={styles.treeLi} key={item.id} id={item.id} onContextMenu={this.noShow} onClick={e => this.handleTreeSelect(e, item.codeName, item.dictCode)}>
+                <li className={styles.treeLi} key={item.id} id={item.id} onContextMenu={this.noShow} onClick={e => this.handleTreeSelect(e, item.codeName, item.dictCode, i)}>
                   <span className={styles.treeIcon}>
                     <span className={styles.childIcon}><Icon type={isOpen ? 'minus-circle' : 'plus-circle'} /></span>
                   </span>

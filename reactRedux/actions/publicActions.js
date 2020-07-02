@@ -40,6 +40,15 @@ export const getUnitTree = () => {
     }
   }
 }
+export const checkUnitTree = (data) => {
+  return async (dispatch) => {
+    try {
+      dispatch({ type: types.GET_UNIT_TREE, payload: data })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+}
 
 // DCU点位弹层信息 || 基础信息配置 之 右侧信息回显
 export const getUnitPop = (interId) => {

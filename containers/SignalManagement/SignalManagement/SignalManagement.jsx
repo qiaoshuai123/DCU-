@@ -10,7 +10,7 @@ import InterworkingList from './InterworkingList/InterworkingList'
 import styles from './SignalManagement.scss'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { getMapUnitInfoList, getUnitPop } from '../../../reactRedux/actions/publicActions'
+import { getMapUnitInfoList, getUnitPop, checkUnitTree } from '../../../reactRedux/actions/publicActions'
 import { getStepStatus, postBgBySelect, postBgByUpload } from '../../../reactRedux/actions/signalmanagementActions'
 import StepNavMenu from './StepNavMenu/StepNavMenu'
 import BasicInfoLeft from './StepConfigLeft/BasicInfoLeft'
@@ -77,20 +77,32 @@ class SignalManagement extends PureComponent {
       popParam2: null,
       popParam3: null,
       popParam4: null,
+      treeFlag: true,
+      searchInterList: null,
+      treeListBackups: null,
+      treeList: null,
+      interListHeight: 0,
     }
     this.map = null
     this.moveFlag = false // 是否是移动状态
     this.bgIpUrl = 'http://192.168.1.213:20203/DCU/dcuImage/background/'
     this.socketPointStatusUrl = 'ws://192.168.1.213:20203/DCU/websocket/dcuState/0/0/0' // 实时请求地图点的状态
     this.socketPointPopUrl = 'ws://192.168.1.213:20203/DCU/websocket/interRunState/' // 点击显示实时弹层
+    this.statePointPopUrl = 'ws://192.168.1.213:20203/DCU/websocket/allInterRunState/0/0/0' // 点击显示实时弹层
+    this.searchInterList = []
   }
   componentDidUpdate = (prevState) => {
-    const { mapPointsData, dcuPopData, stepStatusData, basicBgLists, basicUplSuccess } = this.props.data
+    const { mapPointsData, dcuPopData, stepStatusData, basicBgLists, basicUplSuccess, dcuTreeData } = this.props.data
     if (prevState.data !== this.props.data) {
       // console.log(this.props,this.props.data, "data中所有的数据")
     }
+    if (prevState.data.dcuTreeData !== dcuTreeData) {
+      if (this.state.treeFlag) {
+        this.checkUnitTree()
+      }
+    }
     if (prevState.data.mapPointsData !== mapPointsData) {
-      // console.log(mapPointsData, '点数据')
+      console.log(mapPointsData, '点数据')
       this.setState({ mapPointsData },()=>{
         this.loadingMap()
       })
@@ -110,6 +122,11 @@ class SignalManagement extends PureComponent {
   }
   componentDidMount = () => {
     document.addEventListener('click', (e) => {
+      if (e.target !== this.searchInputBox) {
+        if ( e.target !== this.searchBtn ) {
+          this.setState({ interListHeight: 0 })
+        }
+      }
       this.visibleShowLeft('', '', false)
     })
     // 初始化地图
@@ -118,15 +135,88 @@ class SignalManagement extends PureComponent {
     window.setGetParams = this.setGetParams
     this.props.getMapUnitInfoList()
   }
-  // 从子集获取区域id和index 请求路口
-  getSelectTreeId = (id) => {
-    this.props.getVipRouteChild(id)
+  checkUnitTree = () => {
+    this.searchInterList = this.props.data.dcuTreeData
+    this.setState({
+      treeList: this.props.data.dcuTreeData,
+      treeListBackups: this.props.data.dcuTreeData,
+      treeFlag: false,
+    })
+  }
+  hanleSelectInter = (e, item) => {
+    let marker
+    const _this = this;
+    marker = new AMap.Marker({
+      position: new AMap.LngLat(item.lng, item.lat),
+      offset: new AMap.Pixel(-16, -16),
+      content: "<div id='roadKey" + item.interId + "'></div>",
+    })
+    marker.on('click', function () {
+      _this.setState({
+        roadUnitId: item.id,
+        roadInterId: item.interId,
+        roadNodeNo: item.nodeId,
+      })
+      const resultP = Promise.resolve(_this.props.getUnitPop(item.id))
+      resultP.then(() => {
+        _this.openInfoWin(_this.map, item, marker, item.interName)
+      })
+    })
+
+    if (marker && this.map) {
+      this.map.setCenter([item.lng, item.lat])
+      this.searchInputBox.value = item.interName
+      this.setState({ interListHeight: 0 })
+      marker.emit('click', {
+        lnglat: this.map.getCenter()
+      })
+    } else {
+      message.info('该路口尚未接入')
+    }
+  }
+  searchBtnSelect = (event) => {
+    this.searchBtn = event.target
+    this.handleSearchInterFocus()
+  }
+  handleSearchInterFocus = () => {
+    this.setState({ interListHeight: 300 })
+    const searchInters = []
+    this.searchInterList.forEach((item) => {
+      item.units.forEach((items) => {
+        searchInters.push(items)
+      })
+    })
+    this.setState({ searchInterList: searchInters })
+  }
+  handleSearchInputChange = (e) => {
+    const { value } = e.target
+    const searchInters = []
+    const searchLists = []
+    if (this.searchTimer) {
+      clearTimeout(this.searchTimer)
+      this.searchTimer = null
+    }
+    this.searchTimer = setTimeout(() => {
+      this.searchInterList.forEach((item) => {
+        item.units.forEach((items) => {
+          if (items.interName.indexOf(value) >= 0) {
+            searchInters.push(item)
+            searchLists.push(items)
+          }
+        })
+      })
+      this.setState({ treeList: searchInters, searchInterList: searchLists }, () => {
+        // console.log(searchInters, value, '结构')
+        !value ? this.props.checkUnitTree(this.state.treeListBackups) : this.props.checkUnitTree(this.state.treeList)
+      })
+    }, 200)
+    
   }
   // 获取子id, 路口id
   getSelectChildId = (childInterId, index) => {
     const _this = this;
-    let marker, lng, lat;
-    const childrenArr = this.props.data.dcuTreeData
+    var marker, lng, lat;
+    const childrenArr = this.state.treeListBackups
     childrenArr[index].units && childrenArr[index].units.map((item) => {
       if (childInterId === item.id) {
         lng = item.lng
@@ -293,11 +383,12 @@ class SignalManagement extends PureComponent {
           content: "<div inter-id='"+positions[i].interId+"' id='roadKey"+positions[i].id+"' class='marker-online'></div>",
         })
         // marker.id =
-        marker.on('click', () => {
+        marker.on('click', (e) => {
           map.emit('click', {
             lnglat: map.getCenter()
           })
           
+          // console.log(marker,'aaaaaaaaaaaaaaaaaaaaaaaaaa')
           marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='"+positions[i].interId+"' id='roadKey"+positions[i].id+"' class='marker-online'></div></div>");
           const nowZoom = map.getZoom()
           map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
@@ -311,6 +402,7 @@ class SignalManagement extends PureComponent {
               this.openInfoWin(map, positions[i], marker, positions[i].interName)
             })
           })
+          // console.log(marker.getContent(), 'ppppppppppppppppppppp')
         })
         this[layer].push(marker)
       }
@@ -343,7 +435,7 @@ class SignalManagement extends PureComponent {
     this.infoWindow = infoWindow
     window.infoWindowClose = infoWindow
     map.on('click', (e) => {
-      marker.setContent("<div class='marker-online'></div>");
+      marker.setContent("<div inter-id='"+dataItem.interId+"' class='marker-online'></div>");
       infoWindow.close()
     })
   }
@@ -452,6 +544,11 @@ class SignalManagement extends PureComponent {
       })
     }
   }
+  handleLookData(data) {
+    let result = JSON.parse(data);
+    console.log(result,'实时监控socket 数据')
+    
+  }
   handleData(data) {
     let result = JSON.parse(data);
     // console.log(result,'socket 数据')
@@ -462,6 +559,7 @@ class SignalManagement extends PureComponent {
     this.updateMapPonitsColor(result.dcuStateList)
   }
   handlePopData(data) {
+    debugger
     let result = JSON.parse(data);
     console.log(result,this,'socket POP数据')
     $('#phasestageName').text(result.phasestageName).attr("tag-src",'http://192.168.1.213:20203/DCU/dcuImage/phasestage/' + result.phasestageImage)
@@ -473,7 +571,7 @@ class SignalManagement extends PureComponent {
     })
   }
   render() {
-    const { stepStatusData, popAddEditText, moveFlag, stepOneFlag, stepTwoFlag, 
+    const { interListHeight, searchInterList, stepStatusData, popAddEditText, moveFlag, stepOneFlag, stepTwoFlag, 
       stepRoadFlag, stepRoadAddEdit,
       stepThreeFlag, stepThreeAddEdit,
       stepFourFlag, stepFourAddEdit, 
@@ -488,6 +586,7 @@ class SignalManagement extends PureComponent {
     return (
       <div className={styles.SignalManagement}>
       <Websocket url={this.socketPointStatusUrl} onMessage={this.handleData.bind(this)}/>
+      {/* <Websocket url={this.statePointPopUrl} onMessage={this.handleLookData.bind(this)}/> */}
       { !!roadUnitId && !!roadInterId && !!roadNodeNo ? <Websocket url={`${this.socketPointPopUrl}${roadUnitId}/${roadInterId}/${roadNodeNo}`} onMessage={ this.handlePopData.bind(this)} /> : null }
         <Header {...this.props} />
         {/* 弹层 > 添加编辑 */}
@@ -874,12 +973,39 @@ class SignalManagement extends PureComponent {
           stepNineFlag={stepNineFlag}
         showHidePop={this.showHidePop} stepStatusData={stepStatusData} />
         <div className={styles.Interwork_left}>
-          <div className={styles.InterworkLeft_search}>
+          {/* <div className={styles.InterworkLeft_search}>
             <Search
               placeholder="关键词搜索"
               onSearch={value => console.log(value)}
               style={{ width: 200 }}
             />
+          </div> */}
+          <div className={styles.searchBox}>
+          <input
+                className={styles.searchInput}
+                onClick={this.handleSearchInterFocus}
+                // onChange={this.handleSearchInputChange}
+                type="text"
+                placeholder="关键词搜索"
+                ref={(input) => { this.searchInputBox = input }}
+                style={{ width: '100%' }}
+                id='searchBox'
+              />
+          <Icon className={styles.searchIcon} type="search" onClick={this.searchBtnSelect} />
+          </div>
+          <div className={styles.interList} style={{ maxHeight: `${interListHeight}px`, overflowY: 'auto' }}>
+            <div>
+              {
+                searchInterList && 
+                searchInterList.map(item => (
+                  <div className={styles.interItem}
+                    key={item.id}
+                    onClick={e => this.hanleSelectInter(e, item)}
+                  >{item.interName}
+                  </div>
+                  ))
+              }
+            </div>
           </div>
           <div className={styles.InterworkLeft_Title}>
             <span />DCU点位列表
@@ -915,6 +1041,7 @@ const mapDisPatchToProps = (dispatch) => {
     getStepStatus: bindActionCreators(getStepStatus, dispatch),
     getMapUnitInfoList: bindActionCreators(getMapUnitInfoList, dispatch),
     getUnitPop: bindActionCreators(getUnitPop, dispatch),
+    checkUnitTree: bindActionCreators(checkUnitTree, dispatch),
     postBgBySelect: bindActionCreators(postBgBySelect, dispatch),
     postBgByUpload: bindActionCreators(postBgByUpload, dispatch),
   }
