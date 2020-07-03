@@ -2,12 +2,58 @@
     width: 100%;
     height: 100%;
     background-color: #021035;
-    >img{
+    > img {
         width: 100%;
         height: 100%;
     }
+    .laneInfoAndDetailinfo {
+        position: absolute;
+        z-index: 99;
+    }
     ul {
         margin: 0;
+    }
+    .dcuStyles {
+        font-size: 16px;
+        position: absolute;
+        bottom: 110px;
+        left: 170px;
+        width: 60px;
+        height: 35px;
+        text-align: center;
+        line-height: 35px;
+        color: #3da6c0;
+        border-radius: 4px;
+        cursor: pointer;
+        border: 1px solid #3da6c0;
+        background-color: #253646;
+        .messageBox {
+            width: 310px;
+            background: rgba(31, 37, 49, 0.7);
+            padding: 30px;
+            position: absolute;
+            left: 60px;
+            top: -260px;
+            .IconClose {
+                position: absolute;
+                font-size: 16px;
+                cursor: pointer;
+                right: 10px;
+                top: 10px;
+            }
+            > div {
+                height: 25px;
+                line-height: 25px;
+                overflow: hidden;
+                text-align: left;
+                padding-left: 50px;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                > span {
+                    color: green;
+                }
+            }
+        }
     }
     .roadName {
         width: 100%;
@@ -41,7 +87,7 @@
         }
     }
     .spanMessage {
-        width: 480px;
+        width: 500px;
         height: 295px;
         background: rgba(31, 37, 49, 0.7);
         border-radius: 3px;
@@ -49,7 +95,7 @@
         padding: 30px;
         right: 30px;
         top: 63px;
-        .closeStage{
+        .closeStage {
             font-size: 18px;
             position: absolute;
             cursor: pointer;
@@ -102,27 +148,27 @@
                 padding-right: 15px;
                 line-height: 50px;
             }
-            .timingRight{
+            .timingRight {
                 width: 100%;
                 display: flex;
                 align-items: center;
-                span{
+                span {
                     width: 48%;
                     height: 30px;
                     text-align: center;
                     line-height: 30px;
                     border-radius: 3px;
                     cursor: pointer;
-                    &:nth-child(1){
+                    &:nth-child(1) {
                         color: #3da6c0;
                         border: 1px solid #3da6c0;
                         background-color: #253646;
                         margin-right: 5px;
                     }
-                    &:nth-child(2){
-                        color: #ABB0B6;
-                        border: 1px solid #ABB0B6;
-                        background-color: #272B36; 
+                    &:nth-child(2) {
+                        color: #abb0b6;
+                        border: 1px solid #abb0b6;
+                        background-color: #272b36;
                     }
                 }
             }

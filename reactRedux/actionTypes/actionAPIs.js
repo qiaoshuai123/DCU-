@@ -87,3 +87,11 @@ export const API_DEL_UPDATEUNIT = '/DCU/unitInfo/updateUnit' // 选择底图
 export const API_DEL_FILEUPLOAD = '/DCU/unitInfo/fileUpload' // 上传底图
 export const API_DEL_BACKGROUNDLIST = '/DCU/unitInfo/backgroundList' // 查询全部底图
 
+/************* 实时监控模块 **************/
+// DCU状态
+export const API_LAN_LANEINFOANDDETAIL = '/DCU/laneInfo/laneInfoAndDetail' // 车道图片接口
+export const API_LAM_LAMPGROUPDETAILLIST = '/DCU/lampgroupInfo/lampgroupDetailList' // 灯组图片接口
+export const API_DET_DETECTORDETAILLIST = '/DCU/detectorInfo/detectorDetailList' // 检测器接口
+export const API_PHA_NOWPHASESTAGEINGO = '/DCU/phaseStageInfo/nowPhasestageInfo' // 查询路口当前方案的全部阶段
+export const API_UNI_LOCKSTATELIST = '/DCU/unitInfo/lockStateList' // 锁定状态
+export const API_SCH_SCHMEINFOLIST = '/DCU/schemeInfo/schemeInfoList' // 当前路口全部方案

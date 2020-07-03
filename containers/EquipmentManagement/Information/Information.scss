@@ -26,7 +26,7 @@ $stepBor_col: #393f4f;
       z-index: 99;
       .popBox {
         position: absolute;
-        top: 50%;
+        top: 45%;
         left: 50%;
         background-color: rgba(19, 19, 19, 0.9);
         transform: translate(-50%, -50%);
@@ -65,6 +65,12 @@ $stepBor_col: #393f4f;
           padding: 15px 0;
           margin-bottom: 10px;
           border-bottom: 1px solid #292a2d;
+          .bgImgBox {
+            width: 100px;
+            height: 100px;
+            margin: 8px;
+            cursor: pointer;
+          }
           // 路口底图
           .typePic {
             width: 120px;
@@ -137,9 +143,6 @@ $stepBor_col: #393f4f;
       height: 90%;
       margin: 0 auto;
       position: relative;
-      background: url(../../../images/intersectionBg.png) no-repeat;
-      background-position: center center;
-      background-size: contain;
     }
     .turnBgBtn {
       width: 80px;
@@ -211,7 +214,7 @@ $stepBor_col: #393f4f;
           margin-bottom: 6px;
           > span {
             line-height: 30px;
-            flex: 1;
+            width: 107px;
             text-align: right;
           }
           :global(.ant-input) {
@@ -230,6 +233,9 @@ $stepBor_col: #393f4f;
   }
 }
 .Information {
+  :global(.ant-calendar-picker) {
+    flex: 1;
+  }
   :global(.ant-upload.ant-upload-select-picture-card) {
     width: 120px !important;
     height: 80px !important;
