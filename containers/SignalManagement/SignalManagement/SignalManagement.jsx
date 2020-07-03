@@ -752,7 +752,7 @@ class SignalManagement extends PureComponent {
         {/* 弹层 > 添加编辑 */}
         { stepRoadAddEdit ?  // 车道配置添加编辑弹层
           <div className={styles.maskBg}> 
-            <div className={styles.popBox}>
+            <div className={styles.popBox} style={{width: '600px'}}>
               <div className={styles.popTit}>{popAddEditText}车道<Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepRoadAddEdit", null)} } /></div>
               { laneShowDetail && 
                 <div className={styles.popCon}>
