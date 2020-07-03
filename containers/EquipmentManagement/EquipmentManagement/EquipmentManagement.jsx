@@ -83,7 +83,6 @@ class EquipmentManagement extends Component {
             content: "<div id='roadKey" + item.id + "'></div>",
           })
           marker.on('click', function () {
-            console.log(item.id, item.interId, item.nodeId, '树形跳转')
             _this.setState({
               roadUnitId: item.id,
               roadInterId: item.interId,
@@ -205,7 +204,6 @@ class EquipmentManagement extends Component {
           marker.setContent("<div class='drawCircle'><div class='inner'></div><div id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
           const nowZoom = map.getZoom()
           map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
-          console.log(positions[i].id, positions[i].interId, positions[i].nodeId, '点位点击')
           this.setState({
             roadUnitId: positions[i].id,
             roadInterId: positions[i].interId,

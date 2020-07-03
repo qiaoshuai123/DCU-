@@ -7,7 +7,7 @@ class Equipment extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      isMeessage: true,
+      // isMeessage: true,
     }
   }
   btnCloseMessage = () => {
@@ -16,16 +16,16 @@ class Equipment extends Component {
     })
   }
   showImg = () => {
-    this.setState({
-      isMeessage: true,
-    })
+    // this.setState({
+    //   isMeessage: true,
+    // })
   }
   render() {
-    const { isMeessage } = this.state
+    // const { isMeessage } = this.state
     return (
       <div className={styles.Equipment}>
         <img src={imgs} alt="" onClick={this.showImg} />
-        {
+        {/* {
           isMeessage &&
           <div className={styles.messageBox}>
             <span onClick={this.btnCloseMessage} className={styles.IconClose}><Icon type="close" /></span>
@@ -38,7 +38,7 @@ class Equipment extends Component {
             <div>信号接入状态:<span>正常</span></div>
             <div>发布服务状态:<span>正常</span></div>
           </div>
-        }
+        } */}
       </div>
     )
   }
