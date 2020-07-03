@@ -1,17 +1,12 @@
 import React, { Component } from 'react'
 import { Input, Icon, Radio, message, Upload, DatePicker } from 'antd'
+import axios from 'axios'
 import moment from 'moment'
-{/* <DatePicker style={{ width: '177px' }} value={moment(this.formatDate(DateProduction), this.dateFormat)} format={this.dateFormat} onChange={this.onChangDateStart} /> */ }
-// onChangDateStart = (date) => { // 出厂日期
-//   console.log(this.formatDate(new Date(date._d) * 1), '出厂日期')
-//   this.setState({
-//     DateProduction: this.formatDate(new Date(date._d) * 1),
-//   })
-// }
 // import Websocket from 'react-websocket';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { getdcuByInterId, getsignalByInterId, postupdateDcuinfo } from '../../../reactRedux/actions/equipmentManagement'
+import { getdcuByInterId, getsignalByInterId, postupdateDcuinfo, postupdateSignal } from '../../../reactRedux/actions/equipmentManagement'
+import { getBgLists, postBgBySelect } from '../../../reactRedux/actions/signalmanagementActions'
 import styles from './Information.scss'
 
 // 图片转64位
@@ -36,6 +31,14 @@ class Information extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      imgshref: 'http://192.168.1.213:20203/DCU/dcuImage/background/',
+      bacimghref: 'http://192.168.1.213:20203/DCU/dcuImage/background/',
+      fileList: [],
+      imageUrl: '',
+      basicBgLists: [],
+      bgListFlag: false, // 选择底图
+      baseMapValue: 1,// 选择底图
+      interRoadBg: '', // 底图背景
       idDcu: '', // DCU的id
       deviceIdDCU: '', // DCU设备编号
       maintainPhoneDCU: '', // DCU维护电话
@@ -94,14 +97,14 @@ class Information extends Component {
     this.formsignal = {
       brand: '生产厂家 ', // 生产厂家
       deviceVersion: '设备版本', // 设备版本
-      deviceId: 'deviceId', // 设备ID
-      productionDate: 'productionDate', // 出厂日期,
-      configurationDate: 'configurationDate', // 配置日期
+      deviceIdsignal: '设备ID', // 设备ID,
       serverIp: '上位机IP', // 上位机IP
       timeZone: '时区 ', // 时区
-      ip: 'IP', // IP
       port: '端口号', // 端口号
+      ip: 'IP', // IP
       gpsClockSign: 'GPS时钟标志', // GPS时钟标志
+      productionDate: '出厂日期', // 出厂日期,
+      configurationDate: '配置日期', // 配置日期
       subnetMask: '子网掩码 ', // 子网掩码
       gateway: '网关', // 网关
       serverPort: '通信端口', // 通信端口
@@ -115,21 +118,61 @@ class Information extends Component {
     // 接收传递来的路口interId
     this.props.getdcuByInterId(this.interId)
     this.props.getsignalByInterId(this.interId)
+    console.log(this.bac, 'sdfdsfsdfdsfds')
+    this.setState({
+      interRoadBg: this.bac,
+    })
   }
   componentDidUpdate = (prevState) => {
-    const { getInterId, signalByInterId } = this.props.data
+    const { getInterId, signalByInterId, basicBgLists, basicSelSuccess } = this.props.data
     if (prevState.data.getInterId !== getInterId) {
       this.getgetInterId(getInterId)
     }
     if (prevState.data.signalByInterId !== signalByInterId) {
       this.getsignalByInterId(signalByInterId)
     }
+    if (prevState.data.basicBgLists !== basicBgLists) {
+      this.getbasicBgLists(basicBgLists)
+    }
+    if (prevState.data.basicSelSuccess !== basicSelSuccess) {
+      this.getbasicSelSuccess(basicSelSuccess)
+    }
   }
+
   // step2 底图选择
   onChangeBaseMap = (e) => {
     console.log('radio checked', e.target.value)
     this.setState({
       baseMapValue: e.target.value,
+    })
+  }
+  onChangDateStart = (date) => { // 出厂日期
+    // console.log(this.formatDate(new Date(date._d) * 1), '出厂日期')
+    this.setState({
+      productionDate: this.formatDate(new Date(date._d) * 1),
+    })
+  }
+  onChangDateEnd = (date) => {
+    // console.log(this.formatDate(new Date(date._d) * 1), '配置日期')
+    this.setState({
+      configurationDate: this.formatDate(new Date(date._d) * 1),
+    })
+  }
+  getbasicSelSuccess = (basicSelSuccess) => {
+    if (basicSelSuccess) {
+      const { imageUrl } = this.state
+      this.setState({
+        interRoadBg: imageUrl,
+        baseMapFlag: false,
+      }, () => {
+        localStorage.setItem('bac', JSON.stringify(imageUrl))
+      })
+    }
+  }
+  getbasicBgLists = (basicBgLists) => {
+    // console.log(basicBgLists, 'sss')
+    this.setState({
+      basicBgLists,
     })
   }
   getgetInterId = (getInterId) => {
@@ -202,30 +245,65 @@ class Information extends Component {
   getInter = () => {
     const { search } = this.props.location
     const nums = search.indexOf('&')
+    const lastNums = search.lastIndexOf('&')
     this.interId = search.substring(4, nums)
-    this.bac = search.substr(nums + 5)
+    this.id = search.substring(lastNums + 5)
+    this.bac = JSON.parse(localStorage.getItem('bac'))
   }
   // 添加信号机基础信息
   addSigna = async () => {
     const as = await this.VerificationSignal()
     if (!as) {
-      const { } = this.state
+      const {
+        brand, // 生产厂家
+        idSignal, // 信号机的id
+        deviceVersion, // 设备版本
+        deviceIdsignal, // 设备ID
+        productionDate, // 出厂日期,
+        configurationDate, // 配置日期
+        serverIp, // 上位机IP
+        timeZone, // 时区
+        ip, // IP
+        port, // 端口号
+        gpsClockSign, // GPS时钟标志
+        subnetMask, // 子网掩码
+        gateway, // 网关
+        serverPort, // 通信端口
+        maintainPhonesignal, // 维护电话
+      } = this.state
       const objs = {
-        brand: '', // 生产厂家
-        deviceVersion: '', // 设备版本
-        deviceIdsignal: '', // 设备ID
-        productionDate: '', // 出厂日期,
-        configurationDate: '', // 配置日期
-        serverIp: '', // 上位机IP
-        timeZone: '', // 时区
-        ip: '', // IP
-        port: '', // 端口号
-        gpsClockSign: '', // GPS时钟标志
-        subnetMask: '', // 子网掩码
-        gateway: '', // 网关
-        serverPort: '', // 通信端口
-        maintainPhonesignal: '', // 维护电话
+        areaName: '',
+        brand,
+        configurationDate,
+        controlState: 0,
+        controlUnitNum: 0,
+        dcuId: 0,
+        deviceId: deviceIdsignal,
+        deviceVersion,
+        gateway,
+        gpsClockSign,
+        id: idSignal,
+        interId: this.interId,
+        interName: '',
+        ip,
+        lat: 0,
+        lng: 0,
+        maintainPhone: maintainPhonesignal,
+        port,
+        productionDate,
+        runPhase: 0,
+        serverIp,
+        serverPort,
+        state: 0,
+        subnetMask,
+        timeZone,
       }
+      this.props.postupdateSignal(objs).then((res) => {
+        console.log(res, '1111267')
+        if (res.data.code === 0) {
+          message.success('添加成功')
+        }
+      })
     }
   }
   // 添加Dcu基础信息
@@ -333,22 +411,31 @@ class Information extends Component {
     if (info.file.status === 'done') {
       getBase64(info.file.originFileObj, imageUrl =>
         this.setState({
+          bacimghref: '',
           imageUrl,
           baseLoading: false,
         }))
     }
   }
+  handleUpdateImageUrl = (imageName) => {
+    this.setState({
+      bacimghref: 'http://192.168.1.213:20203/DCU/dcuImage/background/',
+      imageUrl: imageName,
+      bgListFlag: false,
+    })
+  }
   handleClickBaseMap = () => {
-    console.log(this.state.imageUrl)
-    if (this.state.imageUrl === '' && this.state.baseMapValue === 2) {
-      message.info('请选择底图')
+    if (this.state.baseMapValue === 1) {
+      const { imageUrl } = this.state
+      const objs = {
+        background: imageUrl,
+        id: this.id,
+      }
+      this.props.postBgBySelect(objs)
     } else {
-      message.info('底图设置成功')
-      this.setState({
-        interRoadBg: this.state.imageUrl,
-      }, () => {
-        this.popLayerShowHide('baseMapFlag', null)
-      })
+      if (this.state.baseMapValue === 2) {
+
+      }
     }
   }
   VerificationDcu = () => {
@@ -371,6 +458,14 @@ class Information extends Component {
       [name]: flag,
     })
   }
+  showListBg = () => {
+    // this.props.postBgBySelect({id: this.props.roadId, background: item})
+    this.setState({
+      bgListFlag: true,
+    }, () => {
+      this.props.getBgLists()
+    })
+  }
   // handleData = (a) => {
   //   console.log(a, '1122')
   // }
@@ -383,6 +478,7 @@ class Information extends Component {
       signalType, detectorType, brand, deviceVersion, deviceIdsignal,
       productionDate, configurationDate, serverIp, timeZone, ip,
       port, gpsClockSign, subnetMask, gateway, serverPort, maintainPhonesignal,
+      bgListFlag, basicBgLists, imgshref, bacimghref,
     } = this.state
     const uploadButton = (
       <em>{this.state.baseLoading ? <span><Icon type="loading" /> loading</span> : '上 传'}</em>
@@ -396,14 +492,30 @@ class Information extends Component {
           {/* <div className={styles.leftItemCon}> */}
           <div
             className={styles.leftItemCon}
-            style={interRoadBg !== '' ? {
-              background: `url(${interRoadBg}) no-repeat`, backgroundPosition: 'center center',
+            style={{
+              backgroundImage: `url(${imgshref}${interRoadBg})`,
+              backgroundRepeat: 'no-repeat',
               backgroundSize: 'contain',
-            } : {}}
+              backgroundPosition: 'center center',
+            }}
           >
             {/* 内部变化内容 */}
             {baseMapFlag ?
               <div className={styles.maskBg}>
+                {bgListFlag &&
+                  <div className={styles.popBox}>
+                    <div className={styles.popTit}>请点击图片 > 已选中当前图片为底图</div>
+                    <div className={styles.popCon} style={{ width: '464px', maxHeight: '464px', justifyContent: 'flex-start', overflowY: 'auto', flexWrap: 'wrap' }}>
+                      {
+                        !!basicBgLists && basicBgLists.map((item, i) => {
+                          return <div key={"bg" + i} className={styles.bgImgBox} onClick={() => { this.handleUpdateImageUrl(item) }} style={{ background: `url(${imgshref}${item})`, backgroundSize: 'contain' }}></div>
+                        })
+                      }
+                    </div>
+                    <div className={styles.popBottom}>
+                      <em onClick={() => { this.setState({ bgListFlag: false }) }}>返 回</em>
+                    </div>
+                  </div>}
                 <div className={styles.popBox} style={{ top: '75%' }} >
                   <div className={styles.popTit}>选择底图<Icon className={styles.Close} type="close" onClick={() => { this.popLayerShowHide("baseMapFlag", null) }} /></div>
                   <div className={styles.popCon}>
@@ -419,16 +531,15 @@ class Information extends Component {
                         listType="picture-card"
                         className="avatar-uploader"
                         showUploadList={false}
-                        action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                         beforeUpload={beforeUpload}
                         onChange={this.handleChangeBaseMap}
                       >
                         {imageUrl ?
-                          <img src={imageUrl} alt="底图" style={{ width: "100%" }} /> : <s>图片预览</s>
+                          <img src={`${bacimghref}${imageUrl}`} alt="底图" style={{ width: "100%" }} /> : <s>图片预览</s>
                         }
                         {this.state.baseMapValue === 2 ? uploadButton : null}
                       </Upload>
-                      {this.state.baseMapValue === 2 ? null : <em>选 择</em>}
+                      {this.state.baseMapValue === 2 ? null : <em onClick={this.showListBg}>选 择</em>}
 
                     </div>
                   </div>
@@ -506,7 +617,7 @@ class Information extends Component {
                 <span>生产厂家：</span><Input path="brand" onChange={this.handleChangeValue} value={brand} placeholder="请输入生产厂家" />
               </div>
               <div className={styles.itemInputBox}>
-                <span>设备版本</span><Input path="deviceVersion" onChange={this.handleChangeValue} value={deviceVersion} placeholder="请输入设备版本" />
+                <span>设备版本：</span><Input path="deviceVersion" onChange={this.handleChangeValue} value={deviceVersion} placeholder="请输入设备版本" />
               </div>
               <div className={styles.itemInputBox}>
                 <span>设备ID：</span><Input path="deviceIdsignal" onChange={this.handleChangeValue} value={deviceIdsignal} placeholder="请输入设备ID" />
@@ -527,13 +638,17 @@ class Information extends Component {
                 <span>GPS时钟标志：</span><Input path="gpsClockSign" onChange={this.handleChangeValue} value={gpsClockSign} placeholder="请输入GPS时钟标志" />
               </div>
               <div className={styles.itemInputBox}>
-                <span>出厂日期：</span><Input path="productionDate" onChange={this.handleChangeValue} value={productionDate} placeholder="请输入出厂日期" />
+                <span>出厂日期：</span>
+                <DatePicker value={moment(this.formatDate(productionDate), this.dateFormat)} format={this.dateFormat} onChange={this.onChangDateStart} />
+                {/* <Input path="productionDate" onChange={this.handleChangeValue} value={productionDate} placeholder="请输入出厂日期" /> */}
               </div>
               <div className={styles.itemInputBox}>
-                <span>配置日期：</span><Input path="configurationDate" onChange={this.handleChangeValue} value={configurationDate} placeholder="请输入配置日期" />
+                <span>配置日期：</span>
+                {/* <Input path="configurationDate" onChange={this.handleChangeValue} value={configurationDate} placeholder="请输入配置日期" /> */}
+                <DatePicker value={moment(this.formatDate(configurationDate), this.dateFormat)} format={this.dateFormat} onChange={this.onChangDateEnd} />
               </div>
               <div className={styles.itemInputBox}>
-                <span>子网掩码</span><Input path="subnetMask" onChange={this.handleChangeValue} value={subnetMask} placeholder="请输入子网掩码" />
+                <span>子网掩码：</span><Input path="subnetMask" onChange={this.handleChangeValue} value={subnetMask} placeholder="请输入子网掩码" />
               </div>
               <div className={styles.itemInputBox}>
                 <span>网关：</span><Input path="gateway" onChange={this.handleChangeValue} value={gateway} placeholder="请输入网关" />
@@ -547,14 +662,14 @@ class Information extends Component {
             </div>
           </div>
         </div>
-      </div>
+      </div >
     )
   }
 }
 
 const mapStateToProps = (state) => {
   return {
-    data: { ...state.equipmentManagement },
+    data: { ...state.equipmentManagement, ...state.SignalManagement },
   }
 }
 const mapDisPatchToProps = (dispatch) => {
@@ -562,6 +677,9 @@ const mapDisPatchToProps = (dispatch) => {
     getdcuByInterId: bindActionCreators(getdcuByInterId, dispatch),
     getsignalByInterId: bindActionCreators(getsignalByInterId, dispatch),
     postupdateDcuinfo: bindActionCreators(postupdateDcuinfo, dispatch),
+    postupdateSignal: bindActionCreators(postupdateSignal, dispatch),
+    getBgLists: bindActionCreators(getBgLists, dispatch),
+    postBgBySelect: bindActionCreators(postBgBySelect, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(Information)

@@ -41,23 +41,25 @@ class InterworkingHome extends Component {
     this.props.getVipRouteChild(id)
   }
   // 获取子id, 路口id
-  getSelectChildId = (childId, index) => {
+  getSelectChildId = (childId) => {
     const _this = this
     let marker, lng, lat
     const childrenArr = this.props.data.dcuTreeData
-    childrenArr[index].units && childrenArr[index].units.map((item) => {
-      if (childId === item.id) {
-        lng = item.lng
-        lat = item.lat
-        marker = new AMap.Marker({
-          position: new AMap.LngLat(item.lng, item.lat),
-          offset: new AMap.Pixel(-16, -16),
-          content: "<div id='roadKey" + item.id + "'></div>",
-        })
-        marker.on('click', function () {
-          _this.openInfoWin(_this.map, { lng: lng, lat: lat }, marker)
-        })
-      }
+    childrenArr.map((data) => {
+      data.units && data.units.map((item) => {
+        if (childId === item.id) {
+          lng = item.lng
+          lat = item.lat
+          marker = new AMap.Marker({
+            position: new AMap.LngLat(item.lng, item.lat),
+            offset: new AMap.Pixel(-16, -16),
+            content: "<div id='roadKey" + item.id + "'></div>",
+          })
+          marker.on('click', function () {
+            _this.openInfoWin(_this.map, { lng: lng, lat: lat }, marker)
+          })
+        }
+      })
     })
     if (marker && this.map) {
       this.map.setCenter([lng, lat])
