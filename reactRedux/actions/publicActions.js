@@ -7,8 +7,24 @@ import * as types from '../actionTypes/publicTypes'
 import RestUtil from '../RestUtil'
 
 import {
-  API_UNIT_INFO_LIST, API_UNIT_TREE, API_SIGNAL_BY_INTERID, API_UPDATE_SIGNAL
+  API_UNIT_INFO_LIST, API_UNIT_TREE, API_SIGNAL_BY_INTERID, API_UPDATE_SIGNAL, API_SYSTEM_CODE_TYPE
 } from '../actionTypes/publicAPIs'
+
+// 系统字典方法
+export const getSystemCodeType = (dictType) => {
+  return async (dispatch) => {
+    try {
+      const result = await RestUtil.get(`${API_SYSTEM_CODE_TYPE}?dictType=${dictType}`)
+      if (result.data.code === 0) {
+        dispatch({ type: types.GET_SYSTEM_CODE_TYPE, payload: result.data.data })
+      } else {
+        console.error(result.data.msg)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+}
 
 // 查询全部路口 地图中所有的点
 export const getMapUnitInfoList = () => {
@@ -81,3 +97,4 @@ export const postSignalSave = (params) => {
     }
   }
 }
+

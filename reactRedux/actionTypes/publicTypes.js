@@ -9,3 +9,5 @@ export const GET_SIGNAL_BY_UNIT_ID = 'GET_SIGNAL_UNIT_BY_ID'  //  DCU点位弹�
 export const GET_SIGNAL_BY_INTERID = 'GET_SIGNAL_BY_INTERID'  //  //信号机基础信息查询（根据interId查询信号机）
 export const POST_UPDATE_SIGNAL = 'POST_UPDATE_SIGNAL'  //  //信号机基础信息修改（根据interId查询信号机）
 
+// 系统字典
+export const GET_SYSTEM_CODE_TYPE = 'GET_SYSTEM_CODE_TYPE'

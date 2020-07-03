@@ -25,8 +25,8 @@ class LightConfigRight extends PureComponent {
     console.log(this.props, 'look look')
     this.props.getInfoListsType(this.props.roadInterId, 'LIGHT')
   }
-  popLayerShowHide = (name, flag) => {
-    this.props.popLayerShowHide(name, flag)
+  popLayerShowHide = (name, flag, event, stepType) => {
+    this.props.popLayerShowHide(name, flag, event, stepType)
   }
   handleClickFind = (e) => {
     this.props.tagToPicMark(e)
@@ -54,7 +54,7 @@ class LightConfigRight extends PureComponent {
     const { lightLists, clickFlag } = this.state
     return (
       <div className={styles.conBox}>
-        <div className={styles.rTit}>灯组配置列表<em onClick={() => { this.popLayerShowHide("stepThreeAddEdit", true) }}>添加</em></div>
+        <div className={styles.rTit}>灯组配置列表<em onClick={() => { this.popLayerShowHide("stepThreeAddEdit", true, null, 'LIGHT') }}>添加</em></div>
 
         <div className={styles.rList}>
           { lightLists === null || lightLists.length === 0  ? <div className={styles.noData}>暂无数据</div> : <div className={styles.listItem}>
@@ -67,11 +67,11 @@ class LightConfigRight extends PureComponent {
           {
             lightLists && lightLists.map((item) => {
               return <div onClick={this.handleClickFind} key={'lampgroup'+item.lampgroupNo} tag-mark={'lampgroup'+item.lampgroupNo} className={classNames(styles.listItem, clickFlag ? styles.current : null)}>
-                        <span>{item.lampgroupNo}</span>
-                        <span>{item.lampgroupTypeName}</span>
-                        <span>{item.controlTurnName}</span>
-                        <span>{item.controlDirName}</span>
-                        <span className={styles.del} onClick={(e) => this.delListItem(e, item.id)}>删除</span>
+                        <span>{!item.lampgroupNo ? '无' : item.lampgroupNo}</span>
+                        <span>{!item.lampgroupTypeName ? '无' : item.lampgroupTypeName}</span>
+                        <span>{!item.controlTurnName ? '无' : item.controlTurnName}</span>
+                        <span>{!item.controlDirName ? '无' : item.controlDirName}</span>
+                        <span className={styles.del}><b>修改</b><b onClick={(e) => this.delListItem(e, item.id)}>删除</b></span>
                       </div>
             })
           }

@@ -3,6 +3,8 @@ import * as types from '../actionTypes/publicTypes'
 const publics = (state = {}, action) => {
   const { type, payload } = action
   switch (type) {
+    case types.GET_SYSTEM_CODE_TYPE:
+      return Object.assign({}, state, { codeTypeData: payload })
     case types.GET_UNIT_INFO_LIST:
       return Object.assign({}, state, { mapPointsData: payload })
     case types.GET_UNIT_TREE:

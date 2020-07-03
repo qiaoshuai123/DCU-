@@ -42,14 +42,16 @@
               flex-wrap: wrap;
               padding: 6px 0;
               > b{
-                  font-weight: lighter;
-                  padding:0 10px;
-                  display: inline-block;
-                  cursor: pointer;
-                  &:hover{
-                      text-decoration: underline;
-                  }
-              }
+                margin:0 6px;
+                text-decoration: none;
+                display: inline-block;
+                font-weight: lighter;
+                &:hover{
+                    color: yellowgreen;
+                    text-decoration: underline;
+                    font-weight: bold;
+                }
+            }
               .stageImgText{
                   width: 30px;
                   display: flex;

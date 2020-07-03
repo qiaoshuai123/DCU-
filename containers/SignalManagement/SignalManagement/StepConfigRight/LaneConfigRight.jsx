@@ -24,8 +24,8 @@ class LaneConfigRight extends PureComponent {
     console.log(this.props, '状态')
     this.props.getInfoListsType(this.props.roadInterId, 'LANE')
   }
-  popLayerShowHide = (name, flag) => {
-    this.props.popLayerShowHide(name, flag)
+  popLayerShowHide = (name, flag, event, stepType) => {
+    this.props.popLayerShowHide(name, flag, event, stepType)
   }
   handleClickFind = (e) => {
     this.props.tagToPicMark(e)
@@ -49,11 +49,14 @@ class LaneConfigRight extends PureComponent {
       onCancel() { },
     })
   }
+  updateListItem = () => {
+    
+  }
   render() {
     const { laneLists, clickFlag } = this.state
     return (
       <div className={styles.conBox}>
-        <div className={styles.rTit}>车道配置列表<em onClick={() => { this.popLayerShowHide("stepRoadAddEdit", true) }}>添加</em></div>
+        <div className={styles.rTit}>车道配置列表<em onClick={() => { this.popLayerShowHide("stepRoadAddEdit", true, null, 'LANE') }}>添加</em></div>
         <div className={styles.rList}>
           { laneLists === null || laneLists.length === 0 ? <div className={styles.noData}>暂无数据</div> : <div className={styles.listItem}>
             <em>车道号</em>
@@ -66,12 +69,12 @@ class LaneConfigRight extends PureComponent {
           {
             laneLists && laneLists.map((item) => {
               return <div onClick={this.handleClickFind} key={'lane'+item.laneId} tag-mark={'lane'+item.laneId} className={classNames(styles.listItem, clickFlag ? styles.current : null)}>
-                        <span>{item.laneId}</span>
-                        <span>{item.fRid}</span>
-                        <span>{item.turnDirNoName}</span>
-                        <span>{item.dirName}</span>
-                        <span>{item.laneIdCust}</span>
-                        <span className={styles.del} onClick={(e) => this.delListItem(e, item.id)}>删除</span>
+                        <span>{!item.laneId ? '无' : item.laneId}</span>
+                        <span>{!item.fRid ? '无' : item.fRid}</span>
+                        <span>{!item.turnDirNoName ? '无' : item.turnDirNoName}</span>
+                        <span>{!item.dirName ? '无' : item.dirName}</span>
+                        <span>{!item.laneIdCust ? '无' : item.laneIdCust}</span>
+                        <span className={styles.del}><b onClick={(e) => this.updateListItem(e, item.id)}>修改</b> <b onClick={(e) => this.delListItem(e, item.id)}>删除</b></span>
                       </div>
             })
           }

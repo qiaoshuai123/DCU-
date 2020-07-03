@@ -25,8 +25,8 @@ class DetectorConfigRight extends PureComponent {
     console.log(this.props, 'look look')
     this.props.getInfoListsType(this.props.roadInterId, 'DETECTOR')
   }
-  popLayerShowHide = (name, flag) => {
-    this.props.popLayerShowHide(name, flag)
+  popLayerShowHide = (name, flag, event, stepType) => {
+    this.props.popLayerShowHide(name, flag, event, stepType)
   }
   handleClickFind = (e) => {
     this.props.tagToPicMark(e)
@@ -55,7 +55,7 @@ class DetectorConfigRight extends PureComponent {
     const { detectorLists, clickFlag } = this.state
     return (
       <div className={styles.conBox}>
-        <div className={styles.rTit}>检测器配置列表<em onClick={() => { this.popLayerShowHide("stepFourAddEdit", true) }}>添加</em></div>
+        <div className={styles.rTit}>检测器配置列表<em onClick={() => { this.popLayerShowHide("stepFourAddEdit", true, null, 'DETECTOR') }}>添加</em></div>
 
         <div className={styles.rList}>
           {  detectorLists === null || detectorLists.length === 0 ? <div className={styles.noData}>暂无数据</div> : <div className={styles.listItem}>
@@ -68,11 +68,11 @@ class DetectorConfigRight extends PureComponent {
           {
             detectorLists && detectorLists.map((item) => {
               return <div onClick={this.handleClickFind} key={'detector'+item.detectorId} tag-mark={'detector'+item.detectorId} className={classNames(styles.listItem, clickFlag ? styles.current : null)}>
-                        <span>{item.detectorId}</span>
-                        <span>{item.detectorTypeName}</span>
-                        <span>{item.flowCollectionCycle}</span>
-                        <span>{item.occupancyCollectionCycle}</span>
-                        <span className={styles.del} onClick={(e) => this.delListItem(e, item.id)}>删除</span>
+                        <span>{!item.detectorId ? '无' : item.detectorId}</span>
+                        <span>{!item.detectorTypeName ? '无' : item.detectorTypeName}</span>
+                        <span>{!item.flowCollectionCycle ? '无' : item.flowCollectionCycle}</span>
+                        <span>{!item.occupancyCollectionCycle ? '无' : item.occupancyCollectionCycle}</span>
+                        <span className={styles.del}><b>修改</b><b onClick={(e) => this.delListItem(e, item.id)}>删除</b></span>
                       </div>
             })
           }

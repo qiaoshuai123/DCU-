@@ -3,7 +3,7 @@ import { Icon, Modal } from 'antd'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import detectorIcon from '../../../../images/detector_icon.png'
-import { postUpdatePicType, getDelPicType, getPicListsType } from '../../../../reactRedux/actions/signalmanagementActions'
+import { postUpdatePicType, getDelPicType, getPicListsType, getUpdateAllType } from '../../../../reactRedux/actions/signalmanagementActions'
 import styles from '../SignalManagement.scss'
 import Liststyles from '../../ListForAntd/ListForAntd.scss'
 class ImgEvent extends React.Component {
@@ -188,6 +188,11 @@ class ImgEvent extends React.Component {
       }
     }
   }
+  handleUpdate = (thisName) => {
+    this.popLayerShowHide(thisName, true, true)
+    // console.log(this.checkReturnType(this.props.typeUrl),'当前类型')
+    this.props.getUpdateAllType(this.props.roadInterId, this.props.roadNodeNo, this.checkReturnType(this.props.typeUrl))
+  }
   handleDel = (e, id) => {
     e.stopPropagation();
     const _this = this;
@@ -204,7 +209,6 @@ class ImgEvent extends React.Component {
       },
       onCancel() { },
     })
-    
   }
   render() {
     const {
@@ -219,10 +223,10 @@ class ImgEvent extends React.Component {
     const { showCloseTag } = this.state
     const imgStyle = {
       position: 'absolute', display: 'inline-block', top: `${y}px`, left: `${x}px`, userSelect: 'none', cursor: 'pointer',
-      paddingTop: '14px'
+      paddingTop: '14px', transform: 'translate(-50%,-50%)',
     }
     const imgStyleL = {
-      position: 'absolute', display: 'inline-block', top: `${y}px`, left: `${x}px`, userSelect: 'none', paddingTop: '14px'
+      position: 'absolute', display: 'inline-block', top: `${y}px`, left: `${x}px`, userSelect: 'none', paddingTop: '14px',  transform: 'translate(-50%,-50%)',
     }
     let thisName = '';
     let thisUrl= '';
@@ -249,7 +253,7 @@ class ImgEvent extends React.Component {
               onMouseOver={(!this.props.isMoveFlag ? null : this.handleHover)}
               onMouseOut={this.handleLink}
               onMouseUp={this.handleDeviceUp}
-              onDoubleClick={()=>{ (!this.props.isMoveFlag ? null : this.popLayerShowHide(thisName, true, true)) }}
+              onDoubleClick={()=>{ (!this.props.isMoveFlag ? null : this.handleUpdate(thisName)) }}
               style={(!this.props.isMoveFlag ? imgStyleL : imgStyle)}
               pic-mark={tagMark}
               ref={(input) => { this.imgBox = input }}
@@ -276,6 +280,7 @@ const mapDisPatchToProps = (dispatch) => {
     postUpdatePicType: bindActionCreators(postUpdatePicType, dispatch),
     getDelPicType: bindActionCreators(getDelPicType, dispatch),
     getPicListsType: bindActionCreators(getPicListsType, dispatch),
+    getUpdateAllType: bindActionCreators(getUpdateAllType, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(ImgEvent)

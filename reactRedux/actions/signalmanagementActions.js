@@ -159,6 +159,7 @@ export const postAddOthersType = (params, stepType) => {
 }
 // 新增图标和列表一条数据
 export const postAddAllType = (params, stepType) => {
+  debugger
   let thisAPI, thisTYPE;
   switch(stepType){
     case "LANE":
@@ -396,7 +397,7 @@ export const postUpdatePicType = (params, stepType) => {
   }
 }
 // 修改其它信息 以type类型为准
-export const postUpdateOthersType = (uploadFile, stepType) => {
+export const postUpdateOthersType = (params, stepType) => {
   let thisAPI, thisTYPE;
   switch(stepType){
     case "LANE":
@@ -434,7 +435,7 @@ export const postUpdateOthersType = (uploadFile, stepType) => {
   }
   return async (dispatch) => {
     try {
-      const result = await RestUtil.post(`${thisAPI}`, uploadFile)
+      const result = await RestUtil.post(`${thisAPI}`, params)
       if (result.data.code === 0) {
         dispatch({ type: thisTYPE, payload: result.data.data })
       } else {
@@ -477,6 +478,7 @@ export const postUpdateAllType = (params, stepType) => {
 }
 // 回显图标所有内容
 export const getUpdateAllType = (interId, nodeNo, stepType) => {
+  debugger
   let thisAPI, thisTYPE;
   switch(stepType){
     case "LANE":

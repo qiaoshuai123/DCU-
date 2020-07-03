@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-import { Input, Icon, Radio, Upload, Modal, message, Select } from 'antd'
+import { Input, Icon, Radio, Upload, Modal, message, Select, Checkbox } from 'antd'
 import classNames from 'classnames'
 import Header from '../../../components/Header/Header'
 import markerIcon from '../../../images/markerGreen.png'
@@ -10,8 +10,8 @@ import InterworkingList from './InterworkingList/InterworkingList'
 import styles from './SignalManagement.scss'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { getMapUnitInfoList, getUnitPop, checkUnitTree } from '../../../reactRedux/actions/publicActions'
-import { getStepStatus, postBgBySelect, postBgByUpload } from '../../../reactRedux/actions/signalmanagementActions'
+import { getSystemCodeType, getMapUnitInfoList, getUnitPop, checkUnitTree } from '../../../reactRedux/actions/publicActions'
+import { getStepStatus, getPicListsType, getInfoListsType, postBgBySelect, postBgByUpload, postUpdateOthersType, postAddAllType, postUpdateAllType } from '../../../reactRedux/actions/signalmanagementActions'
 import StepNavMenu from './StepNavMenu/StepNavMenu'
 import BasicInfoLeft from './StepConfigLeft/BasicInfoLeft'
 import LaneConfigLeft from './StepConfigLeft/LaneConfigLeft'
@@ -73,15 +73,16 @@ class SignalManagement extends PureComponent {
       roadNodeNo: null,
       onlineNum: 0, //实时在线数
       offlineNum: 0, //实时离线数
-      popParam1: null,
-      popParam2: null,
-      popParam3: null,
-      popParam4: null,
       treeFlag: true,
       searchInterList: null,
       treeListBackups: null,
       treeList: null,
       interListHeight: 0,
+      laneShowDetail: null,
+      lightShowDetail: null,
+      detectorShowDetail: null,
+      fDir8NoData: null, // 方向
+      turnDirNoListData: null, // 转向
     }
     this.map = null
     this.moveFlag = false // 是否是移动状态
@@ -89,11 +90,15 @@ class SignalManagement extends PureComponent {
     this.socketPointStatusUrl = 'ws://192.168.1.213:20203/DCU/websocket/dcuState/0/0/0' // 实时请求地图点的状态
     this.socketPointPopUrl = 'ws://192.168.1.213:20203/DCU/websocket/interRunState/' // 点击显示实时弹层
     this.searchInterList = []
+    this.itemDetailData = null
   }
   componentDidUpdate = (prevState) => {
-    const { mapPointsData, dcuPopData, stepStatusData, basicBgLists, basicUplSuccess, dcuTreeData } = this.props.data
+    const { mapPointsData, dcuPopData, stepStatusData, basicBgLists, basicUplSuccess, dcuTreeData, codeTypeData, laneShowDetail, lightShowDetail, detectorShowDetail } = this.props.data
     if (prevState.data !== this.props.data) {
-      // console.log(this.props,this.props.data, "data中所有的数据")
+      console.log(this.props,this.props.data, "data中所有的数据")
+    }
+    if (prevState.data.codeTypeData !== codeTypeData) {
+      console.log(codeTypeData, 'codeType 数据')
     }
     if (prevState.data.dcuTreeData !== dcuTreeData) {
       if (this.state.treeFlag) {
@@ -118,6 +123,19 @@ class SignalManagement extends PureComponent {
       // console.log(basicBgLists, '子弹层')
       this.setState({ basicBgLists })
     }
+    if (prevState.data.laneShowDetail !== laneShowDetail) {
+      console.log(laneShowDetail, '车道回显详情')
+      this.itemDetailData = laneShowDetail
+      this.setState({ laneShowDetail })
+    }
+    if (prevState.data.lightShowDetail !== lightShowDetail) {
+      console.log(lightShowDetail, '灯组回显详情')
+      // this.setState({ lightShowDetail })
+    }
+    if (prevState.data.detectorShowDetail !== detectorShowDetail) {
+      console.log(detectorShowDetail, '检测器回显详情')
+      // this.setState({ detectorShowDetail })
+    }
   }
   componentDidMount = () => {
     document.addEventListener('click', (e) => {
@@ -132,8 +150,34 @@ class SignalManagement extends PureComponent {
     this.loadingMap()
     window.showHidePop = this.showHidePop
     window.setGetParams = this.setGetParams
-    this.props.getMapUnitInfoList()
+    this.props.getMapUnitInfoList() // 地图中的点
+    this.getSystemCodeType(2) // 转向
+    this.getSystemCodeType(27) // 方向
   }
+  // 字典code
+  getSystemCodeType = (num) => {
+    this.props.getSystemCodeType(num).then(() => {
+      switch (num) {
+        case 2:
+          this.setState({ fDir8NoData: this.props.data.codeTypeData }) // 方向
+          break;
+        case 27:
+          this.setState({ turnDirNoListData: this.props.data.codeTypeData }, () => {
+            const turnDirNoListData = []
+            this.state.turnDirNoListData.map((item) => {
+              const newObj = {
+                value: item.dictCode, 
+                label: item.codeName+item.codeDes,
+              }
+              turnDirNoListData.push(newObj)
+            })
+            this.setState({ turnDirNoListData })
+          }) // 转向
+          break;
+      }
+    })
+  }
+  // 筛选左侧树型结构
   checkUnitTree = () => {
     this.searchInterList = this.props.data.dcuTreeData
     this.setState({
@@ -141,6 +185,36 @@ class SignalManagement extends PureComponent {
       treeListBackups: this.props.data.dcuTreeData,
       treeFlag: false,
     })
+  }
+  // 文本输入改变值
+  handleChangeInput = (event, type, name, key) => {
+    if (key) {
+      this[type][name][key] = event.target.value
+      const newObj = JSON.parse(JSON.stringify(this[type][name]))
+      this.setState({ [name]: newObj })
+    } else {
+      this[type][name] = event.target.value
+    }
+  }
+  // 下拉选择值
+  handleChangeSel = (value, type, name, key) => {
+    if (key) {
+      this[type][name][key] = value
+      const newObj = JSON.parse(JSON.stringify(this[type][name]))
+      this.setState({ [name]: newObj })
+    } else {
+      this[type][name] = value
+    }
+  }
+  // 复选框
+  handleChangeCheck = (checkValues, type, name, key) => {
+    if (key) {
+      this[type][name][key] = checkValues.join()
+      const newObj = JSON.parse(JSON.stringify(this[type][name]))
+      this.setState({ [name]: newObj })
+    } else {
+      this[type][name] = checkValues
+    }
   }
   hanleSelectInter = (e, item) => {
     let marker
@@ -322,12 +396,45 @@ class SignalManagement extends PureComponent {
     }
   }
   // 显示隐藏弹层
-  popLayerShowHide = (name, flag, eventType) => {
-    debugger
+  popLayerShowHide = (name, flag, eventType, stepType) => {
     this.setState({
       [name]: flag,
       popAddEditText: eventType ? '编辑' : '添加',
     })
+    debugger
+    if(!flag){
+      this.itemDetailData = null
+    } else {
+      switch(stepType){
+        case "LANE":
+          // this.itemDetailData
+           const laneShowDetail = {
+            "angle": 0, //角度
+            "fDir8No": 6,//方向
+            "fRid": '', //道路ID
+            "imageUrl": "eastnorthleft_23.gif", // 图片
+            "interId": this.state.roadInterId, //当前路口interId  隐藏项
+            "laneId": '',//车道ID
+            "laneIdCust": '', //外部车道ID
+            "nodeNo": this.state.roadNodeNo,//当前路口nodeNo  隐藏项
+            "turnDirNoList": '', //转向 复选框
+            "x": 489, //坐标x  
+            "y": 390 //坐标y
+          }
+          this.setState({ laneShowDetail })
+          break;
+        case "LIGHT":
+          this.itemDetailData = {
+            
+          }
+          break;
+        case "DETECTOR":
+          this.itemDetailData = {
+            
+          }
+          break;
+      }
+    }
   }
   showInterworkingList = (isShow) => {
     if (isShow) {
@@ -489,11 +596,67 @@ class SignalManagement extends PureComponent {
       message.info("请上传或选择底图!");
     }
   }
-  // step road 车道添加
-  stepRoadAddForList = () => {
-    message.info("车道添加成功！")
-    this.popLayerShowHide("stepRoadAddEdit", null)
+  // step 车道列表和图标添加、灯组列表和图标添加、检测器列表和图标添加
+  // stepType:类型，itemDetailData:实时调用的数据
+  postAddAllType = (itemDetailData, stepType) => {
+    let typeStr = '', showStr = '', _this = this
+    switch(stepType){
+      case 'LANE':
+        typeStr = '车道'
+        showStr = 'stepRoadAddEdit'
+        break;
+      case 'LIGHT':
+        typeStr = '灯组'
+        showStr = 'stepThreeAddEdit'
+        break;
+      case 'DETECTOR':
+        typeStr = '检测器'
+        showStr = 'stepFourAddEdit'
+        break;
+    }
+    this.props.postAddAllType(itemDetailData, stepType).then(() => {
+      this.popLayerShowHide(showStr, null)
+      message.info(typeStr+"添加成功！")
+      _this.state({ laneShowDetail: null })
+      _this.props.getPicListsType(_this.state.roadInterId, _this.state.roadNodeNo, stepType)
+      _this.props.getInfoListsType(_this.state.roadInterId, stepType)
+    })
+    // console.log(itemDetailData, '添加时：看下数据是最新的不？')
   }
+  // step 车道列表和图标修改、灯组列表和图标修改、检测器列表和图标修改
+  // stepType:类型，itemDetailData:实时调用的数据
+  postUpdateAllType = (itemDetailData, stepType) => {
+    let typeStr = '', showStr = '', _this = this
+    switch(stepType){
+      case 'LANE':
+        typeStr = '车道'
+        showStr = 'stepRoadAddEdit'
+        break;
+      case 'LIGHT':
+        typeStr = '灯组'
+        showStr = 'stepThreeAddEdit'
+        break;
+      case 'DETECTOR':
+        typeStr = '检测器'
+        showStr = 'stepFourAddEdit'
+        break;
+    }
+    this.props.postUpdateAllType(itemDetailData, stepType).then(() => {
+    this.popLayerShowHide(showStr, null)
+    message.info(typeStr+"修改成功！")
+    _this.props.getPicListsType(_this.state.roadInterId, _this.state.roadNodeNo, stepType)
+    _this.props.getInfoListsType(_this.state.roadInterId, stepType)
+  })
+      // console.log(itemDetailData, '编辑时：看下数据是最新的不？')
+  }
+  // step 车道列表修改、灯组列表修改、检测器列表修改
+  postUpdateOthersType = () => {
+
+  } 
+  // stepRoadAddForList = () => {
+  //   message.info("车道添加成功！")
+  //   this.popLayerShowHide("stepRoadAddEdit", null)
+  // }
   // step 3 灯组添加
   stepThreeAddForList = () => {
     const obj = {name: 'new', left: '50%', top: '50%', width: '32px', height: '32px', src: markerIcon}
@@ -577,7 +740,9 @@ class SignalManagement extends PureComponent {
       stepEightFlag, stepEightAddEdit,
       stepNineFlag, stepNineAddEdit,
       turnTab, baseMapFlag, stepOneText, imageUrl, interRoadBg, baseLoading, roadId, roadUnitId, roadInterId, roadNodeNo,
-      onlineNum, offlineNum, popParam1, popParam2, popParam3, popParam4 } = this.state
+      onlineNum, offlineNum, 
+      laneShowDetail, fDir8NoData, turnDirNoListData, 
+      lightShowDetail, detectorShowDetail  } = this.state
     const { Search } = Input
     return (
       <div className={styles.SignalManagement}>
@@ -589,13 +754,62 @@ class SignalManagement extends PureComponent {
           <div className={styles.maskBg}> 
             <div className={styles.popBox}>
               <div className={styles.popTit}>{popAddEditText}车道<Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepRoadAddEdit", null)} } /></div>
-              <div className={styles.popCon}> 
-              {
-                popAddEditText === '编辑' ? '车道内容回显' : '车道的新增'
+              { laneShowDetail && 
+                <div className={styles.popCon}>
+                  <div className={styles.itemInputBox}>
+                    <span>道路ID：</span><Input value={laneShowDetail.fRid} onChange={e => this.handleChangeInput(e,'state','laneShowDetail','fRid')} placeholder="请输入道路ID" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>车道ID：</span><Input type='number' value={laneShowDetail.laneId} onChange={e => this.handleChangeInput(e,'state','laneShowDetail','laneId')} placeholder="请输入车道ID" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>外部车道ID：</span><Input value={laneShowDetail.laneIdCust} onChange={e => this.handleChangeInput(e,'state','laneShowDetail','laneIdCust')} placeholder="请输入外部车道ID" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>方 向：</span>
+                    <Select
+                      value={laneShowDetail.fDir8No ? laneShowDetail.fDir8No : 0 }
+                      onChange={ v =>  this.handleChangeSel(v, 'state', 'laneShowDetail', 'fDir8No') }>
+                      <Option value={0}>请选择</Option>
+                      {
+                        fDir8NoData.map((items, key) => {
+                          return <Option key={"optionList" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
+                        })
+                      }
+                    </Select>
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>角 度：</span>
+                    <Select value={laneShowDetail.angle ? laneShowDetail.angle : 0}
+                    onChange={ v =>  this.handleChangeSel(v, 'state', 'laneShowDetail', 'angle') }>
+                      <Option value={0}>0度</Option>
+                      <Option value={45}>45度</Option>
+                      <Option value={90}>90度</Option>
+                      <Option value={135}>135度</Option>
+                      <Option value={180}>180度</Option>
+                      <Option value={225}>225度</Option>
+                      <Option value={270}>270度</Option>
+                      <Option value={315}>315度</Option>
+                      <Option value={360}>360度</Option>
+                    </Select>
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>转 向：</span>
+                    <Checkbox.Group options={turnDirNoListData} value={laneShowDetail.turnDirNoList.split(",").map(Number)} 
+                    onChange={ v =>  this.handleChangeCheck(v, 'state', 'laneShowDetail', 'turnDirNoList')} />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>图 片：</span>
+                    <div style={{flex:4.4}}>
+                      { !!laneShowDetail.imageUrl ? <div className={styles.yesImage}><img src={`http://192.168.1.213:20203/DCU/dcuImage/lane/${laneShowDetail.imageUrl}`} /></div> : <div className={styles.noImage}>选择图片</div> }
+                    </div>
+                  </div>
+                </div>
               }
-              </div>
               <div className={styles.popBottom}>
-                <em onClick={ () => {this.stepRoadAddForList()}}>确 定</em>
+              {
+                popAddEditText === '编辑' ? <em onClick={ () => {this.postUpdateAllType(laneShowDetail, 'LANE')}}>编辑确定</em> : <em onClick={ () => {this.postAddAllType(laneShowDetail, 'LANE')}}>新增确定</em>
+              }
                 <em onClick={ () => {this.popLayerShowHide("stepRoadAddEdit", null)} }>取 消</em>
               </div>
             </div>
@@ -605,9 +819,13 @@ class SignalManagement extends PureComponent {
           <div className={styles.maskBg}> 
             <div className={styles.popBox}>
               <div className={styles.popTit}>{popAddEditText}灯组<Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepThreeAddEdit", null)} } /></div>
-              <div className={styles.popCon}> 灯组的内容 </div>
+              {
+                popAddEditText === '编辑' ? <div className={styles.popCon}>'灯组编辑'</div> : <div className={styles.popCon}>'灯组新增'</div>
+              }
               <div className={styles.popBottom}>
-                <em onClick={ () => {this.stepThreeAddForList()}}>确 定</em>
+              {
+                popAddEditText === '编辑' ? <em onClick={ () => {this.postUpdateAllType(lightShowDetail, 'LIGHT')}}>编辑确定</em> : <em onClick={ () => {this.postAddAllType()}}>新增确定</em>
+              }
                 <em onClick={ () => {this.popLayerShowHide("stepThreeAddEdit", null)} }>取 消</em>
               </div>
             </div>
@@ -617,9 +835,13 @@ class SignalManagement extends PureComponent {
           <div className={styles.maskBg}> 
             <div className={styles.popBox}>
               <div className={styles.popTit}>{popAddEditText}检测器<Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepFourAddEdit", null)} } /></div>
-              <div className={styles.popCon}> 检测器的内容 </div>
+              {
+                popAddEditText === '编辑' ? <div className={styles.popCon}>'检测器编辑'</div> : <div className={styles.popCon}>'检测器新增'</div>
+              }
               <div className={styles.popBottom}>
-                <em onClick={ () => {this.stepFourAddForList()}}>确 定</em>
+              {
+                popAddEditText === '编辑' ? <em onClick={ () => {this.postUpdateAllType(detectorShowDetail, 'DETECTOR')}}>编辑确定</em> : <em onClick={ () => {this.postAddAllType()}}>新增确定</em>
+              }
                 <em onClick={ () => {this.popLayerShowHide("stepFourAddEdit", null)} }>取 消</em>
               </div>
             </div>
@@ -1033,12 +1255,18 @@ const mapStateToProps = (state) => {
 }
 const mapDisPatchToProps = (dispatch) => {
   return {
+    getSystemCodeType: bindActionCreators(getSystemCodeType, dispatch),
     getStepStatus: bindActionCreators(getStepStatus, dispatch),
+    getPicListsType: bindActionCreators(getPicListsType, dispatch),
+    getInfoListsType: bindActionCreators(getInfoListsType, dispatch),
     getMapUnitInfoList: bindActionCreators(getMapUnitInfoList, dispatch),
     getUnitPop: bindActionCreators(getUnitPop, dispatch),
     checkUnitTree: bindActionCreators(checkUnitTree, dispatch),
     postBgBySelect: bindActionCreators(postBgBySelect, dispatch),
     postBgByUpload: bindActionCreators(postBgByUpload, dispatch),
+    postAddAllType: bindActionCreators(postAddAllType, dispatch), // 添加图标和列表
+    postUpdateAllType: bindActionCreators(postUpdateAllType, dispatch),// 双击图标  修改图标和列表一条
+    postUpdateOthersType: bindActionCreators(postUpdateOthersType, dispatch), // 修改列表中的某一条
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(SignalManagement)
