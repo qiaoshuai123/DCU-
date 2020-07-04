@@ -50,7 +50,9 @@ class DetectorConfigRight extends PureComponent {
       onCancel() { },
     })
   }
-
+  updateListItem = (itemDetailData, stepType) => {
+    this.props.postUpdateAllType(itemDetailData, stepType)
+  }
   render() {
     const { detectorLists, clickFlag } = this.state
     return (
@@ -72,7 +74,7 @@ class DetectorConfigRight extends PureComponent {
                         <span>{!item.detectorTypeName ? '无' : item.detectorTypeName}</span>
                         <span>{!item.flowCollectionCycle ? '无' : item.flowCollectionCycle}</span>
                         <span>{!item.occupancyCollectionCycle ? '无' : item.occupancyCollectionCycle}</span>
-                        <span className={styles.del}><b>修改</b><b onClick={(e) => this.delListItem(e, item.id)}>删除</b></span>
+                        <span className={styles.del}><b onClick={() => this.updateListItem(item, 'DETECTOR')}>修改</b><b onClick={(e) => this.delListItem(e, item.id)}>删除</b></span>
                       </div>
             })
           }

@@ -37,6 +37,8 @@ const signalmanagement = (state = {}, action) => {
       return Object.assign({}, state, { laneAddMore: payload })
     case types.POST_UPDATE_LANE_INFO_AND_DETAIL:
       return Object.assign({}, state, { laneUpdateMore: payload })
+    case types.GET_LANE_IMAGE_LIST:
+      return Object.assign({}, state, { laneIconLists: payload })
     // 灯组配置
     case types.GET_LIGHT_INFO_LISTS:
       return Object.assign({}, state, { lightLists: payload })
@@ -59,7 +61,9 @@ const signalmanagement = (state = {}, action) => {
     case types.POST_ADD_LIGHT_INFO_AND_DETAIL:
       return Object.assign({}, state, { lightAddMore: payload })
     case types.POST_UPDATE_LIGHT_INFO_AND_DETAIL:
-      return Object.assign({}, state, { lightUpdateMore: payload })      
+      return Object.assign({}, state, { lightUpdateMore: payload })     
+    case types.GET_LIGHT_IMAGE_LIST:
+      return Object.assign({}, state, { lightIconLists: payload }) 
     // 检测器配置
     case types.GET_DETECTOR_INFO_LISTS:
       return Object.assign({}, state, { detectorLists: payload })
@@ -82,7 +86,9 @@ const signalmanagement = (state = {}, action) => {
     case types.POST_ADD_DETECTOR_INFO_AND_DETAIL:
       return Object.assign({}, state, { detectorAddMore: payload })
     case types.POST_UPDATE_DETECTOR_INFO_AND_DETAIL:
-      return Object.assign({}, state, { detectorUpdateMore: payload })      
+      return Object.assign({}, state, { detectorUpdateMore: payload })   
+    // case types.GET_DETECTOR_IMAGE_LIST:
+    //   return Object.assign({}, state, { detectorIconLists: payload })         
     // 相位配置
     case types.GET_PHASE_INFO_LISTS:
       return Object.assign({}, state, { phaseLists: payload })

@@ -50,6 +50,9 @@ class LightConfigRight extends PureComponent {
       onCancel() { },
     })
   }
+  updateListItem = (itemDetailData, stepType) => {
+    this.props.postUpdateAllType(itemDetailData, stepType)
+  }
   render() {
     const { lightLists, clickFlag } = this.state
     return (
@@ -71,7 +74,7 @@ class LightConfigRight extends PureComponent {
                         <span>{!item.lampgroupTypeName ? '无' : item.lampgroupTypeName}</span>
                         <span>{!item.controlTurnName ? '无' : item.controlTurnName}</span>
                         <span>{!item.controlDirName ? '无' : item.controlDirName}</span>
-                        <span className={styles.del}><b>修改</b><b onClick={(e) => this.delListItem(e, item.id)}>删除</b></span>
+                        <span className={styles.del}><b>修改</b><b onClick={() => this.updateListItem(item, 'LIGHT')}>删除</b></span>
                       </div>
             })
           }

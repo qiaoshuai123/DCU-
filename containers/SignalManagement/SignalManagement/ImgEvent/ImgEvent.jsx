@@ -77,6 +77,7 @@ class ImgEvent extends React.Component {
     const {
       id,
       laneId,
+      lampgroupNo,
       imageUrl,
       x,
       y
@@ -189,9 +190,23 @@ class ImgEvent extends React.Component {
     }
   }
   handleUpdate = (thisName) => {
+    debugger
     this.popLayerShowHide(thisName, true, true)
-    // console.log(this.checkReturnType(this.props.typeUrl),'当前类型')
-    this.props.getUpdateAllType(this.props.roadInterId, this.props.roadNodeNo, this.checkReturnType(this.props.typeUrl))
+    let selId = null
+    switch(thisName){
+      case 'stepRoadAddEdit':
+        selId = this.props.imgMsg.laneId
+        break;
+      case 'stepThreeAddEdit':
+        selId = this.props.imgMsg.lampgroupNo
+        break;
+      case 'stepFourAddEdit':
+        selId = this.props.imgMsg.detectorId
+        break;
+    }
+    // this.props.imgMsg.laneId
+    // console.log(this.props,'当前类型')
+    this.props.getUpdateAllType(this.props.roadInterId, this.props.roadNodeNo, selId, this.checkReturnType(this.props.typeUrl))
   }
   handleDel = (e, id) => {
     e.stopPropagation();

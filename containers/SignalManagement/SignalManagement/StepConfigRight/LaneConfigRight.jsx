@@ -49,11 +49,11 @@ class LaneConfigRight extends PureComponent {
       onCancel() { },
     })
   }
-  updateListItem = () => {
-    
+  updateListItem = (itemDetailData, stepType) => {
+    this.props.getUpdateAllTypes(itemDetailData.interId, this.props.roadNodeNo, itemDetailData.laneId, stepType, true)
   }
   render() {
-    const { laneLists, clickFlag } = this.state
+    const { laneLists, clickFlag, itemDetailData } = this.state
     return (
       <div className={styles.conBox}>
         <div className={styles.rTit}>车道配置列表<em onClick={() => { this.popLayerShowHide("stepRoadAddEdit", true, null, 'LANE') }}>添加</em></div>
@@ -74,7 +74,7 @@ class LaneConfigRight extends PureComponent {
                         <span>{!item.turnDirNoName ? '无' : item.turnDirNoName}</span>
                         <span>{!item.dirName ? '无' : item.dirName}</span>
                         <span>{!item.laneIdCust ? '无' : item.laneIdCust}</span>
-                        <span className={styles.del}><b onClick={(e) => this.updateListItem(e, item.id)}>修改</b> <b onClick={(e) => this.delListItem(e, item.id)}>删除</b></span>
+                        <span className={styles.del}><b onClick={() => this.updateListItem(item, 'LANE')}>修改</b> <b onClick={(e) => this.delListItem(e, item.id)}>删除</b></span>
                       </div>
             })
           }

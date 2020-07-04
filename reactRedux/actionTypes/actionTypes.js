@@ -21,6 +21,7 @@ export const GET_DEL_LANE_PIC = 'GET_DEL_LANEPIC' //删除车道详细
 export const GET_LANE_INFO_AND_DETAIL = 'GET_LANE_INFO_AND_DETAIL' //回显内容
 export const POST_ADD_LANE_INFO_AND_DETAIL = 'POST_ADD_LANE_INFO_AND_DETAIL' //新增内容图标和列表
 export const POST_UPDATE_LANE_INFO_AND_DETAIL = 'POST_UPDATE_LANE_INFO_AND_DETAIL' //修改内容图标和列表
+export const GET_LANE_IMAGE_LIST = 'GET_LANE_IMAGE_LIST' //回显全部图标
 // 灯组配置
 export const GET_LIGHT_INFO_LISTS = 'GET_LIGHTINFO_LISTS' //根据interId查询路口下所有灯组列表
 export const GET_LIGHT_PIC_LISTS = 'GET_LIGHTPIC_LISTS' //根据interId 路口序号查询图上的灯
@@ -33,6 +34,7 @@ export const GET_DEL_LIGHT_PIC = 'GET_DEL_LIGHTPIC' //删除灯组图片
 export const GET_LIGHT_INFO_AND_DETAIL = 'GET_LIGHT_INFO_AND_DETAIL' //回显内容
 export const POST_ADD_LIGHT_INFO_AND_DETAIL = 'POST_ADD_LIGHT_INFO_AND_DETAIL' //新增内容图标和列表
 export const POST_UPDATE_LIGHT_INFO_AND_DETAIL = 'POST_UPDATE_LIGHT_INFO_AND_DETAIL' //修改内容图标和列表
+export const GET_LIGHT_IMAGE_LIST = 'GET_LIGHT_IMAGE_LIST' //回显全部图标
 // 检测器配置
 export const GET_DETECTOR_INFO_LISTS = 'GET_DETECTOR_INFO_LISTS' //根据interId查询路口下所有检测器列表
 export const GET_DETECTOR_PIC_LISTS = 'GET_DETECTOR_PIC_LISTS' //根据interId 路口序号查询图上的检测器
@@ -45,6 +47,7 @@ export const GET_DEL_DETECTOR_PIC = 'GET_DEL_DETECTOR_PIC' //删除检测器图�
 export const GET_DETECTOR_INFO_AND_DETAIL = 'GET_DETECTOR_INFO_AND_DETAIL' //回显内容
 export const POST_ADD_DETECTOR_INFO_AND_DETAIL = 'POST_ADD_DETECTOR_INFO_AND_DETAIL' //新增内容图标和列表
 export const POST_UPDATE_DETECTOR_INFO_AND_DETAIL = 'POST_UPDATE_DETECTOR_INFO_AND_DETAIL' //修改内容图标和列表
+// export const GET_DETECTOR_IMAGE_LIST = 'GET_DETECTOR_IMAGE_LIST' //回显全部图标
 // 相位配置
 export const GET_PHASE_INFO_LISTS = 'GET_PHASE_INFO_LISTS' //相位查询列表
 export const POST_ADD_PHASE_OTHERS = 'POST_ADD_PHASE_OTHERS' //相位新增

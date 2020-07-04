@@ -477,26 +477,59 @@ export const postUpdateAllType = (params, stepType) => {
   }
 }
 // 回显图标所有内容
-export const getUpdateAllType = (interId, nodeNo, stepType) => {
+export const getUpdateAllType = (interId, nodeNo, Id, stepType) => {
   debugger
-  let thisAPI, thisTYPE;
+  let thisAPI, thisTYPE, getUrl;
   switch(stepType){
     case "LANE":
       thisAPI = APIs.API_LANE_INFO_AND_DETAIL
       thisTYPE = types.GET_LANE_INFO_AND_DETAIL
+      getUrl = `${thisAPI}?interId=${interId}&nodeNo=${nodeNo}&laneId=${Id}`
       break;
     case "LIGHT":
       thisAPI = APIs.API_LIGHT_INFO_AND_DETAIL
       thisTYPE = types.GET_LIGHT_INFO_AND_DETAIL
+      getUrl = `${thisAPI}?interId=${interId}&nodeNo=${nodeNo}&lampgroupNo=${Id}`
       break;
     case "DETECTOR":
       thisAPI = APIs.API_DETECTOR_INFO_AND_DETAIL
       thisTYPE = types.GET_DETECTOR_INFO_AND_DETAIL
+      getUrl = `${thisAPI}?interId=${interId}&nodeNo=${nodeNo}&detectorId=${Id}`
       break;
   }
   return async (dispatch) => {
     try {
-      const result = await RestUtil.get(`${thisAPI}?interId=${interId}&nodeNo=${nodeNo}`)
+      const result = await RestUtil.get(getUrl)
+      if (result.data.code === 0) {
+        dispatch({ type: thisTYPE, payload: result.data.data })
+      } else {
+        console.error(result.data.msg)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+}
+// 回显全部图标
+export const getIconImageList = (stepType) => {
+  let thisAPI, thisTYPE;
+  switch(stepType){
+    case "LANE":
+      thisAPI = APIs.API_LANE_IMAGE_LIST
+      thisTYPE = types.GET_LANE_IMAGE_LIST
+      break;
+    case "LIGHT":
+      thisAPI = APIs.API_LIGHT_IMAGE_LIST
+      thisTYPE = types.GET_LIGHT_IMAGE_LIST
+      break;
+    case "DETECTOR":
+      thisAPI = APIs.API_DETECTOR_IMAGE_LIST
+      thisTYPE = types.GET_DETECTOR_IMAGE_LIST
+      break;
+  }
+  return async (dispatch) => {
+    try {
+      const result = await RestUtil.get(`${thisAPI}`)
       if (result.data.code === 0) {
         dispatch({ type: thisTYPE, payload: result.data.data })
       } else {
