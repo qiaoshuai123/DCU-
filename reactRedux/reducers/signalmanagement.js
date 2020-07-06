@@ -87,8 +87,8 @@ const signalmanagement = (state = {}, action) => {
       return Object.assign({}, state, { detectorAddMore: payload })
     case types.POST_UPDATE_DETECTOR_INFO_AND_DETAIL:
       return Object.assign({}, state, { detectorUpdateMore: payload })   
-    // case types.GET_DETECTOR_IMAGE_LIST:
-    //   return Object.assign({}, state, { detectorIconLists: payload })         
+    case types.GET_DETECTOR_IMAGE_LIST:
+      return Object.assign({}, state, { detectorIconLists: payload })         
     // 相位配置
     case types.GET_PHASE_INFO_LISTS:
       return Object.assign({}, state, { phaseLists: payload })

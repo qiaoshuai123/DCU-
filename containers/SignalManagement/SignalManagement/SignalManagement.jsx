@@ -83,6 +83,7 @@ class SignalManagement extends PureComponent {
       lightShowDetail: null,
       lightIconLists: null,
       detectorShowDetail: null,
+      detectorIconLists: null,
       fDir8NoData: null, // 车道方向
       turnDirNoListData: null, // 车道转向
       showFlag: null, // 是否显示
@@ -96,6 +97,7 @@ class SignalManagement extends PureComponent {
     this.bgIpUrl = 'http://192.168.1.213:20203/DCU/dcuImage/background/'
     this.laneBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/lane/'
     this.lightBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/lampgroup/'
+    this.detectorBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/detector/'
     this.phaseBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/phasestage/'
     this.socketPointStatusUrl = 'ws://192.168.1.213:20203/DCU/websocket/dcuState/0/0/0' // 实时请求地图点的状态
     this.socketPointPopUrl = 'ws://192.168.1.213:20203/DCU/websocket/interRunState/' // 点击显示实时弹层
@@ -105,7 +107,7 @@ class SignalManagement extends PureComponent {
   }
   componentDidUpdate = (prevState) => {
     const { mapPointsData, dcuPopData, stepStatusData, basicBgLists, basicUplSuccess, dcuTreeData, codeTypeData, 
-    laneShowDetail, laneIconLists, lightShowDetail, lightIconLists, detectorShowDetail } = this.props.data
+    laneShowDetail, laneIconLists, lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists } = this.props.data
     if (prevState.data !== this.props.data) {
       console.log(this.props,this.props.data, "data中所有的数据")
     }
@@ -160,10 +162,10 @@ class SignalManagement extends PureComponent {
         this.cyclicComparison(this.state.detectorType, 'detectorType', detectorShowDetail.detectorType, 'detectorShowDetail')
       })
     }
-    // if (prevState.data.detectorIconLists !== detectorIconLists) {
-    //   console.log(detectorIconLists, '检测器图标')
-    //   // this.setState({ detectorIconLists })
-    // }
+    if (prevState.data.detectorIconLists !== detectorIconLists) {
+      console.log(detectorIconLists, '检测器图标')
+      this.setState({ detectorIconLists })
+    }
   }
   componentDidMount = () => {
     document.addEventListener('click', (e) => {
@@ -227,18 +229,23 @@ class SignalManagement extends PureComponent {
     })
   }
   // 循环ID转Name
-  cyclicComparison = (dataRes, keyName, id, resData) => {
-    debugger
+  // flag: 为true 时 Name 转ID
+  cyclicComparison = (dataRes, keyName, id, resData, flag) => {
     dataRes.map((item) =>{
-      if (item.dictCode === +id) {
-        this.state[resData][keyName] = item.codeName
+      if (flag) {
+        if (item.codeName === id) {
+          this.state[resData][keyName] = item.dictCode
+        }
+      } else {
+        if (item.dictCode === +id) {
+          this.state[resData][keyName] = item.codeName
+        }
       }
     })
     const obj = JSON.parse(JSON.stringify(this.state[resData]))
     this.setState({
       [resData]: obj,
     })
-    console.log(this.state.lightShowDetail, 'LOOK 变没？')
   }
   // 筛选左侧树型结构
   checkUnitTree = () => {
@@ -506,11 +513,12 @@ class SignalManagement extends PureComponent {
             "flowCollectionCycle": 300, //流量采集周期 
             "occupancyCollectionCycle": 300, //占有率采集周期
             "detectorType": 0, //检测器类型 字典 12
+            "imageUrl": "", //图片地址
             "nodeNo": this.state.roadNodeNo,//当前路口nodeNo  隐藏项
             "x": 489, //坐标x  
             "y": 390 //坐标y
           }
-          this.setState({ detectorShowDetail })
+          this.setState({ detectorShowDetail, showFlag: true })
           break;
       }
     }
@@ -689,11 +697,16 @@ class SignalManagement extends PureComponent {
         typeStr = '灯组'
         showStr = 'stepThreeAddEdit'
         detailStr = 'lightShowDetail'
+        this.cyclicComparison(this.state.controlDir, 'controlDir', itemDetailData.controlDir, 'lightShowDetail', true)
+        this.cyclicComparison(this.state.controlTurn, 'controlTurn', itemDetailData.controlTurn, 'lightShowDetail', true)
+        itemDetailData = JSON.parse(JSON.stringify(this.state.lightShowDetail))
         break;
       case 'DETECTOR':
         typeStr = '检测器'
         showStr = 'stepFourAddEdit'
         detailStr = 'detectorShowDetail'
+        this.cyclicComparison(this.state.detectorType, 'detectorType', itemDetailData.detectorType, 'detectorShowDetail', true)
+        itemDetailData = JSON.parse(JSON.stringify(this.state.detectorShowDetail))
         break;
     }
     this.props.postAddAllType(itemDetailData, stepType).then(() => {
@@ -719,11 +732,16 @@ class SignalManagement extends PureComponent {
         typeStr = '灯组'
         showStr = 'stepThreeAddEdit'
         detailStr = 'lightShowDetail'
+        this.cyclicComparison(this.state.controlDir, 'controlDir', itemDetailData.controlDir, 'lightShowDetail', true)
+        this.cyclicComparison(this.state.controlTurn, 'controlTurn', itemDetailData.controlTurn, 'lightShowDetail', true)
+        itemDetailData = JSON.parse(JSON.stringify(this.state.lightShowDetail))
         break;
       case 'DETECTOR':
         typeStr = '检测器'
         showStr = 'stepFourAddEdit'
         detailStr = 'detectorShowDetail'
+        this.cyclicComparison(this.state.detectorType, 'detectorType', itemDetailData.detectorType, 'detectorShowDetail', true)
+        itemDetailData = JSON.parse(JSON.stringify(this.state.detectorShowDetail))
         break;
     }
     this.props.postUpdateAllType(itemDetailData, stepType).then(() => {
@@ -735,20 +753,33 @@ class SignalManagement extends PureComponent {
   })
 
   }
-  // 修改> 列表中的  待调试
+  // 修改 > 列表中的
   getUpdateAllTypes = (interId, roadNodeNo, Id, stepType, flag) => {
-    debugger
+    let typeName = ''
+    switch(stepType) {
+      case 'LANE':
+        typeName = 'stepRoadAddEdit';
+        break;
+      case 'LIGHT':
+        typeName = 'stepThreeAddEdit';
+        break;
+      case 'DETECTOR':
+        typeName = 'stepFourAddEdit';
+        break;
+    }
     if(flag){
       this.setState({
         showFlag: true,
+        popAddEditText: '编辑',
+        [typeName]: flag,
       },()=>{
         this.props.getUpdateAllType(interId, roadNodeNo, Id, stepType)
-        console.log(this.state.showFlag, this.state.laneShowDetail, '看看是啥？')
       })
     }
   }
   // 获取全部图标、车道、灯组
   getIconImageList = (e, stepType) => {
+    debugger
     this.selImage = e.target
     this.props.getIconImageList(stepType)
     this.setState({showFlag: null})
@@ -847,7 +878,7 @@ class SignalManagement extends PureComponent {
       turnTab, baseMapFlag, stepOneText, imageUrl, interRoadBg, baseLoading, roadId, roadUnitId, roadInterId, roadNodeNo,
       onlineNum, offlineNum, 
       laneShowDetail, laneIconLists, fDir8NoData, turnDirNoListData, 
-      lightShowDetail, lightIconLists, detectorShowDetail, showFlag,
+      lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists, showFlag,
       lampgroupType, controlDir, controlTurn, detectorType
     } = this.state
     const { Search } = Input
@@ -917,7 +948,7 @@ class SignalManagement extends PureComponent {
                   <div className={styles.itemInputBox}>
                     <span style={{alignSelf: 'flex-start'}}>图 片：</span>
                     <div style={{flex:4.4}}>
-                      { !!laneShowDetail.imageUrl ? <div className={styles.yesImage} onClick={(e) => this.getIconImageList(e, 'LANE')}><img src={`http://192.168.1.213:20203/DCU/dcuImage/lane/${laneShowDetail.imageUrl}`} /></div> : <div onClick={(e) => this.getIconImageList(e, 'LANE')} className={styles.noImage}>点击选图</div> }
+                      { !!laneShowDetail.imageUrl ? <div className={styles.yesImage} onClick={(e) => this.getIconImageList(e, 'LANE')}><img src={`${this.laneBgUrl}${laneShowDetail.imageUrl}`} /></div> : <div onClick={(e) => this.getIconImageList(e, 'LANE')} className={styles.noImage}>点击选图</div> }
                     </div>
                   </div>
                 </div>
@@ -946,7 +977,7 @@ class SignalManagement extends PureComponent {
                     })
                     }
                   </div>
-                }
+              }
               { showFlag && lightShowDetail && 
                 <div className={styles.popCon}>
                   <div className={styles.itemInputBox}>
@@ -1029,8 +1060,17 @@ class SignalManagement extends PureComponent {
         { stepFourAddEdit ?  // 检测器配置添加编辑弹层
           <div className={styles.maskBg}> 
             <div className={styles.popBox} style={{width: '700px'}}>
-              <div className={styles.popTit}>{popAddEditText}检测器<Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepFourAddEdit", null)} } /></div>
-              { detectorShowDetail && 
+              <div className={styles.popTit}>{popAddEditText}检测器{ !showFlag ? ' > 点击图标选中 (若不想改变图标则占空白处)' : null }{ !showFlag ? null : <Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepFourAddEdit", null)} } />}</div>
+              {/* 检测器图标层 */}
+              { !showFlag && detectorIconLists &&
+                  <div className={styles.popCon}>
+                    {detectorIconLists.length > 0 && detectorIconLists.map((item, i) => {
+                      return <img key={'icon'+ i} onClick={ () => this.handleSelImage('detectorIconLists', 'detectorShowDetail', item) } style={{border: '1px #27343b solid', cursor: 'pointer', display: 'inline-block',margin: '8px'}} src={`${this.detectorBgUrl}${item}`} />
+                    })
+                    }
+                  </div>
+              }
+              { showFlag && detectorShowDetail && 
                 <div className={styles.popCon}>
                   <div className={styles.itemInputBox}>
                     <span>检测器序号：</span><Input type='number' value={detectorShowDetail.detectorId} onChange={e => this.handleChangeInput(e,'state','detectorShowDetail','detectorId')} placeholder="请输入车道ID" />
@@ -1054,14 +1094,22 @@ class SignalManagement extends PureComponent {
                       }
                     </Select>
                   </div>
+                  <div className={styles.itemInputBox}>
+                    <span style={{alignSelf: 'flex-start'}}>图 片：</span>
+                    <div style={{flex:4.4}}>
+                      { !!detectorShowDetail.imageUrl ? <div className={styles.yesImage} onClick={(e) => this.getIconImageList(e, 'DETECTOR')}><img src={`${this.detectorBgUrl}${detectorShowDetail.imageUrl}`} /></div> : <div onClick={(e) => this.getIconImageList(e, 'DETECTOR')} className={styles.noImage}>点击选图</div> }
+                    </div>
+                  </div>
                 </div>
               }
-              <div className={styles.popBottom}>
-              {
-                popAddEditText === '编辑' ? <em onClick={ () => {this.postUpdateAllType(detectorShowDetail, 'DETECTOR')}}>编辑确定</em> : <em onClick={ () => {this.postAddAllType(detectorShowDetail, 'DETECTOR')}}>新增确定</em>
+              { showFlag ?
+                <div className={styles.popBottom}>
+                {
+                  popAddEditText === '编辑' ? <em onClick={ () => {this.postUpdateAllType(detectorShowDetail, 'DETECTOR')}}>编辑确定</em> : <em onClick={ () => {this.postAddAllType(detectorShowDetail, 'DETECTOR')}}>新增确定</em>
+                }
+                  <em onClick={ () => {this.popLayerShowHide("stepFourAddEdit", null)} }>取 消</em>
+                </div> : null
               }
-                <em onClick={ () => {this.popLayerShowHide("stepFourAddEdit", null)} }>取 消</em>
-              </div>
             </div>
           </div> : null
         }
