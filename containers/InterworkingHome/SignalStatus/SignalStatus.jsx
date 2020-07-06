@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Input, message } from 'antd'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { getMapUnitInfoList } from '../../../reactRedux/actions/publicActions'
+import { getMapUnitInfoList, getUnitPop } from '../../../reactRedux/actions/publicActions'
 import Header from '../../../components/Header/Header'
 import CustomTree from '../../../components/CustomTree/CustomTree'
 import InterworkingList from './InterworkingList/InterworkingList'
@@ -39,24 +39,38 @@ class SignalStatus extends Component {
   getSelectTreeId = (id) => {
     this.props.getVipRouteChild(id)
   }
+  // 从子集获取区域id和index 请求路口
+  getSelectTreeId = (id) => {
+    this.props.getVipRouteChild(id)
+  }
   // 获取子id, 路口id
-  getSelectChildId = (childId, index) => {
+  getSelectChildId = (childId) => {
     const _this = this
     let marker, lng, lat
     const childrenArr = this.props.data.dcuTreeData
-    childrenArr[index].units && childrenArr[index].units.map((item) => {
-      if (childId === item.id) {
-        lng = item.lng
-        lat = item.lat
-        marker = new AMap.Marker({
-          position: new AMap.LngLat(item.lng, item.lat),
-          offset: new AMap.Pixel(-16, -16),
-          content: "<div id='roadKey" + item.id + "'></div>",
-        })
-        marker.on('click', function () {
-          _this.openInfoWin(_this.map, { lng: lng, lat: lat }, marker)
-        })
-      }
+    childrenArr.map((data) => {
+      data.units && data.units.map((item) => {
+        if (childId === item.id) {
+          lng = item.lng
+          lat = item.lat
+          marker = new AMap.Marker({
+            position: new AMap.LngLat(item.lng, item.lat),
+            offset: new AMap.Pixel(-16, -16),
+            content: "<div id='roadKey" + item.id + "'></div>",
+          })
+          marker.on('click', function () {
+            _this.setState({
+              roadUnitId: item.id,
+              roadInterId: item.interId,
+              roadNodeNo: item.nodeId,
+            })
+            const resultP = Promise.resolve(_this.props.getUnitPop(item.interId))
+            resultP.then(() => {
+              _this.openInfoWin(_this.map, item, marker, item.interName)
+            })
+          })
+        }
+      })
     })
     if (marker && this.map) {
       this.map.setCenter([lng, lat])
@@ -155,7 +169,16 @@ class SignalStatus extends Component {
           marker.setContent("<div class='drawCircle'><div class='inner'></div><div id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
           const nowZoom = map.getZoom()
           map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
-          this.openInfoWin(map, positions[i], marker)
+          this.setState({
+            roadUnitId: positions[i].id,
+            roadInterId: positions[i].interId,
+            roadNodeNo: positions[i].nodeId,
+          }, () => {
+            const resultP = Promise.resolve(this.props.getUnitPop(positions[i].interId))
+            resultP.then(() => {
+              this.openInfoWin(map, positions[i], marker, positions[i].interName)
+            })
+          })
         })
         this[layer].push(marker)
       }
@@ -164,22 +187,23 @@ class SignalStatus extends Component {
     }
   }
   //在指定位置打开信息窗体
-  openInfoWin = (map, dataItem, marker) => {
-    debugger
+  openInfoWin = (map, dataItem, marker, name) => {
+    console.log(dataItem, 'qiaoshuaisss')
     var info = [];
+    let itemData = JSON.parse(JSON.stringify(this.props.data.dcuPopData))
     // this.dataItem = JSON.parse(JSON.stringify(dataItem))
     info.push(`<div class='content_box'>`);
     info.push(`<div class='content_box_title'><h4>点位详情</h4>`);
-    info.push(`<p class='input-item' style='border-top: 1px #838a9a solid;margin-top:-10px;padding-top:15px;'>点位名称：<span>` + '路口1' + `</span></p>`);
-    info.push(`<p class='input-item'>信号机编号：<span>` + '1000010' + `</span></p>`);
-    info.push(`<p class='input-item'>信号机品牌：<span>` + '海信' + `</span></p>`);
-    info.push(`<p class='input-item'>设备IP：<span>` + '192.168.1.88' + `</span></p>`);
-    info.push(`<p class='input-item'>维护电话：<span>` + '01086861234' + `</span></p>`);
-    info.push(`<p class='input-item'>信号运行阶段：<span class='greenFont'>` + '东西直行' + `<b class='icon_phase'></b></span></p>`);
-    info.push(`<p class='input-item'>信号运行方案：<span class='greenFont'>` + '早高峰' + `</span></p>`);
-    info.push(`<p class='input-item'>信号控制方式：<span class='greenFont'>` + '实时优化控制' + `</span></p>`);
-    info.push(`<p class='input-item' style='height:15px;'></p>`);
-    info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams("我是路口")'>参数配置</span></p>`);
+    info.push(`<p class='input-item' style='border-top: 1px #838a9a solid;margin-top:-10px;padding-top:15px;'>点位名称：<span>` + name + `</span></p>`);
+    info.push(`<p class='input-item'>设备编号：<span>` + itemData.deviceId + `</span></p>`);
+    info.push(`<p class='input-item'>设备型号：<span>` + itemData.brand + `</span></p>`);
+    info.push(`<p class='input-item'>设备IP：<span>` + itemData.ip + `</span></p>`);
+    info.push(`<p class='input-item'>生产厂商：<span>` + itemData.deviceVersion + `</span></p>`);
+    info.push(`<p class='input-item'>维护电话：<span>` + itemData.maintainPhone + `</span></p>`);
+    info.push(`<p class='input-item'>设备状态：<span>` + '01086861234' + `</span></p>`);
+    info.push(`<p class='input-item'>信号接入状态：<span>` + '01086861234' + `</span></p>`);
+    info.push(`<p class='input-item'>发布服务状态：<span>` + '01086861234' + `</span></p>`);
+    info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>参数配置</span></p>`);
     const infoWindow = new AMap.InfoWindow({
       content: info.join("")  //使用默认信息窗体框样式，显示信息内容
     });
@@ -243,6 +267,7 @@ const mapStateToProps = (state) => {
 const mapDisPatchToProps = (dispatch) => {
   return {
     getMapUnitInfoList: bindActionCreators(getMapUnitInfoList, dispatch),
+    getUnitPop: bindActionCreators(getUnitPop, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(SignalStatus)
