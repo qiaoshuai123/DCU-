@@ -16,6 +16,8 @@ import {
   API_PHA_NOWPHASESTAGEINGO,
   API_UNI_LOCKSTATELIST,
   API_SCH_SCHMEINFOLIST,
+  API_DCU_PROOFREADTIME,
+  API_DCU_CENTERCONTROL,
 } from '../actionTypes/actionAPIs'
 
 // 更改点位信息名称
@@ -193,5 +195,19 @@ export const schemeInfoList = (params) => {
     } catch (e) {
       console.log(e)
     }
+  }
+}
+// DCU校时信号机校时两个参数 interId   proofreadType
+export const proofreadTime = (params) => {
+  return async () => {
+    const result = await RestUtil.get(`${API_DCU_PROOFREADTIME}?${params}`)
+    return result
+  }
+}
+// DCU校时信号机校时两个参数 interId   proofreadType
+export const centerControl = (params) => {
+  return async () => {
+    const result = await RestUtil.get(`${API_DCU_CENTERCONTROL}?${params}`)
+    return result
   }
 }

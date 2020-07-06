@@ -112,7 +112,7 @@ class Header extends React.Component {
           },
           {
             id: '5_2',
-            name: '权限管理',
+            name: '权限角色管理',
             role: 5,
             path: '/jurmanagement',
           },

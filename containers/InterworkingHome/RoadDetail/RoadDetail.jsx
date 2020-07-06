@@ -1,11 +1,16 @@
 import React, { Component } from 'react'
-import { Icon } from 'antd'
+import Websocket from 'react-websocket';
+import { Icon, message } from 'antd'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import styles from './RoadDetail.scss'
-import { laneInfoAndDetail, lampgroupDetailList, detectorDetailList, nowPhasestageInfo, lockStateList, schemeInfoList } from '../../../reactRedux/actions/equipmentManagement'
+import {
+  laneInfoAndDetail, lampgroupDetailList, detectorDetailList,
+  nowPhasestageInfo, lockStateList, schemeInfoList,
+  proofreadTime, centerControl,
+} from '../../../reactRedux/actions/equipmentManagement'
 import { getUnitPop } from '../../../reactRedux/actions/publicActions'
-// import Equipment from './Equipment/Equipment'
+// import Equipment from './Equipment/Equipment
 
 class RoadDetail extends Component {
   constructor(props) {
@@ -21,8 +26,13 @@ class RoadDetail extends Component {
       schemeInfoListinfo: [], // 当前方案全部阶段F
       lockStateListinfo: [], // 控制模式
       nowPhasestageInfos: [], // 当前路口全部方案
+      planRunStage: [1, 2],
     }
     this.imgshref = 'http://192.168.1.213:20203/DCU/dcuImage/background/'
+    this.laneBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/lane/'  //车道
+    this.lightBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/lampgroup/' //灯组
+    this.detectorBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/detector/' //检测器
+    this.phaseBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/phasestage/' //相位图标
   }
   componentWillMount = () => {
     this.getInter()
@@ -59,6 +69,10 @@ class RoadDetail extends Component {
     if (prevState.data.schemeInfoListinfo !== schemeInfoListinfo) {
       this.getschemeInfoListinfo(schemeInfoListinfo)
     }
+  }
+  componentWillUnmount = () => {
+    this.handleClose()
+    // window.open('#777')
   }
   getschemeInfoListinfo = (schemeInfoListinfo) => {
     console.log(schemeInfoListinfo, '当前方案全部阶段')
@@ -137,14 +151,63 @@ class RoadDetail extends Component {
       isMeessage: false,
     })
   }
+  proofread = (num, name) => {
+    const str = `interId=${this.interId}&proofreadType=${num}`
+    this.props.proofreadTime(str).then((res) => {
+      const { code, msg } = res.data
+      if (code === 0) {
+        message.success(`${name}锁定成功`)
+      } else {
+        message.error(msg)
+      }
+    })
+  }
+  centerControls = (ids, name, nums) => {
+    const str = `controlType=${nums}&controlVal=${ids}&interId=${this.interId}&nodeNo=${this.nodeId}`
+    this.props.centerControl(str).then((res) => {
+      const { code, msg } = res.data
+      if (code === 0) {
+        message.success(`${name}成功`)
+      } else {
+        message.error(msg)
+      }
+    })
+  }
+  // handleData = (a) => {
+  //   console.log(a, '1122')
+  // }
+
   render() {
     const {
       IsspanMessage, RoadImg, laneInfoAndDetailinfo, lampgroupDetailListinfo, detectorDetailListinfo,
-      isMeessage, dcuPopData, schemeInfoListinfo, lockStateListinfo, nowPhasestageInfos,
-
+      isMeessage, dcuPopData, schemeInfoListinfo, lockStateListinfo, nowPhasestageInfos, planRunStage,
     } = this.state
     return (
       <div className={styles.RoadDetail}>
+        <div className={styles.AnimationTime}>
+          <div className={styles.palnRunBox}>
+            <div className={styles.runStage} style={{ width: `${20}px` }}><span className={styles.stageInner} /></div>
+            {
+              planRunStage &&
+              planRunStage.map((item) => {
+                const greenWid = 60
+                const redWid = 70
+                const yellowWid = 70
+                return (
+                  <div className={styles.planRunStage} key={item}>
+                    <span className={styles.stageMsg}>阶段{item} &nbsp;20秒</span>
+                    <div className={styles.greenStage} style={{ width: `${greenWid}px` }} />
+                    <div className={styles.redStage} style={{ width: `${redWid}px` }} />
+                    <div className={styles.yellowStage} style={{ width: `${yellowWid}px` }} />
+                  </div>
+                )
+              })
+            }
+          </div>
+        </div>
+        {/* <Websocket
+          url="ws://192.168.1.213:20203/DCU/websocket/interRunState/1/1/1"
+          onMessage={this.handleData.bind(this)} onClose={this.handleClose.bind(this)} /> */}
         <div className={styles.dcuStyles} onClick={this.showImgMessage}>
           DCU
           {
@@ -162,15 +225,20 @@ class RoadDetail extends Component {
             </div>
           }
         </div>
-        <img src={`${this.imgshref}${RoadImg}`} alt="" />
-        <div>
-          {laneInfoAndDetailinfo && <img src={`${this.imgshref}${laneInfoAndDetailinfo.imageUrl}`} style={{ left: `${laneInfoAndDetailinfo.x}px`, top: `${laneInfoAndDetailinfo.y}px` }} className={styles.laneInfoAndDetailinfo} alt="" />}
+        <div style={{ backgroundImage: `url(${this.imgshref}${RoadImg})` }} className={styles.imgBox} >
+          <div className={styles.centralBox}>
+            20
+          </div>
+          {
+            lampgroupDetailListinfo && lampgroupDetailListinfo.map((item, ind) => <img key={`${item}${ind}`} src={`${this.lightBgUrl}${item.imageUrl}`} style={{ left: `${item.x}px`, top: `${item.y}px` }} className={styles.laneInfoAndDetailinfo} alt="" />)
+          }
+          {
+            detectorDetailListinfo && detectorDetailListinfo.map((item, ind) => <img key={`${item}${ind}`} src={`${this.detectorBgUrl}${item.imageUrl}`} style={{ left: `${item.x}px`, top: `${item.y}px` }} className={styles.laneInfoAndDetailinfo} alt="" />)
+          }
+          {
+            laneInfoAndDetailinfo && laneInfoAndDetailinfo.map((item, ind) => <img key={`${item}${ind}`} src={`${this.laneBgUrl}${item.imageUrl}`} style={{ left: `${item.x}px`, top: `${item.y}px` }} className={styles.laneInfoAndDetailinfo} alt="" />)
+          }
         </div>
-        {
-          lampgroupDetailListinfo && lampgroupDetailListinfo.map((item, ind) => {
-            return (<div key={ind}><img src={`${this.imgshref}${item.imageUrl}`} style={{ left: `${item.x}px`, top: `${item.y}px` }} className={styles.laneInfoAndDetailinfo} alt="" /></div>)
-          })
-        }
         <div className={styles.roadName}>
           <div className={styles.roadNameTitle}>路口1</div>
           <div>所属区域:海淀区</div>
@@ -213,7 +281,7 @@ class RoadDetail extends Component {
               <div className={styles.stageLeft}>锁定阶段控制:</div>
               <ul className={styles.stageRight}>
                 {
-                  nowPhasestageInfos && nowPhasestageInfos.map(item => <li key={item.id}>{item.phasestageName}</li>)
+                  nowPhasestageInfos && nowPhasestageInfos.map(item => <li key={item.id} onDoubleClick={() => this.centerControls(item.phasestageNo, '锁定阶段控制', 1)} style={{ backgroundImage: `url(${this.phaseBgUrl}${item.imagePath})` }} />)
                 }
               </ul>
             </div>
@@ -221,7 +289,7 @@ class RoadDetail extends Component {
               <div className={styles.controlLeft}>锁定控制模式:</div>
               <ul className={styles.controlRight}>
                 {
-                  lockStateListinfo && lockStateListinfo.map(item => <li key={item.id}>{item.codeName}</li>)
+                  lockStateListinfo && lockStateListinfo.map(item => <li key={item.id} onDoubleClick={() => this.centerControls(item.dictCode, '锁定阶段控制', 2)}>{item.codeName}</li>)
                 }
               </ul>
             </div>
@@ -229,7 +297,7 @@ class RoadDetail extends Component {
               <div className={styles.programmeLeft}>锁定方案:</div>
               <ul className={styles.programmeRight}>
                 {
-                  schemeInfoListinfo && schemeInfoListinfo.map(item => <li key={item.id}>{item.schemeName}</li>)
+                  schemeInfoListinfo && schemeInfoListinfo.map(item => <li key={item.id} onDoubleClick={() => this.centerControls(item.schemeNodeNo, '锁定方案', 3)}>{item.schemeName}</li>)
                 }
               </ul>
             </div>
@@ -238,8 +306,8 @@ class RoadDetail extends Component {
                 校时:
               </div>
               <div className={styles.timingRight}>
-                <span>DCU校时</span>
-                <span>信号机校时</span>
+                <span onClick={() => this.proofread(1, 'DCU')}>DCU校时</span>
+                <span onClick={() => this.proofread(2, '信号机')}>信号机校时</span>
               </div>
             </div>
           </div>
@@ -263,6 +331,8 @@ const mapDisPatchToProps = (dispatch) => {
     nowPhasestageInfo: bindActionCreators(nowPhasestageInfo, dispatch),
     lockStateList: bindActionCreators(lockStateList, dispatch),
     schemeInfoList: bindActionCreators(schemeInfoList, dispatch),
+    proofreadTime: bindActionCreators(proofreadTime, dispatch),
+    centerControl: bindActionCreators(centerControl, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(RoadDetail)
