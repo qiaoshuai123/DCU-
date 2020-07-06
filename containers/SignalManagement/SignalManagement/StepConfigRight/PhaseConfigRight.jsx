@@ -3,7 +3,7 @@ import { Input, Icon, message, Modal } from 'antd'
 import classNames from 'classnames'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { getStepStatus, getInfoListsType, getDelInfoType } from '../../../../reactRedux/actions/signalmanagementActions'
+import { getStepStatus, getInfoListsType, getDelInfoType, postAddOthersType, postUpdateOthersType } from '../../../../reactRedux/actions/signalmanagementActions'
 import ListForAntd from '../../ListForAntd/ListForAntd'
 import styles from '../SignalManagement.scss'
 import Liststyles from '../../ListForAntd/ListForAntd.scss'
@@ -14,10 +14,14 @@ class PhaseConfigRight extends PureComponent {
     this.state = {
       phaseLists: null,
       listNames: null,
+      detailData: null, // 详细信息
+      phaseForbidenData: null,
+      phaseShieldData: null,
+      typeData: null,
     }
   }
   componentDidUpdate = (prevState) => {
-    const { phaseLists } = this.props.data
+    const { phaseLists, codeTypeData } = this.props.data
     if (prevState.data.phaseLists !== phaseLists) {
       this.setState({ phaseLists: null, listNames: null, },()=>{
         this.setState({
@@ -28,6 +32,9 @@ class PhaseConfigRight extends PureComponent {
           }
         })
       })
+    }
+    if (prevState.data.codeTypeData !== codeTypeData) {
+      console.log(codeTypeData, 'codeType 数据')
     }
   }
   componentDidMount = () => {
@@ -146,15 +153,15 @@ class PhaseConfigRight extends PureComponent {
     }
     this.setState({ listNames })
   }
-  popLayerShowHide = (name, flag) => {
-    this.props.popLayerShowHide(name, flag)
+  popLayerShowHide = (name, flag, event, stepType) => {
+    this.props.popLayerShowHide(name, flag, event, stepType)
   }
   handleClickFind = (e, itemData) => {
     if ($(e.currentTarget).hasClass(Liststyles.hover)){
       $(e.currentTarget).removeClass(Liststyles.hover)
       if (itemData.phaseLampgroupId.indexOf(',') === -1) {
         $('div[pic-mark]').map(( i, item ) => {
-          if (item.getAttribute('pic-mark') === ('lampgroup'+itemData.phaseLampgroupId)) {
+          if (item.getAttribute('pic-mark') === ('lampgroup'+itemData.phaseLampgroupId) || item.getAttribute('pic-mark') === ('lane'+itemData.phasestageLane)) {
             $(item).removeClass(styles.imgCurrent)
           }
         })
@@ -167,20 +174,36 @@ class PhaseConfigRight extends PureComponent {
             }
           })
         })
+        const leftdetectorArr = itemData.phaseDemand.split(',')
+        leftdetectorArr.map((items) => {
+          $('div[pic-mark]').map(( i, item ) => {
+            if (item.getAttribute('pic-mark') === ('detector'+items)) {
+              $(item).removeClass(styles.imgCurrent)
+            }
+          })
+        })
       }
     } else {
       $(e.currentTarget).addClass(Liststyles.hover).siblings().removeClass(Liststyles.hover)
       if (itemData.phaseLampgroupId.indexOf(',') === -1) {
-        $('div').map(( i, item ) => {
-          if (item.getAttribute('pic-mark') === ('lampgroup'+itemData.phaseLampgroupId)) {
+        $('div[pic-mark]').map(( i, item ) => {
+          if (item.getAttribute('pic-mark') === ('lampgroup'+itemData.phaseLampgroupId) || item.getAttribute('pic-mark') === ('lane'+itemData.phasestageLane)) {
             $(item).addClass(styles.imgCurrent).siblings().removeClass(styles.imgCurrent)
           }
         })
       } else {
         const leftSelArr = itemData.phaseLampgroupId.split(',')
         leftSelArr.map((items) => {
-          $('div').map(( i, item ) => {
+          $('div[pic-mark]').map(( i, item ) => {
             if (item.getAttribute('pic-mark') === ('lampgroup'+items)) {
+              $(item).addClass(styles.imgCurrent)
+            }
+          })
+        })
+        const leftdetectorArr = itemData.phaseDemand.split(',')
+        leftdetectorArr.map((items) => {
+          $('div[pic-mark]').map(( i, item ) => {
+            if (item.getAttribute('pic-mark') === ('detector'+items)) {
               $(item).addClass(styles.imgCurrent)
             }
           })
@@ -206,92 +229,32 @@ class PhaseConfigRight extends PureComponent {
       onCancel() { },
     })
   }
+  // 字典code
+  getSystemCodeType = (num) => {
+    this.props.getSystemCodeType(num).then(() => {
+      switch (num) {
+        case 11:
+          this.setState({ phaseForbidenData: this.props.data.codeTypeData }) // 相位禁止
+          break;
+        case 28:
+          this.setState({ phaseShieldData: this.props.data.codeTypeData }) // 相位屏蔽
+          break;
+        case 29:
+          this.setState({ typeData: this.props.data.codeTypeData }) // 灯组Type
+          break;
+      }
+    })
+  }
+  
+  updateListItem = (itemDetailData, stepType) => {
+    this.props.updateListItem(itemDetailData, stepType)
+  }
   render() {
-    const { phaseLists, listNames } = this.state
+    const { phaseLists, listNames, detailData, phaseForbidenData, phaseShieldData, typeData } = this.state
     return (
       <div className={styles.conBox} >
-        <div className={styles.rTit}>相位配置列表<em onClick={() => { this.popLayerShowHide("stepFiveAddEdit", true) }}>添加</em></div>
-        { !!phaseLists && !!listNames ? <ListForAntd {...this.props} dataSourse={phaseLists} listNames={listNames} showIndex={3} handleClickFind={this.handleClickFind} delListItem={this.delListItem} /> : <div className={styles.noData}>暂无数据</div> }
-        {/* <div className={styles.rList}>
-          <div className={styles.listItem}>
-            <em>相位序号</em>
-            <em>相位名称</em>
-            <em>相位包含灯组</em>
-            <em>失去路权过渡灯色1类型</em>
-            <em>失去路权过渡灯色1时间</em>
-            <em>失去路权过渡灯色2类型</em>
-            <em>失去路权过渡灯色2时间</em>
-            <em>失去路权过渡灯色3类型</em>
-            <em>失去路权过渡灯色3时间</em>
-            <em>获得路权过渡灯色1类型</em>
-            <em>获得路权过渡灯色1时间</em>
-            <em>获得路权过渡灯色2类型</em>
-            <em>获得路权过渡灯色2时间</em>
-            <em>获得路权过渡灯色3类型</em>
-            <em>获得路权过渡灯色3时间</em>
-            <em>开机失去路权灯色1类型</em>
-            <em>开机失去路权灯色1时间</em>
-            <em>开机失去路权灯色2类型</em>
-            <em>开机失去路权灯色2时间</em>
-            <em>开机失去路权灯色3类型</em>
-            <em>开机失去路权灯色3时间</em>
-            <em>开机获得路权灯色1类型</em>
-            <em>开机获得路权灯色1时间</em>
-            <em>开机获得路权灯色2类型</em>
-            <em>开机获得路权灯色2时间</em>
-            <em>开机获得路权灯色3类型</em>
-            <em>开机获得路权灯色3时间</em>
-            <em>相位最小绿时间</em>
-            <em>相位最大绿时间1</em>
-            <em>相位最大绿时间2</em>
-            <em>相位延迟绿时间</em>
-            <em>相位的需求</em>
-            <em>相位屏蔽</em>
-            <em>相位禁止</em>
-            <em>操作</em>
-          </div>
-          {
-            phaseLists && phaseLists.map((item) => {
-              return <div onClick={this.handleClickFind} key={'phase'+item.phaseNo} tag-mark={'phase'+item.phaseNo} className={classNames(styles.listItem, clickFlag ? styles.current : null)}>
-                        <em>{item.phaseNo}</em>
-                        <em>{item.phaseName}</em>
-                        <em>{item.phaseLampgroupId}</em>
-                        <em>{item.rightofwayLoseLamp1TypeName}</em>
-                        <em>{item.rightofwayLoseLamp1Time}</em>
-                        <em>{item.rightofwayLoseLamp2TypeName}</em>
-                        <em>{item.rightofwayLoseLamp2Time}</em>
-                        <em>{item.rightofwayLoseLamp3TypeName}</em>
-                        <em>{item.rightofwayLoseLamp3Time}</em>
-                        <em>{item.rightofwayAccessLamp1TypeName}</em>
-                        <em>{item.rightofwayAccessLamp1Time}</em>
-                        <em>{item.rightofwayAccessLamp2TypeName}</em>
-                        <em>{item.rightofwayAccessLamp2Time}</em>
-                        <em>{item.rightofwayAccessLamp3TypeName}</em>
-                        <em>{item.rightofwayAccessLamp3Time}</em>
-                        <em>{item.rightofwayStartingupLoseLamp1TypeName}</em>
-                        <em>{item.rightofwayStartingupLoseLamp1Time}</em>
-                        <em>{item.rightofwayStartingupLoseLamp2TypeName}</em>
-                        <em>{item.rightofwayStartingupLoseLamp2Time}</em>
-                        <em>{item.rightofwayStartingupLoseLamp3TypeName}</em>
-                        <em>{item.rightofwayStartingupLoseLamp3Time}</em>
-                        <em>{item.rightofwayStartingupAccessLamp1TypeName}</em>
-                        <em>{item.rightofwayStartingupAccessLamp1Time}</em>
-                        <em>{item.rightofwayStartingupAccessLamp2TypeName}</em>
-                        <em>{item.rightofwayStartingupAccessLamp2Time}</em>
-                        <em>{item.rightofwayStartingupAccessLamp3TypeName}</em>
-                        <em>{item.rightofwayStartingupAccessLamp3Time}</em>
-                        <em>{item.phaseMingreenTime}</em>
-                        <em>{item.phaseMaxgreen1Time}</em>
-                        <em>{item.phaseMaxgreen2Time}</em>
-                        <em>{item.phaseDelaygreenTime}</em>
-                        <em>{item.phaseDemand}</em>
-                        <em>{item.phaseShield}</em>
-                        <em>{item.phaseForbiden}</em>
-                        <span className={styles.del} onClick={(e) => this.delListItem(e, item.id)}>删除</span>
-                      </div>
-            })
-          }
-        </div> */}
+        <div className={styles.rTit}>相位配置列表<em onClick={() => { this.popLayerShowHide("stepFiveAddEdit", true, null, 'PHASE') }}>添加</em></div>
+        { !!phaseLists && !!listNames ? <ListForAntd {...this.props} dataSourse={phaseLists} listNames={listNames} showIndex={3} listType={'PHASE'} handleClickFind={this.handleClickFind} updateListItem={this.updateListItem} delListItem={this.delListItem} /> : <div className={styles.noData}>暂无数据</div> }
       </div>
     )
   }
@@ -307,6 +270,8 @@ const mapDisPatchToProps = (dispatch) => {
     getStepStatus: bindActionCreators(getStepStatus, dispatch),
     getInfoListsType: bindActionCreators(getInfoListsType, dispatch),
     getDelInfoType: bindActionCreators(getDelInfoType, dispatch),
+    postAddOthersType: bindActionCreators(postAddOthersType, dispatch),
+    postUpdateOthersType: bindActionCreators(postUpdateOthersType, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(PhaseConfigRight)

@@ -99,4 +99,16 @@ export const API_PHA_NOWPHASESTAGEINGO = '/DCU/phaseStageInfo/nowPhasestageInfo'
 export const API_UNI_LOCKSTATELIST = '/DCU/unitInfo/lockStateList' // 锁定状态
 export const API_SCH_SCHMEINFOLIST = '/DCU/schemeInfo/schemeInfoList' // 当前路口全部方案
 export const API_DCU_PROOFREADTIME = '/DCU/dcuInfo/proofreadTime' // DCU校时信号机校时两个参数 interId   proofreadType
+export const API_DCU_CENTERCONTROL = '/DCU/dcuInfo/centerControl' // 中心控制
+export const API_DCU_DCULIST = '/DCU/dcuInfo/dcuList' // 查询全部DCU
+export const API_DCU_DCULISTBYPAGE = '/DCU/dcuInfo/dcuListByPage' // 分页查询DCU
+export const API_DCU_DCUBYINTERID = '/DCU/dcuInfo/dcuByInterId' // 根据点位主键ID查询DCU
 
+// 检测器数据
+export const API_DET_DETECTORDATALISTBYPAGE = '/DCU/detectorData/detectorDataListByPage' // 分页查询检测器数据
+export const API_DET_EXPORTDETECTORDATALIST = '/DCU/detectorData/exportDetectorDataList' // 导出检测器数据
+export const API_DET_DETECTORINFOLIST = '/DCU/detectorInfo/detectorInfoList' // 根据interId查询检测器
+// export const API_DCU_CENTERCONTROL = '/DCU/dcuInfo/centerControl' // 中心控制
+// export const API_DCU_CENTERCONTROL = '/DCU/dcuInfo/centerControl' // 中心控制
+// export const API_DCU_CENTERCONTROL = '/DCU/dcuInfo/centerControl' // 中心控制
+// export const API_DCU_CENTERCONTROL = '/DCU/dcuInfo/centerControl' // 中心控制

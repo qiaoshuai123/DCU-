@@ -50,8 +50,8 @@ class DayPlanConfigRight extends PureComponent {
     }
     this.setState({ listNames })
   }
-  popLayerShowHide = (name, flag) => {
-    this.props.popLayerShowHide(name, flag)
+  popLayerShowHide = (name, flag, event, stepType) => {
+    this.props.popLayerShowHide(name, flag, event, stepType)
   }
   handleClickFind = (e, itemData) => {
     if ($(e.currentTarget).hasClass(Liststyles.hover)){
@@ -114,7 +114,7 @@ class DayPlanConfigRight extends PureComponent {
     const { dayPlanLists, listNames } = this.state
     return (
       <div className={styles.conBox}>
-        <div className={styles.rTit}>日计划配置列表<em onClick={() => { this.popLayerShowHide("stepEightAddEdit", true) }}>添加</em></div>
+        <div className={styles.rTit}>日计划配置列表<em onClick={() => { this.popLayerShowHide("stepEightAddEdit", true, null, 'DAYPLAN') }}>添加</em></div>
         { !!dayPlanLists && !!listNames ? <ListForAntd {...this.props} dataSourse={dayPlanLists} listNames={listNames} showIndex={2} listType={'DAYPLAN'} handleClickFind={this.handleClickFind} delListItem={this.delListItem} /> : <div className={styles.noData}>暂无数据</div> }
       </div>
     )

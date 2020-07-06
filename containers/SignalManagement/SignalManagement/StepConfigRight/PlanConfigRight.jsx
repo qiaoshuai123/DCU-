@@ -66,8 +66,8 @@ class PlanConfigRight extends PureComponent {
     }
     this.setState({ listNames })
   }
-  popLayerShowHide = (name, flag) => {
-    this.props.popLayerShowHide(name, flag)
+  popLayerShowHide = (name, flag, event, stepType) => {
+    this.props.popLayerShowHide(name, flag, event, stepType)
   }
   handleClickFind = (e, itemData) => {
     if ($(e.currentTarget).hasClass(Liststyles.hover)){
@@ -130,7 +130,7 @@ class PlanConfigRight extends PureComponent {
     const { planLists, listNames } = this.state
     return (
       <div className={styles.conBox}>
-        <div className={styles.rTit}>配时方案配置列表<em onClick={() => { this.popLayerShowHide("stepSevenAddEdit", true) }}>添加</em></div>
+        <div className={styles.rTit}>配时方案配置列表<em onClick={() => { this.popLayerShowHide("stepSevenAddEdit", true, null, 'PLAN') }}>添加</em></div>
         { !!planLists && !!listNames ? <ListForAntd {...this.props} dataSourse={planLists} listNames={listNames} listType={'PLAN'} imgIconUrl={this.imgIconUrl} showIndex={3} handleClickFind={this.handleClickFind} delListItem={this.delListItem} /> : <div className={styles.noData}>暂无数据</div> }
       </div>
     )

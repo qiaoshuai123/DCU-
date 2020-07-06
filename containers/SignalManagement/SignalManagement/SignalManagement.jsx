@@ -11,7 +11,7 @@ import styles from './SignalManagement.scss'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { getSystemCodeType, getMapUnitInfoList, getUnitPop, checkUnitTree } from '../../../reactRedux/actions/publicActions'
-import { getStepStatus, getPicListsType, getInfoListsType, postBgBySelect, postBgByUpload, postUpdateOthersType, postAddAllType, postUpdateAllType, getIconImageList, getUpdateAllType } from '../../../reactRedux/actions/signalmanagementActions'
+import { getStepStatus, getPicListsType, getInfoListsType, postBgBySelect, postBgByUpload, postAddOthersType, postUpdateOthersType, postAddAllType, postUpdateAllType, getIconImageList, getUpdateAllType } from '../../../reactRedux/actions/signalmanagementActions'
 import StepNavMenu from './StepNavMenu/StepNavMenu'
 import BasicInfoLeft from './StepConfigLeft/BasicInfoLeft'
 import LaneConfigLeft from './StepConfigLeft/LaneConfigLeft'
@@ -91,6 +91,14 @@ class SignalManagement extends PureComponent {
       controlDir: null, // 灯组方向
       controlTurn: null, // 灯组转向
       detectorType: null, // 检测器类型
+      phaseForbidenData: null,
+      phaseShieldData: null,
+      typeData: null,
+      phaseShowDetail: null,
+      stageShowDetail: null,
+      planShowDetail: null,
+      dayplanShowDetail: null,
+      dispatchShowDetail: null,
     }
     this.map = null
     this.moveFlag = false // 是否是移动状态
@@ -190,6 +198,9 @@ class SignalManagement extends PureComponent {
     this.getSystemCodeType(10) // 灯组转向
     this.getSystemCodeType(12) // 检测器类型
     this.getSystemCodeType(27) // 方向
+    this.getSystemCodeType(11) // 灯组Type
+    this.getSystemCodeType(28) // 相位屏蔽 
+    this.getSystemCodeType(29) // 相位禁止
   }
   // 字典code
   getSystemCodeType = (num) => {
@@ -199,7 +210,6 @@ class SignalManagement extends PureComponent {
           this.setState({ fDir8NoData: this.props.data.codeTypeData }) // 方向
           break;
         case 8:
-          debugger
           this.setState({ lampgroupType: this.props.data.codeTypeData })  //灯组类型  
           break;
         case 9:
@@ -207,6 +217,9 @@ class SignalManagement extends PureComponent {
           break;
         case 10:
           this.setState({ controlTurn: this.props.data.codeTypeData }) // 转向
+          break;
+        case 11:
+          this.setState({ typeData: this.props.data.codeTypeData }) // 灯组Type
           break;
         case 12:
           this.setState({ detectorType: this.props.data.codeTypeData }) // 检测器类型
@@ -224,7 +237,12 @@ class SignalManagement extends PureComponent {
             this.setState({ turnDirNoListData })
           }) // 转向
           break;
-          
+        case 28:
+          this.setState({ phaseShieldData: this.props.data.codeTypeData }) // 相位屏蔽
+          break;
+        case 29:
+          this.setState({ phaseForbidenData: this.props.data.codeTypeData }) // 相位禁止
+          break;
       }
     })
   }
@@ -520,9 +538,176 @@ class SignalManagement extends PureComponent {
           }
           this.setState({ detectorShowDetail, showFlag: true })
           break;
+        case "PHASE":
+          const phaseShowDetail = {
+            "interId": this.state.roadInterId, //路口编号 不用显示，带着就行
+            "phaseDelaygreenTime": 0, //相位延迟绿时间
+            "phaseDemand": "", //相位的需求 1 检测器编号
+            "phaseForbiden": 0, //相位禁止 0 正常，1 关闭灯组输出，优先级高屏蔽
+            "phaseLampgroupId": "", //相位包含灯组 逗号分隔
+            "phaseMaxgreen1Time": 0, //相位最大绿时间1
+            "phaseMaxgreen2Time": 0, //相位最大绿时间2
+            "phaseMingreenTime": 0, //相位最小绿时间
+            "phaseName": "", //相位名称
+            "phaseNo": 0, //相位序号手写
+            "phaseShield": 0, //相位屏蔽 0 正常，1 屏蔽输出（强红），
+            "rightofwayAccessLamp1Time": 0,
+            "rightofwayAccessLamp1Type": "",
+            "rightofwayAccessLamp2Time": 0,
+            "rightofwayAccessLamp2Type": "",
+            "rightofwayAccessLamp3Time": 0,
+            "rightofwayAccessLamp3Type": "",
+            "rightofwayLoseLamp1Time": 0,
+            "rightofwayLoseLamp1Type": "",
+            "rightofwayLoseLamp2Time": 0,
+            "rightofwayLoseLamp2Type": "",
+            "rightofwayLoseLamp3Time": 0,
+            "rightofwayLoseLamp3Type": "",
+            "rightofwayStartingupAccessLamp1Time": 0,
+            "rightofwayStartingupAccessLamp1Type": "",
+            "rightofwayStartingupAccessLamp2Time": 0,
+            "rightofwayStartingupAccessLamp2Type": "",
+            "rightofwayStartingupAccessLamp3Time": 0,
+            "rightofwayStartingupAccessLamp3Type": "",
+            "rightofwayStartingupLoseLamp1Time": 0,
+            "rightofwayStartingupLoseLamp1Type": "",
+            "rightofwayStartingupLoseLamp2Time": 0,
+            "rightofwayStartingupLoseLamp2Type": "",
+            "rightofwayStartingupLoseLamp3Time": 0,
+            "rightofwayStartingupLoseLamp3Type": ""
+          }
+          this.setState({ phaseShowDetail })
+          break;
+          case "STAGE":
+            const stageShowDetail = {
+              
+            }
+          this.setState({ stageShowDetail })
+          break;
+          case "PLAN":
+            const planShowDetail = {
+              
+            }
+          this.setState({ planShowDetail })
+          break;
+          case "DAYPLAN":
+            const dayplanShowDetail = {
+              
+            }
+          this.setState({ dayplanShowDetail })
+          break;
+          case "DISPATCH":
+            const dispatchShowDetail = {
+              
+            }
+            this.setState({ dispatchShowDetail })
+          break;
       }
     }
   }
+  // 编辑时回显内容 相位、阶段、配时方案、日计划、调度
+  updateListItem = (itemDetailData, stepType) => {
+    debugger
+    switch(stepType){
+      case "PHASE":
+        this.setState({ phaseShowDetail: itemDetailData, stepFiveAddEdit: true, popAddEditText: '编辑' }, ()=>{
+          this.cyclicComparison(this.state.phaseForbidenData, 'phaseForbiden', itemDetailData.phaseForbiden, 'phaseShowDetail')
+          this.cyclicComparison(this.state.phaseShieldData, 'phaseShield', itemDetailData.phaseShield, 'phaseShowDetail')
+          this.cyclicComparison(this.state.typeData, 'rightofwayAccessLamp1Type', itemDetailData.rightofwayAccessLamp1Type, 'phaseShowDetail')
+          this.cyclicComparison(this.state.typeData, 'rightofwayAccessLamp2Type', itemDetailData.rightofwayAccessLamp2Type, 'phaseShowDetail')
+          this.cyclicComparison(this.state.typeData, 'rightofwayAccessLamp3Type', itemDetailData.rightofwayAccessLamp3Type, 'phaseShowDetail')
+          this.cyclicComparison(this.state.typeData, 'rightofwayLoseLamp1Type', itemDetailData.rightofwayLoseLamp1Type, 'phaseShowDetail')
+          this.cyclicComparison(this.state.typeData, 'rightofwayLoseLamp2Type', itemDetailData.rightofwayLoseLamp2Type, 'phaseShowDetail')
+          this.cyclicComparison(this.state.typeData, 'rightofwayLoseLamp3Type', itemDetailData.rightofwayLoseLamp3Type, 'phaseShowDetail')
+          this.cyclicComparison(this.state.typeData, 'rightofwayStartingupAccessLamp1Type', itemDetailData.rightofwayStartingupAccessLamp1Type, 'phaseShowDetail')
+          this.cyclicComparison(this.state.typeData, 'rightofwayStartingupAccessLamp2Type', itemDetailData.rightofwayStartingupAccessLamp2Type, 'phaseShowDetail')
+          this.cyclicComparison(this.state.typeData, 'rightofwayStartingupAccessLamp3Type', itemDetailData.rightofwayStartingupAccessLamp3Type, 'phaseShowDetail')
+          this.cyclicComparison(this.state.typeData, 'rightofwayStartingupLoseLamp1Type', itemDetailData.rightofwayStartingupLoseLamp1Type, 'phaseShowDetail')
+          this.cyclicComparison(this.state.typeData, 'rightofwayStartingupLoseLamp2Type', itemDetailData.rightofwayStartingupLoseLamp2Type, 'phaseShowDetail')
+          this.cyclicComparison(this.state.typeData, 'rightofwayStartingupLoseLamp3Type', itemDetailData.rightofwayStartingupLoseLamp3Type, 'phaseShowDetail')
+          itemDetailData = JSON.parse(JSON.stringify(this.state.phaseShowDetail))
+          this.setState({ phaseShowDetail: itemDetailData })
+        })
+      break;
+      case "STAGE":
+        this.setState({ stageShowDetail: JSON.parse(JSON.stringify(itemDetailData)), stepSixAddEdit: true, popAddEditText: '编辑' })
+      break;
+      case "PLAN":
+        this.setState({ planShowDetail: JSON.parse(JSON.stringify(itemDetailData)), stepSevenAddEdit: true, popAddEditText: '编辑' })
+      break;
+      case "DAYPLAN":
+        this.setState({ dayplanShowDetail: JSON.parse(JSON.stringify(itemDetailData)), stepEightAddEdit: true, popAddEditText: '编辑' })
+      break;
+      case "DISPATCH":
+        this.setState({ dispatchShowDetail: JSON.parse(JSON.stringify(itemDetailData)), stepNineAddEdit: true, popAddEditText: '编辑' })
+      break;
+    }
+  }
+  // (新增或更新) 插件相位、阶段、配时方案、日计划、调度
+  postAddUpdateItem = (itemDetailData, stepType, eventType) => {
+    let typeStr = '', showStr = '', detailStr = '',  _this = this
+    switch(stepType){
+      case 'PHASE':
+        typeStr = '相位'
+        showStr = 'stepFiveAddEdit'
+        detailStr = 'phaseShowDetail'
+        break;
+      case 'PHASE':
+        typeStr = '阶段'
+        showStr = 'stepSixAddEdit'
+        detailStr = 'stageShowDetail'
+        break;
+      case 'PHASE':
+        typeStr = '配时方案'
+        showStr = 'stepSevenAddEdit'
+        detailStr = 'planShowDetail'
+        break;
+      case 'PHASE':
+        typeStr = '日计划'
+        showStr = 'stepEightAddEdit'
+        detailStr = 'dayplanShowDetail'
+        break;
+      case 'PHASE':
+        typeStr = '调度'
+        showStr = 'stepNineAddEdit'
+        detailStr = 'dispatchShowDetail'
+        break;
+    }
+    this.cyclicComparison(this.state.phaseForbidenData, 'phaseForbiden', itemDetailData.phaseForbiden, 'phaseShowDetail', true)
+    this.cyclicComparison(this.state.phaseShieldData, 'phaseShield', itemDetailData.phaseShield, 'phaseShowDetail', true)
+    this.cyclicComparison(this.state.typeData, 'rightofwayAccessLamp1Type', itemDetailData.rightofwayAccessLamp1Type, 'phaseShowDetail', true)
+    this.cyclicComparison(this.state.typeData, 'rightofwayAccessLamp2Type', itemDetailData.rightofwayAccessLamp2Type, 'phaseShowDetail', true)
+    this.cyclicComparison(this.state.typeData, 'rightofwayAccessLamp3Type', itemDetailData.rightofwayAccessLamp3Type, 'phaseShowDetail', true)
+    this.cyclicComparison(this.state.typeData, 'rightofwayLoseLamp1Type', itemDetailData.rightofwayLoseLamp1Type, 'phaseShowDetail', true)
+    this.cyclicComparison(this.state.typeData, 'rightofwayLoseLamp2Type', itemDetailData.rightofwayLoseLamp2Type, 'phaseShowDetail', true)
+    this.cyclicComparison(this.state.typeData, 'rightofwayLoseLamp3Type', itemDetailData.rightofwayLoseLamp3Type, 'phaseShowDetail', true)
+    this.cyclicComparison(this.state.typeData, 'rightofwayStartingupAccessLamp1Type', itemDetailData.rightofwayStartingupAccessLamp1Type, 'phaseShowDetail', true)
+    this.cyclicComparison(this.state.typeData, 'rightofwayStartingupAccessLamp2Type', itemDetailData.rightofwayStartingupAccessLamp2Type, 'phaseShowDetail', true)
+    this.cyclicComparison(this.state.typeData, 'rightofwayStartingupAccessLamp3Type', itemDetailData.rightofwayStartingupAccessLamp3Type, 'phaseShowDetail', true)
+    this.cyclicComparison(this.state.typeData, 'rightofwayStartingupLoseLamp1Type', itemDetailData.rightofwayStartingupLoseLamp1Type, 'phaseShowDetail', true)
+    this.cyclicComparison(this.state.typeData, 'rightofwayStartingupLoseLamp2Type', itemDetailData.rightofwayStartingupLoseLamp2Type, 'phaseShowDetail', true)
+    this.cyclicComparison(this.state.typeData, 'rightofwayStartingupLoseLamp3Type', itemDetailData.rightofwayStartingupLoseLamp3Type, 'phaseShowDetail', true)
+    itemDetailData = JSON.parse(JSON.stringify(this.state.phaseShowDetail))
+    
+    if (eventType) {
+      this.props.postAddOthersType(itemDetailData, stepType).then(() => {
+        this.popLayerShowHide(showStr, null)
+        message.info(typeStr+"操作成功！")
+        _this.setState({ [detailStr]: null })
+        _this.props.getStepStatus(_this.state.roadInterId, _this.state.roadNodeNo)
+        _this.props.getInfoListsType(_this.state.roadInterId, stepType)
+      })
+    } else {
+      this.props.postUpdateOthersType(itemDetailData, stepType).then(() => {
+        this.popLayerShowHide(showStr, null)
+        message.info(typeStr+"操作成功！")
+        _this.setState({ [detailStr]: null })
+        _this.props.getStepStatus(_this.state.roadInterId, _this.state.roadNodeNo)
+        _this.props.getInfoListsType(_this.state.roadInterId, stepType)
+      })
+    }
+  }
+
   showInterworkingList = (isShow) => {
     if (isShow) {
       this.setState({
@@ -753,7 +938,7 @@ class SignalManagement extends PureComponent {
   })
 
   }
-  // 修改 > 列表中的
+  // 修改 > 车道列表、灯组列表、检测器列表
   getUpdateAllTypes = (interId, roadNodeNo, Id, stepType, flag) => {
     let typeName = ''
     switch(stepType) {
@@ -857,10 +1042,10 @@ class SignalManagement extends PureComponent {
     debugger
     let result = JSON.parse(data);
     console.log(result,this,'socket POP数据')
-    $('#phasestageName').text(result.phasestageName).attr("tag-src",'http://192.168.1.213:20203/DCU/dcuImage/phasestage/' + result.phasestageImage)
+    $('#phasestageName').text(result.phasestageName).attr("tag-src",`${this.phaseBgUrl}${result.phasestageImage}`)
     $('#schemeName').text(result.schemeName)
     $('#nodeModelName').text(result.nodeModelName)
-    $('#phasestageImage').prop('src', 'http://192.168.1.213:20203/DCU/dcuImage/phasestage/' + result.phasestageImage).attr('style','width:30px;height:30px;margin-left:8px;')
+    $('#phasestageImage').prop('src', `${this.phaseBgUrl}${result.phasestageImage}`).attr('style','width:30px;height:30px;margin-left:8px;')
     this.setState({
       roadUnitId: false,
     })
@@ -879,7 +1064,8 @@ class SignalManagement extends PureComponent {
       onlineNum, offlineNum, 
       laneShowDetail, laneIconLists, fDir8NoData, turnDirNoListData, 
       lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists, showFlag,
-      lampgroupType, controlDir, controlTurn, detectorType
+      lampgroupType, controlDir, controlTurn, detectorType, phaseForbidenData, phaseShieldData, typeData,
+      phaseShowDetail, stageShowDetail, planShowDetail, dayplanShowDetail, dispatchShowDetail
     } = this.state
     const { Search } = Input
     return (
@@ -1117,11 +1303,259 @@ class SignalManagement extends PureComponent {
           <div className={styles.maskBg}> 
             <div className={styles.popBox}>
               <div className={styles.popTit}>{popAddEditText}相位<Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepFiveAddEdit", null)} } /></div>
-              <div className={styles.popCon}> 相位的内容 </div>
+              { phaseShowDetail && 
+                <div className={classNames(styles.popCon, styles.popConTurn)}>
+                  <div className={styles.itemInputBox}>
+                    <span>相位序号：</span><Input type='number' value={phaseShowDetail.phaseNo} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','phaseNo')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>相位延迟绿时间：</span><Input type='number' value={phaseShowDetail.phaseDelaygreenTime} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','phaseDelaygreenTime')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>相位名称：</span><Input value={phaseShowDetail.phaseName} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','phaseName')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>相位的需求：</span><b>{phaseShowDetail.phaseDemand}</b><a>编辑</a>
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>相位禁止：</span>
+                    <Select
+                      value={phaseShowDetail.phaseForbiden ? phaseShowDetail.phaseForbiden : 0 }
+                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'phaseForbiden') }>
+                      <Option value={0}>请选择类型</Option>
+                      {
+                        phaseForbidenData.map((items, key) => {
+                          return <Option key={"optionList" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
+                        })
+                      }
+                    </Select>
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>相位屏蔽：</span>
+                    <Select
+                      value={phaseShowDetail.phaseShield ? phaseShowDetail.phaseShield : 0 }
+                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'phaseShield') }>
+                      <Option value={0}>请选择类型</Option>
+                      {
+                        phaseShieldData.map((items, key) => {
+                          return <Option key={"optionList" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
+                        })
+                      }
+                    </Select>
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>相位最大绿时间1：</span><Input type='number' value={phaseShowDetail.phaseMaxgreen1Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','phaseMaxgreen1Time')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>相位最大绿时间2：</span><Input type='number' value={phaseShowDetail.phaseMaxgreen2Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','phaseMaxgreen2Time')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>相位最小绿时间：</span><Input type='number' value={phaseShowDetail.phaseMingreenTime} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','phaseMingreenTime')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>相位包含灯组：</span><b>{phaseShowDetail.phaseLampgroupId}</b><a>编辑</a>
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>获得路权过渡灯色1时间：</span><Input type='number' value={phaseShowDetail.rightofwayAccessLamp1Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','rightofwayAccessLamp1Time')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>获得路权过渡灯色1类型：</span>
+                    <Select
+                      value={phaseShowDetail.rightofwayAccessLamp1Type ? phaseShowDetail.rightofwayAccessLamp1Type : 0 }
+                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayAccessLamp1Type') }>
+                      <Option value={0}>请选择类型</Option>
+                      {
+                        typeData.map((items, key) => {
+                          return <Option key={"optionList" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
+                        })
+                      }
+                    </Select>
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>获得路权过渡灯色2时间：</span><Input type='number' value={phaseShowDetail.rightofwayAccessLamp2Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','rightofwayAccessLamp2Time')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>获得路权过渡灯色2类型：</span>
+                    <Select
+                      value={phaseShowDetail.rightofwayAccessLamp2Type ? phaseShowDetail.rightofwayAccessLamp2Type : 0 }
+                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayAccessLamp2Type') }>
+                      <Option value={0}>请选择类型</Option>
+                      {
+                        typeData.map((items, key) => {
+                          return <Option key={"optionList" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
+                        })
+                      }
+                    </Select>
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>获得路权过渡灯色3时间：</span><Input type='number' value={phaseShowDetail.rightofwayAccessLamp3Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','rightofwayAccessLamp3Time')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>获得路权过渡灯色3类型：</span>
+                    <Select
+                      value={phaseShowDetail.rightofwayAccessLamp3Type ? phaseShowDetail.rightofwayAccessLamp3Type : 0 }
+                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayAccessLamp3Type') }>
+                      <Option value={0}>请选择类型</Option>
+                      {
+                        typeData.map((items, key) => {
+                          return <Option key={"optionList" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
+                        })
+                      }
+                    </Select>
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>失去路权过渡灯色1时间：</span><Input type='number' value={phaseShowDetail.rightofwayLoseLamp1Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','rightofwayLoseLamp1Time')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>失去路权过渡灯色1类型：</span>
+                    <Select
+                      value={phaseShowDetail.rightofwayLoseLamp1Type ? phaseShowDetail.rightofwayLoseLamp1Type : 0 }
+                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayLoseLamp1Type') }>
+                      <Option value={0}>请选择类型</Option>
+                      {
+                        typeData.map((items, key) => {
+                          return <Option key={"optionList" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
+                        })
+                      }
+                    </Select>
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>失去路权过渡灯色2时间：</span><Input type='number' value={phaseShowDetail.rightofwayLoseLamp2Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','rightofwayLoseLamp2Time')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>失去路权过渡灯色2类型：</span>
+                    <Select
+                      value={phaseShowDetail.rightofwayLoseLamp2Type ? phaseShowDetail.rightofwayLoseLamp2Type : 0 }
+                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayLoseLamp2Type') }>
+                      <Option value={0}>请选择类型</Option>
+                      {
+                        typeData.map((items, key) => {
+                          return <Option key={"optionList" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
+                        })
+                      }
+                    </Select>
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>失去路权过渡灯色3时间：</span><Input type='number' value={phaseShowDetail.rightofwayLoseLamp3Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','rightofwayLoseLamp3Time')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>失去路权过渡灯色3类型：</span>
+                    <Select
+                      value={phaseShowDetail.rightofwayLoseLamp3Type ? phaseShowDetail.rightofwayLoseLamp3Type : 0 }
+                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayLoseLamp3Type') }>
+                      <Option value={0}>请选择类型</Option>
+                      {
+                        typeData.map((items, key) => {
+                          return <Option key={"optionList" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
+                        })
+                      }
+                    </Select>
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>开机获得路权灯色1时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupAccessLamp1Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','rightofwayStartingupAccessLamp1Time')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>开机获得路权灯色1类型：</span>
+                    <Select
+                      value={phaseShowDetail.rightofwayStartingupAccessLamp1Type ? phaseShowDetail.rightofwayStartingupAccessLamp1Type : 0 }
+                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayStartingupAccessLamp1Type') }>
+                      <Option value={0}>请选择类型</Option>
+                      {
+                        typeData.map((items, key) => {
+                          return <Option key={"optionList" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
+                        })
+                      }
+                    </Select>
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>开机获得路权灯色2时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupAccessLamp2Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','rightofwayStartingupAccessLamp2Time')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>开机获得路权灯色2类型：</span>
+                    <Select
+                      value={phaseShowDetail.rightofwayStartingupAccessLamp2Type ? phaseShowDetail.rightofwayStartingupAccessLamp2Type : 0 }
+                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayStartingupAccessLamp2Type') }>
+                      <Option value={0}>请选择类型</Option>
+                      {
+                        typeData.map((items, key) => {
+                          return <Option key={"optionList" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
+                        })
+                      }
+                    </Select>
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>开机获得路权灯色3时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupAccessLamp3Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','rightofwayStartingupAccessLamp3Time')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>开机获得路权灯色3类型：</span>
+                    <Select
+                      value={phaseShowDetail.rightofwayStartingupAccessLamp3Type ? phaseShowDetail.rightofwayStartingupAccessLamp3Type : 0 }
+                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayStartingupAccessLamp3Type') }>
+                      <Option value={0}>请选择类型</Option>
+                      {
+                        typeData.map((items, key) => {
+                          return <Option key={"optionList" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
+                        })
+                      }
+                    </Select>
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>开机失去路权灯色1时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupLoseLamp1Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','rightofwayStartingupLoseLamp1Time')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>开机失去路权灯色1类型：</span>
+                    <Select
+                      value={phaseShowDetail.rightofwayStartingupLoseLamp1Type ? phaseShowDetail.rightofwayStartingupLoseLamp1Type : 0 }
+                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayStartingupLoseLamp1Type') }>
+                      <Option value={0}>请选择类型</Option>
+                      {
+                        typeData.map((items, key) => {
+                          return <Option key={"optionList" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
+                        })
+                      }
+                    </Select>
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>开机失去路权灯色2时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupLoseLamp2Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','rightofwayStartingupLoseLamp2Time')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>开机失去路权灯色2类型：</span>
+                    <Select
+                      value={phaseShowDetail.rightofwayStartingupLoseLamp2Type ? phaseShowDetail.rightofwayStartingupLoseLamp2Type : 0 }
+                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayStartingupLoseLamp2Type') }>
+                      <Option value={0}>请选择类型</Option>
+                      {
+                        typeData.map((items, key) => {
+                          return <Option key={"optionList" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
+                        })
+                      }
+                    </Select>
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>开机失去路权灯色3时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupLoseLamp3Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','rightofwayStartingupLoseLamp3Time')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>开机失去路权灯色3类型：</span>
+                    <Select
+                      value={phaseShowDetail.rightofwayStartingupLoseLamp3Type ? phaseShowDetail.rightofwayStartingupLoseLamp3Type : 0 }
+                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayStartingupLoseLamp3Type') }>
+                      <Option value={0}>请选择类型</Option>
+                      {
+                        typeData.map((items, key) => {
+                          return <Option key={"optionList" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
+                        })
+                      }
+                    </Select>
+                  </div>
+
+                </div>
+              }
               <div className={styles.popBottom}>
-                <em onClick={ () => {this.stepFiveAddForList()}}>确 定</em>
-                <em onClick={ () => {this.popLayerShowHide("stepFiveAddEdit", null)} }>取 消</em>
-              </div>
+                {
+                  popAddEditText === '编辑' ? <em onClick={ () => {this.postAddUpdateItem(phaseShowDetail, 'PHASE')}}>编辑确定</em> : <em onClick={ () => {this.postAddUpdateItem(phaseShowDetail, 'PHASE', true)}}>新增确定</em>
+                }
+                  <em onClick={ () => {this.popLayerShowHide("stepFiveAddEdit", null)} }>取 消</em>
+                </div>
             </div>
           </div> : null
         }
@@ -1262,7 +1696,7 @@ class SignalManagement extends PureComponent {
                       popLayerShowHide={this.popLayerShowHide} 
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
-                      isClick={stepFiveFlag}
+                      isClick={stepThreeFlag}
                       isMoveFlag={stepThreeFlag}
                     />
                     <DetectorConfigLeft {...this.props} 
@@ -1416,31 +1850,41 @@ class SignalManagement extends PureComponent {
                     roadId={roadId}
                     roadInterId={roadInterId}
                     roadNodeNo={roadNodeNo}
-                    popLayerShowHide={this.popLayerShowHide} /> :
+                    popLayerShowHide={this.popLayerShowHide}
+                    updateListItem={this.updateListItem}
+                     /> :
                   stepSixFlag ?
                     <StageConfigRight 
                     roadId={roadId}
                     roadInterId={roadInterId}
                     roadNodeNo={roadNodeNo}
-                    popLayerShowHide={this.popLayerShowHide} /> : 
+                    popLayerShowHide={this.popLayerShowHide} 
+                    updateListItem={this.updateListItem}                      
+                    /> : 
                   stepSevenFlag ?
                     <PlanConfigRight 
                     roadId={roadId}
                     roadInterId={roadInterId}
                     roadNodeNo={roadNodeNo}
-                    popLayerShowHide={this.popLayerShowHide} /> : 
+                    popLayerShowHide={this.popLayerShowHide}
+                    updateListItem={this.updateListItem}
+                     /> : 
                   stepEightFlag ?
                     <DayPlanConfigRight 
                     roadId={roadId}
                     roadInterId={roadInterId}
                     roadNodeNo={roadNodeNo}
-                    popLayerShowHide={this.popLayerShowHide} /> : 
+                    popLayerShowHide={this.popLayerShowHide}
+                    updateListItem={this.updateListItem}
+                     /> : 
                   stepNineFlag ?
                     <DispatchConfigRight 
                     roadId={roadId}
                     roadInterId={roadInterId}
                     roadNodeNo={roadNodeNo}
-                    popLayerShowHide={this.popLayerShowHide} /> : null}
+                    popLayerShowHide={this.popLayerShowHide}
+                    updateListItem={this.updateListItem}
+                     /> : null}
             </div>
           </div> : null
         }
@@ -1538,7 +1982,8 @@ const mapDisPatchToProps = (dispatch) => {
     postBgByUpload: bindActionCreators(postBgByUpload, dispatch),
     postAddAllType: bindActionCreators(postAddAllType, dispatch), // 添加图标和列表
     postUpdateAllType: bindActionCreators(postUpdateAllType, dispatch),// 双击图标  修改图标和列表一条
-    // postUpdateOthersType: bindActionCreators(postUpdateOthersType, dispatch), // 修改列表中的某一条
+    postAddOthersType: bindActionCreators(postAddOthersType, dispatch), // 添加
+    postUpdateOthersType: bindActionCreators(postUpdateOthersType, dispatch), // 修改列表中的某一条用于list插件
     getIconImageList: bindActionCreators(getIconImageList, dispatch), // 回显图标
     getUpdateAllType: bindActionCreators(getUpdateAllType, dispatch), // 修改列表中的某一条 
   }
