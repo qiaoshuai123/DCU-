@@ -51,7 +51,8 @@ class DetectorConfigRight extends PureComponent {
     })
   }
   updateListItem = (itemDetailData, stepType) => {
-    this.props.postUpdateAllType(itemDetailData, stepType)
+    debugger
+    this.props.getUpdateAllTypes(itemDetailData.interId, this.props.roadNodeNo, itemDetailData.detectorId, stepType, true)
   }
   render() {
     const { detectorLists, clickFlag } = this.state

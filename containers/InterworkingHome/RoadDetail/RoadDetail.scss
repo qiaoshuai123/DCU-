@@ -13,6 +13,18 @@
     ul {
         margin: 0;
     }
+    .imgBox {
+        width: 978px;
+        height: 780px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+    }
     .dcuStyles {
         font-size: 16px;
         position: absolute;
@@ -127,6 +139,7 @@
                 width: 45px;
                 height: 45px;
                 margin: 0 15px;
+                cursor: pointer;
                 background-color: red;
             }
         }
@@ -136,6 +149,7 @@
             li {
                 height: 25px;
                 line-height: 25px;
+                cursor: pointer;
             }
         }
         .Timing {

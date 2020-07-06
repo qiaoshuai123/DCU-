@@ -47,7 +47,7 @@ class DetectorConfigLeft extends PureComponent {
       <div>
         {
           detectorPicLists.length > 0 && detectorPicLists.map((item, i) => {
-            return <ImgEvent {...this.props} key={'detector'+item.id} typeUrl={'detector'} isMoveFlag={this.props.isMoveFlag} isClick={this.props.isClick} imgMsg={item} popLayerShowHide={this.popLayerShowHide} />
+            return <ImgEvent {...this.props} key={'detector'+item.id} isMoveFlag={this.props.isMoveFlag} isClick={this.props.isClick} imgMsg={item} typeUrl={'detector'} popLayerShowHide={this.popLayerShowHide} />
           })
         }
       </div>
