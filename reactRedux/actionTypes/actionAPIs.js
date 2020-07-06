@@ -92,9 +92,10 @@ export const API_DEL_BACKGROUNDLIST = '/DCU/unitInfo/backgroundList' // 查询�
 
 /************* 实时监控模块 **************/
 // DCU状态
-export const API_LAN_LANEINFOANDDETAIL = '/DCU/laneInfo/laneInfoAndDetail' // 车道图片接口
+export const API_LAN_LANEINFOANDDETAIL = '/DCU/laneInfo/laneDetailList' // 车道图片接口..
 export const API_LAM_LAMPGROUPDETAILLIST = '/DCU/lampgroupInfo/lampgroupDetailList' // 灯组图片接口
 export const API_DET_DETECTORDETAILLIST = '/DCU/detectorInfo/detectorDetailList' // 检测器接口
 export const API_PHA_NOWPHASESTAGEINGO = '/DCU/phaseStageInfo/nowPhasestageInfo' // 查询路口当前方案的全部阶段
 export const API_UNI_LOCKSTATELIST = '/DCU/unitInfo/lockStateList' // 锁定状态
 export const API_SCH_SCHMEINFOLIST = '/DCU/schemeInfo/schemeInfoList' // 当前路口全部方案
+export const API_DCU_PROOFREADTIME = '/DCU/dcuInfo/proofreadTime' // DCU校时信号机校时两个参数 interId   proofreadType
