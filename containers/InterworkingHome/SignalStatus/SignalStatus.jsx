@@ -88,9 +88,11 @@ class SignalStatus extends Component {
       this.loadingMap()
     })
   }
-  setGetParams = (params) => {
-    console.log(params, 'sffsfsf')
-    window.open(`#roaddetail/1`)
+  setGetParams = (dataItem) => {
+    console.log(dataItem, 'sdsdsd')
+    localStorage.setItem('bac', JSON.stringify(dataItem.background))
+    window.open(`#/roaddetail?id=${dataItem.interId}&ids=${dataItem.nodeId}`)
+    // window.open(`#roaddetail/1`)
   }
   visibleShowLeft = (top, id, show) => { // 框的跳转与位置
     if (top || id) {
@@ -186,7 +188,7 @@ class SignalStatus extends Component {
       window[layer].setMap(map) // 层组渲染到地图中
     }
   }
-  //在指定位置打开信息窗体
+  // 在指定位置打开信息窗体
   openInfoWin = (map, dataItem, marker, name) => {
     console.log(dataItem, 'qiaoshuaisss')
     var info = [];
