@@ -50,8 +50,8 @@ class DetectorConfigRight extends PureComponent {
     }
     this.setState({ listNames })
   }
-  popLayerShowHide = (name, flag) => {
-    this.props.popLayerShowHide(name, flag)
+  popLayerShowHide = (name, flag, event, stepType) => {
+    this.props.popLayerShowHide(name, flag, event, stepType)
   }
   handleClickFind = (e, itemData) => {
     if ($(e.currentTarget).hasClass(Liststyles.hover)){
@@ -114,7 +114,7 @@ class DetectorConfigRight extends PureComponent {
     const { dispatchLists, listNames } = this.state
     return (
       <div className={styles.conBox}>
-        <div className={styles.rTit}>调度配置列表<em onClick={() => { this.popLayerShowHide("stepNineAddEdit", true) }}>添加</em></div>
+        <div className={styles.rTit}>调度配置列表<em onClick={() => { this.popLayerShowHide("stepNineAddEdit", true, null, 'DISPATCH') }}>添加</em></div>
         { !!dispatchLists && !!listNames ? <ListForAntd {...this.props} dataSourse={dispatchLists} listType={'DISPATCH'} listNames={listNames} showIndex={2} handleClickFind={this.handleClickFind} delListItem={this.delListItem} /> : <div className={styles.noData}>暂无数据</div> }
       </div>
     )

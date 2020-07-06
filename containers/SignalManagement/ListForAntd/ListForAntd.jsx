@@ -48,7 +48,12 @@ class ListForAntd extends Component {
   getIndex = index => {
     this.selectIndex = index
   }
-  update = (e, id) => {
+  updateListItem = (itemDetailData, stepType) => {
+    debugger
+    // console.log(itemDetailData, stepType, '修改的')
+    this.props.updateListItem(itemDetailData, stepType)
+  }
+  delListItem = (e, id) => {
     e.stopPropagation();
     this.props.delListItem(e, id)
   }
@@ -153,7 +158,7 @@ class ListForAntd extends Component {
                         </span>
                       })
                       }
-                      {handleFlag ? <span>{/* <b onClick={(e) => { this.updates(e, item.id) }}>修改</b> */}<b onClick={(e) => { this.update(e, item.id) }}>删除</b></span> : null}
+                      {handleFlag ? <span><b onClick={() => { this.updateListItem(item, this.props.listType) }}>修改</b><b onClick={(e) => { this.delListItem(e, item.id) }}>删除</b></span> : null}
                     </div>
                   })
                 }

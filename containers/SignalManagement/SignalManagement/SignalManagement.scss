@@ -30,14 +30,12 @@ $stepBor_col: #393f4f;
         z-index: 99;
     }
     .popBox {
-        max-height: 600px;
         position: absolute;
         top: 50%;
         left: 50%;
         background-color: rgba(19, 19, 19, 0.9);
         z-index: 100;
         padding: 0 20px 20px;
-        overflow-y: auto;
         transform: translate(-50%, -50%);
         -webkit-transform: translate(-50%, -50%);
         -moz-transform: translate(-50%, -50%);
@@ -66,14 +64,17 @@ $stepBor_col: #393f4f;
                 }
             }
         }
+        
         .popCon {
+            max-height: 600px;
             display: flex;
             justify-content: flex-start;
             align-items: stretch;
-            padding: 15px 0;
+            padding: 15px 30px 15px 0;
             margin-bottom: 10px;
             border-bottom: 1px solid #292a2d;
             flex-wrap: wrap;
+            overflow-y: auto;
             >img{
                 align-self: flex-start;
                 padding: 8px;
@@ -182,6 +183,86 @@ $stepBor_col: #393f4f;
                 }
                 :global(.ant-calendar-picker-icon) {
                     color:white;
+                }
+            }
+            // 路口底图
+            .typePic {
+                width: 120px;
+                height: 80px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-wrap: wrap;
+                position: relative;
+                > em {
+                    width: 80px;
+                    line-height: 25px;
+                    font-style: normal;
+                    font-size: 12px;
+                    display: inline-block;
+                    text-align: center;
+                    margin: -12.5px auto 0;
+                    border: 1px #838a9a solid;
+                    color: #838a9a;
+                    cursor: pointer;
+                    position: absolute;
+                    top: 50%;
+                    right: 0;
+                    border-radius: 4px;
+                    -webkit-border-radius: 4px;
+                    -moz-border-radius: 4px;
+                    -ms-border-radius: 4px;
+                    -o-border-radius: 4px;
+                    > p {
+                        width:120px;
+                        height:80px;
+                        position: absolute;
+                        top:-28px;
+                        left:-140px;
+                        z-index: 100;
+                        border-radius: 4px;
+                        -webkit-border-radius: 4px;
+                        -moz-border-radius: 4px;
+                        -ms-border-radius: 4px;
+                        -o-border-radius: 4px;
+}
+                }
+                :global(.ant-radio-wrapper) {
+                    color: #bbbdbc;
+                    font-size: 12px;
+                    padding: 10px 0;
+                }
+                :global(.ant-radio-inner) {
+                    background-color: transparent !important;
+                }
+            }
+            .bgImgBox{
+                width:100px;
+                height:100px;
+                margin: 8px;
+                cursor: pointer;
+            }
+        }
+        .popConTurn {
+            // 表单
+            .itemInputBox{
+                > span {
+                    line-height: 30px;
+                    flex: 2.5;
+                    text-align: right;
+                }
+                :global(.ant-checkbox-group){
+                    flex:2.2;
+                }
+                :global(.ant-input) {
+                    flex: 2;
+                }
+                :global(.ant-select) {
+                    flex: 2.2;
+                }
+
+                :global(.ant-calendar-picker) {
+                    flex: 2.2;
                 }
             }
             // 路口底图
