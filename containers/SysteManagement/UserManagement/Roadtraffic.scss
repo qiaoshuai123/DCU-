@@ -12,6 +12,12 @@
     height: 100%;
   }
 }
+.syetem_item {
+  :global(.ant-select) {
+      width: 200px;
+  }
+}
+
 :global(.ant-select-dropdown) {
   text-align: center;
 }

@@ -18,12 +18,11 @@ class InterworkingList extends Component {
         },
         {
           id: 4,
-        }
+        },
       ],
     }
   }
   componentDidMount = () => {
-
   }
   getresetPwd = (id) => {
     window.open(`#roaddetail/${id}`)

@@ -4,7 +4,7 @@
 
 export const API_UNIT_STATUS = '/DCU/unitInfo/unitStatus' // 信号参数据管理 step
 
-/************* 信号参数管理模块 **************/
+/** *********** 信号参数管理模块 ************* */
 // 切换视图
 export const API_SIGNAL_lIST_BY_PAGE = '/DCU/signalInfo/signalListByPage' // 切换视图
 // 基础信息配置
@@ -76,7 +76,7 @@ export const API_ADD_DISPATCH_OTHERS = '/DCU/schedule/addSchedule' // 调度配�
 export const API_UPDATE_DISPATCH_OTHERS = '/DCU/schedule/updateSchedule' // 调度配置修改
 export const API_DEL_DISPATCH_INFO = '/DCU/schedule/deleteSchedule' // 调度配置删除
 
-/************* 设备参数管理模块 **************/
+/** *********** 设备参数管理模块 ************* */
 export const API_DCU_INTERCHECK_INFO = '/DCU/unitInfo/interCheck' // 判断是否存在点位
 export const API_DCU_ADDDCU_INFO = '/DCU/unitInfo/addUnit' // 添加点位
 export const API_DEL_UPDATEDCU_INFO = '/DCU/unitInfo/updateUnit' // 修改点位
@@ -90,7 +90,7 @@ export const API_DEL_UPDATEUNIT = '/DCU/unitInfo/updateUnit' // 选择底图
 export const API_DEL_FILEUPLOAD = '/DCU/unitInfo/fileUpload' // 上传底图
 export const API_DEL_BACKGROUNDLIST = '/DCU/unitInfo/backgroundList' // 查询全部底图
 
-/************* 实时监控模块 **************/
+/** *********** 实时监控模块 ************* */
 // DCU状态
 export const API_LAN_LANEINFOANDDETAIL = '/DCU/laneInfo/laneDetailList' // 车道图片接口..
 export const API_LAM_LAMPGROUPDETAILLIST = '/DCU/lampgroupInfo/lampgroupDetailList' // 灯组图片接口
@@ -99,3 +99,4 @@ export const API_PHA_NOWPHASESTAGEINGO = '/DCU/phaseStageInfo/nowPhasestageInfo'
 export const API_UNI_LOCKSTATELIST = '/DCU/unitInfo/lockStateList' // 锁定状态
 export const API_SCH_SCHMEINFOLIST = '/DCU/schemeInfo/schemeInfoList' // 当前路口全部方案
 export const API_DCU_PROOFREADTIME = '/DCU/dcuInfo/proofreadTime' // DCU校时信号机校时两个参数 interId   proofreadType
+
