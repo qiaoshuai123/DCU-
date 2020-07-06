@@ -1554,7 +1554,7 @@ class SignalManagement extends PureComponent {
                 {
                   popAddEditText === '编辑' ? <em onClick={ () => {this.postAddUpdateItem(phaseShowDetail, 'PHASE')}}>编辑确定</em> : <em onClick={ () => {this.postAddUpdateItem(phaseShowDetail, 'PHASE', true)}}>新增确定</em>
                 }
-                  <em onClick={ () => {this.popLayerShowHide("stepFourAddEdit", null)} }>取 消</em>
+                  <em onClick={ () => {this.popLayerShowHide("stepFiveAddEdit", null)} }>取 消</em>
                 </div>
             </div>
           </div> : null
