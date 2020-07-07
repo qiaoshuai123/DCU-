@@ -43,12 +43,12 @@ class TrafficMenu extends React.Component {
     this.getSystemList()
     this.getlistTrue()
     // 获取用户权限
-    // const limitArr = JSON.parse(localStorage.getItem('userLimit'))
-    // const userLimit = []
-    // limitArr.forEach((item) => {
-    //   userLimit.push(item.id)
-    // })
-    // this.setState({ userLimit })
+    const limitArr = JSON.parse(localStorage.getItem('userLimit'))
+    const userLimit = []
+    limitArr.forEach((item) => {
+      userLimit.push(item.id)
+    })
+    this.setState({ userLimit })
   }
   getTreeChange = (value, name, e) => {
     console.log(value, e.triggerNode.props.eventKey, e)
@@ -254,10 +254,7 @@ class TrafficMenu extends React.Component {
             </div>
             <div className={styles.syetem_top}>
               <div className={styles.syetem_item}><span className={styles.item}>关键词</span><div className={styles.inSle}><Input onChange={(e) => { this.handleInputChange(e) }} placeholder="查询条件" /></div></div>
-              {
-                userLimit && userLimit.indexOf(24) !== -1 ?
-                  <span className={styles.searchBtn} onClick={() => { this.handlePagination('1') }} limitid="24">查询</span> : null
-              }
+              <span className={styles.searchBtn} onClick={() => { this.handlePagination('1') }} limitid="24">查询</span>
               <i className={styles.line} />
             </div>
             <div className={styles.syetem_buttom}>

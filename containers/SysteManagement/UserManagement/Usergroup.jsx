@@ -47,12 +47,12 @@ class Usergroup extends React.Component {
     this.getDeptList()
     this.getparentGroup()
     // 获取用户权限
-    // const limitArr = JSON.parse(localStorage.getItem('userLimit'))
-    // const userLimit = []
-    // limitArr.forEach((item) => {
-    //   userLimit.push(item.id)
-    // })
-    // this.setState({ userLimit })
+    const limitArr = JSON.parse(localStorage.getItem('userLimit'))
+    const userLimit = []
+    limitArr.forEach((item) => {
+      userLimit.push(item.id)
+    })
+    this.setState({ userLimit })
   }
   getDeptList = () => {
     getResponseDatas('post', this.deptListUrl, this.getFormData(this.listParams)).then((res) => {
@@ -205,10 +205,7 @@ class Usergroup extends React.Component {
                   </Select>
                 </div>
               </div> */}
-              {
-                userLimit && userLimit.indexOf(31) !== -1 ?
-                  <span className={styles.searchBtn} onClick={() => { this.handlePagination('1') }}>查询</span> : null
-              }
+              <span className={styles.searchBtn} onClick={() => { this.handlePagination('1') }}>查询</span>
               <i className={styles.line} />
             </div>
             <div className={styles.syetem_buttom}>
