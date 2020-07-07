@@ -106,6 +106,7 @@ class SignalManagement extends PureComponent {
       selectFlag: true,
       defaultSelectLists: '',
       phaseSelectLists: null, // 
+      phaseFlag: null,
     }
     this.map = null
     this.moveFlag = false // 是否是移动状态
@@ -759,37 +760,52 @@ getSelectLists = (interId, nodeNo, stepType, name, key) => {
       this.setState({
         popAddEditName: '车道',
         selectFlag: false,
-        defaultSelectLists: this.state[name][key],
+        laneDefaultSelectLists: this.state[name][key],
       })
       break;
     case 'LIGHT':
       this.setState({
         popAddEditName: '灯组',
         selectFlag: false,
-        defaultSelectLists: this.state[name][key], 
+        lightDefaultSelectLists: this.state[name][key], 
       })
       break;
     case 'DETECTOR':
       this.setState({
         popAddEditName: '检测器需求',
         selectFlag: false,
-        defaultSelectLists: this.state[name][key],
+        detectorDefaultSelectLists: this.state[name][key],
       })
       break;
     case 'PHASE':
       this.setState({
         popAddEditName: '相位',
         selectFlag: false,
-        defaultSelectLists: this.state[name][key],
+        phaseDefaultSelectLists: this.state[name][key],
+        phaseFlag: true,
+      },()=>{
+        this.props.getInfoListsType(this.state.roadInterId, 'PHASE') // 加载相位列表
       })
-      this.props.getSelectLists(interId, nodeNo, stepType)
+      break;
+    }
+    this.props.getSelectLists(interId, nodeNo, stepType)
+}
+selectItemList = (defaultSelectLists, stepType) => {
+  console.log(defaultSelectLists, '选中的数据')
+  switch(stepType){
+    case 'PHASE':
+      this.setState({ phaseDefaultSelectLists: defaultSelectLists.join() })
+      break;
+    case 'LANE':
+      this.setState({ laneDefaultSelectLists: defaultSelectLists.join() })
+      break;
+    case 'LIGHT':
+      this.setState({ lightDefaultSelectLists: defaultSelectLists.join() })
+      break;
+    case 'DETECTOR':
+      this.setState({ detectorDefaultSelectLists: defaultSelectLists.join() })
       break;
   }
-  this.props.getInfoListsType(this.state.roadInterId, 'PHASE') // 加载相位列表
-}
-selectItemList = (defaultSelectLists) => {
-  console.log(defaultSelectLists, '选中的数据')
-  this.setState({ defaultSelectLists: defaultSelectLists.join() })
 }
 // 确定和取消选中
 btnSelectOver = (flag, defaultSelectLists) => {
@@ -813,6 +829,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
       lightSelectLists: null,  
       detectorSelectLists: null,
       phaseSelectLists: null,
+      phaseFlag: null,
       selectFlag: true,
     })
   } else {
@@ -821,6 +838,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
       lightSelectLists: null,  
       detectorSelectLists: null,
       phaseSelectLists: null,
+      phaseFlag: null,
       selectFlag: true,
     })
   }
@@ -1182,7 +1200,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
       laneShowDetail, laneIconLists, fDir8NoData, turnDirNoListData, 
       lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists, showFlag,
       lampgroupType, controlDir, controlTurn, detectorType, phaseForbidenData, phaseShieldData, typeData,
-      phaseShowDetail, stageShowDetail, planShowDetail, dayplanShowDetail, dispatchShowDetail, laneSelectLists, lightSelectLists, detectorSelectLists, selectFlag, defaultSelectLists, phaseIconLists, phaseSelectLists
+      phaseShowDetail, stageShowDetail, planShowDetail, dayplanShowDetail, dispatchShowDetail, laneSelectLists, lightSelectLists, detectorSelectLists, selectFlag, phaseDefaultSelectLists, laneDefaultSelectLists, lightDefaultSelectLists, detectorDefaultSelectLists,  phaseIconLists, phaseSelectLists, phaseFlag
     } = this.state
     const { Search } = Input
     return (
@@ -1196,8 +1214,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
             <div className={styles.popBox} style={{width: '600px'}}>
               <div className={styles.popTit}>{popAddEditText}{popAddEditName}</div>
               <div className={styles.popCon} style={{padding:'0'}}>
-              { phaseSelectLists &&
-                <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'PHASE')} value={defaultSelectLists.split(",").map(Number)}>
+              { phaseFlag && phaseSelectLists &&
+                <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'PHASE')} value={phaseDefaultSelectLists.split(",").map(Number)}>
                   <Row>
                     <Col span={4}>相位序号</Col>
                     <Col span={10}>相位名称</Col>
@@ -1216,7 +1234,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
                 </Checkbox.Group>
               }
               { laneSelectLists &&
-                <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'LANE')} value={defaultSelectLists.split(",").map(Number)}>
+                <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'LANE')} value={laneDefaultSelectLists.split(",").map(Number)}>
                   <Row>
                     <Col span={4}>车道号</Col>
                     <Col span={5}>道路编号</Col>
@@ -1239,7 +1257,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
                 </Checkbox.Group>
               }
               { lightSelectLists &&
-                <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'LIGHT')} value={defaultSelectLists.split(",").map(Number)}>
+                <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'LIGHT')} value={lightDefaultSelectLists.split(",").map(Number)}>
                   <Row>
                     <Col span={6}>灯组序号</Col>
                     <Col span={6}>灯组类型</Col>
@@ -1260,7 +1278,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
                 </Checkbox.Group>
               }
               { detectorSelectLists &&
-                <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'DETECTOR')} value={defaultSelectLists.split(",").map(Number)}>
+                <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'DETECTOR')} value={detectorDefaultSelectLists.split(",").map(Number)}>
                   <Row>
                     <Col span={6}>检测器编号</Col>
                     <Col span={6}>检测器类型</Col>
@@ -1281,10 +1299,21 @@ btnSelectOver = (flag, defaultSelectLists) => {
                 </Checkbox.Group>
               }
               </div>
-              <div className={styles.popBottom}>
-                <em onClick={()=> this.btnSelectOver(true, defaultSelectLists)}>确 定</em>
+              { !selectFlag  ? 
+                <div className={styles.popBottom}>
+                { laneSelectLists ? 
+                  <em onClick={()=> this.btnSelectOver(true, laneDefaultSelectLists)}>确 定</em> : 
+                  lightSelectLists ? 
+                  <em onClick={()=> this.btnSelectOver(true, lightDefaultSelectLists)}>确 定</em> :
+                  detectorSelectLists ? 
+                  <em onClick={()=> this.btnSelectOver(true, detectorDefaultSelectLists)}>确 定</em> :
+                  phaseSelectLists ?
+                  <em onClick={()=> this.btnSelectOver(true, phaseDefaultSelectLists)}>确 定</em> : null
+                }
                 <em onClick={()=> this.btnSelectOver(false)}>返 回</em>
-              </div>
+              </div> : null
+              }
+              
             </div>
         </div> : null
         }              
@@ -1553,10 +1582,10 @@ btnSelectOver = (flag, defaultSelectLists) => {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>相位的需求：</span><div onClick={() => this.getSelectLists(roadInterId, roadNodeNo, 'DETECTOR', 'phaseShowDetail', 'phaseLampgroupId',)} className={styles.editItem}><b>{!phaseShowDetail.phaseDemand ? "请点击进行编辑" : phaseShowDetail.phaseDemand}</b><em>编辑</em></div>
+                    <span>相位的需求：</span><div onClick={() => this.getSelectLists(roadInterId, roadNodeNo, 'DETECTOR', 'phaseShowDetail', 'phaseDemand',)} className={styles.editItem}><b>{!phaseShowDetail.phaseDemand ? "请点击进行编辑" : phaseShowDetail.phaseDemand}</b><em>编辑</em></div>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>相位包含灯组：</span><div onClick={() => this.getSelectLists(roadInterId, roadNodeNo, 'LIGHT', 'phaseShowDetail', 'phaseDemand')} className={styles.editItem}><b>{!phaseShowDetail.phaseLampgroupId ? "请点击进行编辑" : phaseShowDetail.phaseLampgroupId}</b><em>编辑</em></div>
+                    <span>相位包含灯组：</span><div onClick={() => this.getSelectLists(roadInterId, roadNodeNo, 'LIGHT', 'phaseShowDetail', 'phaseLampgroupId')} className={styles.editItem}><b>{!phaseShowDetail.phaseLampgroupId ? "请点击进行编辑" : phaseShowDetail.phaseLampgroupId}</b><em>编辑</em></div>
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>相位延迟绿时间：</span><Input type='number' value={phaseShowDetail.phaseDelaygreenTime} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','phaseDelaygreenTime')} placeholder="请输入" />

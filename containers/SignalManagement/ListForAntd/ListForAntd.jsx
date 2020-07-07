@@ -49,9 +49,9 @@ class ListForAntd extends Component {
     this.selectIndex = index
   }
   updateListItem = (itemDetailData, stepType, e) => {
-    // debugger
+    debugger
     e.stopPropagation()
-    // console.log(itemDetailData, stepType, '修改的')
+    console.log(itemDetailData, stepType, '修改的')
     this.props.updateListItem(itemDetailData, stepType)
   }
   delListItem = (e, id) => {
