@@ -526,10 +526,44 @@ export const getIconImageList = (stepType) => {
       thisAPI = APIs.API_DETECTOR_IMAGE_LIST
       thisTYPE = types.GET_DETECTOR_IMAGE_LIST
       break;
+    case "PHASE":
+      thisAPI = APIs.API_PHASE_IMAGE_LIST
+      thisTYPE = types.GET_PHASE_IMAGE_LIST
+      break;
   }
   return async (dispatch) => {
     try {
       const result = await RestUtil.get(`${thisAPI}`)
+      if (result.data.code === 0) {
+        dispatch({ type: thisTYPE, payload: result.data.data })
+      } else {
+        console.error(result.data.msg)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+}
+// 选择列表，提供添加、修改之用
+export const getSelectLists = (interId, nodeNo, stepType) => {
+  let thisAPI, thisTYPE;
+  switch(stepType){
+    case "LANE":
+      thisAPI = APIs.API_LANE_SELECT_LIST
+      thisTYPE = types.GET_LANE_SELECT_LIST
+      break;
+    case "LIGHT":
+      thisAPI = APIs.API_LIGHT_SELECT_LIST
+      thisTYPE = types.GET_LIGHT_SELECT_LIST
+      break;
+    case "DETECTOR":
+      thisAPI = APIs.API_DETECTOR_SELECT_LIST
+      thisTYPE = types.GET_DETECTOR_SELECT_LIST
+      break;
+  }
+  return async (dispatch) => {
+    try {
+      const result = await RestUtil.get(`${thisAPI}?interId=${interId}&nodeNo=${nodeNo}`)
       if (result.data.code === 0) {
         dispatch({ type: thisTYPE, payload: result.data.data })
       } else {

@@ -66,15 +66,30 @@ $stepBor_col: #393f4f;
         }
         
         .popCon {
-            max-height: 600px;
+            max-height: 780px;
             display: flex;
             justify-content: flex-start;
             align-items: stretch;
-            padding: 15px 30px 15px 0;
+            padding: 15px 0;
             margin-bottom: 10px;
             border-bottom: 1px solid #292a2d;
             flex-wrap: wrap;
             overflow-y: auto;
+            :global(.ant-checkbox-group){
+                color:#bbbdbc;
+                font-size:12px;
+                :global(.ant-row){
+                    line-height: 30px;
+                    text-align: center;
+                    color:#bbbdbc;
+                }
+                :global(.ant-row:first-child){
+                    background: #26394A;
+                }
+                :global(.ant-checkbox + span){
+                    color:#bbbdbc;
+                }
+            }
             >img{
                 align-self: flex-start;
                 padding: 8px;
@@ -244,8 +259,29 @@ $stepBor_col: #393f4f;
             }
         }
         .popConTurn {
+            padding: 15px 30px 15px 0;
             // 表单
             .itemInputBox{
+                .editItem{
+                    flex:2.25;
+                    line-height: 30px;
+                    border-bottom: 1px solid $stepBor_col;
+                    cursor: pointer;
+                    position: relative;
+                    user-select: none;
+                    font-size: 12px;
+                    > b{
+                        flex:1.5;
+                        color:yellowgreen;
+                    }
+                    > em {
+                        font-style: normal;
+                        position: absolute;
+                        top:0;
+                        right:0;
+                        color:#3c6ac5;
+                    }
+                }
                 > span {
                     line-height: 30px;
                     flex: 2.5;
@@ -258,9 +294,8 @@ $stepBor_col: #393f4f;
                     flex: 2;
                 }
                 :global(.ant-select) {
-                    flex: 2.2;
+                    flex: 2.25;
                 }
-
                 :global(.ant-calendar-picker) {
                     flex: 2.2;
                 }

@@ -14,10 +14,6 @@ class PhaseConfigRight extends PureComponent {
     this.state = {
       phaseLists: null,
       listNames: null,
-      detailData: null, // 详细信息
-      phaseForbidenData: null,
-      phaseShieldData: null,
-      typeData: null,
     }
   }
   componentDidUpdate = (prevState) => {
@@ -228,29 +224,12 @@ class PhaseConfigRight extends PureComponent {
       },
       onCancel() { },
     })
-  }
-  // 字典code
-  getSystemCodeType = (num) => {
-    this.props.getSystemCodeType(num).then(() => {
-      switch (num) {
-        case 11:
-          this.setState({ phaseForbidenData: this.props.data.codeTypeData }) // 相位禁止
-          break;
-        case 28:
-          this.setState({ phaseShieldData: this.props.data.codeTypeData }) // 相位屏蔽
-          break;
-        case 29:
-          this.setState({ typeData: this.props.data.codeTypeData }) // 灯组Type
-          break;
-      }
-    })
-  }
-  
+  }  
   updateListItem = (itemDetailData, stepType) => {
     this.props.updateListItem(itemDetailData, stepType)
   }
   render() {
-    const { phaseLists, listNames, detailData, phaseForbidenData, phaseShieldData, typeData } = this.state
+    const { phaseLists, listNames } = this.state
     return (
       <div className={styles.conBox} >
         <div className={styles.rTit}>相位配置列表<em onClick={() => { this.popLayerShowHide("stepFiveAddEdit", true, null, 'PHASE') }}>添加</em></div>
