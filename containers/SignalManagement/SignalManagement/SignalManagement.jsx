@@ -820,6 +820,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
       laneSelectLists: null, 
       lightSelectLists: null,  
       detectorSelectLists: null,
+      phaseSelectLists: null,
       selectFlag: true,
     })
   } else {
@@ -827,6 +828,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
       laneSelectLists: null, 
       lightSelectLists: null,  
       detectorSelectLists: null,
+      phaseSelectLists: null,
       selectFlag: true,
     })
   }
@@ -1197,12 +1199,11 @@ btnSelectOver = (flag, defaultSelectLists) => {
       { !!roadUnitId && !!roadInterId && !!roadNodeNo ? <Websocket url={`${this.socketPointPopUrl}${roadUnitId}/${roadInterId}/${roadNodeNo}`} onMessage={ this.handlePopData.bind(this)} /> : null }
         <Header {...this.props} />
         {/* 编辑弹层列表用于多选 车道、灯组、检测器 */}
-        { laneSelectLists && !selectFlag || lightSelectLists && !selectFlag || detectorSelectLists && !selectFlag ?
+        { laneSelectLists && !selectFlag || lightSelectLists && !selectFlag || detectorSelectLists && !selectFlag  || phaseSelectLists && !selectFlag ?
           <div className={styles.maskBg}> 
             <div className={styles.popBox} style={{width: '600px'}}>
               <div className={styles.popTit}>{popAddEditText}{popAddEditName}</div>
               <div className={styles.popCon} style={{padding:'0'}}>
-
               { phaseSelectLists &&
                 <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'PHASE')} value={defaultSelectLists.split(",").map(Number)}>
                   <Row>
