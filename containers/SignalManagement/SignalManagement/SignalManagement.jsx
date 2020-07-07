@@ -731,6 +731,7 @@ class SignalManagement extends PureComponent {
         detailStr = 'dispatchShowDetail'
         break;
     }
+    debugger
     if (eventType) {
       this.props.postAddOthersType(itemDetailData, stepType).then(() => {
         this.popLayerShowHide(showStr, null)
@@ -757,7 +758,6 @@ getSelectLists = (interId, nodeNo, stepType, name, key) => {
     case 'LANE':
       this.setState({
         popAddEditName: '车道',
-        popAddEditText: '编辑',
         selectFlag: false,
         defaultSelectLists: this.state[name][key],
       })
@@ -765,7 +765,6 @@ getSelectLists = (interId, nodeNo, stepType, name, key) => {
     case 'LIGHT':
       this.setState({
         popAddEditName: '灯组',
-        popAddEditText: '编辑',
         selectFlag: false,
         defaultSelectLists: this.state[name][key], 
       })
@@ -773,7 +772,6 @@ getSelectLists = (interId, nodeNo, stepType, name, key) => {
     case 'DETECTOR':
       this.setState({
         popAddEditName: '检测器需求',
-        popAddEditText: '编辑',
         selectFlag: false,
         defaultSelectLists: this.state[name][key],
       })
@@ -781,19 +779,13 @@ getSelectLists = (interId, nodeNo, stepType, name, key) => {
     case 'PHASE':
       this.setState({
         popAddEditName: '相位',
-        popAddEditText: '编辑',
         selectFlag: false,
         defaultSelectLists: this.state[name][key],
-      },()=>{
-        // this.props.getInfoListsType(this.state.roadInterId, 'PHASE') // 加载相位列表
       })
+      this.props.getSelectLists(interId, nodeNo, stepType)
       break;
   }
-  if (stepType !== 'PHASE'){
-    this.props.getSelectLists(interId, nodeNo, stepType)
-  }else{
-    this.props.getInfoListsType(this.state.roadInterId, 'PHASE') // 加载相位列表
-  }
+  this.props.getInfoListsType(this.state.roadInterId, 'PHASE') // 加载相位列表
 }
 selectItemList = (defaultSelectLists) => {
   console.log(defaultSelectLists, '选中的数据')

@@ -290,6 +290,10 @@ $stepBor_col: #393f4f;
                 :global(.ant-checkbox-group){
                     flex:2.2;
                 }
+                :global(.ant-col-4){
+                    padding-left:20px;
+                    text-align: left;
+                }
                 :global(.ant-input) {
                     flex: 2;
                 }
