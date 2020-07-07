@@ -150,7 +150,8 @@ reactDom.render(
         <PersistGate loading="null" persistor={persistore}>
           <HashRouter basename="" history={BrowserHistory}>
             <Switch>
-              <Redirect exact from="/" to="/interworkingHome" />
+              <Redirect exact from="/" to="/login" />
+              <Route exact path="/login" component={Login} />
               <Route exact path="/interworkingHome" component={InterworkingHome} />
               <Route path="/" component={Parent} />
             </Switch>

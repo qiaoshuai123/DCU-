@@ -3,80 +3,86 @@
     height: 100%;
     background: url(./login_bg.png) center center no-repeat;
     background-size: cover;
-    .loginBox {
-        position: absolute;
-        top: 50%;
-        right: 8%;
-        width: 600px;
-        margin-top: -300px;
-        .loginTitle {
-            text-align: center;
-            letter-spacing: 5px;
-            font-size: 42px;
-            font-weight: bold;
-            background: linear-gradient(to bottom, #BFE3EF, #70B0D4);
-            background-clip: text;
-            color: transparent;
-            // text-fill-color: transparent;
+    display: flex;
+    align-items: center;
+    .loginContent {
+        width: 100%;
+        height: 400px;
+        background-color: rgba(46,61,82, .9);
+        display: flex;
+        .leftContent, .rightContent {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
-        .usermsgBox {
-            width: 100%;
-            height: 400px;
-            background: url(./msg_bg.png) center center no-repeat;
-            background-size: 100% 100%;
-            .welcome {
-                height: 80px;
-                background: url(./login_title.png) center -14px no-repeat;
-                background-size: 100% 100%;
+        .leftContent {
+            font-size: 36px;
+            // font-weight: bold;
+            .welcome, .systext {
+                width: 50%;
+                padding-bottom: 5px;
+                .commingIcon {
+                    display: inline-block;
+                    width: 30px;
+                    height: 30px;
+                    margin-left: 10px;
+                    vertical-align: -3px;
+                    background: url(./diricon.png) center center no-repeat;
+                    background-size: 100% 100%;
+                }
             }
-            .userInput {
+            .welcome {
+                border-bottom: 4px solid #fff;
+            }
+        }
+        .rightContent {
+            .loginMsg {
+                width: 300px;
                 display: flex;
                 flex-direction: column;
+                justify-content: center;
                 align-items: center;
-                .userMsg {
-                    position: relative;
-                    width: 340px;
+                .loginTit {
                     height: 40px;
-                    margin-top: 40px;
-                    padding-left: 40px;
-                    span {
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        width: 40px;
-                        height: 100%;
-                        background: url(./user_icon.png) center center no-repeat;
-                        background-size: 100% 100%;
-                        text-align: center;
-                        line-height: 40px;
-                        color: #E4F1FA;
-                        font-size: 20px;
-                    }
+                    line-height: 40px;
+                    font-size: 24px;
+                    letter-spacing: 3px;
+                    color: #fff;
+                }
+                .inputBox {
+                    position: relative;
+                    margin-bottom: 15px;
                     input {
-                        width: 300px;
-                        height: 40px;
-                        padding-left: 10px;
-                        background-color: #164499;
-                        border: 1px solid #365DA9;
-                        border-left: none;
+                        width: 260px;
+                        height: 42px;
+                        padding-left: 35px;
+                        border: 1px solid #fff;
+                        border-radius: 5px;
                         outline: none;
-                        color: #fff;
+                        color: #000;
                     }
-                    input::-webkit-input-placeholder {
-                        color: #799FD6;
+                    .userIcon, .pwdICon {
+                        z-index: 2;
+                        position: absolute;
+                        top: 4px;
+                        left: 10px;
+                        font-size: 20px;
+                        color: #aaa;
                     }
                 }
                 .loginBtn {
-                    width: 150px;
-                    height: 34px;
-                    margin-top: 50px;
+                    width: 260px;
+                    height: 42px;
                     text-align: center;
-                    line-height: 34px;
-                    letter-spacing: 3px;
-                    color: #fff;
-                    font-size: 15px;
-                    background: url(./btn_bg.png) center center no-repeat;
-                    background-size: 100% 100%;
+                    line-height: 41px;
+                    background-image: linear-gradient(to bottom, #FF5319, #FF8755);
+                    border-radius: 5px;
+                    font-size: 20px;
+                    font-weight: bold;
+                    text-indent: 10px;
+                    letter-spacing: 10px;
                     cursor: pointer;
                 }
             }

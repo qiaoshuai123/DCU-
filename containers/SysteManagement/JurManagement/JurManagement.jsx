@@ -50,12 +50,12 @@ class JurManagement extends Component {
     this.getDeptList()
     this.onlistTrue()
     // 获取用户权限
-    // const limitArr = JSON.parse(localStorage.getItem('userLimit'))
-    // const userLimit = []
-    // limitArr.forEach((item) => {
-    //   userLimit.push(item.id)
-    // })
-    // this.setState({ userLimit })
+    const limitArr = JSON.parse(localStorage.getItem('userLimit'))
+    const userLimit = []
+    limitArr.forEach((item) => {
+      userLimit.push(item.id)
+    })
+    this.setState({ userLimit })
   }
   onlistTrue = () => {
     getResponseDatas('post', this.listTrueUrl).then((res) => {
@@ -282,10 +282,7 @@ class JurManagement extends Component {
                   </Select>
                 </div>
               </div> */}
-              {
-                userLimit && userLimit.indexOf(18) !== -1 ?
-                  <span className={styles.searchBtn} onClick={() => { this.handlePagination('1') }}>查询</span> : null
-              }
+              <span className={styles.searchBtn} onClick={() => { this.handlePagination('1') }}>查询</span>
               <i className={styles.line} />
             </div>
             <div className={styles.syetem_buttom}>

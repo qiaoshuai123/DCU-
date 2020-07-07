@@ -48,14 +48,14 @@ class UserManagement extends Component {
     // 获取用户列表
     this.getSystemList()
     // 获取用户组信息
-    // this.getSystemdep()
-    // const limitArr = JSON.parse(localStorage.getItem('userLimit'))
-    // const userLimit = []
-    // limitArr.forEach((item) => {
-    //   userLimit.push(item.id)
-    // })
-    // console.log(userLimit)
-    // this.setState({ userLimit })
+    this.getSystemdep()
+    const limitArr = JSON.parse(localStorage.getItem('userLimit'))
+    const userLimit = []
+    limitArr.forEach((item) => {
+      userLimit.push(item.id)
+    })
+    console.log(userLimit)
+    this.setState({ userLimit })
   }
   getSystemdep = () => {
     // 获取用户
@@ -287,10 +287,7 @@ class UserManagement extends Component {
                   </Select>
                 </div>
               </div> */}
-              {
-                userLimit && userLimit.indexOf(13) !== -1 ?
-                  <span className={styles.searchBtn} onClick={() => { this.handlePagination('1') }} limitid="13">查询</span> : null
-              }
+              <span className={styles.searchBtn} onClick={() => { this.handlePagination('1') }} limitid="13">查询</span>
             </div>
             <div className={styles.syetem_buttom}>
               {

@@ -1,21 +1,9 @@
 import React from 'react'
-import { Menu, Dropdown, Icon } from 'antd'
+import { Menu, Dropdown, Icon, message } from 'antd'
 import styles from './Header.scss'
 
-const menu = (
-  <Menu>
-    <Menu.Item>
-      <span>
-        返回主页
-      </span>
-    </Menu.Item>
-    <Menu.Item>
-      <span>
-        修改密码
-      </span>
-    </Menu.Item>
-  </Menu >
-)
+import getResponseDatas from '../../utils/getResponseDatas'
+
 class Header extends React.Component {
   constructor(props) {
     super(props)
@@ -23,6 +11,8 @@ class Header extends React.Component {
       selectNum: 1,
       navItem: [],
       showSysMsg: false,
+      userName: null,
+      showChangePwd: false,
     }
     this.paths = this.props.match.url
     console.log(this.paths)
@@ -133,13 +123,69 @@ class Header extends React.Component {
       },
       { id: 6, name: '关于系统', role: 6, path: '' },
     ]
-    // 获取用户权限
-    // this.getUser = localStorage.getItem('')
+    this.menu = (
+      <Menu onClick={this.handleUserMenu}>
+        <Menu.Item key="1">
+          <span>
+            修改密码
+          </span>
+        </Menu.Item>
+        <Menu.Item key="2">
+          <span>
+            退出登录
+          </span>
+        </Menu.Item>
+      </Menu >
+    )
+    this.loginKeys = {
+      password: '',
+      oldPassword: '',
+      id: '',
+    }
+    this.updatePassUrl = '/DCU/sys/user/updatePassword'
+    this.logoutUrl = '/DCU/sys/user/logout'
   }
   componentDidMount = () => {
-    // 筛选符合条件数据
-    // const myMenu = this.filterMenu(this.navItems, this.getUser)
+    const userMsg = JSON.parse(localStorage.getItem('userInfo'))
+    this.setState({ userName: userMsg.userName })
+    this.loginKeys.id = userMsg.id
     this.pageRouter()
+  }
+  getupdatePwd = () => {
+    const { password, oldPassword } = this.loginKeys
+    if (password === '') {
+      message.error('请填写新密码！')
+      return
+    }
+    if (oldPassword === '') {
+      message.error('请再次填写新密码！')
+      return
+    }
+    if (oldPassword !== password) {
+      message.error('密码输入不一致！')
+      return
+    }
+    getResponseDatas('post', this.updatePassUrl, this.getFormData(this.loginKeys)).then((res) => {
+      const result = res.data
+      if (result.code === 0) {
+        // console.log(result.data)
+        this.handleHideMsg()
+        message.error('密码修改成功,3秒后返回登陆页面！')
+        setTimeout(() => {
+          this.handleLogout()
+        }, 3000)
+      } else {
+        message.error('网络异常，请稍后再试!')
+      }
+    })
+  }
+  // 转格式
+  getFormData = (obj) => {
+    const formData = new FormData()
+    Object.keys(obj).forEach((item) => {
+      formData.append(item, obj[item])
+    })
+    return formData
   }
   pageRouter = () => {
     this.pageRouters(this.paths, this.navItems)
@@ -184,10 +230,37 @@ class Header extends React.Component {
     this.props.history.push(item.path)
   }
   handleHideMsg = () => {
-    this.setState({ showSysMsg: false })
+    this.setState({
+      showSysMsg: false,
+      showChangePwd: false,
+    })
+  }
+  handleUserMenu = ({ key }, e) => {
+    if (key === '1') {
+      this.setState({ showChangePwd: true })
+    } else if (key === '2') {
+      this.handleLogout()
+    }
+  }
+  handleLogout = () => {
+    getResponseDatas('post', this.logoutUrl).then((res) => {
+      const { code, msg } = res.data
+      if (code === 0) {
+        localStorage.clear()
+        this.props.history.push('/login')
+      } else {
+        message.warning(msg)
+      }
+    })
+  }
+  handlePwdChange = (e) => {
+    const pname = e.target.getAttribute('pname')
+    this.loginKeys[pname] = e.target.value
   }
   render() {
-    const { selectNum, navItem, showSysMsg } = this.state
+    const {
+      selectNum, navItem, showSysMsg, userName, showChangePwd,
+    } = this.state
     return (
       <div className={styles.headerWrapper}>
         {
@@ -200,7 +273,20 @@ class Header extends React.Component {
             <div className={styles.sysMsg}>版本：v1.0</div>
             <div className={styles.copyRight}>版权信息：北京博研智通科技有限公司</div>
           </div>
-
+        }
+        {
+          showChangePwd &&
+          <div className={styles.changePwd}>
+            <div className={styles.pwdTitle}>修改密码 <span className={styles.closeIcon} onClick={this.handleHideMsg}><Icon type="close" /></span></div>
+            <div className={styles.pwdInput}>
+              <input type="passWord" placeholder="请输入新密码" pname="password" onChange={this.handlePwdChange} />
+              <input type="passWord" placeholder="请再次输入新密码" pname="oldPassword" onChange={this.handlePwdChange} />
+            </div>
+            <div className={styles.pwdBtnBox}>
+              <div className={styles.btn} onClick={this.getupdatePwd}>确认</div>
+              <div className={styles.btn} onClick={this.handleHideMsg}>取消</div>
+            </div>
+          </div>
         }
         <div className={styles.header_left}>
           <span />
@@ -223,9 +309,9 @@ class Header extends React.Component {
         </div>
         <div className={styles.header_right}>
           <span />
-          <Dropdown overlay={menu}>
+          <Dropdown overlay={this.menu}>
             <b onClick={e => e.preventDefault()}>
-              hello,admin <Icon type="down" />
+              hello,{userName} <Icon type="down" />
             </b>
           </Dropdown>
         </div>
