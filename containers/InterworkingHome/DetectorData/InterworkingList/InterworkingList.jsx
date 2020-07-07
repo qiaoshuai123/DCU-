@@ -28,6 +28,21 @@ class InterworkingList extends Component {
   getresetPwd = (id) => {
     window.open(`#roaddetail/${id}`)
   }
+  exportTable = () => {
+    const str = `districtId=${this.changeRegionValue}&keyword=${this.changeFontValue}&signalType=${this.changeSignalValue}&unitId=${this.changeIntctionValue}`
+    this.props.gettimingInfoByExcel(str)
+  }
+  getTimingInfoByExcels = (getTimingInfoByExcel) => {
+    const blob = new Blob([getTimingInfoByExcel], { type: 'application/vnd.ms-excel,charset=utf-8' })
+    const a = document.createElement('a')
+    const href = window.URL.createObjectURL(blob)
+    a.href = href
+    document.body.appendChild(a)
+    // a.click()
+    a.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }))
+    document.body.removeChild(a)
+    window.URL.revokeObjectURL(href)
+  }
   render() {
     const { systemList } = this.state
     return (
@@ -52,6 +67,9 @@ class InterworkingList extends Component {
         </div>
         <div className={styles.equipmentList}>
           设备列表
+          <span onClick={this.exportTable}>
+            导出数据表
+          </span>
         </div>
         <div className={styles.syetem_buttom}>
           <div className={styles.listBox}>

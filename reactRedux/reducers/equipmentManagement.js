@@ -21,6 +21,10 @@ const equipmentManagement = (state = {}, action) => {
       return Object.assign({}, state, { lockStateListinfo: payload })
     case types.GET_SCH_SCHMEINFOLIST:
       return Object.assign({}, state, { schemeInfoListinfo: payload })
+    case types.GET_DCU_DCULIST:
+      return Object.assign({}, state, { dcuList: payload })
+    case types.GET_DCU_DCULISTBYPAGE:
+      return Object.assign({}, state, { dcuListByPage: payload })
     default:
       return state
   }

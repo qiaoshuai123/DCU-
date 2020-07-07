@@ -97,9 +97,9 @@ class InterworkingHome extends Component {
   }
 
   setGetParams = (dataItem) => {
-    console.log(dataItem, 'sdsdsd')
+    // console.log(dataItem, 'sdsdsd')
     localStorage.setItem('bac', JSON.stringify(dataItem.background))
-    window.open(`#/roaddetail?id=${dataItem.interId}&ids=${dataItem.nodeId}`)
+    window.open(`#/roaddetail?id=${dataItem.interId}&ids=${dataItem.nodeId}&ider=${dataItem.id}`)
     // window.open(`#roaddetail/1`)
   }
   visibleShowLeft = (top, id, show) => { // 框的跳转与位置
