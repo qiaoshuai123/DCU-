@@ -24,6 +24,7 @@ export const API_LANE_INFO_AND_DETAIL = '/DCU/laneInfo/laneInfoAndDetail' // 回
 export const API_ADD_LANE_INFO_AND_DETAIL = '/DCU/laneInfo/addLaneInfoAndDetail' // 新增内容图标和列表
 export const API_UPDATE_LANE_INFO_AND_DETAIL = '/DCU/laneInfo/updateLaneInfoAndDetail' // 修改内容图标和列表
 export const API_LANE_IMAGE_LIST = '/DCU/laneInfo/laneImageList' // 回显全部图标
+export const API_LANE_SELECT_LIST = '/DCU/laneInfo/laneInfoAndDetailList' // 选中后列表
 // 灯组配置
 export const API_LIGHT_INFO_LISTS = '/DCU/lampgroupInfo/lampgroupInfoList' // 根据interId查询路口下所有灯组列表
 export const API_LIGHT_PIC_LISTS = '/DCU/lampgroupInfo/lampgroupDetailList' // 根据interId 路口序号查询图上的灯
@@ -37,6 +38,7 @@ export const API_LIGHT_INFO_AND_DETAIL = '/DCU/lampgroupInfo/lampgroupInfoAndDet
 export const API_ADD_LIGHT_INFO_AND_DETAIL = '/DCU/lampgroupInfo/addLampgroupInfoAndDetail' // 新增内容图标和列表
 export const API_UPDATE_LIGHT_INFO_AND_DETAIL = '/DCU/lampgroupInfo/updateLampgroupInfoAndDetail' // 修改内容图标和列表
 export const API_LIGHT_IMAGE_LIST = '/DCU/lampgroupInfo/lampgroupImageList' // 回显全部图标
+export const API_LIGHT_SELECT_LIST = '/DCU/lampgroupInfo/lampgroupInfoAndDetailList' // 选中后列表
 // 检测器配置
 export const API_DETECTOR_INFO_LISTS = '/DCU/detectorInfo/detectorInfoList' // 根据interId查询路口下所有检测器列表
 export const API_DETECTOR_PIC_LISTS = '/DCU/detectorInfo/detectorDetailList' // 根据interId 路口序号查询图上的检测器
@@ -50,11 +52,13 @@ export const API_DETECTOR_INFO_AND_DETAIL = '/DCU/detectorInfo/detectorInfoAndDe
 export const API_ADD_DETECTOR_INFO_AND_DETAIL = '/DCU/detectorInfo/addDetectorInfoAndDetail' // 新增内容图标和列表
 export const API_UPDATE_DETECTOR_INFO_AND_DETAIL = '/DCU/detectorInfo/updateDetectorInfoAndDetail' // 修改内容图标和列表
 export const API_DETECTOR_IMAGE_LIST = '/DCU/laneInfo/laneImageList' // 回显全部图标
+export const API_DETECTOR_SELECT_LIST = '/DCU/detectorInfo/detectorInfoAndDetailList' // 选中后列表
 // 相位配置
 export const API_PHASE_INFO_LISTS = '/DCU/phaseInfo/phaseInfoList' // 相位查询列表
 export const API_ADD_PHASE_OTHERS = '/DCU/phaseInfo/addPhaseInfo' // 相位新增
 export const API_UPDATE_PHASE_OTHERS = '/DCU/phaseInfo/updatePhaseInfo' // 相位修改
 export const API_DEL_PHASE_INFO = '/DCU/phaseInfo/deletePhaseInfo' // 相位删除
+export const API_PHASE_IMAGE_LIST = '/DCU/phaseStageInfo/phasestageImageList' // 回显全部图标
 // 阶段配置
 export const API_STAGE_INFO_LISTS = '/DCU/phaseStageInfo/phaseStageInfoList' // 阶段查询列表
 export const API_ADD_STAGE_OTHERS = '/DCU/phaseStageInfo/addPhaseStageInfo' // 阶段新增

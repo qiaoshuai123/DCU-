@@ -18,6 +18,8 @@ import {
   API_SCH_SCHMEINFOLIST,
   API_DCU_PROOFREADTIME,
   API_DCU_CENTERCONTROL,
+  API_DCU_DCULIST,
+  API_DCU_DCULISTBYPAGE,
 } from '../actionTypes/actionAPIs'
 
 // 更改点位信息名称
@@ -209,5 +211,35 @@ export const centerControl = (params) => {
   return async () => {
     const result = await RestUtil.get(`${API_DCU_CENTERCONTROL}?${params}`)
     return result
+  }
+}
+// 查询全部DCU
+export const dcuLists = () => {
+  return async (dispatch) => {
+    try {
+      const result = await RestUtil.get(`${API_DCU_DCULIST}`)
+      if (result.data.code === 0) {
+        dispatch({ type: types.GET_DCU_DCULIST, payload: result.data.data })
+      } else {
+        console.error(result.data.message)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+}
+// 分页查询DCU
+export const dcuListByPages = (params) => {
+  return async (dispatch) => {
+    try {
+      const result = await RestUtil.get(`${API_DCU_DCULISTBYPAGE}?${params}`)
+      if (result.data.code === 0) {
+        dispatch({ type: types.GET_DCU_DCULISTBYPAGE, payload: result.data.data })
+      } else {
+        console.error(result.data.message)
+      }
+    } catch (e) {
+      console.log(e)
+    }
   }
 }

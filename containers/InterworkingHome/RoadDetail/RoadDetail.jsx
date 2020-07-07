@@ -22,17 +22,23 @@ class RoadDetail extends Component {
       isMeessage: false,
       laneInfoAndDetailinfo: '', // 车道图片接口
       lampgroupDetailListinfo: [], // 灯组图片
+      arrs: [],
       detectorDetailListinfo: [], // 检测器图片
       schemeInfoListinfo: [], // 当前方案全部阶段F
       lockStateListinfo: [], // 控制模式
       nowPhasestageInfos: [], // 当前路口全部方案
-      planRunStage: [1, 2],
+      planRunStage: [],
+      remainingTime: null,
+      schemeName: '',
+      phasestageNo: '',
+      imgPaths: '',
+      phasestageNames: '',
     }
     this.imgshref = 'http://192.168.1.213:20203/DCU/dcuImage/background/'
-    this.laneBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/lane/'  //车道
-    this.lightBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/lampgroup/' //灯组
-    this.detectorBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/detector/' //检测器
-    this.phaseBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/phasestage/' //相位图标
+    this.laneBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/lane/' // 车道
+    this.lightBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/lampgroup/' // 灯组
+    this.detectorBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/detector/' // 检测器
+    this.phaseBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/phasestage/' // 相位图标
   }
   componentWillMount = () => {
     this.getInter()
@@ -72,6 +78,7 @@ class RoadDetail extends Component {
   }
   componentWillUnmount = () => {
     this.handleClose()
+    this.handleCloseSc()
     // window.open('#777')
   }
   getschemeInfoListinfo = (schemeInfoListinfo) => {
@@ -119,7 +126,8 @@ class RoadDetail extends Component {
     const nums = search.indexOf('&')
     const lastNums = search.lastIndexOf('&')
     this.interId = search.substring(4, nums)
-    this.nodeId = search.substring(lastNums + 5)
+    this.nodeId = search.substring(nums + 5, lastNums)
+    this.unitId = search.substring(lastNums + 6)
     this.bac = JSON.parse(localStorage.getItem('bac'))
     this.objs = `interId=${this.interId}&nodeNo=${this.nodeId}`
   }
@@ -173,41 +181,91 @@ class RoadDetail extends Component {
       }
     })
   }
-  // handleData = (a) => {
-  //   console.log(a, '1122')
-  // }
+  handleData = (e) => {
+    const { lampgroupState, phasestageState, running } = JSON.parse(e)
+    const { remainingTime, phasestageNo, runningTime } = phasestageState
+    const { localTime } = running
+    this.setState({
+      arrs: lampgroupState,
+      remainingTime,
+      phasestageNo,
+    })
+    this.startWidth(runningTime, phasestageNo)
+  }
 
+  handleDataSc = (e) => {
+    const { phasestageList, allTime, schemeName } = JSON.parse(e)
+    this.insWidth = 960 / allTime
+    this.setState({
+      planRunStage: phasestageList,
+      schemeName,
+    })
+    // const { lampgroupState, phasestageState } = JSON.parse(e)
+    this.phasestageNos(phasestageList)
+  }
+  startWidth = (time, no) => {
+    const { planRunStage } = this.state
+    if (planRunStage) {
+      let num = 0
+      planRunStage.forEach((item) => {
+        if (item.phasetageTime < no) {
+          num += item.phasetageTime
+        }
+      })
+      this.setState({
+        widths: (num + time) * this.insWidth
+      })
+    }
+  }
+  phasestageNos = (phasestageList) => {
+    const { phasestageNo } = this.state
+    if (phasestageNo) {
+      const { phasestageName, imagePath } = phasestageList.find(item => item.phasestageNo == phasestageNo)
+      this.setState({
+        phasestageNames: phasestageName,
+        imgPaths: imagePath,
+      })
+    }
+  }
   render() {
     const {
       IsspanMessage, RoadImg, laneInfoAndDetailinfo, lampgroupDetailListinfo, detectorDetailListinfo,
       isMeessage, dcuPopData, schemeInfoListinfo, lockStateListinfo, nowPhasestageInfos, planRunStage,
+      arrs, remainingTime, schemeName, imgPaths, phasestageNames, widths,
     } = this.state
     return (
       <div className={styles.RoadDetail}>
         <div className={styles.AnimationTime}>
           <div className={styles.palnRunBox}>
-            <div className={styles.runStage} style={{ width: `${20}px` }}><span className={styles.stageInner} /></div>
+            <div className={styles.runStage} style={{ width: `${widths}px` }}><span className={styles.stageInner} /></div>
             {
               planRunStage &&
-              planRunStage.map((item) => {
-                const greenWid = 60
-                const redWid = 70
-                const yellowWid = 70
+              planRunStage.map((item, ind) => {
+                const greenWid = this.insWidth * item.green
+                const yellowWid = this.insWidth * item.yellow
+                const redWid = this.insWidth * item.red
                 return (
-                  <div className={styles.planRunStage} key={item}>
-                    <span className={styles.stageMsg}>阶段{item} &nbsp;20秒</span>
+                  <div className={styles.planRunStage} key={`${item.phasestageName}${ind}`}>
+                    <span className={styles.stageMsg}>{item.phasestageName} &nbsp;{item.phasetageTime}秒</span>
                     <div className={styles.greenStage} style={{ width: `${greenWid}px` }} />
-                    <div className={styles.redStage} style={{ width: `${redWid}px` }} />
                     <div className={styles.yellowStage} style={{ width: `${yellowWid}px` }} />
+                    <div className={styles.redStage} style={{ width: `${redWid}px` }} />
                   </div>
                 )
               })
             }
           </div>
         </div>
-        {/* <Websocket
-          url="ws://192.168.1.213:20203/DCU/websocket/interRunState/1/1/1"
-          onMessage={this.handleData.bind(this)} onClose={this.handleClose.bind(this)} /> */}
+        <Websocket
+          url={`ws://192.168.1.213:20203/DCU/websocket/interMonitorRealTime/${this.unitId}/${this.interId}/${this.nodeId}`}
+          onMessage={this.handleData.bind(this)}
+          onClose={() => this.handleClose()}
+        />
+        <Websocket
+          url={`ws://192.168.1.213:20203/DCU/websocket/interMonitorScheme/${this.unitId}/${this.interId}/${this.nodeId}`}
+          onMessage={this.handleDataSc.bind(this)}
+          onClose={() => this.handleCloseSc()}
+        />
         <div className={styles.dcuStyles} onClick={this.showImgMessage}>
           DCU
           {
@@ -230,7 +288,19 @@ class RoadDetail extends Component {
             20
           </div>
           {
-            lampgroupDetailListinfo && lampgroupDetailListinfo.map((item, ind) => <img key={`${item}${ind}`} src={`${this.lightBgUrl}${item.imageUrl}`} style={{ left: `${item.x}px`, top: `${item.y}px` }} className={styles.laneInfoAndDetailinfo} alt="" />)
+            lampgroupDetailListinfo && lampgroupDetailListinfo.map((item, ind) => {
+              let as = ''
+              let str = 'http://192.168.1.213:20203/DCU/dcuImage/lampgroup'
+              arrs.map((items) => {
+                if (item.lampgroupNo === items.lampgroupNo) {
+                  as = items.lamogroupStatus
+                }
+              })
+              str = `${str + as}/`
+              return (
+                <img key={`${str}${ind}`} src={`${str}${item.imageUrl}`} style={{ left: `${item.x}px`, top: `${item.y}px` }} className={styles.laneInfoAndDetailinfo} alt="" />
+              )
+            })
           }
           {
             detectorDetailListinfo && detectorDetailListinfo.map((item, ind) => <img key={`${item}${ind}`} src={`${this.detectorBgUrl}${item.imageUrl}`} style={{ left: `${item.x}px`, top: `${item.y}px` }} className={styles.laneInfoAndDetailinfo} alt="" />)
@@ -250,28 +320,25 @@ class RoadDetail extends Component {
             <li>设备状态:<span className={styles.fontColor}>&nbsp;正常在线</span></li>
             <li>控制状态:<span className={styles.fontColor}></span>本地多时段</li>
             <li>
-              当前时段:<span className={styles.fontColor}></span>
-              东西左转
-              {/* {
-                sinaglInfo &&
-                <span className={styles.stageImgBox}>
-                  <img width="30px" height="30px" src={`${this.processUrl}/atms/comm/images/anniu/${sinaglInfo.STAGE_IMAGE}`} alt="" />
-                </span>
-              }&nbsp;
-              {sinaglInfo ? sinaglInfo.STAGE_CODE : '--'} */}
+              当前阶段:<span className={styles.fontColor}>{phasestageNames}</span>
+              <span className={styles.stageImgBox}>
+                <img width="30px" height="30px" src={this.phaseBgUrl + imgPaths} alt="" />
+              </span>
             </li>
-            <li>当前方案:<span className={styles.fontColor}></span>方案10</li>
+            <li>当前方案:<span className={styles.fontColor}></span>{schemeName}</li>
             <li>2019/12/02 22:43:20</li>
           </ul>
           <div className={styles.DeviceStatus_right}>
-            <dl className={styles.deviceControlBtn}>
-              <dt><span className={styles.stageImgBox}>锁定</span></dt>
-              <dd>锁定</dd>
-            </dl>
-            <dl className={styles.deviceControlBtn}>
-              <dt><span className={styles.stageImgBox}>自动</span></dt>
-              <dd>取消步进</dd>
-            </dl>
+            {
+              planRunStage && planRunStage.map((item, index) => {
+                return (
+                  <dl key={item + index} className={styles.deviceControlBtn}>
+                    <dt><span className={styles.stageImgBox}><img src={this.phaseBgUrl + item.imagePath} alt="" /></span></dt>
+                    <dd>{item.phasestageName}</dd>
+                  </dl>
+                )
+              })
+            }
           </div>
         </div>
         {IsspanMessage &&

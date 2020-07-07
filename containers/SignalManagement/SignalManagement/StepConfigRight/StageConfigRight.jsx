@@ -144,13 +144,15 @@ class StageConfigRight extends PureComponent {
       onCancel() { },
     })
   }
-
+  updateListItem = (itemDetailData, stepType) => {
+    this.props.updateListItem(itemDetailData, stepType)
+  }
   render() {
     const { stageLists, listNames } = this.state
     return (
       <div className={styles.conBox}>
         <div className={styles.rTit}>阶段配置列表<em onClick={() => { this.popLayerShowHide("stepSixAddEdit", true, null, 'STAGE') }}>添加</em></div>
-        { !!stageLists && !!listNames ? <ListForAntd {...this.props} dataSourse={stageLists} listNames={listNames} showIndex={3} listType={'STAGE'} handleClickFind={this.handleClickFind} delListItem={this.delListItem} /> : <div className={styles.noData}>暂无数据</div> }
+        { !!stageLists && !!listNames ? <ListForAntd {...this.props} dataSourse={stageLists} listNames={listNames} showIndex={3} listType={'STAGE'} handleClickFind={this.handleClickFind} updateListItem={this.updateListItem} delListItem={this.delListItem} /> : <div className={styles.noData}>暂无数据</div> }
       </div>
     )
   }

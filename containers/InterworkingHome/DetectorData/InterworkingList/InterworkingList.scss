@@ -79,6 +79,16 @@ $bor-color: #2e3440;
     height: 40px;
     font-size: 16px;
     line-height: 40px;
+    span{
+      color: #40c3e3;
+      height: 30px;
+      line-height: 30px;
+      margin-top: 5px;
+      cursor: pointer;
+      float: right;
+      padding: 0px 5px;
+      border: 1px solid #40c3e3;
+    }
   }
   .syetem_buttom {
     width: 100%;

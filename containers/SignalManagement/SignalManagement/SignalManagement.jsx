@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-import { Input, Icon, Radio, Upload, Modal, message, Select, Checkbox } from 'antd'
+import { Input, Icon, Radio, Upload, Modal, message, Select, Checkbox, Row, Col } from 'antd'
 import classNames from 'classnames'
 import Header from '../../../components/Header/Header'
 import markerIcon from '../../../images/markerGreen.png'
@@ -11,7 +11,7 @@ import styles from './SignalManagement.scss'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { getSystemCodeType, getMapUnitInfoList, getUnitPop, checkUnitTree } from '../../../reactRedux/actions/publicActions'
-import { getStepStatus, getPicListsType, getInfoListsType, postBgBySelect, postBgByUpload, postAddOthersType, postUpdateOthersType, postAddAllType, postUpdateAllType, getIconImageList, getUpdateAllType } from '../../../reactRedux/actions/signalmanagementActions'
+import { getStepStatus, getPicListsType, getInfoListsType, postBgBySelect, postBgByUpload, postAddOthersType, postUpdateOthersType, postAddAllType, postUpdateAllType, getIconImageList, getUpdateAllType, getSelectLists } from '../../../reactRedux/actions/signalmanagementActions'
 import StepNavMenu from './StepNavMenu/StepNavMenu'
 import BasicInfoLeft from './StepConfigLeft/BasicInfoLeft'
 import LaneConfigLeft from './StepConfigLeft/LaneConfigLeft'
@@ -39,6 +39,7 @@ class SignalManagement extends PureComponent {
     super(props)
     this.state = {
       popAddEditText: '添加', // 添加或编辑状态
+      popAddEditName: '', 
       moveFlag: null,
       stepOneFlag: true,
       stepTwoFlag: null,
@@ -99,6 +100,12 @@ class SignalManagement extends PureComponent {
       planShowDetail: null,
       dayplanShowDetail: null,
       dispatchShowDetail: null,
+      laneSelectLists: null,
+      lightSelectLists: null,
+      detectorSelectLists: null,
+      selectFlag: true,
+      defaultSelectLists: '',
+      phaseSelectLists: null, // 
     }
     this.map = null
     this.moveFlag = false // 是否是移动状态
@@ -114,8 +121,8 @@ class SignalManagement extends PureComponent {
     this.selImage = null
   }
   componentDidUpdate = (prevState) => {
-    const { mapPointsData, dcuPopData, stepStatusData, basicBgLists, basicUplSuccess, dcuTreeData, codeTypeData, 
-    laneShowDetail, laneIconLists, lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists } = this.props.data
+    const { mapPointsData, dcuPopData, stepStatusData, basicBgLists, basicUplSuccess, dcuTreeData, codeTypeData, phaseLists,
+    laneShowDetail, laneIconLists, lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists, laneSelectLists, lightSelectLists, detectorSelectLists, phaseIconLists } = this.props.data
     if (prevState.data !== this.props.data) {
       console.log(this.props,this.props.data, "data中所有的数据")
     }
@@ -165,14 +172,33 @@ class SignalManagement extends PureComponent {
       this.setState({ lightIconLists })
     }
     if (prevState.data.detectorShowDetail !== detectorShowDetail) {
-      console.log(detectorShowDetail, '检测器回显详情')
+      // console.log(detectorShowDetail, '检测器回显详情')
       this.setState({ detectorShowDetail, showFlag: true, },()=>{
         this.cyclicComparison(this.state.detectorType, 'detectorType', detectorShowDetail.detectorType, 'detectorShowDetail')
       })
     }
     if (prevState.data.detectorIconLists !== detectorIconLists) {
-      console.log(detectorIconLists, '检测器图标')
+      // console.log(detectorIconLists, '检测器图标')
       this.setState({ detectorIconLists })
+    }
+    if (prevState.data.phaseIconLists !== phaseIconLists) {
+      // console.log(phaseIconLists, '相位图标')
+      this.setState({ phaseIconLists })
+    }
+    if (prevState.data.laneSelectLists !== laneSelectLists) {
+      console.log(laneSelectLists, '车')
+      this.setState({ laneSelectLists })
+    }
+    if (prevState.data.lightSelectLists !== lightSelectLists) {
+      console.log(lightSelectLists, '灯组')
+      this.setState({ lightSelectLists })
+    }
+    if (prevState.data.detectorSelectLists !== detectorSelectLists) {
+      console.log(detectorSelectLists, '检测器')
+      this.setState({ detectorSelectLists })
+    }
+    if (prevState.data.phaseLists !== phaseLists) {
+      this.setState({ phaseSelectLists: phaseLists })
     }
   }
   componentDidMount = () => {
@@ -542,9 +568,9 @@ class SignalManagement extends PureComponent {
           const phaseShowDetail = {
             "interId": this.state.roadInterId, //路口编号 不用显示，带着就行
             "phaseDelaygreenTime": 0, //相位延迟绿时间
-            "phaseDemand": "", //相位的需求 1 检测器编号
+            "phaseDemand": "请点击进行编辑", //相位的需求 1 检测器编号
             "phaseForbiden": 0, //相位禁止 0 正常，1 关闭灯组输出，优先级高屏蔽
-            "phaseLampgroupId": "", //相位包含灯组 逗号分隔
+            "phaseLampgroupId": "请点击进行编辑", //相位包含灯组 逗号分隔
             "phaseMaxgreen1Time": 0, //相位最大绿时间1
             "phaseMaxgreen2Time": 0, //相位最大绿时间2
             "phaseMingreenTime": 0, //相位最小绿时间
@@ -580,9 +606,21 @@ class SignalManagement extends PureComponent {
           break;
           case "STAGE":
             const stageShowDetail = {
-              
+              "interId": this.state.roadInterId,  //路口ID
+              "imagePath": "",  //图片
+              "lateStartTime": 0,  //阶段中相位晚启动的时间
+              "leftingEndTime": 0,  //阶段中相位早结束的时间
+              "phasestageForbiden": 0,  //相位阶段禁止标志
+              "phasestageLampgroup": "",
+              "phasestageLane": "",  //相位阶段包含的车道
+              "phasestageName": "",  //阶段名称
+              "phasestageNo": 0,  //阶段编号
+              "phasestagePhase": "", //相位阶段包含的相位
+              "phasestageShield": 0,   //相位阶段屏蔽标志
+              "schemePhaseTime": "",
+              "softwareRequirement": "" //相位阶段软件需求
             }
-          this.setState({ stageShowDetail })
+          this.setState({ stageShowDetail, showFlag: true })
           break;
           case "PLAN":
             const planShowDetail = {
@@ -630,7 +668,12 @@ class SignalManagement extends PureComponent {
         })
       break;
       case "STAGE":
-        this.setState({ stageShowDetail: JSON.parse(JSON.stringify(itemDetailData)), stepSixAddEdit: true, popAddEditText: '编辑' })
+        this.setState({ stageShowDetail: itemDetailData, stepSixAddEdit: true, showFlag: true, popAddEditText: '编辑' }, () =>{
+        // this.cyclicComparison(this.state.phaseShieldData, 'phasestageShield', itemDetailData.phasestageShield, 'stageShowDetail') // 屏蔽
+        // this.cyclicComparison(this.state.phaseForbidenData, 'phasestageForbiden', itemDetailData.phasestageForbiden, 'stageShowDetail') // 禁止
+        itemDetailData = JSON.parse(JSON.stringify(this.state.stageShowDetail))
+        this.setState({ stageShowDetail: itemDetailData })
+        })
       break;
       case "PLAN":
         this.setState({ planShowDetail: JSON.parse(JSON.stringify(itemDetailData)), stepSevenAddEdit: true, popAddEditText: '编辑' })
@@ -651,50 +694,49 @@ class SignalManagement extends PureComponent {
         typeStr = '相位'
         showStr = 'stepFiveAddEdit'
         detailStr = 'phaseShowDetail'
+        this.cyclicComparison(this.state.phaseForbidenData, 'phaseForbiden', itemDetailData.phaseForbiden, 'phaseShowDetail', true)
+        this.cyclicComparison(this.state.phaseShieldData, 'phaseShield', itemDetailData.phaseShield, 'phaseShowDetail', true)
+        this.cyclicComparison(this.state.typeData, 'rightofwayAccessLamp1Type', itemDetailData.rightofwayAccessLamp1Type, 'phaseShowDetail', true)
+        this.cyclicComparison(this.state.typeData, 'rightofwayAccessLamp2Type', itemDetailData.rightofwayAccessLamp2Type, 'phaseShowDetail', true)
+        this.cyclicComparison(this.state.typeData, 'rightofwayAccessLamp3Type', itemDetailData.rightofwayAccessLamp3Type, 'phaseShowDetail', true)
+        this.cyclicComparison(this.state.typeData, 'rightofwayLoseLamp1Type', itemDetailData.rightofwayLoseLamp1Type, 'phaseShowDetail', true)
+        this.cyclicComparison(this.state.typeData, 'rightofwayLoseLamp2Type', itemDetailData.rightofwayLoseLamp2Type, 'phaseShowDetail', true)
+        this.cyclicComparison(this.state.typeData, 'rightofwayLoseLamp3Type', itemDetailData.rightofwayLoseLamp3Type, 'phaseShowDetail', true)
+        this.cyclicComparison(this.state.typeData, 'rightofwayStartingupAccessLamp1Type', itemDetailData.rightofwayStartingupAccessLamp1Type, 'phaseShowDetail', true)
+        this.cyclicComparison(this.state.typeData, 'rightofwayStartingupAccessLamp2Type', itemDetailData.rightofwayStartingupAccessLamp2Type, 'phaseShowDetail', true)
+        this.cyclicComparison(this.state.typeData, 'rightofwayStartingupAccessLamp3Type', itemDetailData.rightofwayStartingupAccessLamp3Type, 'phaseShowDetail', true)
+        this.cyclicComparison(this.state.typeData, 'rightofwayStartingupLoseLamp1Type', itemDetailData.rightofwayStartingupLoseLamp1Type, 'phaseShowDetail', true)
+        this.cyclicComparison(this.state.typeData, 'rightofwayStartingupLoseLamp2Type', itemDetailData.rightofwayStartingupLoseLamp2Type, 'phaseShowDetail', true)
+        this.cyclicComparison(this.state.typeData, 'rightofwayStartingupLoseLamp3Type', itemDetailData.rightofwayStartingupLoseLamp3Type, 'phaseShowDetail', true)
+        itemDetailData = JSON.parse(JSON.stringify(this.state.phaseShowDetail))
         break;
-      case 'PHASE':
+      case 'STAGE':
         typeStr = '阶段'
         showStr = 'stepSixAddEdit'
         detailStr = 'stageShowDetail'
         break;
-      case 'PHASE':
+      case 'PLAN':
         typeStr = '配时方案'
         showStr = 'stepSevenAddEdit'
         detailStr = 'planShowDetail'
         break;
-      case 'PHASE':
+      case 'DAYPLAN':
         typeStr = '日计划'
         showStr = 'stepEightAddEdit'
         detailStr = 'dayplanShowDetail'
         break;
-      case 'PHASE':
+      case 'DISPATCH':
         typeStr = '调度'
         showStr = 'stepNineAddEdit'
         detailStr = 'dispatchShowDetail'
         break;
     }
-    this.cyclicComparison(this.state.phaseForbidenData, 'phaseForbiden', itemDetailData.phaseForbiden, 'phaseShowDetail', true)
-    this.cyclicComparison(this.state.phaseShieldData, 'phaseShield', itemDetailData.phaseShield, 'phaseShowDetail', true)
-    this.cyclicComparison(this.state.typeData, 'rightofwayAccessLamp1Type', itemDetailData.rightofwayAccessLamp1Type, 'phaseShowDetail', true)
-    this.cyclicComparison(this.state.typeData, 'rightofwayAccessLamp2Type', itemDetailData.rightofwayAccessLamp2Type, 'phaseShowDetail', true)
-    this.cyclicComparison(this.state.typeData, 'rightofwayAccessLamp3Type', itemDetailData.rightofwayAccessLamp3Type, 'phaseShowDetail', true)
-    this.cyclicComparison(this.state.typeData, 'rightofwayLoseLamp1Type', itemDetailData.rightofwayLoseLamp1Type, 'phaseShowDetail', true)
-    this.cyclicComparison(this.state.typeData, 'rightofwayLoseLamp2Type', itemDetailData.rightofwayLoseLamp2Type, 'phaseShowDetail', true)
-    this.cyclicComparison(this.state.typeData, 'rightofwayLoseLamp3Type', itemDetailData.rightofwayLoseLamp3Type, 'phaseShowDetail', true)
-    this.cyclicComparison(this.state.typeData, 'rightofwayStartingupAccessLamp1Type', itemDetailData.rightofwayStartingupAccessLamp1Type, 'phaseShowDetail', true)
-    this.cyclicComparison(this.state.typeData, 'rightofwayStartingupAccessLamp2Type', itemDetailData.rightofwayStartingupAccessLamp2Type, 'phaseShowDetail', true)
-    this.cyclicComparison(this.state.typeData, 'rightofwayStartingupAccessLamp3Type', itemDetailData.rightofwayStartingupAccessLamp3Type, 'phaseShowDetail', true)
-    this.cyclicComparison(this.state.typeData, 'rightofwayStartingupLoseLamp1Type', itemDetailData.rightofwayStartingupLoseLamp1Type, 'phaseShowDetail', true)
-    this.cyclicComparison(this.state.typeData, 'rightofwayStartingupLoseLamp2Type', itemDetailData.rightofwayStartingupLoseLamp2Type, 'phaseShowDetail', true)
-    this.cyclicComparison(this.state.typeData, 'rightofwayStartingupLoseLamp3Type', itemDetailData.rightofwayStartingupLoseLamp3Type, 'phaseShowDetail', true)
-    itemDetailData = JSON.parse(JSON.stringify(this.state.phaseShowDetail))
-    
     if (eventType) {
       this.props.postAddOthersType(itemDetailData, stepType).then(() => {
         this.popLayerShowHide(showStr, null)
         message.info(typeStr+"操作成功！")
         _this.setState({ [detailStr]: null })
-        _this.props.getStepStatus(_this.state.roadInterId, _this.state.roadNodeNo)
+        // _this.props.getStepStatus(_this.state.roadInterId, _this.state.roadNodeNo)
         _this.props.getInfoListsType(_this.state.roadInterId, stepType)
       })
     } else {
@@ -702,12 +744,95 @@ class SignalManagement extends PureComponent {
         this.popLayerShowHide(showStr, null)
         message.info(typeStr+"操作成功！")
         _this.setState({ [detailStr]: null })
-        _this.props.getStepStatus(_this.state.roadInterId, _this.state.roadNodeNo)
+        // _this.props.getStepStatus(_this.state.roadInterId, _this.state.roadNodeNo)
         _this.props.getInfoListsType(_this.state.roadInterId, stepType)
       })
     }
   }
-
+// 编辑弹层列表用于多选 车道、灯组、检测器
+getSelectLists = (interId, nodeNo, stepType, name, key) => {
+  let typeStr = '', showStr = '', detailStr = '',  _this = this
+  debugger
+  switch(stepType){
+    case 'LANE':
+      this.setState({
+        popAddEditName: '车道',
+        popAddEditText: '编辑',
+        selectFlag: false,
+        defaultSelectLists: this.state[name][key],
+      })
+      break;
+    case 'LIGHT':
+      this.setState({
+        popAddEditName: '灯组',
+        popAddEditText: '编辑',
+        selectFlag: false,
+        defaultSelectLists: this.state[name][key], 
+      })
+      break;
+    case 'DETECTOR':
+      this.setState({
+        popAddEditName: '检测器需求',
+        popAddEditText: '编辑',
+        selectFlag: false,
+        defaultSelectLists: this.state[name][key],
+      })
+      break;
+    case 'PHASE':
+      this.setState({
+        popAddEditName: '相位',
+        popAddEditText: '编辑',
+        selectFlag: false,
+        defaultSelectLists: this.state[name][key],
+      },()=>{
+        // this.props.getInfoListsType(this.state.roadInterId, 'PHASE') // 加载相位列表
+      })
+      break;
+  }
+  if (stepType !== 'PHASE'){
+    this.props.getSelectLists(interId, nodeNo, stepType)
+  }else{
+    this.props.getInfoListsType(this.state.roadInterId, 'PHASE') // 加载相位列表
+  }
+}
+selectItemList = (defaultSelectLists) => {
+  console.log(defaultSelectLists, '选中的数据')
+  this.setState({ defaultSelectLists: defaultSelectLists.join() })
+}
+// 确定和取消选中
+btnSelectOver = (flag, defaultSelectLists) => {
+  debugger
+  if (flag) {
+    if (this.state.laneSelectLists) {
+      this.state.stageShowDetail.phasestageLane = defaultSelectLists
+    } else if (this.state.lightSelectLists) {
+      this.state.phaseShowDetail.phaseLampgroupId = defaultSelectLists
+    } else if (this.state.detectorSelectLists) {
+      if (this.state.phaseShowDetail && this.state.phaseShowDetail.phaseDemand !== undefined) {
+        this.state.phaseShowDetail.phaseDemand = defaultSelectLists
+      } else if (this.state.stageShowDetail && this.state.stageShowDetail.softwareRequirement !== undefined) {
+        this.state.stageShowDetail.softwareRequirement = defaultSelectLists
+      }
+    } else if(this.state.phaseSelectLists){
+      this.state.stageShowDetail.phasestagePhase = defaultSelectLists
+    }
+    this.setState({
+      laneSelectLists: null, 
+      lightSelectLists: null,  
+      detectorSelectLists: null,
+      phaseSelectLists: null,
+      selectFlag: true,
+    })
+  } else {
+    this.setState({
+      laneSelectLists: null, 
+      lightSelectLists: null,  
+      detectorSelectLists: null,
+      phaseSelectLists: null,
+      selectFlag: true,
+    })
+  }
+}
   showInterworkingList = (isShow) => {
     if (isShow) {
       this.setState({
@@ -971,7 +1096,7 @@ class SignalManagement extends PureComponent {
   }
   // 图标点击
   handleSelImage = (imageList, name, imgName) => {
-    this.state[name].imageUrl = imgName
+    this.state[name].imagePath !== undefined ? this.state[name].imagePath = imgName : this.state[name].imageUrl = imgName
     this.setState({showFlag: true, [imageList]: null})
   } 
   // stepRoadAddForList = () => {
@@ -1051,7 +1176,7 @@ class SignalManagement extends PureComponent {
     })
   }
   render() {
-    const { interListHeight, searchInterList, stepStatusData, popAddEditText, moveFlag, stepOneFlag, stepTwoFlag, 
+    const { interListHeight, searchInterList, stepStatusData, popAddEditText, popAddEditName, moveFlag, stepOneFlag, stepTwoFlag, 
       stepRoadFlag, stepRoadAddEdit,
       stepThreeFlag, stepThreeAddEdit,
       stepFourFlag, stepFourAddEdit, 
@@ -1065,7 +1190,7 @@ class SignalManagement extends PureComponent {
       laneShowDetail, laneIconLists, fDir8NoData, turnDirNoListData, 
       lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists, showFlag,
       lampgroupType, controlDir, controlTurn, detectorType, phaseForbidenData, phaseShieldData, typeData,
-      phaseShowDetail, stageShowDetail, planShowDetail, dayplanShowDetail, dispatchShowDetail
+      phaseShowDetail, stageShowDetail, planShowDetail, dayplanShowDetail, dispatchShowDetail, laneSelectLists, lightSelectLists, detectorSelectLists, selectFlag, defaultSelectLists, phaseIconLists, phaseSelectLists
     } = this.state
     const { Search } = Input
     return (
@@ -1073,6 +1198,104 @@ class SignalManagement extends PureComponent {
       <Websocket url={this.socketPointStatusUrl} onMessage={this.handleData.bind(this)}/>
       { !!roadUnitId && !!roadInterId && !!roadNodeNo ? <Websocket url={`${this.socketPointPopUrl}${roadUnitId}/${roadInterId}/${roadNodeNo}`} onMessage={ this.handlePopData.bind(this)} /> : null }
         <Header {...this.props} />
+        {/* 编辑弹层列表用于多选 车道、灯组、检测器 */}
+        { laneSelectLists && !selectFlag || lightSelectLists && !selectFlag || detectorSelectLists && !selectFlag  || phaseSelectLists && !selectFlag ?
+          <div className={styles.maskBg}> 
+            <div className={styles.popBox} style={{width: '600px'}}>
+              <div className={styles.popTit}>{popAddEditText}{popAddEditName}</div>
+              <div className={styles.popCon} style={{padding:'0'}}>
+              { phaseSelectLists &&
+                <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'PHASE')} value={defaultSelectLists.split(",").map(Number)}>
+                  <Row>
+                    <Col span={4}>相位序号</Col>
+                    <Col span={10}>相位名称</Col>
+                    <Col span={10}>相位延迟绿时间</Col>
+                  </Row>
+                  { phaseSelectLists.map((item) =>{
+                      return <Row key={'phase'+ item.phaseNo}>
+                            <Col span={4}>
+                              <Checkbox value={item.phaseNo}>{item.phaseNo}</Checkbox>
+                            </Col>
+                            <Col span={10}>{!item.phaseName ? '无' : item.phaseName}</Col>
+                            <Col span={10}>{!item.phaseDelaygreenTime ? '无' : item.phaseDelaygreenTime}</Col>
+                          </Row>
+                    })
+                  }
+                </Checkbox.Group>
+              }
+              { laneSelectLists &&
+                <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'LANE')} value={defaultSelectLists.split(",").map(Number)}>
+                  <Row>
+                    <Col span={4}>车道号</Col>
+                    <Col span={5}>道路编号</Col>
+                    <Col span={5}>转向</Col>
+                    <Col span={5}>通行方向描述</Col>
+                    <Col span={5}>外部车道号</Col>
+                  </Row>
+                  { laneSelectLists.map((item) =>{
+                      return <Row key={'lane'+ item.laneId}>
+                            <Col span={4}>
+                              <Checkbox value={item.laneId}>{item.laneId}</Checkbox>
+                            </Col>
+                            <Col span={5}>{!item.fRid ? '无' : item.fRid}</Col>
+                            <Col span={5}>{!item.turnDirNoListName ? '无' : item.turnDirNoListName}</Col>
+                            <Col span={5}>{!item.dirName ? '无' : item.dirName}</Col>
+                            <Col span={5}>{!item.laneIdCust ? '无' : item.laneIdCust}</Col>
+                          </Row>
+                    })
+                  }
+                </Checkbox.Group>
+              }
+              { lightSelectLists &&
+                <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'LIGHT')} value={defaultSelectLists.split(",").map(Number)}>
+                  <Row>
+                    <Col span={6}>灯组序号</Col>
+                    <Col span={6}>灯组类型</Col>
+                    <Col span={6}>控制转向</Col>
+                    <Col span={6}>控制方向</Col>
+                  </Row>
+                  { lightSelectLists.map((item) =>{
+                      return <Row key={'lampgroup'+ item.lampgroupNo}>
+                            <Col span={6}>
+                              <Checkbox value={item.lampgroupNo}>{item.lampgroupNo}</Checkbox>
+                            </Col>
+                            <Col span={6}>{!item.lampgroupTypeName ? '无' : item.lampgroupTypeName}</Col>
+                            <Col span={6}>{!item.controlTurnName ? '无' : item.controlTurnName}</Col>
+                            <Col span={6}>{!item.controlDirName ? '无' : item.controlDirName}</Col>
+                          </Row>
+                    })
+                  }
+                </Checkbox.Group>
+              }
+              { detectorSelectLists &&
+                <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'DETECTOR')} value={defaultSelectLists.split(",").map(Number)}>
+                  <Row>
+                    <Col span={6}>检测器编号</Col>
+                    <Col span={6}>检测器类型</Col>
+                    <Col span={6}>流量采集周期</Col>
+                    <Col span={6}>占有率采集周期</Col>
+                  </Row>
+                  { detectorSelectLists.map((item) =>{
+                      return <Row key={'detector'+ item.detectorId}>
+                            <Col span={6}>
+                              <Checkbox value={item.detectorId}>{item.detectorId}</Checkbox>
+                            </Col>
+                            <Col span={6}>{!item.detectorTypeName ? '无' : item.detectorTypeName}</Col>
+                            <Col span={6}>{!item.flowCollectionCycle ? '无' : item.flowCollectionCycle}</Col>
+                            <Col span={6}>{!item.occupancyCollectionCycle ? '无' : item.occupancyCollectionCycle}</Col>
+                          </Row>
+                    })
+                  }
+                </Checkbox.Group>
+              }
+              </div>
+              <div className={styles.popBottom}>
+                <em onClick={()=> this.btnSelectOver(true, defaultSelectLists)}>确 定</em>
+                <em onClick={()=> this.btnSelectOver(false)}>返 回</em>
+              </div>
+            </div>
+        </div> : null
+        }              
         {/* 弹层 > 添加编辑 */}
         { stepRoadAddEdit ?  // 车道配置添加编辑弹层
           <div className={styles.maskBg}> 
@@ -1299,7 +1522,7 @@ class SignalManagement extends PureComponent {
             </div>
           </div> : null
         }
-        { stepFiveAddEdit ?  // 相位配置添加编辑弹层
+        { selectFlag && stepFiveAddEdit ?  // 相位配置添加编辑弹层
           <div className={styles.maskBg}> 
             <div className={styles.popBox}>
               <div className={styles.popTit}>{popAddEditText}相位<Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepFiveAddEdit", null)} } /></div>
@@ -1309,13 +1532,7 @@ class SignalManagement extends PureComponent {
                     <span>相位序号：</span><Input type='number' value={phaseShowDetail.phaseNo} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','phaseNo')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>相位延迟绿时间：</span><Input type='number' value={phaseShowDetail.phaseDelaygreenTime} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','phaseDelaygreenTime')} placeholder="请输入" />
-                  </div>
-                  <div className={styles.itemInputBox}>
                     <span>相位名称：</span><Input value={phaseShowDetail.phaseName} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','phaseName')} placeholder="请输入" />
-                  </div>
-                  <div className={styles.itemInputBox}>
-                    <span>相位的需求：</span><b>{phaseShowDetail.phaseDemand}</b><a>编辑</a>
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>相位禁止：</span>
@@ -1344,6 +1561,15 @@ class SignalManagement extends PureComponent {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
+                    <span>相位的需求：</span><div onClick={() => this.getSelectLists(roadInterId, roadNodeNo, 'DETECTOR', 'phaseShowDetail', 'phaseLampgroupId',)} className={styles.editItem}><b>{!phaseShowDetail.phaseDemand ? "请点击进行编辑" : phaseShowDetail.phaseDemand}</b><em>编辑</em></div>
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>相位包含灯组：</span><div onClick={() => this.getSelectLists(roadInterId, roadNodeNo, 'LIGHT', 'phaseShowDetail', 'phaseDemand')} className={styles.editItem}><b>{!phaseShowDetail.phaseLampgroupId ? "请点击进行编辑" : phaseShowDetail.phaseLampgroupId}</b><em>编辑</em></div>
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>相位延迟绿时间：</span><Input type='number' value={phaseShowDetail.phaseDelaygreenTime} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','phaseDelaygreenTime')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
                     <span>相位最大绿时间1：</span><Input type='number' value={phaseShowDetail.phaseMaxgreen1Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','phaseMaxgreen1Time')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
@@ -1351,9 +1577,6 @@ class SignalManagement extends PureComponent {
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>相位最小绿时间：</span><Input type='number' value={phaseShowDetail.phaseMingreenTime} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','phaseMingreenTime')} placeholder="请输入" />
-                  </div>
-                  <div className={styles.itemInputBox}>
-                    <span>相位包含灯组：</span><b>{phaseShowDetail.phaseLampgroupId}</b><a>编辑</a>
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>获得路权过渡灯色1时间：</span><Input type='number' value={phaseShowDetail.rightofwayAccessLamp1Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','rightofwayAccessLamp1Time')} placeholder="请输入" />
@@ -1555,19 +1778,89 @@ class SignalManagement extends PureComponent {
                   popAddEditText === '编辑' ? <em onClick={ () => {this.postAddUpdateItem(phaseShowDetail, 'PHASE')}}>编辑确定</em> : <em onClick={ () => {this.postAddUpdateItem(phaseShowDetail, 'PHASE', true)}}>新增确定</em>
                 }
                   <em onClick={ () => {this.popLayerShowHide("stepFiveAddEdit", null)} }>取 消</em>
-                </div>
+              </div>
             </div>
           </div> : null
         }
-        { stepSixAddEdit ?  // 阶段配置添加编辑弹层
+        {  selectFlag && stepSixAddEdit ?  // 阶段配置添加编辑弹层
           <div className={styles.maskBg}> 
             <div className={styles.popBox}>
-              <div className={styles.popTit}>{popAddEditText}阶段<Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepSixAddEdit", null)} } /></div>
-              <div className={styles.popCon}> 阶段的内容 </div>
-              <div className={styles.popBottom}>
-                <em onClick={ () => {this.stepSixAddForList()}}>确 定</em>
-                <em onClick={ () => {this.popLayerShowHide("stepSixAddEdit", null)} }>取 消</em>
+            <div className={styles.popTit}>{popAddEditText}阶段的相位{ !showFlag ? ' > 点击图标选中 (若不想改变图标则占空白处)' : null }{ !showFlag ? null : <Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepFourAddEdit", null)} } />}</div>
+              {/* 阶段相位图标层 */}
+              { !showFlag && phaseIconLists &&
+                  <div className={styles.popCon}>
+                    {phaseIconLists.length > 0 && phaseIconLists.map((item, i) => {
+                      return <img key={'icon'+ i} onClick={ () => this.handleSelImage('phaseIconLists', 'stageShowDetail', item) } style={{border: '1px #27343b solid', cursor: 'pointer', width: '60px', height: '60px', display: 'inline-block',margin: '8px'}} src={`${this.phaseBgUrl}${item}`} />
+                    })
+                    }
+                  </div>
+              }
+              { showFlag && stageShowDetail && 
+              <div className={classNames(styles.popCon, styles.popConTurn)}>
+                <div className={styles.itemInputBox}>
+                  <span>阶段编号：</span><Input type='number' value={stageShowDetail.phasestageNo} onChange={e => this.handleChangeInput(e,'state','stageShowDetail','phasestageNo')} placeholder="请输入" />
+                </div>
+                <div className={styles.itemInputBox}>
+                  <span>阶段名称：</span><Input value={stageShowDetail.phasestageName} onChange={e => this.handleChangeInput(e,'state','stageShowDetail','phasestageName')} placeholder="请输入" />
+                </div>
+                <div className={styles.itemInputBox}>
+                  <span>阶段中相位晚启动的时间：</span><Input type='number' value={stageShowDetail.lateStartTime} onChange={e => this.handleChangeInput(e,'state','stageShowDetail','lateStartTime')} placeholder="请输入" />
+                </div>
+                <div className={styles.itemInputBox}>
+                  <span>阶段中相位早结束的时间：</span><Input type='number' value={stageShowDetail.leftingEndTime} onChange={e => this.handleChangeInput(e,'state','stageShowDetail','leftingEndTime')} placeholder="请输入" />
+                </div>
+                <div className={styles.itemInputBox}>
+                  <span>阶段中包含相位：</span><div onClick={() => this.getSelectLists(roadInterId, roadNodeNo, 'PHASE', 'stageShowDetail','phasestagePhase' )} className={styles.editItem}><b>{!stageShowDetail.phasestagePhase ? "请点击进行编辑" : stageShowDetail.phasestagePhase}</b><em>编辑</em></div>
+                  {/* <Input value={stageShowDetail.phasestagePhase} onChange={e => this.handleChangeInput(e,'state','stageShowDetail','phasestagePhase')} placeholder="请输入" /> */}
+                </div>
+                <div className={styles.itemInputBox}>
+                  <span>相位阶段软件需求：</span><div onClick={() => this.getSelectLists(roadInterId, roadNodeNo, 'DETECTOR', 'stageShowDetail','softwareRequirement' )} className={styles.editItem}><b>{!stageShowDetail.softwareRequirement ? "请点击进行编辑" : stageShowDetail.softwareRequirement}</b><em>编辑</em></div>
+                </div>
+                <div className={styles.itemInputBox} style={{alignSelf: 'flex-start'}}>
+                  <span>阶段中包含车道：</span><div onClick={() => this.getSelectLists(roadInterId, roadNodeNo, 'LANE', 'stageShowDetail','phasestageLane')} className={styles.editItem}><b>{!stageShowDetail.phasestageLane ? "请点击进行编辑" : stageShowDetail.phasestageLane}</b><em>编辑</em></div>
+                </div>
+                {/* <div className={styles.itemInputBox}>
+                  <span>相位阶段禁止标志：</span>
+                    <Select
+                      value={stageShowDetail.phasestageForbiden ? stageShowDetail.phasestageForbiden : 0 }
+                      onChange={ v =>  this.handleChangeSel(v, 'state', 'stageShowDetail', 'phasestageForbiden') }>
+                      <Option value={0}>请选择类型</Option>
+                      {
+                        phaseForbidenData.map((items, key) => {
+                          return <Option key={"optionList" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
+                        })
+                      }
+                    </Select>
+                </div>
+                <div className={styles.itemInputBox} style={{alignSelf: 'flex-start'}}>
+                  <span>相位阶段屏蔽标志：</span>
+                  <Select
+                      value={stageShowDetail.phasestageShield ? phaseShowDetail.phasestageShield : 0 }
+                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'phasestageShield') }>
+                      <Option value={0}>请选择类型</Option>
+                      {
+                        phaseShieldData.map((items, key) => {
+                          return <Option key={"optionList" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
+                        })
+                      }
+                    </Select>
+                </div> */}
+                <div className={styles.itemInputBox}>
+                    <span style={{alignSelf: 'flex-start'}}>图 片：</span>
+                    <div style={{flex:2.25}}>
+                      { !!stageShowDetail.imagePath ? <div className={styles.yesImage} onClick={(e) => this.getIconImageList(e, 'PHASE')}><img src={`${this.phaseBgUrl}${stageShowDetail.imagePath}`} /></div> : <div onClick={(e) => this.getIconImageList(e, 'PHASE')} className={styles.noImage}>点击选图</div> }
+                    </div>
+                  </div>
               </div>
+              }
+              { showFlag ? 
+                <div className={styles.popBottom}>
+                  {
+                    popAddEditText === '编辑' ? <em onClick={ () => {this.postAddUpdateItem(stageShowDetail, 'STAGE')}}>编辑确定</em> : <em onClick={ () => {this.postAddUpdateItem(stageShowDetail, 'STAGE', true)}}>新增确定</em>
+                  }
+                    <em onClick={ () => {this.popLayerShowHide("stepSixAddEdit", null)} }>取 消</em>
+                </div> : null
+              }
             </div>
           </div> : null
         }
@@ -1986,6 +2279,7 @@ const mapDisPatchToProps = (dispatch) => {
     postUpdateOthersType: bindActionCreators(postUpdateOthersType, dispatch), // 修改列表中的某一条用于list插件
     getIconImageList: bindActionCreators(getIconImageList, dispatch), // 回显图标
     getUpdateAllType: bindActionCreators(getUpdateAllType, dispatch), // 修改列表中的某一条 
+    getSelectLists: bindActionCreators(getSelectLists, dispatch), // 编辑车道、灯组、检测器的列表
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(SignalManagement)
