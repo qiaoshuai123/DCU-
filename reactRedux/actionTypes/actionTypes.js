@@ -2,12 +2,12 @@
  * @file 模块化 type name
  */
 
-export const GET_UNIT_STATUS = 'GET_UNIT_STATUS'  //  信号参数据管理 step
+export const GET_UNIT_STATUS = 'GET_UNIT_STATUS' //  信号参数据管理 step
 // 切换视图
-export const GET_SIGNAL_lIST_BY_PAGE = 'GET_SIGNAL_lIST_BY_PAGE'  //
+export const GET_SIGNAL_lIST_BY_PAGE = 'GET_SIGNAL_lIST_BY_PAGE' //
 // 基础信息配置
 export const GET_BG_LIST = 'GET_BG_LIST' // 查询全部底图
-export const POST_DCU_BY_INTERID = 'POST_DCU_BY_INTERID' //选中底图 > 更新底图
+export const POST_DCU_BY_INTERID = 'POST_DCU_BY_INTERID' // 选中底图 > 更新底图
 export const POST_UPDATE_DCU = 'POST_UPDATE_DCU' // 上传底图 > 更新底图
 // 车道配置
 export const GET_LANE_INFO_LISTS = 'GET_LANEINFO_LISTS' //根据interId查询路口下所有车道列表
@@ -25,8 +25,8 @@ export const GET_LANE_IMAGE_LIST = 'GET_LANE_IMAGE_LIST' //回显全部图标
 export const GET_LANE_SELECT_LIST = 'GET_LANE_SELECT_LIST' // 选中后列表
 
 // 灯组配置
-export const GET_LIGHT_INFO_LISTS = 'GET_LIGHTINFO_LISTS' //根据interId查询路口下所有灯组列表
-export const GET_LIGHT_PIC_LISTS = 'GET_LIGHTPIC_LISTS' //根据interId 路口序号查询图上的灯
+export const GET_LIGHT_INFO_LISTS = 'GET_LIGHTINFO_LISTS' // 根据interId查询路口下所有灯组列表
+export const GET_LIGHT_PIC_LISTS = 'GET_LIGHTPIC_LISTS' // 根据interId 路口序号查询图上的灯
 export const POST_ADD_LIGHT_OTHERS = 'POST_ADD_LIGHT_OTHERS' // 新增灯组其它信息
 export const POST_ADD_LIGHT_PIC = 'POST_ADD_LIGHTPIC' // 新增灯组坐标、图片、旋转角度
 export const POST_UPDATE_LIGHT_OTHERS = 'POST_UPDATE_LIGHT_OTHERS' // 修改灯组其它信息
@@ -59,25 +59,25 @@ export const POST_UPDATE_PHASE_OTHERS = 'POST_UPDATE_PHASE_OTHERS' //相位修�
 export const GET_DEL_PHASE_INFO = 'GET_DEL_PHASE_INFO' //相位删除
 export const GET_PHASE_IMAGE_LIST = 'GET_PHASE_IMAGE_LIST' //回显全部图标
 // 阶段配置
-export const GET_STAGE_INFO_LISTS = 'GET_STAGE_INFO_LISTS' //阶段查询列表
-export const POST_ADD_STAGE_OTHERS = 'POST_ADD_STAGE_OTHERS' //阶段新增
-export const POST_UPDATE_STAGE_OTHERS = 'POST_UPDATE_STAGE_OTHERS' //阶段修改
-export const GET_DEL_STAGE_INFO = 'GET_DEL_STAGE_INFO' //阶段删除
+export const GET_STAGE_INFO_LISTS = 'GET_STAGE_INFO_LISTS' // 阶段查询列表
+export const POST_ADD_STAGE_OTHERS = 'POST_ADD_STAGE_OTHERS' // 阶段新增
+export const POST_UPDATE_STAGE_OTHERS = 'POST_UPDATE_STAGE_OTHERS' // 阶段修改
+export const GET_DEL_STAGE_INFO = 'GET_DEL_STAGE_INFO' // 阶段删除
 // 配时方案配置
-export const GET_PLAN_INFO_LISTS = 'GET_PLAN_INFO_LISTS' //配时方案查询列表
-export const POST_ADD_PLAN_OTHERS = 'POST_ADD_PLAN_OTHERS' //配时方案新增
-export const POST_UPDATE_PLAN_OTHERS = 'POST_UPDATE_PLAN_OTHERS' //配时方案修改
-export const GET_DEL_PLAN_INFO = 'GET_DEL_PLAN_INFO' //配时方案删除
+export const GET_PLAN_INFO_LISTS = 'GET_PLAN_INFO_LISTS' // 配时方案查询列表
+export const POST_ADD_PLAN_OTHERS = 'POST_ADD_PLAN_OTHERS' // 配时方案新增
+export const POST_UPDATE_PLAN_OTHERS = 'POST_UPDATE_PLAN_OTHERS' // 配时方案修改
+export const GET_DEL_PLAN_INFO = 'GET_DEL_PLAN_INFO' // 配时方案删除
 // 日计划配置
-export const GET_DAYPLAN_INFO_LISTS = 'GET_DAYPLAN_INFO_LISTS' //日计划查询列表
-export const POST_ADD_DAYPLAN_OTHERS = 'POST_ADD_DAYPLAN_OTHERS' //日计划新增
-export const POST_UPDATE_DAYPLAN_OTHERS = 'POST_UPDATE_DAYPLAN_OTHERS' //日计划修改
-export const GET_DEL_DAYPLAN_INFO = 'GET_DEL_DAYPLAN_INFO' //日计划删除
+export const GET_DAYPLAN_INFO_LISTS = 'GET_DAYPLAN_INFO_LISTS' // 日计划查询列表
+export const POST_ADD_DAYPLAN_OTHERS = 'POST_ADD_DAYPLAN_OTHERS' // 日计划新增
+export const POST_UPDATE_DAYPLAN_OTHERS = 'POST_UPDATE_DAYPLAN_OTHERS' // 日计划修改
+export const GET_DEL_DAYPLAN_INFO = 'GET_DEL_DAYPLAN_INFO' // 日计划删除
 // 调度配置
-export const GET_DISPATCH_INFO_LISTS = 'GET_DISPATCH_INFO_LISTS' //调度配置查询列表
-export const POST_ADD_DISPATCH_OTHERS = 'POST_ADD_DISPATCH_OTHERS' //调度配置新增
-export const POST_UPDATE_DISPATCH_OTHERS = 'POST_UPDATE_DISPATCH_OTHERS' //调度配置修改
-export const GET_DEL_DISPATCH_INFO = 'GET_DEL_DISPATCH_INFO' //调度配置删除
+export const GET_DISPATCH_INFO_LISTS = 'GET_DISPATCH_INFO_LISTS' // 调度配置查询列表
+export const POST_ADD_DISPATCH_OTHERS = 'POST_ADD_DISPATCH_OTHERS' // 调度配置新增
+export const POST_UPDATE_DISPATCH_OTHERS = 'POST_UPDATE_DISPATCH_OTHERS' // 调度配置修改
+export const GET_DEL_DISPATCH_INFO = 'GET_DEL_DISPATCH_INFO' // 调度配置删除
 
 /** *************设备参数管理************* */
 export const GET_DELNUM = 'GET_DELNUM' // 修改添加弹窗
@@ -97,3 +97,11 @@ export const GET_DET_DETECTORDETAILLIST = 'GET_DET_DETECTORDETAILLIST' // 检测
 export const GET_PHA_NOWPHASESTAGEINGO = 'GET_PHA_NOWPHASESTAGEINGO' // 查询路口当前方案的全部阶段
 export const GET_UNI_LOCKSTATELIST = 'GET_UNI_LOCKSTATELIST' // 锁定状态
 export const GET_SCH_SCHMEINFOLIST = 'GET_SCH_SCHMEINFOLIST' // 当前路口全部方案
+export const GET_DCU_DCULIST = 'GET_DCU_DCULIST' // 查询全部DCU
+export const GET_DCU_DCULISTBYPAGE = 'GET_DCU_DCULISTBYPAGE' // 分页查询DCU
+export const GET_DCU_DCUBYINTERID = 'GET_DCU_DCUBYINTERID' // 根据点位主键ID查询DCU
+
+// 检测器数据
+export const GET_DET_DETECTORDATALISTBYPAGE = 'GET_DET_DETECTORDATALISTBYPAGE' // 分页查询检测器数据
+export const GET_DET_EXPORTDETECTORDATALIST = 'GET_DET_EXPORTDETECTORDATALIST' // 导出检测器数据
+export const GET_DET_DETECTORINFOLIST = 'GET_DET_DETECTORINFOLIST' // 根据interId查询检测器

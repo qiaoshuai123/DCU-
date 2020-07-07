@@ -5,7 +5,7 @@ import { HashRouter, Route, BrowserHistory, Redirect, Switch } from 'react-route
 import { AppContainer } from 'react-hot-loader'
 import './app.css'
 import LoadingPage from './components/LoadingPage/LoadingPage'
-import { ConfigProvider } from 'antd'
+import { ConfigProvider, Menu } from 'antd'
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/lib/integration/react'
 import zhCN from 'antd/es/locale/zh_CN'
@@ -67,6 +67,16 @@ const UserManagement = Loadable({
   loading: Loading,
   delay: 0,
 })
+const UserGroup = Loadable({
+  loader: () => import('./containers/SysteManagement/UserManagement/Usergroup'),
+  loading: Loading,
+  delay: 0,
+})
+const MenuManage = Loadable({
+  loader: () => import('./containers/SysteManagement/UserManagement/TrafficMenu'),
+  loading: Loading,
+  delay: 0,
+})
 const CommunicationFault = Loadable({
   loader: () => import('./containers/LogManagement/CommunicationFault/CommunicationFault'),
   loading: Loading,
@@ -119,6 +129,8 @@ const Parent = () => (
     <Route path="/usermanagement" component={UserManagement} />
     <Route path="/jurmanagement" component={JurManagement} />
     <Route path="/rolemanagement" component={RoleManagement} />
+    <Route path="/usergroup" component={UserGroup} />
+    <Route path="/menumanage" component={MenuManage} />
     {/* 日志管理 */}
     <Route path="/dcufault" component={DcuFault} />
     <Route path="/signalfault" component={SignalFault} />

@@ -9,12 +9,24 @@ $ft_color: #62bbff;
   position: absolute;
   top: 65px;
   left: 35px;
+  .syetem_title {
+    height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .syetem_titleLeft {
+      font-size: 30px;
+      color: #dcdde2;
+    }
+  }
 }
 .syetem_top {
   width: 100%;
-  height: 50px;
+  height: 70px;
   padding: 0 1px;
-  border-bottom: 4px solid #2e3440;
+  display: flex;
+  align-items: center;
+  border: 2px solid #2e3440;
   position: relative;
   .searchBtn {
     width: 120px;

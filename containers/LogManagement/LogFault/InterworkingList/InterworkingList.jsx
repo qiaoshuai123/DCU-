@@ -2,50 +2,61 @@ import React, { Component } from 'react'
 import { Input, Pagination, DatePicker } from 'antd'
 import styles from './InterworkingList.scss'
 
+import getResponseDatas from '../../../../utils/getResponseDatas'
+import resetTimeStep from '../../../../utils/resetTimeStep'
+
 class InterworkingList extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      systemList: [
-        {
-          id: 1,
-        },
-        {
-          id: 2,
-        },
-        {
-          id: 3,
-        },
-        {
-          id: 4,
-        }
-      ],
+      systemList: null,
+      totalPage: 0,
+      currentPage: 1,
+    }
+    this.logList = '/DCU/log/list'
+    this.listParams = {
+      pageNo: 1,
+      keyword: '',
     }
   }
   componentDidMount = () => {
-
+    this.getLogFaultLists()
+  }
+  // 转格式
+  getFormData = (obj) => {
+    const formData = new FormData()
+    Object.keys(obj).forEach((item) => {
+      formData.append(item, obj[item])
+    })
+    return formData
+  }
+  getLogFaultLists = () => {
+    getResponseDatas('post', this.logList, this.getFormData(this.listParams)).then((res) => {
+      const { code, data } = res.data
+      if (code === 0) {
+        this.setState({
+          systemList: data.list,
+          totalPage: data.totalCount,
+        })
+      }
+    })
   }
   getresetPwd = (id) => {
     window.open(`#roaddetail/${id}`)
   }
-  // 导出excel表格
-  exportTable = () => {
-    // 后端返回数据流
-    // this.sigexportExcelThing(str)
+  handleChangePage = (page) => {
+    this.listParams.pageNo = page
+    this.setState({ currentPage: page })
+    this.getLogFaultLists()
   }
-  // sigexportExcelThings = (sigexportExcelThing) => {
-  //   const blob = new Blob([sigexportExcelThing], { type: 'application/vnd.ms-excel,charset=utf-8' })
-  //   const a = document.createElement('a')
-  //   const href = window.URL.createObjectURL(blob)
-  //   a.href = href
-  //   document.body.appendChild(a)
-  //   // a.click()
-  //   a.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }))
-  //   document.body.removeChild(a)
-  //   window.URL.revokeObjectURL(href)
-  // }
+  handleSearchList = () => {
+    this.getLogFaultLists()
+  }
+  handleKeyWordChange = (e) => {
+    this.listParams.keyword = e.target.value
+  }
   render() {
-    const { systemList } = this.state
+    const { systemList, totalPage, currentPage } = this.state
     return (
       <div className={styles.syetem_bg} ref={(input) => { this.userLimitBox = input }}>
         <div className={styles.syetem_title}>
@@ -54,40 +65,27 @@ class InterworkingList extends Component {
         <div className={styles.syetem_top}>
           <div className={styles.syetem_item}>
             <span className={styles.item}>关键词:</span>
-            <div className={styles.inSle}><Input onChange={this.handleInputChange} /></div>
+            <div className={styles.inSle}><Input onChange={this.handleKeyWordChange} /></div>
           </div>
-          <div className={styles.syetem_item}>
-            <span className={styles.item}>功能模块:</span>
-            <div className={styles.inSle}><Input onChange={this.handleInputChange} /></div>
-          </div>
-          <div className={styles.syetem_item}>
-            <span className={styles.item}>操作时间:</span>
-            <div className={styles.inSle}><DatePicker /></div><span style={{ margin: '0 10px' }}>至</span><div className={styles.inSle}><DatePicker /></div>
-          </div>
-          <span className={styles.searchBtn} onClick={() => { this.handlePagination('1') }} limitid="13">查询</span>
-        </div>
-        <div className={styles.equipmentList}>
-          <span onClick={this.exportTable}>导出设备表</span>
+          <span className={styles.searchBtn} onClick={this.handleSearchList} limitid="13">查询</span>
         </div>
         <div className={styles.syetem_buttom}>
           <div className={styles.listBox}>
             <div className={styles.listItems}>
-              <div className={styles.listTd} >操作模块</div>
+              <div className={styles.listTd} >日志编号</div>
+              <div className={styles.listTd} >登录名称</div>
               <div className={styles.listTd} >操作内容</div>
+              <div className={styles.listTd} >网络地址</div>
               <div className={styles.listTd} >操作时间</div>
-              <div className={styles.listTd} >操作用户</div>
-              <div className={styles.listTd} >操作用户IP</div>
-              <div className={styles.listTd} >故障描述</div>
             </div>
-            {systemList && systemList.map((item, index) => {
+            {systemList && systemList.map((item) => {
               return (
-                <div className={styles.listItems} key={item.id + index}>
-                  <div className={styles.listTd} >11213213212222222222222222222222</div>
-                  <div className={styles.listTd} >2</div>
-                  <div className={styles.listTd} >3</div>
-                  <div className={styles.listTd} >4</div>
-                  <div className={styles.listTd} >5</div>
-                  <div className={styles.listTd} >6</div>
+                <div className={styles.listItems} key={item.id}>
+                  <div className={styles.listTd} >{item.id}</div>
+                  <div className={styles.listTd} >{item.username}</div>
+                  <div className={styles.listTd} >{item.operation}</div>
+                  <div className={styles.listTd} >{item.ip}</div>
+                  <div className={styles.listTd} >{resetTimeStep(item.createDate)}</div>
                 </div>)
             })}
             {
@@ -95,7 +93,7 @@ class InterworkingList extends Component {
             }
           </div>
           <div className={styles.paginations}>
-            <Pagination showQuickJumper defaultCurrent={2} total={500} />
+            <Pagination showQuickJumper current={currentPage} total={totalPage} onChange={this.handleChangePage} />
           </div>
         </div>
       </div>

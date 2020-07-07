@@ -1,25 +1,15 @@
 import React, { Component } from 'react'
 import { Input, Pagination, Select } from 'antd'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { dcuLists, dcuListByPages } from '../../../../reactRedux/actions/equipmentManagement'
 import styles from './InterworkingList.scss'
 
 class InterworkingList extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      systemList: [
-        {
-          id: 1,
-        },
-        {
-          id: 2,
-        },
-        {
-          id: 3,
-        },
-        {
-          id: 4,
-        },
-      ],
+      systemList: [],
     }
     this.objs = {
       keyword: '',
@@ -28,10 +18,29 @@ class InterworkingList extends Component {
     }
   }
   componentDidMount = () => {
-
+    this.props.dcuLists()
   }
-  getresetPwd = (id) => {
-    window.open(`#roaddetail/${id}`)
+  componentDidUpdate = (prevState) => {
+    const { dcuList, dcuListByPage } = this.props.data
+    if (prevState.data.dcuList !== dcuList) {
+      this.getdcuList(dcuList)
+    }
+    if (prevState.data.dcuListByPage !== dcuListByPage) {
+      this.getdcuListByPage(dcuListByPage)
+    }
+  }
+  getdcuList = (dcuList) => {
+    this.setState({
+      systemList: dcuList,
+    })
+  }
+  getdcuListByPage = (dcuListByPage) => {
+    console.log(dcuListByPage)
+  }
+  getresetPwd = (dataItem) => {
+    console.log(dataItem, 'dddss')
+    // localStorage.setItem('bac', JSON.stringify(dataItem.background))
+    // window.open(`#/roaddetail?id=${dataItem.interId}&ids=${dataItem.nodeId}`)
   }
   // 更改查询关键字
   handleChange = (e, optios) => {
@@ -56,7 +65,7 @@ class InterworkingList extends Component {
     console.log(page, pageSize)
   }
   render() {
-    const { systemList } = this.state
+    const { systemList, } = this.state
     const { Option } = Select
     return (
       <div className={styles.syetem_bg} ref={(input) => { this.userLimitBox = input }}>
@@ -100,7 +109,8 @@ class InterworkingList extends Component {
               <div className={styles.listTd} >设备型号</div>
               <div className={styles.listTd} >设备IP</div>
               <div className={styles.listTd} >生产厂商</div>
-              <div className={styles.listTd} >经纬度</div>
+              <div className={styles.listTd} >经度</div>
+              <div className={styles.listTd} >纬度</div>
               <div className={styles.listTd} >维护电话</div>
               <div className={styles.listTd} >设备状态</div>
               <div className={styles.listTd} >信号接入状态</div>
@@ -110,20 +120,22 @@ class InterworkingList extends Component {
             </div>
             {systemList && systemList.map((item, index) => {
               return (
-                <div className={styles.listItems} key={item.id + index}>
-                  <div className={styles.listTd} >11213213212222222222222222222222</div>
-                  <div className={styles.listTd} >2</div>
-                  <div className={styles.listTd} >3</div>
-                  <div className={styles.listTd} >4</div>
-                  <div className={styles.listTd} >5</div>
-                  <div className={styles.listTd} >6</div>
-                  <div className={styles.listTd} >7</div>
-                  <div className={styles.listTd} >8</div>
-                  <div className={styles.listTd} >9</div>
-                  <div className={styles.listTd} >10</div>
-                  <div className={styles.listTd} >11</div>
+                <div className={styles.listItems} key={item + index}>
+                  <div className={styles.listTd} >{item.interName}</div>
+                  <div className={styles.listTd} >{item.deviceId}</div>
+                  <div className={styles.listTd} >{item.deviceModel}</div>
+                  <div className={styles.listTd} >{item.signalConnectIp}</div>
+                  <div className={styles.listTd} >{item.manufactor}</div>
+                  <div className={styles.listTd} >{item.lat}</div>
+                  <div className={styles.listTd} >{item.lng}</div>
+                  <div className={styles.listTd} >{item.maintainPhone}</div>
+                  <div className={styles.listTd} >{item.detectorType}</div>
+                  <div className={styles.listTd} >{item.interName}</div>
+                  <div className={styles.listTd} >{item.interName}</div>
+                  <div className={styles.listTd} >{item.interName}</div>
+                  <div className={styles.listTd} >{item.interName}</div>
                   <div className={styles.listTd} >
-                    <span className={styles.delectName} onClick={() => { this.getresetPwd(item.id) }}>
+                    <span className={styles.delectName} onClick={() => { this.getresetPwd(item) }}>
                       路口监视
                     </span>
                   </div>
@@ -141,5 +153,15 @@ class InterworkingList extends Component {
     )
   }
 }
-
-export default InterworkingList
+const mapStateToProps = (state) => {
+  return {
+    data: { ...state.equipmentManagement },
+  }
+}
+const mapDisPatchToProps = (dispatch) => {
+  return {
+    dcuLists: bindActionCreators(dcuLists, dispatch),
+    dcuListByPages: bindActionCreators(dcuListByPages, dispatch),
+  }
+}
+export default connect(mapStateToProps, mapDisPatchToProps)(InterworkingList)

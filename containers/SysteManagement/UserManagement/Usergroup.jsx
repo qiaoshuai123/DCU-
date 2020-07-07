@@ -1,38 +1,33 @@
-import React, { Component } from 'react'
+import React from 'react'
 import classNames from 'classnames'
-import { Icon, Select, Input, message, Pagination, Tree, Modal } from 'antd'
+import { Icon, Select, Input, message, Pagination, Modal } from 'antd'
 import Header from '../../../components/Header/Header'
-import roadStyles from '../UserManagement/RoadTraffic.scss'
-import styles from '../UserManagement/UserManagement.scss'
+import roadStyles from './Roadtraffic.scss'
+import styles from './UserManagement.scss'
 import getResponseDatas from '../../../utils/getResponseDatas'
 
 const { confirm } = Modal
 const { Option } = Select
-const { TreeNode } = Tree
-
-class JurManagement extends Component {
+// 日志管理
+class Usergroup extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
+      totalCount: 1,
       listDatas: null,
       showGroupMsg: false,
-      totalCount: 1,
-      expandedKeys: [],
-      autoExpandParent: true,
-      checkedKeys: [],
-      selectedKeys: [],
-      treeData: null,
+      listItems: null,
+      parentGroup: null,
       userLimit: null,
       current: 1,
     }
-    this.deptListUrl = '/DCU/sys/role/listPage'
-    this.addListUrl = '/DCU/sys/role/save'
-    this.updateUrl = '/DCU/sys/role/update'
-    this.deleteUrl = '/DCU/sys/role/delete'
-    this.sysMenuUrl = '/DCU/sys/menu/list'
-    this.listTrueUrl = '/DCU/sys/menu/listTrue' // 获取树结构
+    this.deptListUrl = '/DCU/sys/dept/listPage'
+    this.addListUrl = '/DCU/sys/dept/save'
+    this.updateUrl = '/DCU/sys/dept/update'
+    this.deleteUrl = '/DCU/sys/dept/delete'
+    this.listUrl = '/DCU/sys/dept/list'
     this.deleteParams = {
-      roleIds: [],
+      deptIds: [],
     }
     this.listParams = {
       keyword: '',
@@ -40,15 +35,17 @@ class JurManagement extends Component {
     }
     this.defaultparams = {
       id: '',
-      menuIds: '',
-      name: '',
+      deptCode: '',
+      deptName: '',
+      leaderName: '',
+      parentId: '',
       remark: '',
+      sort: '',
     }
   }
   componentDidMount = () => {
-    this.getSystemMenu()
     this.getDeptList()
-    this.onlistTrue()
+    this.getparentGroup()
     // 获取用户权限
     // const limitArr = JSON.parse(localStorage.getItem('userLimit'))
     // const userLimit = []
@@ -57,72 +54,24 @@ class JurManagement extends Component {
     // })
     // this.setState({ userLimit })
   }
-  onlistTrue = () => {
-    getResponseDatas('post', this.listTrueUrl).then((res) => {
-      const { code, data } = res.data
-      if (code === 0) {
-        this.setState({ treeData: data })
-      }
-    })
-  }
-  handlePagination = (pageNumber) => {
-    console.log('Page: ', pageNumber)
-    this.listParams.pageNo = pageNumber
-    this.getDeptList()
-  }
-  onExpand = (expandedKeys) => {
-    console.log('onExpand', expandedKeys)
-    this.setState({
-      expandedKeys,
-      autoExpandParent: false,
-    })
-  }
-
-  onCheck = (checkedKeys, e) => {
-    console.log('onCheck', checkedKeys, e)
-    this.defaultparams.menuIds = checkedKeys.checked
-    /*  this.defaultparams.menuIds = [...e.halfCheckedKeys, ...checkedKeys] */
-    this.setState({ checkedKeys: checkedKeys.checked })
-  }
-
-  onSelect = (selectedKeys, info) => {
-    console.log('onSelect', info)
-    this.setState({ selectedKeys })
-  }
-  getSystemMenu = () => {
-    getResponseDatas('post', this.sysMenuUrl).then((res) => {
-      const { code, data } = res.data
-      if (code === 0) {
-        const menuIdArr = []
-        data.forEach((item) => {
-          menuIdArr.push(item.id)
-        })
-        this.defaultparams.menuIds = menuIdArr
-      }
-    })
-  }
-  renderTreeNodes = (data) =>
-    data.map((item) => {
-      if (item.children) {
-        return (
-          <TreeNode title={item.name} key={item.id} dataRef={item}>
-            {this.renderTreeNodes(item.children)}
-          </TreeNode>
-        )
-      }
-      return <TreeNode key={item.id} {...item} />
-    })
   getDeptList = () => {
     getResponseDatas('post', this.deptListUrl, this.getFormData(this.listParams)).then((res) => {
       const { code, data } = res.data
       if (code === 0) {
-        const listdata = data.list.filter((item) => {
-          return item.isDelete == 0
-        })
         this.setState({
-          listDatas: listdata,
+          listDatas: data.list,
           totalCount: data.totalCount,
           current: Number(this.listParams.pageNo)
+        })
+      }
+    })
+  }
+  getparentGroup = () => {
+    getResponseDatas('post', this.listUrl).then((res) => {
+      const { code, data } = res.data
+      if (code === 0) {
+        this.setState({
+          parentGroup: data,
         })
       }
     })
@@ -144,39 +93,26 @@ class JurManagement extends Component {
     })
   }
   handleCloseGroupMsg = () => {
-    this.state.checkedKeys = []
-    this.defaultparams = {
-      id: '',
-      menuIds: '',
-      name: '',
-      remark: '',
-    }
     this.setState({ showGroupMsg: false })
   }
   handleEditItems = (id) => {
     this.isAdd = false
-    let menuId = []
     const listItem = (this.state.listDatas.filter(item => item.id === id))[0]
-    console.log(listItem)
-    if (listItem.menuId) {
-      menuId = listItem.menuId.split(',')
-    }
     this.setState({
       listItems: listItem,
       showGroupMsg: true,
-      checkedKeys: menuId,
     })
     Object.keys(this.defaultparams).map((item) => {
-      if (item === 'menuIds') {
-        this.defaultparams[item] = listItem.menuId
-      } else {
-        this.defaultparams[item] = listItem[item]
-      }
+      this.defaultparams[item] = listItem[item]
     })
   }
   handleGroupMsgChange = (e, itemname) => {
-    const value = typeof (e) === 'object' ? e.target.value : e
+    let value = typeof (e) === 'object' ? e.target.value : e
+    if (itemname === 'deptCode') {
+      value = value.replace(/[^\-?\d.]/g, '')
+    }
     this.defaultparams[itemname] = value
+    console.log(this.defaultparams)
   }
   handleAddEdit = () => {
     if (this.isAdd) {
@@ -185,14 +121,7 @@ class JurManagement extends Component {
         if (code === 0) {
           this.listParams.keyword = ''
           this.listParams.pageNo = 1
-          this.state.checkedKeys = []
-          this.defaultparams = {
-            id: '',
-            menuIds: '',
-            name: '',
-            remark: '',
-          }
-          message.info('添加成功!')
+          message.success('操作成功！')
           this.getDeptList()
         } else {
           message.info(msg)
@@ -204,14 +133,6 @@ class JurManagement extends Component {
         if (code === 0) {
           this.listParams.keyword = ''
           this.listParams.pageNo = 1
-          this.state.checkedKeys = []
-          this.defaultparams = {
-            id: '',
-            menuIds: '',
-            name: '',
-            remark: '',
-          }
-          message.info('修改成功!')
           this.getDeptList()
         } else {
           message.info(msg)
@@ -222,9 +143,9 @@ class JurManagement extends Component {
   }
   handleDeleteItem = (id) => {
     const that = this
-    this.deleteParams.roleIds.push(id)
+    this.deleteParams.deptIds.push(id)
     confirm({
-      title: '确认要删除当前角色权限?',
+      title: '确认要删除当前部门?',
       cancelText: '取消',
       okText: '确认',
       onOk() {
@@ -233,7 +154,7 @@ class JurManagement extends Component {
             const { code, msg } = res.data
             if (code === 0) {
               message.info('删除成功！')
-              /*  that.listParams.keyword = '' */
+              /* that.listParams.keyword = '' */
               // this.listParams.pageNo = 1
               const { listDatas } = that.state
               if (listDatas.length === 1 && that.listParams.pageNo > 1) {
@@ -250,9 +171,6 @@ class JurManagement extends Component {
       onCancel() { },
     })
   }
-  handleInputChange = (e) => {
-    this.listParams.keyword = e.target.value
-  }
   handleChangePage = (page) => {
     this.listParams.pageNo = page
     this.getDeptList()
@@ -261,8 +179,13 @@ class JurManagement extends Component {
     const { value } = e.target
     this.listParams.keyword = value
   }
+  handlePagination = (pageNumber) => {
+    console.log('Page: ', pageNumber)
+    this.listParams.pageNo = pageNumber
+    this.getDeptList()
+  }
   render() {
-    const { listDatas, showGroupMsg, treeData, listItems, totalCount, userLimit, current } = this.state
+    const { listItems, listDatas, showGroupMsg, parentGroup, totalCount, userLimit, current } = this.state
     return (
       <div className={(roadStyles.Roadtcontent)}>
         <Header {...this.props} />
@@ -270,10 +193,10 @@ class JurManagement extends Component {
         <div id="mapContainer" className={classNames(roadStyles.mapContainer, styles.mapContainer)} >
           <div className={styles.syetem_bg}>
             <div className={styles.syetem_title}>
-              <div className={styles.syetem_titleLeft}>权限角色管理</div>
+              <div className={styles.syetem_titleLeft}>部门管理</div>
             </div>
             <div className={styles.syetem_top}>
-              <div className={styles.syetem_item}><span className={styles.item}>关键词</span><div className={styles.inSle}><Input onChange={this.handleInputChange} placeholder="查询条件" /></div></div>
+              <div className={styles.syetem_item}><span className={styles.item}>关键词</span><div className={styles.inSle}><Input placeholder="查询条件" onChange={this.handleKeywordChange} /></div></div>
               {/* <div className={styles.syetem_item}><span className={styles.item}>用户组</span>
                 <div className={styles.inSle}>
                   <Select defaultValue="lucy" style={{ width: 200 }}>
@@ -283,49 +206,54 @@ class JurManagement extends Component {
                 </div>
               </div> */}
               {
-                userLimit && userLimit.indexOf(18) !== -1 ?
+                userLimit && userLimit.indexOf(31) !== -1 ?
                   <span className={styles.searchBtn} onClick={() => { this.handlePagination('1') }}>查询</span> : null
               }
               <i className={styles.line} />
             </div>
             <div className={styles.syetem_buttom}>
               {
-                userLimit && userLimit.indexOf(19) !== -1 ?
-                  <div className={styles.title}><span onClick={this.handleAddGroup}>+添加角色</span></div> : null
+                userLimit && userLimit.indexOf(28) !== -1 ?
+                  <div className={styles.title}><span onClick={this.handleAddGroup}>+添加部门</span></div> : null
               }
               <div className={styles.listBox}>
                 <div className={styles.listItems}>
-                  <div className={styles.listTd} >角色编号</div>
-                  <div className={styles.listTd} >角色名称</div>
-                  <div className={styles.listTd} >角色描述</div>
-                  <div className={styles.listTd} >创建时间</div>
+                  <div className={styles.listTd} >序号</div>
+                  <div className={styles.listTd} >部门编号</div>
+                  <div className={styles.listTd} >部门名称</div>
+                  <div className={styles.listTd} >描述</div>
+                  <div className={styles.listTd} >上级部门</div>
+                  <div className={styles.listTd} >部门负责人</div>
                   <div className={styles.listTd} >操作</div>
                 </div>
                 {
                   listDatas &&
-                  listDatas.map((item) => {
+                  listDatas.map((item, index) => {
                     return (
                       <div className={styles.listItems} key={item.id}>
-                        <div className={styles.listTd} ><span className={styles.roadName}>{item.id}</span></div>
-                        <div className={styles.listTd} ><span className={styles.roadName}>{item.name}</span></div>
+                        <div className={styles.listTd} ><span className={styles.roadName}>{item['sort']}</span></div>
+                        <div className={styles.listTd} ><span className={styles.roadName}>{item.deptCode}</span></div>
+                        <div className={styles.listTd} ><span className={styles.roadName}>{item.deptName}</span></div>
                         <div className={styles.listTd} ><span className={styles.roadName}>{item.remark}</span></div>
-                        <div className={styles.listTd} ><span className={styles.roadName}>{item.createTime}</span></div>
+                        <div className={styles.listTd} ><span className={styles.roadName}>{item.parentName}</span></div>
+                        <div className={styles.listTd} ><span className={styles.roadName}>{item.leaderName}</span></div>
                         <div className={styles.listTd} >
                           {
-                            userLimit && userLimit.indexOf(20) !== -1 ?
+                            userLimit && userLimit.indexOf(30) !== -1 ?
                               <span className={styles.updateName} onClick={() => { this.handleEditItems(item.id) }}>
                                 <Icon type="edit" className={styles.icon} />修改
                               </span> : null
                           }
                           {
-                            userLimit && userLimit.indexOf(21) !== -1 ?
+                            userLimit && userLimit.indexOf(29) !== -1 ?
                               <span className={styles.delectName} onClick={() => { this.handleDeleteItem(item.id) }}>
                                 <Icon type="close" className={styles.icon} />删除
                               </span> : null
                           }
                         </div>
                       </div>)
-                  })}
+                  })
+                }
                 {
                   !!listDatas && listDatas.length === 0 ? <div className={styles.noData}>当前查询无数据</div> : null
                 }
@@ -340,38 +268,48 @@ class JurManagement extends Component {
           <div className={styles.traBox}>
             <div className={styles.addListBox}>
               <div className={styles.titleBox}>
-                <div className={styles.title} style={{ marginRight: 15 }}><Icon type="double-right" /><span>角色信息</span></div>
+                <div className={styles.title} style={{ marginRight: 15 }}><Icon type="double-right" /><span>部门信息</span></div>
                 <Icon type="close" onClick={this.handleCloseGroupMsg} className={styles.close} />
               </div>
               <div className={styles.content}>
                 <div className={styles.syetemItem}>
-                  <span className={styles.item}>角色名称</span>
+                  <span className={styles.item}>部门编号</span>
                   <div className={styles.inSle}>
-                    <Input placeholder="请输入角色名称" defaultValue={listItems && listItems.name} onChange={(e) => { this.handleGroupMsgChange(e, 'name') }} />
+                    <Input placeholder="请输入部门编号" defaultValue={listItems && listItems.deptCode} onChange={(e) => { this.handleGroupMsgChange(e, 'deptCode') }} />
                   </div>
                 </div>
-                <div className={styles.syetemItem}><span className={styles.item}>角色描述</span>
+                <div className={styles.syetemItem}><span className={styles.item}>部门名称</span>
                   <div className={styles.inSle}>
-                    <Input placeholder="请输入角色描述" defaultValue={listItems && listItems.remark} onChange={(e) => { this.handleGroupMsgChange(e, 'remark') }} />
+                    <Input placeholder="请输入部门名称" defaultValue={listItems && listItems.deptName} onChange={(e) => { this.handleGroupMsgChange(e, 'deptName') }} />
                   </div>
                 </div>
-                <div className={styles.syetemItem}><span className={styles.item}>角色权限</span>
-                  <div className={styles.inSle} style={{ maxHeight: '201px', overflowY: 'auto' }}>
-                    {treeData ?
-                      <Tree
-                        checkable
-                        checkStrictly
-                        onExpand={this.onExpand}
-                        expandedKeys={this.state.expandedKeys}
-                        autoExpandParent={this.state.autoExpandParent}
-                        onCheck={this.onCheck}
-                        checkedKeys={this.state.checkedKeys}
-                        onSelect={this.onSelect}
-                        selectedKeys={this.state.selectedKeys}
-                        defaultExpandAll={true}
-                      >
-                        {this.renderTreeNodes(treeData)}
-                      </Tree> : null}
+                <div className={styles.syetemItem}><span className={styles.item}>负责人</span>
+                  <div className={styles.inSle}>
+                    <Input placeholder="请输入负责人" defaultValue={listItems && listItems.leaderName} onChange={(e) => { this.handleGroupMsgChange(e, 'leaderName') }} />
+                  </div>
+                </div>
+                <div className={styles.syetemItem}><span className={styles.item}>父部门</span>
+                  <div className={styles.inSle}>
+                    <Select defaultValue={listItems ? listItems.parentId : 0} placeholder="请选择所属用父部门" style={{ width: 300 }} onChange={(e) => { this.handleGroupMsgChange(e, 'parentId') }}>
+                      <Option value={0} key={0}>请选择所属用父部门</Option>
+                      {
+                        !!parentGroup && parentGroup.map((item) => {
+                          return (
+                            <Option value={item.id} key={item.id}>{item.deptName}</Option>
+                          )
+                        })
+                      }
+                    </Select>
+                  </div>
+                </div>
+                <div className={styles.syetemItem}><span className={styles.item}>备注</span>
+                  <div className={styles.inSle}>
+                    <Input placeholder="请输入备注" defaultValue={listItems && listItems.remark} onChange={(e) => { this.handleGroupMsgChange(e, 'remark') }} />
+                  </div>
+                </div>
+                <div className={styles.syetemItem}><span className={styles.item}>排序</span>
+                  <div className={styles.inSle}>
+                    <Input placeholder="请输入序号" defaultValue={listItems && listItems.sort} onChange={(e) => { this.handleGroupMsgChange(e, 'sort') }} />
                   </div>
                 </div>
                 <div className={styles.syetemItem}>
@@ -386,4 +324,4 @@ class JurManagement extends Component {
   }
 }
 
-export default JurManagement
+export default Usergroup
