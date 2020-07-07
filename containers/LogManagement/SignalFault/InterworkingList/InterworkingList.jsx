@@ -17,6 +17,7 @@ class InterworkingList extends Component {
     }
     this.logTypeUrl = '/DCU/sys/code/systemCodeListByCodeType?dictType=4'
     this.logList = '/DCU/signalFault/signalFaultListByPage'
+    this.exportUrl = '/DCU/signalFault/exportSignalFaultList'
     this.logListParams = {
       endTime: '',
       faultType: null,
@@ -35,7 +36,9 @@ class InterworkingList extends Component {
       const resetParams = Object.keys(params)
       const lengths = resetParams.length
       Object.keys(params).forEach((item, index) => {
-        newParams += `${item}=${params[item]}${index !== lengths - 1 ? '&' : ''}`
+        if (params[item] !== null && params[item] !== 'null') {
+          newParams += `${item}=${params[item]}${index !== lengths - 1 ? '&' : ''}`
+        }
       })
       return newParams
     }
@@ -68,8 +71,7 @@ class InterworkingList extends Component {
   }
   // 导出excel表格
   exportTable = () => {
-    // 后端返回数据流
-    // this.sigexportExcelThing(str)
+    window.location.href = `${this.exportUrl}${this.getResetParams(this.logListParams)}`
   }
   handleChangeType = (value, options) => {
     const types = options.key === 'null' ? null : options.key

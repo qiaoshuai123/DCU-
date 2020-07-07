@@ -265,12 +265,16 @@ class UserManagement extends Component {
   }
   render() {
     const { systemList, totalCount, depList, roleList, dataList, userLimit, current } = this.state
+    const { Option } = Select
     return (
       <div className={(roadStyles.Roadtcontent)}>
         <Header {...this.props} />
         {/* 地图 */}
         <div id="mapContainer" className={classNames(roadStyles.mapContainer, styles.mapContainer)} >
           <div className={styles.syetem_bg} ref={(input) => { this.userLimitBox = input }}>
+            <div className={styles.syetem_title}>
+              <div className={styles.syetem_titleLeft}>用户管理</div>
+            </div>
             <div className={styles.syetem_top}>
               <div className={styles.syetem_item}><span className={styles.item}>关键词</span>
                 <div className={styles.inSle}><Input placeholder="查询条件" onChange={this.handleInputChange} /></div>
@@ -297,6 +301,7 @@ class UserManagement extends Component {
                 <div className={styles.listItems}>
                   <div className={styles.listTd} >用户编号</div>
                   <div className={styles.listTd} >用户名称</div>
+                  <div className={styles.listTd} >登录名称</div>
                   <div className={styles.listTd} >所属用户组</div>
                   <div className={styles.listTd} >权限角色</div>
                   <div className={styles.listTd} >用户创建时间</div>
@@ -309,6 +314,7 @@ class UserManagement extends Component {
                     <div className={styles.listItems} key={item.id + index}>
                       <div className={styles.listTd} ><span className={styles.roadName}>{item.id}</span></div>
                       <div className={styles.listTd} ><span className={styles.roadName}>{item.userName}</span></div>
+                      <div className={styles.listTd} ><span className={styles.roadName}>{item.loginName}</span></div>
                       <div className={styles.listTd} ><span className={styles.roadName}>{item.deptName}</span></div>
                       <div className={styles.listTd} ><span className={styles.roadName}>{item.roleName}</span></div>
                       <div className={styles.listTd} ><span className={styles.roadName}>{item.createTime}</span></div>
