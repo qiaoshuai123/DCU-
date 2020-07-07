@@ -9,6 +9,46 @@
     top: 0;
     z-index: 19;
     display: flex;
+    .aboutSystem {
+        position: fixed;
+        width: 450px;
+        height: 260px;
+        top: 15%;
+        left: 50%;
+        margin-left: -225px;
+        padding: 10px 20px;
+        background-color: rgba(28, 33, 39, 0.9);
+        border: 1px solid #000;
+        .aboutTitle {
+            position: relative;
+            h2 {
+                color: #dcdde2;
+                font-weight: bold;
+            }
+            .closeIcon {
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 20px;
+                height: 20px;
+                text-align: center;
+                line-height: 20px;
+                font-size: 16px;
+                transition: all .2s;
+                cursor: pointer;
+                &:hover {
+
+                    transform: rotate(-180deg) scale(1.2);
+                }
+            }
+        }
+        .sysMsg {
+            height: 160px;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+    }
     .header_left {
         width: 410px;
         font-size: 18px;

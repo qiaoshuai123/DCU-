@@ -1,6 +1,6 @@
 import React from 'react'
-import styles from './Header.scss'
 import { Menu, Dropdown, Icon } from 'antd'
+import styles from './Header.scss'
 
 const menu = (
   <Menu>
@@ -22,6 +22,7 @@ class Header extends React.Component {
     this.state = {
       selectNum: 1,
       navItem: [],
+      showSysMsg: false,
     }
     this.paths = this.props.match.url
     console.log(this.paths)
@@ -130,7 +131,7 @@ class Header extends React.Component {
           },
         ],
       },
-      { id: 6, name: '关于系统', role: 6, path: '/aboutSystemt' },
+      { id: 6, name: '关于系统', role: 6, path: '' },
     ]
     // 获取用户权限
     // this.getUser = localStorage.getItem('')
@@ -172,16 +173,35 @@ class Header extends React.Component {
     }
   }
   SelectButton = (e) => {
-    this.props.history.push(e.path)
+    if (e.path) {
+      this.props.history.push(e.path)
+    } else {
+      this.setState({ showSysMsg: true })
+    }
   }
   SelectButtonChild = (e, item) => {
     e.stopPropagation()
     this.props.history.push(item.path)
   }
+  handleHideMsg = () => {
+    this.setState({ showSysMsg: false })
+  }
   render() {
-    const { selectNum, navItem } = this.state
+    const { selectNum, navItem, showSysMsg } = this.state
     return (
       <div className={styles.headerWrapper}>
+        {
+          showSysMsg &&
+          <div className={styles.aboutSystem}>
+            <div className={styles.aboutTitle}>
+              <h2>双向互通管控系统</h2>
+              <span className={styles.closeIcon} onClick={this.handleHideMsg}><Icon type="close" /></span>
+            </div>
+            <div className={styles.sysMsg}>版本：v1.0</div>
+            <div className={styles.copyRight}>版权信息：北京博研智通科技有限公司</div>
+          </div>
+
+        }
         <div className={styles.header_left}>
           <span />
           双向互通管控系统
