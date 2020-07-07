@@ -118,9 +118,15 @@ class Header extends React.Component {
           },
           {
             id: '5_3',
-            name: '角色管理',
+            name: '菜单管理',
             role: 5,
-            path: '/rolemanagement',
+            path: '/menumanage',
+          },
+          {
+            id: '5_4',
+            name: '部门管理',
+            role: 5,
+            path: '/usergroup',
           },
         ],
       },
