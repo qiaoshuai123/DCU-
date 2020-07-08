@@ -20,6 +20,10 @@ import {
   API_DCU_CENTERCONTROL,
   API_DCU_DCULIST,
   API_DCU_DCULISTBYPAGE,
+  API_SYS_SYSTEMCODELISTBYCODETYPE,
+  API_UNI_UNITINFOLIST,
+  API_SIG_SIGNALLIST,
+  API_SIG_SIGNALLISTBYPAGE,
 } from '../actionTypes/actionAPIs'
 
 // 更改点位信息名称
@@ -235,6 +239,66 @@ export const dcuListByPages = (params) => {
       const result = await RestUtil.get(`${API_DCU_DCULISTBYPAGE}?${params}`)
       if (result.data.code === 0) {
         dispatch({ type: types.GET_DCU_DCULISTBYPAGE, payload: result.data.data })
+      } else {
+        console.error(result.data.message)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+}
+// 获取所有区号
+export const systemCodeListByCodeType = (params) => {
+  return async (dispatch) => {
+    try {
+      const result = await RestUtil.get(`${API_SYS_SYSTEMCODELISTBYCODETYPE}?dictType=${params}`)
+      if (result.data.code === 0) {
+        dispatch({ type: types.GET_SYS_SYSTEMCODELISTBYCODETYPE, payload: result.data.data })
+      } else {
+        console.error(result.data.message)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+}
+// 获取所有点位
+export const unitInfoList = () => {
+  return async (dispatch) => {
+    try {
+      const result = await RestUtil.get(`${API_UNI_UNITINFOLIST}`)
+      if (result.data.code === 0) {
+        dispatch({ type: types.GET_UNI_UNITINFOLIST, payload: result.data.data })
+      } else {
+        console.error(result.data.message)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+}
+// 查询全部信号机数据
+export const signalList = () => {
+  return async (dispatch) => {
+    try {
+      const result = await RestUtil.get(`${API_SIG_SIGNALLIST}`)
+      if (result.data.code === 0) {
+        dispatch({ type: types.GET_SIG_SIGNALLIST, payload: result.data.data })
+      } else {
+        console.error(result.data.message)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+}
+// 分页查询信号机数据
+export const signalListByPage = (params) => {
+  return async (dispatch) => {
+    try {
+      const result = await RestUtil.get(`${API_SIG_SIGNALLISTBYPAGE}?${params}`)
+      if (result.data.code === 0) {
+        dispatch({ type: types.GET_SIG_SIGNALLISTBYPAGE, payload: result.data.data })
       } else {
         console.error(result.data.message)
       }

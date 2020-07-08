@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Websocket from 'react-websocket';
+import Websocket from 'react-websocket'
 import { Icon, message } from 'antd'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -182,6 +182,7 @@ class RoadDetail extends Component {
     })
   }
   handleData = (e) => {
+    console.log(JSON.parse(e), 'ssa')
     const { lampgroupState, phasestageState, running } = JSON.parse(e)
     const { remainingTime, phasestageNo, runningTime } = phasestageState
     const { localTime } = running

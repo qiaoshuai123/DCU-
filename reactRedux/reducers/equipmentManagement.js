@@ -25,6 +25,14 @@ const equipmentManagement = (state = {}, action) => {
       return Object.assign({}, state, { dcuList: payload })
     case types.GET_DCU_DCULISTBYPAGE:
       return Object.assign({}, state, { dcuListByPage: payload })
+    case types.GET_SYS_SYSTEMCODELISTBYCODETYPE:
+      return Object.assign({}, state, { systemCodeListByCodeTypes: payload })
+    case types.GET_UNI_UNITINFOLIST:
+      return Object.assign({}, state, { unitInfoLists: payload })
+    case types.GET_SIG_SIGNALLIST:
+      return Object.assign({}, state, { signalLists: payload })
+    case types.GET_SIG_SIGNALLISTBYPAGE:
+      return Object.assign({}, state, { signalListByPages: payload })
     default:
       return state
   }
