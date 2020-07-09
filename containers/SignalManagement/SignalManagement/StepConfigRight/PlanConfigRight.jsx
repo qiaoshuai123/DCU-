@@ -3,7 +3,7 @@ import { Input, Icon, message, Modal } from 'antd'
 import classNames from 'classnames'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { getStepStatus, getInfoListsTypeMore, getDelInfoType } from '../../../../reactRedux/actions/signalmanagementActions'
+import { getStepStatus, getInfoListsType, getInfoListsTypeMore, getDelInfoType } from '../../../../reactRedux/actions/signalmanagementActions'
 import ListForAntd from '../../ListForAntd/ListForAntd'
 import styles from '../SignalManagement.scss'
 import Liststyles from '../../ListForAntd/ListForAntd.scss'
@@ -33,6 +33,7 @@ class PlanConfigRight extends PureComponent {
   }
   componentDidMount = () => {
     console.log(this.props, '状态')
+    this.props.getInfoListsType(this.props.roadInterId, 'STAGE')
     this.props.getInfoListsTypeMore(this.props.roadInterId, this.props.roadNodeNo, 'PLAN')
   }
   getListData = (data) => {
@@ -40,7 +41,7 @@ class PlanConfigRight extends PureComponent {
     for (let p in data) {
       let newObj;
       switch(p){     
-        case 'schemeNodeNo':
+        case 'schemeNo':
           newObj = {key: p, label: '方案序号'}
           break;
         case 'schemeName':
@@ -126,12 +127,15 @@ class PlanConfigRight extends PureComponent {
       onCancel() { },
     })
   }
+  updateListItem = (itemDetailData, stepType) => {
+    this.props.updateListItem(itemDetailData, stepType)
+  }
   render() {
     const { planLists, listNames } = this.state
     return (
       <div className={styles.conBox}>
         <div className={styles.rTit}>配时方案配置列表<em onClick={() => { this.popLayerShowHide("stepSevenAddEdit", true, null, 'PLAN') }}>添加</em></div>
-        { !!planLists && !!listNames ? <ListForAntd {...this.props} dataSourse={planLists} listNames={listNames} listType={'PLAN'} imgIconUrl={this.imgIconUrl} showIndex={3} handleClickFind={this.handleClickFind} delListItem={this.delListItem} /> : <div className={styles.noData}>暂无数据</div> }
+        { !!planLists && !!listNames ? <ListForAntd {...this.props} dataSourse={planLists} listNames={listNames} listType={'PLAN'} imgIconUrl={this.imgIconUrl} showIndex={3} handleClickFind={this.handleClickFind} updateListItem={this.updateListItem} delListItem={this.delListItem} /> : <div className={styles.noData}>暂无数据</div> }
       </div>
     )
   }
@@ -145,6 +149,7 @@ const mapStateToProps = (state) => {
 const mapDisPatchToProps = (dispatch) => {
   return {
     getStepStatus: bindActionCreators(getStepStatus, dispatch),
+    getInfoListsType: bindActionCreators(getInfoListsType, dispatch),
     getInfoListsTypeMore: bindActionCreators(getInfoListsTypeMore, dispatch),
     getDelInfoType: bindActionCreators(getDelInfoType, dispatch),
   }

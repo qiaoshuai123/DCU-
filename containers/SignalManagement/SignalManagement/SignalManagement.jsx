@@ -11,7 +11,7 @@ import styles from './SignalManagement.scss'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { getSystemCodeType, getMapUnitInfoList, getUnitPop, checkUnitTree } from '../../../reactRedux/actions/publicActions'
-import { getStepStatus, getPicListsType, getInfoListsType, postBgBySelect, postBgByUpload, postAddOthersType, postUpdateOthersType, postAddAllType, postUpdateAllType, getIconImageList, getUpdateAllType, getSelectLists } from '../../../reactRedux/actions/signalmanagementActions'
+import { getStepStatus, getPicListsType, getInfoListsType, getInfoListsTypeMore, postBgBySelect, postBgByUpload, postAddOthersType, postUpdateOthersType, postAddAllType, postUpdateAllType, getIconImageList, getUpdateAllType, getSelectLists } from '../../../reactRedux/actions/signalmanagementActions'
 import StepNavMenu from './StepNavMenu/StepNavMenu'
 import BasicInfoLeft from './StepConfigLeft/BasicInfoLeft'
 import LaneConfigLeft from './StepConfigLeft/LaneConfigLeft'
@@ -94,6 +94,7 @@ class SignalManagement extends PureComponent {
       detectorType: null, // 检测器类型
       phaseForbidenData: null,
       phaseShieldData: null,
+      schemePhasestageTypeData: null,
       typeData: null,
       phaseShowDetail: null,
       stageShowDetail: null,
@@ -107,6 +108,9 @@ class SignalManagement extends PureComponent {
       defaultSelectLists: '',
       phaseSelectLists: null, // 
       phaseFlag: null,
+      planStageLists: null, //方案相位阶段链数据
+      strStagePlanID: null, // 方案相位阶段链
+      strStagePlanItem: null, //方案相位阶段一组对象数据
     }
     this.map = null
     this.moveFlag = false // 是否是移动状态
@@ -228,6 +232,7 @@ class SignalManagement extends PureComponent {
     this.getSystemCodeType(11) // 灯组Type
     this.getSystemCodeType(28) // 相位屏蔽 
     this.getSystemCodeType(29) // 相位禁止
+    this.getSystemCodeType(32) // 方案相位阶段出现类型
   }
   // 字典code
   getSystemCodeType = (num) => {
@@ -270,6 +275,9 @@ class SignalManagement extends PureComponent {
         case 29:
           this.setState({ phaseForbidenData: this.props.data.codeTypeData }) // 相位禁止
           break;
+        case 32:
+          this.setState({ schemePhasestageTypeData: this.props.data.codeTypeData }) // schemePhasestageTypeData
+          break;
       }
     })
   }
@@ -310,6 +318,27 @@ class SignalManagement extends PureComponent {
     } else {
       this[type][name] = event.target.value
     }
+  }
+  // 单选按钮选择
+  handleChangeRadio = (event) => {
+    this.setState({ strStagePlanID: event.target.value })
+  }
+  // 点击单选按钮
+  handleClickRadio = (item) => {
+    item.phaseTimeIndex = 0
+    this.setState({ strStagePlanItem: item})
+  }
+  // 确认单选按钮 弹层
+  stageIdRight = (event, type, name, key) => {
+    this[type][name].schemePhasestageChainsTime ? this[type][name].schemePhasestageChainsTime = this[type][name].schemePhasestageChainsTime + ',' + '0' : this[type][name].schemePhasestageChainsTime = '0'
+    this[type][name][key] ? this[type][name][key] = this[type][name][key] + ',' + this.state.strStagePlanID :  this[type][name][key] = this.state.strStagePlanID
+    const newArr = this.state.planStageLists ? JSON.parse(JSON.stringify(this.state.planStageLists)) : []
+    newArr.push(this.state.strStagePlanItem)
+    this.setState({ showFlag: true, planStageLists: newArr })
+  }
+  // 取消单选按钮 弹层
+  stageIdCancel = () => {
+    this.setState({ showFlag: true })
   }
   // 下拉选择值
   handleChangeSel = (value, type, name, key) => {
@@ -625,9 +654,18 @@ class SignalManagement extends PureComponent {
           break;
           case "PLAN":
             const planShowDetail = {
-              
+              "interId": this.state.roadInterId,  //
+              "nodeNo": this.state.roadNodeNo, //
+              "schemeCoordinationNo": 0,  //方案协调序号
+              "schemeCycle": 0,   //方案周期
+              "schemeName": "",  //方案名称
+              "schemeNo": 0,   //方案号
+              "schemePhaseDiferenceTime": 0,   //方案相位差时间
+              "schemePhasestageChains": "",  //方案相位阶段链
+              "schemePhasestageChainsTime": "",  //方案相位阶段链时间
+              "schemePhasestageType": ""   //方案相位阶段出现类型
             }
-          this.setState({ planShowDetail })
+          this.setState({ planShowDetail, planStageLists: null })
           break;
           case "DAYPLAN":
             const dayplanShowDetail = {
@@ -646,7 +684,6 @@ class SignalManagement extends PureComponent {
   }
   // 编辑时回显内容 相位、阶段、配时方案、日计划、调度
   updateListItem = (itemDetailData, stepType) => {
-    debugger
     switch(stepType){
       case "PHASE":
         this.setState({ phaseShowDetail: itemDetailData, stepFiveAddEdit: true, popAddEditText: '编辑' }, ()=>{
@@ -677,7 +714,30 @@ class SignalManagement extends PureComponent {
         })
       break;
       case "PLAN":
-        this.setState({ planShowDetail: JSON.parse(JSON.stringify(itemDetailData)), stepSevenAddEdit: true, popAddEditText: '编辑' })
+        this.setState({ planShowDetail: JSON.parse(JSON.stringify(itemDetailData)), stepSevenAddEdit: true, showFlag: true, popAddEditText: '编辑', planStageLists: null },() => {
+          this.cyclicComparison(this.state.schemePhasestageTypeData, 'schemePhasestageType', itemDetailData.schemePhasestageType, 'planShowDetail')
+          itemDetailData = JSON.parse(JSON.stringify(this.state.planShowDetail))
+          const idArr = JSON.parse(JSON.stringify(itemDetailData.schemePhasestageChains.split(','))).map(Number) // id转数组
+          const timeArr = JSON.parse(JSON.stringify(itemDetailData.schemePhasestageChainsTime.split(','))).map(Number) // time 转数组
+          const newIdNameArr = [] // 新的数据集合
+          this.props.data.stageLists.map((item) => {
+            idArr.map((itemId, idIndex) => {
+              if (item.phasestageNo === itemId) {
+                timeArr.map((itemTime, timeIndex) => {
+                  if (idIndex === timeIndex) {
+                    const itemNew = JSON.parse(JSON.stringify(item))
+                          itemNew.phaseTimeIndex = itemTime
+                          newIdNameArr.push(itemNew)
+                  }
+                })
+              }
+
+            })
+          })
+          this.setState({ planShowDetail: itemDetailData, planStageLists: newIdNameArr }, ()=>{
+            console.log(this.state.showFlag, '？状成是？')
+          })
+        })
       break;
       case "DAYPLAN":
         this.setState({ dayplanShowDetail: JSON.parse(JSON.stringify(itemDetailData)), stepEightAddEdit: true, popAddEditText: '编辑' })
@@ -739,7 +799,12 @@ class SignalManagement extends PureComponent {
         message.info(typeStr+"操作成功！")
         _this.setState({ [detailStr]: null })
         // _this.props.getStepStatus(_this.state.roadInterId, _this.state.roadNodeNo)
-        _this.props.getInfoListsType(_this.state.roadInterId, stepType)
+        if (stepType === 'PLAN' || stepType === 'DAYPLAN' || stepType === 'DISPATCH') {
+          _this.props.getInfoListsTypeMore(_this.state.roadInterId, _this.state.roadNodeNo, stepType)
+        }else {
+          _this.props.getInfoListsType(_this.state.roadInterId, stepType)
+
+        }
       })
     } else {
       this.props.postUpdateOthersType(itemDetailData, stepType).then(() => {
@@ -747,7 +812,11 @@ class SignalManagement extends PureComponent {
         message.info(typeStr+"操作成功！")
         _this.setState({ [detailStr]: null })
         // _this.props.getStepStatus(_this.state.roadInterId, _this.state.roadNodeNo)
-        _this.props.getInfoListsType(_this.state.roadInterId, stepType)
+        if (stepType === 'PLAN' || stepType === 'DAYPLAN' || stepType === 'DISPATCH') {
+          _this.props.getInfoListsTypeMore(_this.state.roadInterId, _this.state.roadNodeNo, stepType)
+        }else {
+          _this.props.getInfoListsType(_this.state.roadInterId, stepType)
+        }
       })
     }
   }
@@ -980,7 +1049,6 @@ btnSelectOver = (flag, defaultSelectLists) => {
     })
   }
   handleClickBaseMap = () => {
-    console.log(this.state.imageUrl)
     debugger
     if (this.state.imageFile !== null) {
       debugger
@@ -1109,6 +1177,23 @@ btnSelectOver = (flag, defaultSelectLists) => {
     this.state[name].imagePath !== undefined ? this.state[name].imagePath = imgName : this.state[name].imageUrl = imgName
     this.setState({showFlag: true, [imageList]: null})
   } 
+  // 方案阶段链添加
+  addStagePlan = () => {
+    this.setState({
+      popAddEditName: '选择阶段',
+      showFlag: false,
+    })
+  }
+  // 方案阶段链删除
+  reduceStagePlan = () => {
+    const planStageLists = JSON.parse(JSON.stringify(this.state.planStageLists))
+    if (planStageLists.length > 1) {
+      planStageLists.splice(planStageLists.length-1, 1)
+      this.setState({ planStageLists })
+    } else {
+      message.info('请至少保留一条数据！')
+    }
+  }
   // stepRoadAddForList = () => {
   //   message.info("车道添加成功！")
   //   this.popLayerShowHide("stepRoadAddEdit", null)
@@ -1128,20 +1213,20 @@ btnSelectOver = (flag, defaultSelectLists) => {
   //   this.popLayerShowHide("stepFourAddEdit", null)
   // }
   // step 5 相位添加
-  stepFiveAddForList = () => {
-    message.info("相位添加成功！")
-    this.popLayerShowHide("stepFiveAddEdit", null)
-  }
-  // step 6 阶段添加
-  stepSixAddForList = () => {
-    message.info("阶段添加成功！")
-    this.popLayerShowHide("stepSixAddEdit", null)
-  }
-  // step 7 配时方案添加
-  stepSevenAddForList = () => {
-    message.info("配时方案添加成功！")
-    this.popLayerShowHide("stepSevenAddEdit", null)
-  }
+  // stepFiveAddForList = () => {
+  //   message.info("相位添加成功！")
+  //   this.popLayerShowHide("stepFiveAddEdit", null)
+  // }
+  // // step 6 阶段添加
+  // stepSixAddForList = () => {
+  //   message.info("阶段添加成功！")
+  //   this.popLayerShowHide("stepSixAddEdit", null)
+  // }
+  // // step 7 配时方案添加
+  // stepSevenAddForList = () => {
+  //   message.info("配时方案添加成功！")
+  //   this.popLayerShowHide("stepSevenAddEdit", null)
+  // }
   // step 8 日计划添加
   stepEightAddForList = () => {
     message.info("日计划添加成功！")
@@ -1199,8 +1284,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
       onlineNum, offlineNum, 
       laneShowDetail, laneIconLists, fDir8NoData, turnDirNoListData, 
       lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists, showFlag,
-      lampgroupType, controlDir, controlTurn, detectorType, phaseForbidenData, phaseShieldData, typeData,
-      phaseShowDetail, stageShowDetail, planShowDetail, dayplanShowDetail, dispatchShowDetail, laneSelectLists, lightSelectLists, detectorSelectLists, selectFlag, phaseDefaultSelectLists, laneDefaultSelectLists, lightDefaultSelectLists, detectorDefaultSelectLists,  phaseIconLists, phaseSelectLists, phaseFlag
+      lampgroupType, controlDir, controlTurn, detectorType, phaseForbidenData, phaseShieldData, typeData, planStageLists,
+      phaseShowDetail, stageShowDetail, planShowDetail, dayplanShowDetail, dispatchShowDetail, laneSelectLists, lightSelectLists, detectorSelectLists, selectFlag, phaseDefaultSelectLists, laneDefaultSelectLists, lightDefaultSelectLists, detectorDefaultSelectLists,  phaseIconLists, phaseSelectLists, phaseFlag, schemePhasestageTypeData
     } = this.state
     const { Search } = Input
     return (
@@ -1806,7 +1891,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
         {  selectFlag && stepSixAddEdit ?  // 阶段配置添加编辑弹层
           <div className={styles.maskBg}> 
             <div className={styles.popBox}>
-            <div className={styles.popTit}>{popAddEditText}阶段的相位{ !showFlag ? ' > 点击图标选中 (若不想改变图标则占空白处)' : null }{ !showFlag ? null : <Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepFourAddEdit", null)} } />}</div>
+            <div className={styles.popTit}>{popAddEditText}阶段的相位{ !showFlag ? ' > 点击图标选中 (若不想改变图标则占空白处)' : null }{ !showFlag ? null : <Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepSixAddEdit", null)} } />}</div>
               {/* 阶段相位图标层 */}
               { !showFlag && phaseIconLists &&
                   <div className={styles.popCon}>
@@ -1887,13 +1972,86 @@ btnSelectOver = (flag, defaultSelectLists) => {
         }
         { stepSevenAddEdit ?  // 配时方案配置添加编辑弹层
           <div className={styles.maskBg}> 
-            <div className={styles.popBox}>
-              <div className={styles.popTit}>{popAddEditText}配时方案<Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepSevenAddEdit", null)} } /></div>
-              <div className={styles.popCon}> 配时方案的内容 </div>
-              <div className={styles.popBottom}>
-                <em onClick={ () => {this.stepSevenAddForList()}}>确 定</em>
-                <em onClick={ () => {this.popLayerShowHide("stepSevenAddEdit", null)} }>取 消</em>
+            <div className={styles.popBox} style={{ width: '720px' }}>
+              <div className={styles.popTit}>{popAddEditText}配时方案{ !showFlag ? "- 选择阶段" : null}{ !showFlag ? <Icon className={styles.Close} type="close"  onClick={this.stageIdCancel} /> : <Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepSevenAddEdit", null)} } />}</div>
+              {/* 选择阶段层 */}
+              { !showFlag && this.props.data.stageLists &&
+                  <div className={styles.popCon}>
+                    <Radio.Group  onChange={e => this.handleChangeRadio(e)}>
+                      { this.props.data.stageLists.length > 0 && this.props.data.stageLists.map((item, i) => {
+                        return <Radio key={'radio'+i} value={item.phasestageNo} onClick={e => this.handleClickRadio(item)}>{item.phasestageName} <img style={{width:'30px', height: '30px'}} src={`${this.phaseBgUrl}${item.imagePath}`} /></Radio>
+                        })
+                      }
+                    </Radio.Group>
+                  </div>
+              }
+              { showFlag && planShowDetail && 
+              <div className={classNames(styles.popCon, styles.popConTurn)} style={{padding: '15px 50px 15px 0'}}>
+                <div className={styles.itemInputBox}>
+                  <span>方案编号：</span><Input type='number' value={planShowDetail.schemeNo} onChange={e => this.handleChangeInput(e,'state','planShowDetail','schemeNo')} placeholder="请输入" />
+                </div>
+                <div className={styles.itemInputBox}>
+                  <span>方案名称：</span><Input value={planShowDetail.schemeName} onChange={e => this.handleChangeInput(e,'state','planShowDetail','schemeName')} placeholder="请输入" />
+                </div>
+                <div className={styles.itemInputBox}>
+                  <span>方案协调序号：</span><Input type='number' value={planShowDetail.schemeCoordinationNo} onChange={e => this.handleChangeInput(e,'state','planShowDetail','schemeCoordinationNo')} placeholder="请输入" />
+                </div>
+                <div className={styles.itemInputBox}>
+                  <span>方案周期：</span><Input type='number' value={planShowDetail.schemeCycle} onChange={e => this.handleChangeInput(e,'state','planShowDetail','schemeCycle')} placeholder="请输入" />
+                </div>
+                <div className={styles.itemInputBox}>
+                  <span>方案相位差时间：</span><Input type='number' value={planShowDetail.schemePhaseDiferenceTime} onChange={e => this.handleChangeInput(e,'state','planShowDetail','schemePhaseDiferenceTime')} placeholder="请输入" />
+                </div>
+                <div className={styles.itemInputBox}>
+                  <span>方案相位阶段出现类型：</span>
+                  <Select
+                      value={planShowDetail.schemePhasestageType ? planShowDetail.schemePhasestageType : 0 }
+                      onChange={ v =>  this.handleChangeSel(v, 'state', 'planShowDetail', 'schemePhasestageType') }>
+                      <Option value={0}>请选择类型</Option>
+                      {
+                        schemePhasestageTypeData.map((items, key) => {
+                          return <Option key={"optionList" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
+                        })
+                      }
+                    </Select>
+                </div>
+                <div className={styles.itemInputBox} style={{width: '100%', alignSelf: 'flex-start'}}>
+                  <span style={{alignSelf: 'flex-start'}}>方案相位阶段链：</span>
+                  <div className={styles.phaseStageBox}>
+                    <div className={styles.phaseStageIdBox}>
+                      { planStageLists && 
+                        planStageLists.map((item, i) =>{
+                          return <div key={'phaseStage'+i}  className={styles.imageName}>
+                          <span title={`${item.phasestageNo} - ${item.phasestageName}`} className={styles.IdName}><em/>{`${item.phasestageNo} - ${item.phasestageName}`}：</span> 
+                          <Input type='number' value={item.phaseTimeIndex} onChange={e => this.handleChangeInput(e,'state','planStageLists','phaseTimeIndex')} placeholder="请输入" />
+                          <img src={`${this.phaseBgUrl}${item.imagePath}`} />
+                          </div>
+                        })
+                      }
+                    </div>
+                    <div className={styles.addReduceBtn}>
+                      <s>
+                        <Icon type="plus" onClick={this.addStagePlan} />
+                        <Icon type="minus" onClick={this.reduceStagePlan} />
+                      </s>
+                    </div>
+                  </div>
+                  
+                </div>
               </div>
+              }
+              { showFlag ? 
+                <div className={styles.popBottom}>
+                  {
+                    popAddEditText === '编辑' ? <em onClick={ () => {this.postAddUpdateItem(planShowDetail, 'PLAN')}}>编辑确定</em> : <em onClick={ () => {this.postAddUpdateItem(planShowDetail, 'PLAN', true)}}>新增确定</em>
+                  }
+                    <em onClick={ () => {this.popLayerShowHide("stepSevenAddEdit", null)} }>取 消</em>
+                </div> : 
+                <div className={styles.popBottom}>
+                  <em onClick={ e => {this.stageIdRight(e,'state','planShowDetail','schemePhasestageChains')} }>确 定</em>
+                  <em onClick={this.stageIdCancel}>取 消</em>
+                </div>
+              }
             </div>
           </div> : null
         }
@@ -2289,6 +2447,7 @@ const mapDisPatchToProps = (dispatch) => {
     getStepStatus: bindActionCreators(getStepStatus, dispatch),
     getPicListsType: bindActionCreators(getPicListsType, dispatch),
     getInfoListsType: bindActionCreators(getInfoListsType, dispatch),
+    getInfoListsTypeMore: bindActionCreators(getInfoListsTypeMore, dispatch),
     getMapUnitInfoList: bindActionCreators(getMapUnitInfoList, dispatch),
     getUnitPop: bindActionCreators(getUnitPop, dispatch),
     checkUnitTree: bindActionCreators(checkUnitTree, dispatch),

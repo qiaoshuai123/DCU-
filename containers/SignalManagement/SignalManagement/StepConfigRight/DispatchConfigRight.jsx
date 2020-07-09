@@ -110,12 +110,15 @@ class DetectorConfigRight extends PureComponent {
       onCancel() { },
     })
   }
+  updateListItem = (itemDetailData, stepType) => {
+    this.props.updateListItem(itemDetailData, stepType)
+  }
   render() {
     const { dispatchLists, listNames } = this.state
     return (
       <div className={styles.conBox}>
         <div className={styles.rTit}>调度配置列表<em onClick={() => { this.popLayerShowHide("stepNineAddEdit", true, null, 'DISPATCH') }}>添加</em></div>
-        { !!dispatchLists && !!listNames ? <ListForAntd {...this.props} dataSourse={dispatchLists} listType={'DISPATCH'} listNames={listNames} showIndex={2} handleClickFind={this.handleClickFind} delListItem={this.delListItem} /> : <div className={styles.noData}>暂无数据</div> }
+        { !!dispatchLists && !!listNames ? <ListForAntd {...this.props} dataSourse={dispatchLists} listType={'DISPATCH'} listNames={listNames} showIndex={2} handleClickFind={this.handleClickFind} updateListItem={this.updateListItem} delListItem={this.delListItem} /> : <div className={styles.noData}>暂无数据</div> }
       </div>
     )
   }
