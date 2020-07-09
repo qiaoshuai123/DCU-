@@ -16,6 +16,8 @@ class InterworkingHome extends Component {
       dcuPopData: null,
       isInterworkingList: false,
       mapPointsData: null, // 地图中所有的点
+      offlineNum: '',
+      onlineNum: '',
     }
   }
 
@@ -213,7 +215,7 @@ class InterworkingHome extends Component {
     info.push(`<p class='input-item'>设备状态：<span>` + '01086861234' + `</span></p>`);
     info.push(`<p class='input-item'>信号接入状态：<span>` + '01086861234' + `</span></p>`);
     info.push(`<p class='input-item'>发布服务状态：<span>` + '01086861234' + `</span></p>`);
-    info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>参数配置</span></p>`);
+    info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>路口监视</span></p>`);
     const infoWindow = new AMap.InfoWindow({
       content: info.join("")  //使用默认信息窗体框样式，显示信息内容
     });
@@ -225,11 +227,24 @@ class InterworkingHome extends Component {
       infoWindow.close()
     })
   }
+  handleData = (e) => {
+    // console.log(JSON.parse(e), '内容')
+    const { offlineNum, onlineNum } = JSON.parse(e)
+    this.setState({
+      offlineNum,
+      onlineNum,
+    })
+  }
   render() {
     const { Search } = Input
-    const { isInterworkingList } = this.state
+    const { isInterworkingList, offlineNum, onlineNum } = this.state
     return (
       <div className={styles.InterworkingHomeBox}>
+        <Websocket
+          url="ws://192.168.1.213:20203/DCU/websocket/dcuState/0/0/0"
+          onMessage={this.handleData.bind(this)}
+        // onClose={() => this.handleClose()}
+        />
         <Header {...this.props} />
         <div className={styles.Interwork_left}>
           <div className={styles.InterworkLeft_search}>
@@ -250,8 +265,8 @@ class InterworkingHome extends Component {
           />
         </div>
         <div className={styles.promptBox}>
-          <div><span className={styles.spanTop} />在线设备9处</div>
-          <div><span className={styles.spanBom} />在线设备3处</div>
+          <div><span className={styles.spanTop} />在线设备{offlineNum}处</div>
+          <div><span className={styles.spanBom} />离线设备{onlineNum}处</div>
         </div>
         <div onClick={() => this.showInterworkingList(true)} className={styles.switch} />
         {

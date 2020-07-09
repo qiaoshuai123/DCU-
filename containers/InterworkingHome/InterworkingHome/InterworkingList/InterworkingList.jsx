@@ -72,9 +72,8 @@ class InterworkingList extends Component {
     })
   }
   getresetPwd = (dataItem) => {
-    console.log(dataItem, 'dddss')
-    // localStorage.setItem('bac', JSON.stringify(dataItem.background))
-    // window.open(`#/roaddetail?id=${dataItem.interId}&ids=${dataItem.nodeId}`)
+    localStorage.setItem('bac', JSON.stringify(dataItem.background))
+    window.open(`#/roaddetail?id=${dataItem.interId}&ids=${dataItem.nodeId}&ider=${dataItem.unitId}`)
   }
   // 更改查询关键字
   handleChange = (e, optios) => {
@@ -201,7 +200,7 @@ class InterworkingList extends Component {
                   <div className={styles.listTd} >{item.lat}</div>
                   <div className={styles.listTd} >{item.lng}</div>
                   <div className={styles.listTd} >{item.maintainPhone}</div>
-                  <div className={styles.listTd} >{isc === 1 ? '正在运行' : '停止运行'}</div>
+                  <div className={styles.listTd} >{isc === 1 ? '正常运行' : '停止运行'}</div>
                   <div className={styles.listTd} >
                     <span className={styles.delectName} onClick={() => { this.getresetPwd(item) }}>
                       路口监视
