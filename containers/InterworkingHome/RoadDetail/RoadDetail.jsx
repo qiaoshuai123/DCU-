@@ -33,6 +33,7 @@ class RoadDetail extends Component {
       phasestageNo: '',
       imgPaths: '',
       phasestageNames: '',
+      isOnline: '',
     }
     this.imgshref = 'http://192.168.1.213:20203/DCU/dcuImage/background/'
     this.laneBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/lane/' // 车道
@@ -183,15 +184,17 @@ class RoadDetail extends Component {
   }
   handleData = (e) => {
     console.log(JSON.parse(e), 'ssa')
-    const { lampgroupState, phasestageState, running } = JSON.parse(e)
+    const { lampgroupState, phasestageState, running, isOnline } = JSON.parse(e)
     const { remainingTime, phasestageNo, runningTime } = phasestageState
     const { localTime } = running
     this.setState({
       arrs: lampgroupState,
       remainingTime,
       phasestageNo,
+      isOnline,
     })
     this.startWidth(runningTime, phasestageNo)
+    this.phasestageNos(phasestageNo)
   }
 
   handleDataSc = (e) => {
@@ -202,7 +205,6 @@ class RoadDetail extends Component {
       schemeName,
     })
     // const { lampgroupState, phasestageState } = JSON.parse(e)
-    this.phasestageNos(phasestageList)
   }
   startWidth = (time, no) => {
     const { planRunStage } = this.state
@@ -218,10 +220,11 @@ class RoadDetail extends Component {
       })
     }
   }
-  phasestageNos = (phasestageList) => {
-    const { phasestageNo } = this.state
-    if (phasestageNo) {
-      const { phasestageName, imagePath } = phasestageList.find(item => item.phasestageNo == phasestageNo)
+  phasestageNos = (phasestageNo) => {
+    const { planRunStage } = this.state
+    console.log(planRunStage, phasestageNo, 'cccssss')
+    if (planRunStage) {
+      const { phasestageName, imagePath } = planRunStage.find(item => item.phasestageNo == phasestageNo)
       this.setState({
         phasestageNames: phasestageName,
         imgPaths: imagePath,
@@ -232,7 +235,7 @@ class RoadDetail extends Component {
     const {
       IsspanMessage, RoadImg, laneInfoAndDetailinfo, lampgroupDetailListinfo, detectorDetailListinfo,
       isMeessage, dcuPopData, schemeInfoListinfo, lockStateListinfo, nowPhasestageInfos, planRunStage,
-      arrs, remainingTime, schemeName, imgPaths, phasestageNames, widths,
+      arrs, remainingTime, schemeName, imgPaths, phasestageNames, widths, isOnline, phasestageNo,
     } = this.state
     return (
       <div className={styles.RoadDetail}>
@@ -318,12 +321,12 @@ class RoadDetail extends Component {
         </div>
         <div className={styles.DeviceStatus}>
           <ul className={styles.DeviceStatus_left}>
-            <li>设备状态:<span className={styles.fontColor}>&nbsp;正常在线</span></li>
+            <li>设备状态:<span className={styles.fontColor}>&nbsp;{isOnline === 1 ? '正常在线' : '离线'}</span></li>
             <li>控制状态:<span className={styles.fontColor}></span>本地多时段</li>
             <li>
               当前阶段:<span className={styles.fontColor}>{phasestageNames}</span>
               <span className={styles.stageImgBox}>
-                <img width="30px" height="30px" src={this.phaseBgUrl + imgPaths} alt="" />
+                <img width="30px" height="30px" src={`http://192.168.1.213:20203/DCU/dcuImage/phasestage1/${imgPaths}`} alt="" />
               </span>
             </li>
             <li>当前方案:<span className={styles.fontColor}></span>{schemeName}</li>
@@ -332,9 +335,11 @@ class RoadDetail extends Component {
           <div className={styles.DeviceStatus_right}>
             {
               planRunStage && planRunStage.map((item, index) => {
+                let num = ''
+                if (item.phasestageNo == phasestageNo) { num = 1 }
                 return (
                   <dl key={item + index} className={styles.deviceControlBtn}>
-                    <dt><span className={styles.stageImgBox}><img src={this.phaseBgUrl + item.imagePath} alt="" /></span></dt>
+                    <dt><span className={styles.stageImgBox}><img src={`http://192.168.1.213:20203/DCU/dcuImage/phasestage${num}/` + item.imagePath} alt="" /></span></dt>
                     <dd>{item.phasestageName}</dd>
                   </dl>
                 )

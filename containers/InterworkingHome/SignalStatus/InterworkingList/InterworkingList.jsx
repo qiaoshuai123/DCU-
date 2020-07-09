@@ -15,6 +15,7 @@ class InterworkingList extends Component {
       namesList: [],
       current: 1,
       currnum: '',
+      stylesList: [],
     }
     this.objs = {
       keyword: '',
@@ -66,8 +67,9 @@ class InterworkingList extends Component {
       currnum: signalLists.length,
     })
   }
-  getresetPwd = (id) => {
-    window.open(`#roaddetail/${id}`)
+  getresetPwd = (dataItem) => {
+    localStorage.setItem('bac', JSON.stringify(dataItem.background))
+    window.open(`#/roaddetail?id=${dataItem.interId}&ids=${dataItem.nodeId}&ider=${dataItem.unitId}`)
   }
   backPage = () => {
     this.props.showInterworkingList(false)
@@ -97,15 +99,15 @@ class InterworkingList extends Component {
   }
   handleData = (e) => {
     console.log(JSON.parse(e), 'sdssdsd')
-    // const { dcuStateList } = JSON.parse(e)
-    // this.setState(
-    //   {
-    //     stylesList: dcuStateList,
-    //   }
-    // )
+    const { signalStateList } = JSON.parse(e)
+    this.setState(
+      {
+        stylesList: signalStateList,
+      }
+    )
   }
   render() {
-    const { systemList, optionSelect, current, currnum, namesList } = this.state
+    const { systemList, optionSelect, current, currnum, namesList, stylesList } = this.state
     const { Option } = Select
     return (
       <div className={styles.syetem_bg} ref={(input) => { this.userLimitBox = input }}>
@@ -175,6 +177,12 @@ class InterworkingList extends Component {
               <div className={styles.listTd} >操作</div>
             </div>
             {systemList && systemList.map((item, index) => {
+              let isc = ''
+              stylesList.map((items) => {
+                if (item.interId === items.interId) {
+                  isc = items.phasestageNo
+                }
+              })
               return (
                 <div className={styles.listItems} key={item.id + index}>
                   <div className={styles.listTd} >{item.interName}</div>
@@ -184,11 +192,11 @@ class InterworkingList extends Component {
                   <div className={styles.listTd} >{item.lat}</div>
                   <div className={styles.listTd} >{item.lng}</div>
                   <div className={styles.listTd} >{item.maintainPhone}</div>
-                  <div className={styles.listTd} >{}</div>
+                  <div className={styles.listTd} >{isc === 1 ? '正常运行' : '停止运行'}</div>
                   {/* <div className={styles.listTd} >{item.brand}</div>
                   <div className={styles.listTd} >{item.brand}</div> */}
                   <div className={styles.listTd} >
-                    <span className={styles.delectName} onClick={() => { this.getresetPwd(item.id) }}>
+                    <span className={styles.delectName} onClick={() => { this.getresetPwd(item) }}>
                       路口监视
                     </span>
                   </div>

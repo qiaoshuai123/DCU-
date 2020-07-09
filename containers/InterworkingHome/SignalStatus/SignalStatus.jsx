@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Input, message } from 'antd'
+import Websocket from 'react-websocket'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { getMapUnitInfoList, getUnitPop } from '../../../reactRedux/actions/publicActions'
@@ -14,6 +15,7 @@ class SignalStatus extends Component {
     this.state = {
       isInterworkingList: false,
       mapPointsData: null, // 地图中所有的点s
+      statisticsMap: {},
     }
   }
   componentDidMount = () => {
@@ -205,7 +207,7 @@ class SignalStatus extends Component {
     info.push(`<p class='input-item'>设备状态：<span>` + '01086861234' + `</span></p>`);
     info.push(`<p class='input-item'>信号接入状态：<span>` + '01086861234' + `</span></p>`);
     info.push(`<p class='input-item'>发布服务状态：<span>` + '01086861234' + `</span></p>`);
-    info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>参数配置</span></p>`);
+    info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>路口监视</span></p>`);
     const infoWindow = new AMap.InfoWindow({
       content: info.join("")  //使用默认信息窗体框样式，显示信息内容
     });
@@ -217,11 +219,24 @@ class SignalStatus extends Component {
       infoWindow.close()
     })
   }
+  handleData = (e) => {
+    console.log(JSON.parse(e), 'sdssdsd')
+    this.setState(
+      {
+        statisticsMap: JSON.parse(e),
+      }
+    )
+  }
   render() {
     const { Search } = Input
-    const { isInterworkingList } = this.state
+    const { isInterworkingList, statisticsMap } = this.state
     return (
       <div className={styles.SignalStatus}>
+        <Websocket
+          url="ws://192.168.1.213:20203/DCU/websocket/signalState/0/0/0"
+          onMessage={this.handleData.bind(this)}
+        // onClose={() => this.handleClose()}
+        />
         <Header {...this.props} />
         <div className={styles.Interwork_left}>
           <div className={styles.InterworkLeft_search}>
@@ -242,11 +257,11 @@ class SignalStatus extends Component {
           />
         </div>
         <div className={styles.promptBox}>
-          <div><span className={styles.spanTop} />本地多时段控制0处</div>
-          <div><span className={styles.spanBom} />手动控制0处</div>
-          <div><span className={styles.spanBom} />实时优化控制7处</div>
-          <div><span className={styles.spanBom} />多时段优化控制0处</div>
-          <div><span className={styles.spanBom} />设备离线2处</div>
+          <div><span className={styles.spanTop} />本地多时段控制{statisticsMap[0]}处</div>
+          <div><span className={styles.spanBom} />手动控制{statisticsMap[1]}处</div>
+          <div><span className={styles.spanBom} />实时优化控制{statisticsMap[2]}处</div>
+          <div><span className={styles.spanBom} />多时段优化控制{statisticsMap[3]}处</div>
+          <div><span className={styles.spanBom} />设备离线{statisticsMap[4]}处</div>
         </div>
         <div onClick={() => this.showInterworkingList(true)} className={styles.switch} />
         {
