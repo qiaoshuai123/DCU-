@@ -310,11 +310,20 @@ class SignalManagement extends PureComponent {
     })
   }
   // 文本输入改变值
-  handleChangeInput = (event, type, name, key) => {
+  handleChangeInput = (event, type, name, key, index) => {
     if (key) {
-      this[type][name][key] = event.target.value
-      const newObj = JSON.parse(JSON.stringify(this[type][name]))
-      this.setState({ [name]: newObj })
+      if (index !== undefined){
+        this[type][name][index][key] = event.target.value
+        const newObj = JSON.parse(JSON.stringify(this[type][name]))
+        const newArrTime = this.state.planShowDetail.schemePhasestageChainsTime.split(",")
+        newArrTime[index] = event.target.value
+        this.state.planShowDetail.schemePhasestageChainsTime = newArrTime.join()
+        this.setState({ [name]: newObj })  
+      } else {
+        this[type][name][key] = event.target.value
+        const newObj = JSON.parse(JSON.stringify(this[type][name]))
+        this.setState({ [name]: newObj })
+      }
     } else {
       this[type][name] = event.target.value
     }
@@ -334,6 +343,7 @@ class SignalManagement extends PureComponent {
     this[type][name][key] ? this[type][name][key] = this[type][name][key] + ',' + this.state.strStagePlanID :  this[type][name][key] = this.state.strStagePlanID
     const newArr = this.state.planStageLists ? JSON.parse(JSON.stringify(this.state.planStageLists)) : []
     newArr.push(this.state.strStagePlanItem)
+    console.log(newArr, '看下数据对不？')
     this.setState({ showFlag: true, planStageLists: newArr })
   }
   // 取消单选按钮 弹层
@@ -665,7 +675,7 @@ class SignalManagement extends PureComponent {
               "schemePhasestageChainsTime": "",  //方案相位阶段链时间
               "schemePhasestageType": ""   //方案相位阶段出现类型
             }
-          this.setState({ planShowDetail, planStageLists: null })
+          this.setState({ planShowDetail, planStageLists: null, showFlag: true })
           break;
           case "DAYPLAN":
             const dayplanShowDetail = {
@@ -2023,7 +2033,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
                         planStageLists.map((item, i) =>{
                           return <div key={'phaseStage'+i}  className={styles.imageName}>
                           <span title={`${item.phasestageNo} - ${item.phasestageName}`} className={styles.IdName}><em/>{`${item.phasestageNo} - ${item.phasestageName}`}：</span> 
-                          <Input type='number' value={item.phaseTimeIndex} onChange={e => this.handleChangeInput(e,'state','planStageLists','phaseTimeIndex')} placeholder="请输入" />
+                          <Input type='number' value={Number(item.phaseTimeIndex)} onChange={e => this.handleChangeInput(e,'state','planStageLists','phaseTimeIndex', i)} placeholder="请输入" />
                           <img src={`${this.phaseBgUrl}${item.imagePath}`} />
                           </div>
                         })
