@@ -71,43 +71,13 @@ class PlanConfigRight extends PureComponent {
     this.props.popLayerShowHide(name, flag, event, stepType)
   }
   handleClickFind = (e, itemData) => {
+    e.stopPropagation()
     if ($(e.currentTarget).hasClass(Liststyles.hover)){
       $(e.currentTarget).removeClass(Liststyles.hover)
-      if (itemData.phaseLampgroupId.indexOf(',') === -1) {
-        $('div[pic-mark]').map(( i, item ) => {
-          if (item.getAttribute('pic-mark') === ('lampgroup'+itemData.phaseLampgroupId)) {
-            $(item).removeClass(styles.imgCurrent)
-          }
-        })
-      } else {
-        const leftSelArr = itemData.phaseLampgroupId.split(',')
-        leftSelArr.map((items) => {
-          $('div[pic-mark]').map(( i, item ) => {
-            if (item.getAttribute('pic-mark') === ('lampgroup'+items)) {
-              $(item).removeClass(styles.imgCurrent)
-            }
-          })
-        })
-      }
     } else {
       $(e.currentTarget).addClass(Liststyles.hover).siblings().removeClass(Liststyles.hover)
-      if (itemData.phaseLampgroupId.indexOf(',') === -1) {
-        $('div[pic-mark]').map(( i, item ) => {
-          if (item.getAttribute('pic-mark') === ('lampgroup'+itemData.phaseLampgroupId)) {
-            $(item).addClass(styles.imgCurrent).siblings().removeClass(styles.imgCurrent)
-          }
-        })
-      } else {
-        const leftSelArr = itemData.phaseLampgroupId.split(',')
-        leftSelArr.map((items) => {
-          $('div[pic-mark]').map(( i, item ) => {
-            if (item.getAttribute('pic-mark') === ('lampgroup'+items)) {
-              $(item).addClass(styles.imgCurrent)
-            }
-          })
-        })
-      }
     }
+    this.props.handleClickFind(e, itemData, Liststyles.hover)
   }
   delListItem = (e, id) => {
     e.stopPropagation();

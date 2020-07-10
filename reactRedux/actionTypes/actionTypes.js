@@ -68,6 +68,7 @@ export const GET_PLAN_INFO_LISTS = 'GET_PLAN_INFO_LISTS' // 配时方案查询�
 export const POST_ADD_PLAN_OTHERS = 'POST_ADD_PLAN_OTHERS' // 配时方案新增
 export const POST_UPDATE_PLAN_OTHERS = 'POST_UPDATE_PLAN_OTHERS' // 配时方案修改
 export const GET_DEL_PLAN_INFO = 'GET_DEL_PLAN_INFO' // 配时方案删除
+export const GET_S_PHASE_STAGE_CHAINS = 'GET_S_PHASE_STAGE_CHAINS' //方案阶段链
 // 日计划配置
 export const GET_DAYPLAN_INFO_LISTS = 'GET_DAYPLAN_INFO_LISTS' // 日计划查询列表
 export const POST_ADD_DAYPLAN_OTHERS = 'POST_ADD_DAYPLAN_OTHERS' // 日计划新增

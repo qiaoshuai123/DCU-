@@ -26,6 +26,7 @@ import StageConfigRight from './StepConfigRight/StageConfigRight'
 import PlanConfigRight from './StepConfigRight/PlanConfigRight'
 import DayPlanConfigRight from './StepConfigRight/DayPlanConfigRight'
 import DispatchConfigRight from './StepConfigRight/DispatchConfigRight'
+import '../../../utils/scrollTime/scrollTime.jquery.min.js' // 引用时间轴插件
 import Websocket from 'react-websocket';
 const { Option } = Select
 // 图片转64位
@@ -111,12 +112,18 @@ class SignalManagement extends PureComponent {
       planStageLists: null, //方案相位阶段链数据
       strStagePlanID: null, // 方案相位阶段链
       strStagePlanItem: null, //方案相位阶段一组对象数据
+      planChainsLists: null, // 阶段链时间轴数据
+      thisIndex: null,
+      lightStatus: 2,
+      cycleLength: 0, // 周期
+      nowCycleLength: 0, // 当前时间周期
+      timePlanFlag: null, // 是否显示
     }
     this.map = null
     this.moveFlag = false // 是否是移动状态
     this.bgIpUrl = 'http://192.168.1.213:20203/DCU/dcuImage/background/'
     this.laneBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/lane/'
-    this.lightBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/lampgroup/'
+    this.lightBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/lampgroup2/' // 红色
     this.detectorBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/detector/'
     this.phaseBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/phasestage/'
     this.socketPointStatusUrl = 'ws://192.168.1.213:20203/DCU/websocket/dcuState/0/0/0' // 实时请求地图点的状态
@@ -127,7 +134,7 @@ class SignalManagement extends PureComponent {
   }
   componentDidUpdate = (prevState) => {
     const { mapPointsData, dcuPopData, stepStatusData, basicBgLists, basicUplSuccess, dcuTreeData, codeTypeData, phaseLists,
-    laneShowDetail, laneIconLists, lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists, laneSelectLists, lightSelectLists, detectorSelectLists, phaseIconLists } = this.props.data
+    laneShowDetail, laneIconLists, lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists, laneSelectLists, lightSelectLists, detectorSelectLists, phaseIconLists, planChainsLists } = this.props.data
     if (prevState.data !== this.props.data) {
       console.log(this.props,this.props.data, "data中所有的数据")
     }
@@ -204,6 +211,13 @@ class SignalManagement extends PureComponent {
     }
     if (prevState.data.phaseLists !== phaseLists) {
       this.setState({ phaseSelectLists: phaseLists })
+    }
+    if (prevState.data.planChainsLists !== planChainsLists) {
+      this.setState({ planChainsLists: null, cycleLength: planChainsLists.allTime  }, () => {
+        this.setState({ planChainsLists: planChainsLists.phasestageList }, () => {
+          this.getScrollTime(this.state.planChainsLists)
+        })
+      })
     }
   }
   componentDidMount = () => {
@@ -310,11 +324,20 @@ class SignalManagement extends PureComponent {
     })
   }
   // 文本输入改变值
-  handleChangeInput = (event, type, name, key) => {
+  handleChangeInput = (event, type, name, key, index) => {
     if (key) {
-      this[type][name][key] = event.target.value
-      const newObj = JSON.parse(JSON.stringify(this[type][name]))
-      this.setState({ [name]: newObj })
+      if (index !== undefined){
+        this[type][name][index][key] = event.target.value
+        const newObj = JSON.parse(JSON.stringify(this[type][name]))
+        const newArrTime = this.state.planShowDetail.schemePhasestageChainsTime.split(",")
+        newArrTime[index] = event.target.value
+        this.state.planShowDetail.schemePhasestageChainsTime = newArrTime.join()
+        this.setState({ [name]: newObj })  
+      } else {
+        this[type][name][key] = event.target.value
+        const newObj = JSON.parse(JSON.stringify(this[type][name]))
+        this.setState({ [name]: newObj })
+      }
     } else {
       this[type][name] = event.target.value
     }
@@ -334,6 +357,7 @@ class SignalManagement extends PureComponent {
     this[type][name][key] ? this[type][name][key] = this[type][name][key] + ',' + this.state.strStagePlanID :  this[type][name][key] = this.state.strStagePlanID
     const newArr = this.state.planStageLists ? JSON.parse(JSON.stringify(this.state.planStageLists)) : []
     newArr.push(this.state.strStagePlanItem)
+    console.log(newArr, '看下数据对不？')
     this.setState({ showFlag: true, planStageLists: newArr })
   }
   // 取消单选按钮 弹层
@@ -665,19 +689,40 @@ class SignalManagement extends PureComponent {
               "schemePhasestageChainsTime": "",  //方案相位阶段链时间
               "schemePhasestageType": ""   //方案相位阶段出现类型
             }
-          this.setState({ planShowDetail, planStageLists: null })
+          this.setState({ planShowDetail, planStageLists: null, showFlag: true })
           break;
           case "DAYPLAN":
             const dayplanShowDetail = {
-              
+              "dailyplanNo": 0, //日计划编号
+              "interId": this.state.roadInterId,  //
+              "nodeNo": this.state.roadNodeNo, //
+              "timeintervalModelChain": "",    //时段运行模式链
+              "timeintervalSchemeChain": "",   //时段执行方案链
+              "timeintervalStarttimeChain": ""  //时段开始时间链
             }
-          this.setState({ dayplanShowDetail })
+          this.setState({ dayplanShowDetail, showFlag: true })
           break;
           case "DISPATCH":
             const dispatchShowDetail = {
-              
+              "scheduleCenter": {
+                "interId": this.state.roadInterId,  //
+                "nodeNo": this.state.roadNodeNo, //
+                "scheduleNo": 0    //调度号
+              },
+              "scheduleDetailList": [
+                {
+                  "interId": this.state.roadInterId,  //
+                  "nodeNo": this.state.roadNodeNo, //
+                  "dailyPlanId": 0,   //日计划编号
+                  "dataValueCodes": "",  //日期值code，逗号拼接
+                  "dateType": 0,  //日期类型                    
+                  "monthValueCodes": "", //月份
+                  "priority": 0,  //优先级
+                  "scheduleNo": 0   //调度号
+                }
+              ]
             }
-            this.setState({ dispatchShowDetail })
+            this.setState({ dispatchShowDetail, showFlag: true })
           break;
       }
     }
@@ -746,6 +791,42 @@ class SignalManagement extends PureComponent {
         this.setState({ dispatchShowDetail: JSON.parse(JSON.stringify(itemDetailData)), stepNineAddEdit: true, popAddEditText: '编辑' })
       break;
     }
+  }
+  // 点击组件列表中的一条时反馈的数据
+  handleClickFind = (e, itemData, clazz) => {
+    // console.log($(e.currentTarget).hasClass(clazz), '8787878787')
+    this.setState({ nowCycleLength: 0, timePlanFlag: $(e.currentTarget).hasClass(clazz) }, () => {
+      if(this.state.timePlanFlag) {
+        this.props.getInfoListsTypeMore(this.state.roadInterId, this.state.roadNodeNo, 'PLAN', itemData.schemeNo )
+      }
+    })
+  }
+  // 时间轴开始停止 触发
+  triggerClick = () => {
+    if($($('#timeBox').find('mark')[0]).attr('class')){
+      $($('#timeBox').find('mark')[0]).trigger('click')
+      $($('#timeBox').parent().find('em')).attr('style', 'left:15px')
+    }else{
+      $($('#timeBox').parent().find('em')).attr('style', 'left:15px')
+    }
+  }
+  // 时间轴
+  getScrollTime = (bgData) => {
+    this.triggerClick()
+    const _this = this
+    if (bgData) {
+      this.setState({
+        thisIndex: bgData.length,
+      })
+      $('#timeBox').getScrollTime({
+        bgColor: true, // 是否有颜色
+        bgData: bgData, // 背景数据
+        paddingBoth: 15, //左右padding 值
+        plugStyle: styles, //样式传入
+        thisDom: _this, // this根指向
+      })
+    }
+    
   }
   // (新增或更新) 插件相位、阶段、配时方案、日计划、调度
   postAddUpdateItem = (itemDetailData, stepType, eventType) => {
@@ -1274,8 +1355,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
     const { interListHeight, searchInterList, stepStatusData, popAddEditText, popAddEditName, moveFlag, stepOneFlag, stepTwoFlag, 
       stepRoadFlag, stepRoadAddEdit,
       stepThreeFlag, stepThreeAddEdit,
-      stepFourFlag, stepFourAddEdit, 
-      stepFiveFlag, stepFiveAddEdit,
+      stepFourFlag, stepFourAddEdit, lightStatus,
+      stepFiveFlag, stepFiveAddEdit, timePlanFlag, 
       stepSixFlag, stepSixAddEdit,
       stepSevenFlag, stepSevenAddEdit,
       stepEightFlag, stepEightAddEdit,
@@ -1283,8 +1364,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
       turnTab, baseMapFlag, stepOneText, imageUrl, interRoadBg, baseLoading, roadId, roadUnitId, roadInterId, roadNodeNo,
       onlineNum, offlineNum, 
       laneShowDetail, laneIconLists, fDir8NoData, turnDirNoListData, 
-      lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists, showFlag,
-      lampgroupType, controlDir, controlTurn, detectorType, phaseForbidenData, phaseShieldData, typeData, planStageLists,
+      lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists, showFlag, nowCycleLength, cycleLength,
+      lampgroupType, controlDir, controlTurn, detectorType, phaseForbidenData, phaseShieldData, typeData, planStageLists, planChainsLists,
       phaseShowDetail, stageShowDetail, planShowDetail, dayplanShowDetail, dispatchShowDetail, laneSelectLists, lightSelectLists, detectorSelectLists, selectFlag, phaseDefaultSelectLists, laneDefaultSelectLists, lightDefaultSelectLists, detectorDefaultSelectLists,  phaseIconLists, phaseSelectLists, phaseFlag, schemePhasestageTypeData
     } = this.state
     const { Search } = Input
@@ -2023,7 +2104,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
                         planStageLists.map((item, i) =>{
                           return <div key={'phaseStage'+i}  className={styles.imageName}>
                           <span title={`${item.phasestageNo} - ${item.phasestageName}`} className={styles.IdName}><em/>{`${item.phasestageNo} - ${item.phasestageName}`}：</span> 
-                          <Input type='number' value={item.phaseTimeIndex} onChange={e => this.handleChangeInput(e,'state','planStageLists','phaseTimeIndex')} placeholder="请输入" />
+                          <Input type='number' value={Number(item.phaseTimeIndex)} onChange={e => this.handleChangeInput(e,'state','planStageLists','phaseTimeIndex', i)} placeholder="请输入" />
                           <img src={`${this.phaseBgUrl}${item.imagePath}`} />
                           </div>
                         })
@@ -2083,7 +2164,15 @@ btnSelectOver = (flag, defaultSelectLists) => {
         { stepTwoFlag || stepRoadFlag || stepThreeFlag || stepFourFlag || stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag ?
           <div className={styles.stepBoxContent}>
             <div className={styles.stepLeftCon}>
-              {/* <div className={styles.leftItemCon}> */}
+            {/* 时间轴 */}
+              { timePlanFlag ? 
+                <div className={styles.timeWarpper}>
+                  <div id="timeBox" className={styles.timeBox}>
+                    <div style={{ color: '#1890ff', fontSize: '18px' }}>暂无信号灯</div>
+                  </div>
+                  <div className={styles.cycleLengthBox}>{'周期：' + nowCycleLength + ' / ' + cycleLength + ' s'}</div>
+                </div> : null
+              }
               <div className={styles.leftItemCon} style={interRoadBg !== '' ? { background: `url(${interRoadBg}) center center / 100% 100% no-repeat` } : {}}>
                 {/* 左侧基础信息回显 */}
                 {stepTwoFlag ? <div className={styles.turnBgBtn} onClick={ () => {this.popLayerShowHide("baseMapFlag", true)} }>路口底图</div> : null }
@@ -2125,6 +2214,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
                       roadNodeNo={roadNodeNo}
                       isClick={stepThreeFlag}
                       isMoveFlag={stepThreeFlag}
+                      typeUrl={lightStatus === 2 ? "lampgroup2" : lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : null}
                     />
                   </div> : null
                 }
@@ -2144,6 +2234,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
                       roadNodeNo={roadNodeNo}
                       isClick={stepThreeFlag}
                       isMoveFlag={stepThreeFlag}
+                      typeUrl={lightStatus === 2 ? "lampgroup2" : lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : null}
                     />
                     <DetectorConfigLeft {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
@@ -2170,6 +2261,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
                       roadNodeNo={roadNodeNo}
                       isClick={stepThreeFlag}
                       isMoveFlag={stepThreeFlag}
+                      typeUrl={lightStatus === 2 ? "lampgroup2" : lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : null}
                     />
                     <DetectorConfigLeft {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
@@ -2196,6 +2288,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
                       roadNodeNo={roadNodeNo}
                       isClick={stepThreeFlag}
                       isMoveFlag={stepThreeFlag}
+                      typeUrl={lightStatus === 2 ? "lampgroup2" : lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : null}
                     />
                     <DetectorConfigLeft {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
@@ -2222,6 +2315,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
                       roadNodeNo={roadNodeNo}
                       isClick={stepThreeFlag}
                       isMoveFlag={stepThreeFlag}
+                      typeUrl={lightStatus === 2 ? "lampgroup2" : lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : null}
                     />
                     <DetectorConfigLeft {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
@@ -2248,6 +2342,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
                       roadNodeNo={roadNodeNo}
                       isClick={stepThreeFlag}
                       isMoveFlag={stepThreeFlag}
+                      typeUrl={lightStatus === 2 ? "lampgroup2" : lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : null}
                     />
                     <DetectorConfigLeft {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
@@ -2274,6 +2369,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
                       roadNodeNo={roadNodeNo}
                       isClick={stepThreeFlag}
                       isMoveFlag={stepThreeFlag}
+                      typeUrl={lightStatus === 2 ? "lampgroup2" : lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : null}
                     />
                     <DetectorConfigLeft {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
@@ -2340,6 +2436,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
                     roadNodeNo={roadNodeNo}
                     popLayerShowHide={this.popLayerShowHide}
                     updateListItem={this.updateListItem}
+                    handleClickFind={this.handleClickFind}
                      /> : 
                   stepEightFlag ?
                     <DayPlanConfigRight 

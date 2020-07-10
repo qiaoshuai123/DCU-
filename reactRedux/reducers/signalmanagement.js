@@ -124,6 +124,8 @@ const signalmanagement = (state = {}, action) => {
       return Object.assign({}, state, { planUpdateOthers: payload })
     case types.GET_DEL_PLAN_INFO:
       return Object.assign({}, state, { planDelInfo: payload })
+    case types.GET_S_PHASE_STAGE_CHAINS:
+      return Object.assign({}, state, { planChainsLists: payload })
     // 日计划配置
     case types.GET_DAYPLAN_INFO_LISTS:
       return Object.assign({}, state, { dayPlanLists: payload })
