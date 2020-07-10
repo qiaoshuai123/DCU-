@@ -668,7 +668,7 @@ $stepBor_col: #393f4f;
         display: flex;
         justify-content: space-between;
         .stepLeftCon {
-            width: 980px;
+            width: 1180px;
             height: 100%;
             border-right: 2px solid $stepBor_col;
             display: flex;
@@ -676,7 +676,7 @@ $stepBor_col: #393f4f;
             align-items: center;
             position: relative;
             .leftItemCon {
-                width: 100%;
+                width: 980px;
                 height: 780px;
                 user-select: none;
                 margin:0 auto;
@@ -712,7 +712,7 @@ $stepBor_col: #393f4f;
             }
         }
         .stepRightCon {
-            width: calc(100% - 982px);
+            width: calc(100% - 1182px);
             height: 100%;
             overflow-y: auto;
             .conBox {
@@ -1064,3 +1064,202 @@ $stepBor_col: #393f4f;
         background-color: blue;
     }
 }
+@keyframes playGo {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+.timeWarpper{
+    position: absolute;
+    z-index:99999;
+    width:500px;
+    height:100px;
+    bottom: -20px;
+    right:-8px;
+    .timeBox {
+        display: flex;
+        height: 35px;
+        padding: 16px 15px;
+        background: rgba(62, 56, 68, 0.6);
+        position: absolute;
+        top: 0px;
+        right: 15px;
+        left: 15px;
+        display: flex;
+        justify-content: center;
+        user-select: none;
+        box-sizing: content-box;
+        mark {
+          padding: 5px 15px;
+          position: absolute;
+          right: 10px;
+          top: -66px;
+          font-weight: bold;
+          border-radius: 2px;
+          font-size: 0px;
+          cursor: pointer;
+          height: 30px;
+          width: 30px;
+          background: url(./imgs/play.png) no-repeat;
+          i {
+            width: 50px;
+            height: 50px;
+            display: block;
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            background: url(./imgs/timeBtnHover.png) no-repeat;
+            animation: playGo 3s linear infinite;
+            animation: playGo 3s linear infinite;
+            &:hover {
+              background: url(./imgs/timeBtnHover.png) no-repeat;
+              animation: unset;
+              animation: unset;
+            }
+          }
+        }
+        .btnSuspend {
+          background: url(./imgs/suspend.png) no-repeat;
+          i {
+            width: 50px;
+            height: 50px;
+            display: block;
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            background: url(./imgs/timeBtnHover.png) no-repeat;
+            animation: playGo 3s linear infinite;
+            animation: playGo 3s linear infinite;
+            &:hover {
+              background: url(./imgs/timeBtnHover.png) no-repeat;
+              animation: unset;
+              animation: unset;
+            }
+          }
+        }
+      
+        em {
+          height: 100%;
+          width: 0;
+          border-right: 1px #b63d5d solid;
+          position: absolute;
+          top: 0;
+          left: 15px;
+          z-index: 2;
+          transition: all .2s;
+          transition-timing-function: linear;
+      }
+        em > i {
+          display: inline-block;
+          height: 30%;
+          width: 16px;
+          border-radius: 2px;
+          background: #dedede;
+          position: absolute;
+          top: 35%;
+          left: -8px;
+          border-radius: 2px;
+          -moz-border-radius: 2px;
+          -ms-border-radius: 2px;
+          -o-border-radius: 2px;
+        }
+        /* 横向效果style */
+        .stepGapHor {
+          display: inline-block;
+          height: 10%;
+          position: relative;
+          top: 40%;
+        }
+        .horStepGap {
+          display: inline-block;
+          height: 30%;
+          position: relative;
+          top: 35%;
+        }
+        .horStepGapBig {
+          display: inline-block;
+          height: 100%;
+          justify-content: stretch;
+          position: relative;
+          cursor: pointer;
+        }
+      
+        .horStepGapBig time {
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          transform: translate(-50%, 120%);
+          font-size: 12px;
+          color: #debdc2;
+          cursor: default;
+      
+          .timePlanNames{
+            position: absolute;
+            left:0;
+            top:20px;
+            // border:1px yellow solid;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            > s{
+              width: 70px;
+              height: 25px;
+              line-height:25px;
+              padding:0 5px;
+              background: url(./imgs/leftBg.png) center center no-repeat;
+              background-size: 100% 100%;
+              text-decoration: none;
+              text-align: center;
+              cursor: pointer;
+              >span {
+                display: none;
+              }
+              &:hover {
+                color: #00d31f;
+                box-shadow: inset 0 0 10px #fff;
+                border-radius: 5px;
+                >span {
+                  display: flex;
+                }
+                :global(.anticon-close){
+                  color: #fff;
+                  font-size:12px;
+                  display: block;
+                  position: absolute;
+                  top:-7px;
+                  right:-6px;
+                  border:1px rgb(20, 50, 129) solid;
+                  background:#151b32;
+                  border-radius: 100%;
+                  -webkit-border-radius: 100%;
+                  -moz-border-radius: 100%;
+                  -ms-border-radius: 100%;
+                  -o-border-radius: 100%;
+                }
+              }
+            }
+          }
+        }
+        .horStepGapBig:first-child {
+          >time .timePlanNames:first-child{
+            s{
+              span{
+                display: none;
+              }
+            }
+          }
+        }
+    }
+    .cycleLengthBox{
+        position: absolute;
+        text-align: center;
+        left:0;
+        right:0;
+        bottom:10px;
+        font-size:14px;
+        color:#fff;
+      }
+}  

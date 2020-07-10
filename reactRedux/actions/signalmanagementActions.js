@@ -337,12 +337,18 @@ export const getInfoListsType = (interId, stepType) => {
   }
 }
 // 右侧列表 配时方案、日计划、调度的列表以此为准
-export const getInfoListsTypeMore = (interId, nodeNo, stepType) => {
+export const getInfoListsTypeMore = (interId, nodeNo, stepType, schemeNo) => {
   let thisAPI, thisTYPE;
   switch(stepType){
     case "PLAN":
-      thisAPI = APIs.API_PLAN_INFO_LISTS
-      thisTYPE = types.GET_PLAN_INFO_LISTS
+      debugger
+      if (!schemeNo){
+        thisAPI = APIs.API_PLAN_INFO_LISTS
+        thisTYPE = types.GET_PLAN_INFO_LISTS
+      } else {
+        thisAPI = APIs.API_S_PHASE_STAGE_CHAINS
+        thisTYPE = types.GET_S_PHASE_STAGE_CHAINS
+      }
       break;
     case "DAYPLAN":
       thisAPI = APIs.API_DAYPLAN_INFO_LISTS
@@ -355,7 +361,7 @@ export const getInfoListsTypeMore = (interId, nodeNo, stepType) => {
   }
   return async (dispatch) => {
     try {
-      const result = await RestUtil.get(`${thisAPI}?interId=${interId}&nodeNo=${nodeNo}`)
+      const result = await RestUtil.get(!schemeNo ? `${thisAPI}?interId=${interId}&nodeNo=${nodeNo}` : `${thisAPI}?interId=${interId}&nodeNo=${nodeNo}&schemeNo=${schemeNo}`)
       if (result.data.code === 0) {
         dispatch({ type: thisTYPE, payload: result.data.data })
       } else {

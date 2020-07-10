@@ -246,13 +246,14 @@ class ImgEvent extends React.Component {
     let thisName = '';
     let thisUrl= '';
     let tagMark = '';
+    debugger
     if (this.props.typeUrl === 'lane') {
       thisName = "stepRoadAddEdit";
       thisUrl = "lane";
       tagMark = "lane" + laneId
-    } else if(this.props.typeUrl === 'lampgroup'){
+    } else if(this.props.typeUrl.indexOf('lampgroup') !== -1){
       thisName = "stepThreeAddEdit";
-      thisUrl = "lampgroup";
+      thisUrl = this.props.typeUrl;
       tagMark = "lampgroup" + lampgroupNo
     } else if(this.props.typeUrl === 'detector') {
       thisName = "stepFourAddEdit";
