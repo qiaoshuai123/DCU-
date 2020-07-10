@@ -257,11 +257,11 @@ class SignalStatus extends Component {
           />
         </div>
         <div className={styles.promptBox}>
-          <div><span className={styles.spanTop} />本地多时段控制{statisticsMap[0]}处</div>
-          <div><span className={styles.spanBom} />手动控制{statisticsMap[1]}处</div>
-          <div><span className={styles.spanBom} />实时优化控制{statisticsMap[2]}处</div>
-          <div><span className={styles.spanBom} />多时段优化控制{statisticsMap[3]}处</div>
-          <div><span className={styles.spanBom} />设备离线{statisticsMap[4]}处</div>
+          <div><span className={styles.spanTop} />特殊控制{statisticsMap.special}处</div>
+          <div><span className={styles.spanBom} />手动控制{statisticsMap.manual}处</div>
+          <div><span className={styles.spanBom} />本地控制{statisticsMap.local}处</div>
+          <div><span className={styles.spanBom} />优化控制{statisticsMap.optimize}处</div>
+          <div><span className={styles.spanBom} />设备离线{statisticsMap.offline}处</div>
         </div>
         <div onClick={() => this.showInterworkingList(true)} className={styles.switch} />
         {

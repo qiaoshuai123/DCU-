@@ -155,44 +155,59 @@ class InterworkingHome extends Component {
     });
   }
   //批量添加点
-  drawMarkers = (positions, layer) => {
+  drawMarkers = (positions, layer, updatePoint = []) => {
     const map = this.map
     if (window[layer]) {
       window[layer].removeLayers(this[layer])
     }
     this[layer] = []
-    if (this.infoWindow) {
-      this.infoWindow.close()
-    }
+    // if (this.infoWindow) {
+    //   this.infoWindow.close()
+    // }
     if (map) {
       for (let i = 0; i < positions.length; i++) {
-        // const latlng = positions[i]
-        // const latlng = positions[i].latlng
-        const marker = new AMap.Marker({
-          position: new AMap.LngLat(positions[i].lng, positions[i].lat),
-          offset: new AMap.Pixel(-16, -16),
-          content: "<div id='roadKey" + positions[i].id + "' class='marker-online'></div>",
-        })
-        // marker.id =
-        marker.on('click', () => {
-          map.emit('click', {
-            lnglat: map.getCenter()
-          })
-          marker.setContent("<div class='drawCircle'><div class='inner'></div><div id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
-          const nowZoom = map.getZoom()
-          map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
-          this.setState({
-            roadUnitId: positions[i].id,
-            roadInterId: positions[i].interId,
-            roadNodeNo: positions[i].nodeId,
-          }, () => {
-            const resultP = Promise.resolve(this.props.getUnitPop(positions[i].interId))
-            resultP.then(() => {
-              this.openInfoWin(map, positions[i], marker, positions[i].interName)
+        updatePoint.map((item) => {
+          let isc = ''
+          if (item.interId == positions[i].interId) {
+            isc = item.state
+          }
+          // const latlng = positions[i]
+          // const latlng = positions[i].latlng
+          let marker = ''
+          if (isc == 1) {
+            marker = new AMap.Marker({
+              position: new AMap.LngLat(positions[i].lng, positions[i].lat),
+              offset: new AMap.Pixel(-16, -16),
+              content: "<div id='roadKey" + positions[i].id + "' class='marker-online'></div>",
+            })
+          } else {
+            marker = new AMap.Marker({
+              position: new AMap.LngLat(positions[i].lng, positions[i].lat),
+              offset: new AMap.Pixel(-16, -16),
+              content: "<div id='roadKey" + positions[i].id + "' class='marker-offline'></div>",
+            })
+          }
+          // marker.id =
+          marker.on('click', () => {
+            map.emit('click', {
+              lnglat: map.getCenter()
+            })
+            marker.setContent("<div class='drawCircle'><div class='inner'></div><div id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
+            const nowZoom = map.getZoom()
+            map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
+            this.setState({
+              roadUnitId: positions[i].id,
+              roadInterId: positions[i].interId,
+              roadNodeNo: positions[i].nodeId,
+            }, () => {
+              const resultP = Promise.resolve(this.props.getUnitPop(positions[i].interId))
+              resultP.then(() => {
+                this.openInfoWin(map, positions[i], marker, positions[i].interName)
+              })
             })
           })
+          this[layer].push(marker)
         })
-        this[layer].push(marker)
       }
       window[layer].addLayers(this[layer]) // 把点添加到层组中
       window[layer].setMap(map) // 层组渲染到地图中
@@ -228,8 +243,9 @@ class InterworkingHome extends Component {
     })
   }
   handleData = (e) => {
-    // console.log(JSON.parse(e), '内容')
-    const { offlineNum, onlineNum } = JSON.parse(e)
+    console.log(JSON.parse(e), '内容')
+    const { offlineNum, onlineNum, dcuStateList } = JSON.parse(e)
+    this.drawMarkers(this.state.mapPointsData, 'pointLayers', dcuStateList)
     this.setState({
       offlineNum,
       onlineNum,
@@ -265,8 +281,8 @@ class InterworkingHome extends Component {
           />
         </div>
         <div className={styles.promptBox}>
-          <div><span className={styles.spanTop} />在线设备{offlineNum}处</div>
-          <div><span className={styles.spanBom} />离线设备{onlineNum}处</div>
+          <div><span className={styles.spanTop} />在线设备{onlineNum}处</div>
+          <div><span className={styles.spanBom} />离线设备{offlineNum}处</div>
         </div>
         <div onClick={() => this.showInterworkingList(true)} className={styles.switch} />
         {

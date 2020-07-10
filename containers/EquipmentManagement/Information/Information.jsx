@@ -5,7 +5,10 @@ import moment from 'moment'
 // import Websocket from 'react-websocket';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { getdcuByInterId, getsignalByInterId, postupdateDcuinfo, postupdateSignal } from '../../../reactRedux/actions/equipmentManagement'
+import {
+  getdcuByInterId, getsignalByInterId, postupdateDcuinfo, postupdateSignal,
+  loadData, editData, dculoadData, dcueditData, reboot,
+} from '../../../reactRedux/actions/equipmentManagement'
 import { getBgLists, postBgBySelect } from '../../../reactRedux/actions/signalmanagementActions'
 import styles from './Information.scss'
 
@@ -176,7 +179,7 @@ class Information extends Component {
     })
   }
   getgetInterId = (getInterId) => {
-    console.log(getInterId, 'qiaos')
+    // console.log(getInterId, 'qiaos')
     if (getInterId) {
       this.dcuIds = true
       const {
@@ -469,6 +472,47 @@ class Information extends Component {
   // handleData = (a) => {
   //   console.log(a, '1122')
   // }
+
+  btnreboot = (num) => { // 设备重启
+    const obj = `interId=${this.interId}&rebootDeviceType=${num}`
+    this.props.reboot(obj).then(res => {
+      if (res.data.code === 0) {
+        message.success('重启成功')
+      }
+    })
+  }
+  DcueditData = () => { // dcu下发配置
+    const obj = `interId=${this.interId}`
+    this.props.dcueditData(obj).then(res => {
+      if (res.data.code === 0) {
+        message.success('下发成功')
+      }
+    })
+  }
+  DculoadData = () => { // dcu上传配置
+    const obj = `interId=${this.interId}`
+    this.props.dculoadData(obj).then(res => {
+      if (res.data.code === 0) {
+        message.success('上传成功')
+      }
+    })
+  }
+  InfeditData = () => { // 信号机下发配置
+    const obj = `interId=${this.interId}`
+    this.props.editData(obj).then(res => {
+      if (res.data.code === 0) {
+        message.success('下发成功')
+      }
+    })
+  }
+  InfloadData = () => { // 信号机上传配置
+    const obj = `interId=${this.interId}`
+    this.props.loadData(obj).then(res => {
+      if (res.data.code === 0) {
+        message.success('上传成功')
+      }
+    })
+  }
   render() {
     const {
       interRoadBg, baseMapFlag, imageUrl, deviceIdDCU, serverTimeZone,
@@ -555,7 +599,7 @@ class Information extends Component {
         </div>
         <div className={styles.stepRightCon}>
           <div className={styles.conBox}>
-            <div className={styles.rTit}><span>DCU基础信息</span><em onClick={this.addDcu}>保存</em><em>设置重启</em><em>下发配置</em><em>上传配置</em></div>
+            <div className={styles.rTit}><span>DCU基础信息</span><em onClick={this.addDcu}>保存</em><em onClick={() => this.btnreboot(1)}>设置重启</em><em onClick={this.DcueditData}>下发配置</em><em onClick={this.DculoadData}>上传配置</em></div>
             {/* 表单 */}
             <div className={styles.rCon}>
               <div className={styles.itemInputBox}>
@@ -611,7 +655,7 @@ class Information extends Component {
               </div>
             </div>
             {/* 列表 */}
-            <div className={styles.rTit}><span>信号机基础信息</span><em onClick={this.addSigna}>保存</em><em>设置重启</em></div>
+            <div className={styles.rTit}><span>信号机基础信息</span><em onClick={this.addSigna}>保存</em><em onClick={() => this.btnreboot(2)}>设置重启</em><em onClick={this.InfeditData}>下发配置</em><em onClick={this.InfloadData}>上传配置</em></div>
             <div className={styles.rCon}>
               <div className={styles.itemInputBox}>
                 <span>生产厂家：</span><Input path="brand" onChange={this.handleChangeValue} value={brand} placeholder="请输入生产厂家" />
@@ -680,6 +724,11 @@ const mapDisPatchToProps = (dispatch) => {
     postupdateSignal: bindActionCreators(postupdateSignal, dispatch),
     getBgLists: bindActionCreators(getBgLists, dispatch),
     postBgBySelect: bindActionCreators(postBgBySelect, dispatch),
+    loadData: bindActionCreators(loadData, dispatch),
+    editData: bindActionCreators(editData, dispatch),
+    dculoadData: bindActionCreators(dculoadData, dispatch),
+    dcueditData: bindActionCreators(dcueditData, dispatch),
+    reboot: bindActionCreators(reboot, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(Information)

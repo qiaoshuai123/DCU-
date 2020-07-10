@@ -24,6 +24,11 @@ import {
   API_UNI_UNITINFOLIST,
   API_SIG_SIGNALLIST,
   API_SIG_SIGNALLISTBYPAGE,
+  API_SIG_LOADDATA,
+  API_SIG_EDITDATA,
+  API_DCU_LOADDATA,
+  API_DCU_EDITDATA,
+  API_UNI_REBOOT,
 } from '../actionTypes/actionAPIs'
 
 // 更改点位信息名称
@@ -83,6 +88,41 @@ export const getdcuByInterId = (params) => {
 export const postupdateDcuinfo = (params) => {
   return async () => {
     const result = await RestUtil.post(`${API_DEL_UPDATEDCU}`, params)
+    return result
+  }
+}
+// 信号机上传配置
+export const loadData = (params) => {
+  return async () => {
+    const result = await RestUtil.get(`${API_SIG_LOADDATA}?${params}`)
+    return result
+  }
+}
+// 信号机下发配置
+export const editData = (params) => {
+  return async () => {
+    const result = await RestUtil.get(`${API_SIG_EDITDATA}?${params}`)
+    return result
+  }
+}
+// DCU上传配置
+export const dculoadData = (params) => {
+  return async () => {
+    const result = await RestUtil.get(`${API_DCU_LOADDATA}?${params}`)
+    return result
+  }
+}
+// DCU下发配置
+export const dcueditData = (params) => {
+  return async () => {
+    const result = await RestUtil.get(`${API_DCU_EDITDATA}?${params}`)
+    return result
+  }
+}
+// 信号机DCU重启
+export const reboot = (params) => {
+  return async () => {
+    const result = await RestUtil.get(`${API_UNI_REBOOT}?${params}`)
     return result
   }
 }

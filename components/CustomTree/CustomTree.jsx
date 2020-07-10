@@ -15,7 +15,6 @@ class CustomTree extends React.Component {
       visible: 0, // 右键菜单
       treeChecked: null,
       dcuTreeData: null,
-      arrIndex: null,
     }
   }
   componentDidMount = () => {
@@ -66,7 +65,7 @@ class CustomTree extends React.Component {
     if (!this.props.rightDownNone) {
       this.props.visibleShowLeft('', '', false)
     }
-    this.setState({ expendsKey: this.state.expendsKey, arrIndex })
+    this.setState({ expendsKey: this.state.expendsKey })
     // this.props.getSelectTreeId(id)
   }
   handleTreeChildSelect = (e) => {

@@ -172,15 +172,17 @@ class InterworkingList extends Component {
               <div className={styles.listTd} >纬度</div>
               <div className={styles.listTd} >维护电话</div>
               <div className={styles.listTd} >设备状态</div>
-              {/* <div className={styles.listTd} >信号控制状态</div>
-              <div className={styles.listTd} >运行阶段</div> */}
+              <div className={styles.listTd} >信号控制状态</div>
+              <div className={styles.listTd} >运行阶段</div>
               <div className={styles.listTd} >操作</div>
             </div>
             {systemList && systemList.map((item, index) => {
-              let isc = ''
+              let isc = {}
               stylesList.map((items) => {
                 if (item.interId === items.interId) {
-                  isc = items.phasestageNo
+                  isc.phasestageNo = items.phasestageNo
+                  isc.nodeModelName = items.nodeModelName
+                  isc.phasestageName = items.phasestageName
                 }
               })
               return (
@@ -192,9 +194,9 @@ class InterworkingList extends Component {
                   <div className={styles.listTd} >{item.lat}</div>
                   <div className={styles.listTd} >{item.lng}</div>
                   <div className={styles.listTd} >{item.maintainPhone}</div>
-                  <div className={styles.listTd} >{isc === 1 ? '正常运行' : '停止运行'}</div>
-                  {/* <div className={styles.listTd} >{item.brand}</div>
-                  <div className={styles.listTd} >{item.brand}</div> */}
+                  <div className={styles.listTd} >{isc.phasestageNo === 1 ? '正常运行' : '停止运行'}</div>
+                  <div className={styles.listTd} >{isc.nodeModelName}</div>
+                  <div className={styles.listTd} >{isc.phasestageName}</div>
                   <div className={styles.listTd} >
                     <span className={styles.delectName} onClick={() => { this.getresetPwd(item) }}>
                       路口监视

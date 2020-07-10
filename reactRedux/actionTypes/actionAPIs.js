@@ -93,6 +93,11 @@ export const API_DEL_UPDATESIGNAL = '/DCU/signalInfo/updateSignal' // 修改信�
 export const API_DEL_UPDATEUNIT = '/DCU/unitInfo/updateUnit' // 选择底图
 export const API_DEL_FILEUPLOAD = '/DCU/unitInfo/fileUpload' // 上传底图
 export const API_DEL_BACKGROUNDLIST = '/DCU/unitInfo/backgroundList' // 查询全部底图
+export const API_SIG_LOADDATA = '/DCU/signalInfo/loadData' // 信号机上传配置
+export const API_SIG_EDITDATA = '/DCU/signalInfo/editData' // 信号机下发配置
+export const API_DCU_LOADDATA = '/DCU/dcuInfo/loadData' // DCU上传配置
+export const API_DCU_EDITDATA = '/DCU/dcuInfo/editData' // DCU下发配置
+export const API_UNI_REBOOT = '/DCU/unitInfo/reboot' // 信号机DCU重启
 
 /** *********** 实时监控模块 ************* */
 // DCU状态
