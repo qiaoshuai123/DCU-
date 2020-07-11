@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react'
-import { Input, Icon, Radio, Upload, Modal, message, Select, Checkbox, Row, Col } from 'antd'
+import { Input, Icon, Radio, Upload, Modal, message, Select, Checkbox, Row, Col, TimePicker  } from 'antd'
+import moment from 'moment';
 import classNames from 'classnames'
 import Header from '../../../components/Header/Header'
 import markerIcon from '../../../images/markerGreen.png'
@@ -28,6 +29,7 @@ import DayPlanConfigRight from './StepConfigRight/DayPlanConfigRight'
 import DispatchConfigRight from './StepConfigRight/DispatchConfigRight'
 import '../../../utils/scrollTime/scrollTime.jquery.min.js' // 引用时间轴插件
 import Websocket from 'react-websocket';
+const format = 'HH:mm';
 const { Option } = Select
 // 图片转64位
 function getBase64(img, callback) {
@@ -96,6 +98,7 @@ class SignalManagement extends PureComponent {
       phaseForbidenData: null,
       phaseShieldData: null,
       schemePhasestageTypeData: null,
+      timeintervalModelChainData: null,
       typeData: null,
       phaseShowDetail: null,
       stageShowDetail: null,
@@ -248,6 +251,7 @@ class SignalManagement extends PureComponent {
     this.getSystemCodeType(28) // 相位屏蔽 
     this.getSystemCodeType(29) // 相位禁止
     this.getSystemCodeType(32) // 方案相位阶段出现类型
+    this.getSystemCodeType(33) // 方案相位阶段出现类型
   }
   // 字典code
   getSystemCodeType = (num) => {
@@ -293,6 +297,9 @@ class SignalManagement extends PureComponent {
         case 32:
           this.setState({ schemePhasestageTypeData: this.props.data.codeTypeData }) // schemePhasestageTypeData
           break;
+        case 33:
+          this.setState({ timeintervalModelChainData: this.props.data.codeTypeData }) // 时段运行模式链
+          break;
       }
     })
   }
@@ -335,7 +342,7 @@ class SignalManagement extends PureComponent {
         this.state.planShowDetail.schemePhasestageChainsTime = newArrTime.join()
         this.setState({ [name]: newObj })  
       } else {
-        this[type][name][key] = event.target.value
+        // key === 'dailyplanNo' ? this[type][name][key] = Number(event.target.value) : this[type][name][key] = event.target.value
         const newObj = JSON.parse(JSON.stringify(this[type][name]))
         this.setState({ [name]: newObj })
       }
@@ -366,14 +373,21 @@ class SignalManagement extends PureComponent {
     this.setState({ showFlag: true })
   }
   // 下拉选择值
-  handleChangeSel = (value, type, name, key) => {
-    if (key) {
-      this[type][name][key] = value
+  handleChangeSel = (value, type, name, key, index, keyValue) => {
+    if (index !== undefined) {
+      this[type][name][key][index][keyValue] = value
       const newObj = JSON.parse(JSON.stringify(this[type][name]))
       this.setState({ [name]: newObj })
     } else {
-      this[type][name] = value
+      if (key) {
+        this[type][name][key] = value
+        const newObj = JSON.parse(JSON.stringify(this[type][name]))
+        this.setState({ [name]: newObj })
+      } else {
+        this[type][name] = value
+      }
     }
+    
   }
   // 复选框
   handleChangeCheck = (checkValues, type, name, key) => {
@@ -694,9 +708,10 @@ class SignalManagement extends PureComponent {
           break;
           case "DAYPLAN":
             const dayplanShowDetail = {
-              "dailyplanNo": 0, //日计划编号
+              "dailyplanNo": 1, //日计划编号
               "interId": this.state.roadInterId,  //
               "nodeNo": this.state.roadNodeNo, //
+              "timeintervalList":[],
               "timeintervalModelChain": "",    //时段运行模式链
               "timeintervalSchemeChain": "",   //时段执行方案链
               "timeintervalStarttimeChain": ""  //时段开始时间链
@@ -780,13 +795,15 @@ class SignalManagement extends PureComponent {
 
             })
           })
-          this.setState({ planShowDetail: itemDetailData, planStageLists: newIdNameArr }, ()=>{
-            console.log(this.state.showFlag, '？状成是？')
-          })
+          this.setState({ planShowDetail: itemDetailData, planStageLists: newIdNameArr })
         })
       break;
       case "DAYPLAN":
-        this.setState({ dayplanShowDetail: JSON.parse(JSON.stringify(itemDetailData)), stepEightAddEdit: true, popAddEditText: '编辑' })
+        this.setState({ dayplanShowDetail: JSON.parse(JSON.stringify(itemDetailData)), stepEightAddEdit: true, popAddEditText: '编辑' },()=>{
+          this.state.dayplanShowDetail.timeintervalList.map((item)=>{
+            this.cyclicComparison(this.state.timeintervalModelChainData, 'timeintervalScheme', Number(item.timeintervalScheme), 'dayplanShowDetail')
+          })
+        })
       break;
       case "DISPATCH":
         this.setState({ dispatchShowDetail: JSON.parse(JSON.stringify(itemDetailData)), stepNineAddEdit: true, popAddEditText: '编辑' })
@@ -830,7 +847,7 @@ class SignalManagement extends PureComponent {
   }
   // (新增或更新) 插件相位、阶段、配时方案、日计划、调度
   postAddUpdateItem = (itemDetailData, stepType, eventType) => {
-    let typeStr = '', showStr = '', detailStr = '',  _this = this
+    let typeStr = '', showStr = '', detailStr = '',  _this = this, dayPlanParam1 = '', dayPlanParam2 = '', dayPlanParam3 = ''
     switch(stepType){
       case 'PHASE':
         typeStr = '相位'
@@ -863,6 +880,14 @@ class SignalManagement extends PureComponent {
         detailStr = 'planShowDetail'
         break;
       case 'DAYPLAN':
+        itemDetailData.timeintervalList.map((dayPlanitem) =>{
+          dayPlanParam1 += dayPlanitem.timeintervalScheme + ','
+          dayPlanParam2 += dayPlanitem.timeintervalModel + ','
+          dayPlanParam3 += dayPlanitem.timeintervalStarttime + ','
+        })
+        itemDetailData.timeintervalSchemeChain = dayPlanParam1.slice(0,-1)
+        itemDetailData.timeintervalModelChain = dayPlanParam2.slice(0,-1)
+        itemDetailData.timeintervalStarttimeChain = dayPlanParam3.slice(0,-1)
         typeStr = '日计划'
         showStr = 'stepEightAddEdit'
         detailStr = 'dayplanShowDetail'
@@ -1273,6 +1298,22 @@ btnSelectOver = (flag, defaultSelectLists) => {
       message.info('请至少保留一条数据！')
     }
   }
+  // 日计划开始时间方案模式链添加
+  addDayPlan = () => {
+    const dayplanShowDetail = JSON.parse(JSON.stringify(this.state.dayplanShowDetail))
+    dayplanShowDetail.timeintervalList.push({timeintervalModel:0, timeintervalStarttime: "00:00", timeintervalScheme: 0})
+    this.setState({ dayplanShowDetail })
+  }
+  // 日计划开始时间方案模式链删除
+  reduceDayPlan = () => {
+    const dayplanShowDetail = JSON.parse(JSON.stringify(this.state.dayplanShowDetail))
+    if (dayplanShowDetail.timeintervalList.length > 1) {
+      dayplanShowDetail.timeintervalList.splice(dayplanShowDetail.timeintervalList.length-1, 1)
+      this.setState({ dayplanShowDetail })
+    } else {
+      message.info('请至少保留一条数据！')
+    }
+  }
   // stepRoadAddForList = () => {
   //   message.info("车道添加成功！")
   //   this.popLayerShowHide("stepRoadAddEdit", null)
@@ -1364,7 +1405,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
       laneShowDetail, laneIconLists, fDir8NoData, turnDirNoListData, 
       lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists, showFlag, nowCycleLength, cycleLength,
       lampgroupType, controlDir, controlTurn, detectorType, phaseForbidenData, phaseShieldData, typeData, planStageLists, planChainsLists,
-      phaseShowDetail, stageShowDetail, planShowDetail, dayplanShowDetail, dispatchShowDetail, laneSelectLists, lightSelectLists, detectorSelectLists, selectFlag, phaseDefaultSelectLists, laneDefaultSelectLists, lightDefaultSelectLists, detectorDefaultSelectLists,  phaseIconLists, phaseSelectLists, phaseFlag, schemePhasestageTypeData
+      phaseShowDetail, stageShowDetail, planShowDetail, dayplanShowDetail, dispatchShowDetail, laneSelectLists, lightSelectLists, detectorSelectLists, selectFlag, phaseDefaultSelectLists, laneDefaultSelectLists, lightDefaultSelectLists, detectorDefaultSelectLists,  phaseIconLists, phaseSelectLists, phaseFlag, schemePhasestageTypeData, timeintervalModelChainData
     } = this.state
     const { Search } = Input
     return (
@@ -2136,12 +2177,61 @@ btnSelectOver = (flag, defaultSelectLists) => {
         }
         { stepEightAddEdit ?  // 日计划配置添加编辑弹层
           <div className={styles.maskBg}> 
-            <div className={styles.popBox}>
+          <div className={styles.popBox} style={{ width: '910px' }}>
               <div className={styles.popTit}>{popAddEditText}日计划<Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepEightAddEdit", null)} } /></div>
-              <div className={styles.popCon}> 日计划的内容 </div>
+              { dayplanShowDetail && 
+              <div className={classNames(styles.popCon, styles.popConTurn)} style={{padding: '15px 50px 15px 0'}}>
+                <div className={styles.itemInputBox}>
+                  <span>日计划编号：</span><Input type='number' value={Number(dayplanShowDetail.dailyplanNo)} onChange={e => this.handleChangeInput(e,'state','dayplanShowDetail','dailyplanNo')} placeholder="请输入" />
+                </div>
+                <div className={styles.itemInputBox} style={{width: '100%', alignSelf: 'flex-start'}}>
+                  <span style={{alignSelf: 'flex-start'}}>开始时间方案模式链：</span>
+                  <div className={styles.phaseStageBox}>
+                    <div className={styles.phaseStageIdBox}>
+                      { dayplanShowDetail.timeintervalList && 
+                        dayplanShowDetail.timeintervalList.map((item, i) =>{
+                          return <div key={'dayPlan'+i}  className={styles.timeThreeBox}>
+      
+                            <span>开始时间：</span><TimePicker defaultValue={moment(item.timeintervalStarttime, format)} format={format} />
+                            <span>运行方案：</span><Select
+                              value={Number(item.timeintervalScheme) ? Number(item.timeintervalScheme) : 0}
+                              onChange={v => this.handleChangeSel(v, 'state', 'dayplanShowDetail', 'timeintervalList', i ,'timeintervalScheme')}>
+                              <Option value={0}>请选择方案号</Option>
+                              {
+                                this.props.data.planLists.map((items, key) => {
+                                  return <Option key={"planList" + items.schemeNo} value={items.schemeNo}>{items.schemeName}</Option>
+                                })
+                              }
+                            </Select>
+                            <span>运行模式：</span><Select
+                              value={Number(item.timeintervalModel) ? Number(item.timeintervalModel) : 0}
+                              onChange={v => this.handleChangeSel(v, 'state', 'dayplanShowDetail', 'timeintervalList', i ,'timeintervalModel')}>
+                              <Option value={0}>请选择模式</Option>
+                              {
+                                timeintervalModelChainData.map((items, key) => {
+                                  return <Option key={"optionList" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
+                                })
+                              }
+                            </Select>
+                          </div>
+                        })
+                      }
+                    </div>
+                    <div className={styles.addReduceBtn}>
+                      <s>
+                        <Icon type="plus" onClick={this.addDayPlan} />
+                        <Icon type="minus" onClick={this.reduceDayPlan} />
+                      </s>
+                    </div>
+                  </div>
+                </div>                
+              </div>
+              }
               <div className={styles.popBottom}>
-                <em onClick={ () => {this.stepEightAddForList()}}>确 定</em>
-                <em onClick={ () => {this.popLayerShowHide("stepEightAddEdit", null)} }>取 消</em>
+                {
+                  popAddEditText === '编辑' ? <em onClick={ () => {this.postAddUpdateItem(dayplanShowDetail, 'DAYPLAN')}}>编辑确定</em> : <em onClick={ () => {this.postAddUpdateItem(dayplanShowDetail, 'DAYPLAN', true)}}>新增确定</em>
+                }
+                  <em onClick={ () => {this.popLayerShowHide("stepEightAddEdit", null)} }>取 消</em>
               </div>
             </div>
           </div> : null

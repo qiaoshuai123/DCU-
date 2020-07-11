@@ -33,6 +33,7 @@ class DayPlanConfigRight extends PureComponent {
   }
   componentDidMount = () => {
     console.log(this.props, '状态')
+    this.props.getInfoListsTypeMore(this.props.roadInterId, this.props.roadNodeNo, 'PLAN')
     this.props.getInfoListsTypeMore(this.props.roadInterId, this.props.roadNodeNo, 'DAYPLAN')
   }
   getListData = (data) => {

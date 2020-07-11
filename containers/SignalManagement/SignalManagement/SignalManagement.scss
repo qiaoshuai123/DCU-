@@ -277,20 +277,27 @@ $stepBor_col: #393f4f;
                         justify-content: space-between;
                         align-items: center;
                         flex-wrap: wrap;
-                        // .imageName::before{
-                        //     width:10px;
-                        //     height:10px;
-                        //     background: green;
-                        //     content: '';
-                        //     position: absolute;
-                        //     top:10px;
-                        //     left:0;
-                        //     border-radius: 100%;
-                        //     -webkit-border-radius: 100%;
-                        //     -moz-border-radius: 100%;
-                        //     -ms-border-radius: 100%;
-                        //     -o-border-radius: 100%;
-                        // }
+                        .timeThreeBox{
+                            width: 100%;
+                            >span{
+                                margin:0 5px 8px;
+                            }
+                            :global(.ant-select) {
+                                width: 135px;
+                            }
+                            :global(.ant-time-picker) {
+                                width: 80px;
+                            }
+                            :global(.ant-time-picker-input) {
+                                background-color: #1b2d2f;
+                                border: 1px solid #3B5268;
+                                color: #f1f1fb;
+                            }
+                            :global(.ant-time-picker-clock-icon) {
+                                color: #f1f1fb;
+                                
+                            }
+                        }
                         .imageName{
                             width: 48%;
                             :global(.ant-input){
