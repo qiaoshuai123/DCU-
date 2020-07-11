@@ -65,7 +65,7 @@ class ImgEvent extends React.Component {
     switch(typeUrl) {
       case 'lane':
         return typeName = 'LANE';
-      case 'lampgroup':
+      case 'lampgroup2':case 'lampgroup5':case 'lampgroup8':
         return typeName = 'LIGHT';
       case 'detector':
         return typeName = 'DETECTOR';
@@ -190,7 +190,6 @@ class ImgEvent extends React.Component {
     }
   }
   handleUpdate = (thisName) => {
-    debugger
     this.popLayerShowHide(thisName, true, true)
     let selId = null
     switch(thisName){
@@ -233,27 +232,31 @@ class ImgEvent extends React.Component {
       detectorId,
       imageUrl,
       x,
-      y
+      y,
+      angle
     } = this.props.imgMsg
     const { showCloseTag } = this.state
     const imgStyle = {
       position: 'absolute', display: 'inline-block', top: `${y}px`, left: `${x}px`, userSelect: 'none', cursor: 'pointer',
-      paddingTop: '14px', transform: 'translate(-50%,-50%)',
+      paddingTop: '14px', transform: `translate(-50%,-50%) rotate(${angle}deg)`,
     }
     const imgStyleL = {
-      position: 'absolute', display: 'inline-block', top: `${y}px`, left: `${x}px`, userSelect: 'none', paddingTop: '14px',  transform: 'translate(-50%,-50%)',
+      position: 'absolute', display: 'inline-block', top: `${y}px`, left: `${x}px`, userSelect: 'none', paddingTop: '14px',  transform: `translate(-50%,-50%) rotate(${angle}deg)`,
     }
     let thisName = '';
     let thisUrl= '';
     let tagMark = '';
-    debugger
     if (this.props.typeUrl === 'lane') {
       thisName = "stepRoadAddEdit";
       thisUrl = "lane";
       tagMark = "lane" + laneId
     } else if(this.props.typeUrl.indexOf('lampgroup') !== -1){
+      if (this.props.lightSelectIds && this.props.lightSelectIds.indexOf(lampgroupNo) > -1 ){
+        thisUrl = this.props.typeUrl;
+      } else {
+        thisUrl = 'lampgroup2'
+      }
       thisName = "stepThreeAddEdit";
-      thisUrl = this.props.typeUrl;
       tagMark = "lampgroup" + lampgroupNo
     } else if(this.props.typeUrl === 'detector') {
       thisName = "stepFourAddEdit";

@@ -49,7 +49,8 @@ class LaneConfigRight extends PureComponent {
       onCancel() { },
     })
   }
-  updateListItem = (itemDetailData, stepType) => {
+  updateListItem = (itemDetailData, stepType, e) => {
+    e.stopPropagation();
     this.props.getUpdateAllTypes(itemDetailData.interId, this.props.roadNodeNo, itemDetailData.laneId, stepType, true)
   }
   render() {
@@ -74,7 +75,7 @@ class LaneConfigRight extends PureComponent {
                         <span>{!item.turnDirNoName ? '无' : item.turnDirNoName}</span>
                         <span>{!item.dirName ? '无' : item.dirName}</span>
                         <span>{!item.laneIdCust ? '无' : item.laneIdCust}</span>
-                        <span className={styles.del}><b onClick={() => this.updateListItem(item, 'LANE')}>修改</b> <b onClick={(e) => this.delListItem(e, item.id)}>删除</b></span>
+                        <span className={styles.del}><b onClick={(e) => this.updateListItem(item, 'LANE', e)}>修改</b> <b onClick={(e) => this.delListItem(e, item.id)}>删除</b></span>
                       </div>
             })
           }

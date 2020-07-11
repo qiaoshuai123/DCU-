@@ -115,6 +115,7 @@ class SignalManagement extends PureComponent {
       planChainsLists: null, // 阶段链时间轴数据
       thisIndex: null,
       lightStatus: 2,
+      lightSelectIds: null, // 选中的ID集合
       cycleLength: 0, // 周期
       nowCycleLength: 0, // 当前时间周期
       timePlanFlag: null, // 是否显示
@@ -556,6 +557,7 @@ class SignalManagement extends PureComponent {
         } else {
           this.setState({
             [stepArr[i]]: null,
+            timePlanFlag: null,
           })
         }
       }
@@ -570,7 +572,6 @@ class SignalManagement extends PureComponent {
       popAddEditText: eventType ? '编辑' : '添加',
     })
     if(flag){
-      debugger
       switch(stepType){
         case "LANE":
           // this.itemDetailData
@@ -794,7 +795,6 @@ class SignalManagement extends PureComponent {
   }
   // 点击组件列表中的一条时反馈的数据
   handleClickFind = (e, itemData, clazz) => {
-    // console.log($(e.currentTarget).hasClass(clazz), '8787878787')
     this.setState({ nowCycleLength: 0, timePlanFlag: $(e.currentTarget).hasClass(clazz) }, () => {
       if(this.state.timePlanFlag) {
         this.props.getInfoListsTypeMore(this.state.roadInterId, this.state.roadNodeNo, 'PLAN', itemData.schemeNo )
@@ -873,7 +873,6 @@ class SignalManagement extends PureComponent {
         detailStr = 'dispatchShowDetail'
         break;
     }
-    debugger
     if (eventType) {
       this.props.postAddOthersType(itemDetailData, stepType).then(() => {
         this.popLayerShowHide(showStr, null)
@@ -904,7 +903,6 @@ class SignalManagement extends PureComponent {
 // 编辑弹层列表用于多选 车道、灯组、检测器
 getSelectLists = (interId, nodeNo, stepType, name, key) => {
   let typeStr = '', showStr = '', detailStr = '',  _this = this
-  debugger
   switch(stepType){
     case 'LANE':
       this.setState({
@@ -959,7 +957,6 @@ selectItemList = (defaultSelectLists, stepType) => {
 }
 // 确定和取消选中
 btnSelectOver = (flag, defaultSelectLists) => {
-  debugger
   if (flag) {
     if (this.state.laneSelectLists) {
       this.state.stageShowDetail.phasestageLane = defaultSelectLists
@@ -1130,9 +1127,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
     })
   }
   handleClickBaseMap = () => {
-    debugger
     if (this.state.imageFile !== null) {
-      debugger
       message.info("底图设置成功！");
       this.setState({
         interRoadBg: this.state.imageUrl,
@@ -1191,6 +1186,9 @@ btnSelectOver = (flag, defaultSelectLists) => {
   // stepType:类型，itemDetailData:实时调用的数据
   postUpdateAllType = (itemDetailData, stepType) => {
     let typeStr = '', showStr = '', detailStr = '',  _this = this
+    itemDetailData.nodeNo = this.state.roadNodeNo
+    itemDetailData.x ? itemDetailData.x : itemDetailData.x = 489
+    itemDetailData.y ? itemDetailData.y : itemDetailData.y = 390
     switch(stepType){
       case 'LANE':
         typeStr = '车道'
@@ -1248,7 +1246,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
   }
   // 获取全部图标、车道、灯组
   getIconImageList = (e, stepType) => {
-    debugger
+    // debugger
     this.selImage = e.target
     this.props.getIconImageList(stepType)
     this.setState({showFlag: null})
@@ -1340,7 +1338,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
     this.updateMapPonitsColor(result.dcuStateList)
   }
   handlePopData(data) {
-    debugger
+    // debugger
     let result = JSON.parse(data);
     console.log(result,this,'socket POP数据')
     $('#phasestageName').text(result.phasestageName).attr("tag-src",`${this.phaseBgUrl}${result.phasestageImage}`)
@@ -1355,7 +1353,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
     const { interListHeight, searchInterList, stepStatusData, popAddEditText, popAddEditName, moveFlag, stepOneFlag, stepTwoFlag, 
       stepRoadFlag, stepRoadAddEdit,
       stepThreeFlag, stepThreeAddEdit,
-      stepFourFlag, stepFourAddEdit, lightStatus,
+      stepFourFlag, stepFourAddEdit, lightStatus, lightSelectIds,
       stepFiveFlag, stepFiveAddEdit, timePlanFlag, 
       stepSixFlag, stepSixAddEdit,
       stepSevenFlag, stepSevenAddEdit,
@@ -2165,7 +2163,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
           <div className={styles.stepBoxContent}>
             <div className={styles.stepLeftCon}>
             {/* 时间轴 */}
-              { timePlanFlag ? 
+              { stepSevenFlag && timePlanFlag ? 
                 <div className={styles.timeWarpper}>
                   <div id="timeBox" className={styles.timeBox}>
                     <div style={{ color: '#1890ff', fontSize: '18px' }}>暂无信号灯</div>
@@ -2214,7 +2212,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
                       roadNodeNo={roadNodeNo}
                       isClick={stepThreeFlag}
                       isMoveFlag={stepThreeFlag}
-                      typeUrl={lightStatus === 2 ? "lampgroup2" : lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : null}
+                      lightSelectIds={lightSelectIds}
+                      typeUrl={lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : "lampgroup2"}
                     />
                   </div> : null
                 }
@@ -2234,7 +2233,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
                       roadNodeNo={roadNodeNo}
                       isClick={stepThreeFlag}
                       isMoveFlag={stepThreeFlag}
-                      typeUrl={lightStatus === 2 ? "lampgroup2" : lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : null}
+                      lightSelectIds={lightSelectIds}
+                      typeUrl={lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : "lampgroup2"}
                     />
                     <DetectorConfigLeft {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
@@ -2261,7 +2261,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
                       roadNodeNo={roadNodeNo}
                       isClick={stepThreeFlag}
                       isMoveFlag={stepThreeFlag}
-                      typeUrl={lightStatus === 2 ? "lampgroup2" : lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : null}
+                      lightSelectIds={lightSelectIds}
+                      typeUrl={lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : "lampgroup2"}
                     />
                     <DetectorConfigLeft {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
@@ -2288,7 +2289,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
                       roadNodeNo={roadNodeNo}
                       isClick={stepThreeFlag}
                       isMoveFlag={stepThreeFlag}
-                      typeUrl={lightStatus === 2 ? "lampgroup2" : lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : null}
+                      lightSelectIds={lightSelectIds}
+                      typeUrl={lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : "lampgroup2"}
                     />
                     <DetectorConfigLeft {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
@@ -2315,7 +2317,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
                       roadNodeNo={roadNodeNo}
                       isClick={stepThreeFlag}
                       isMoveFlag={stepThreeFlag}
-                      typeUrl={lightStatus === 2 ? "lampgroup2" : lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : null}
+                      lightSelectIds={lightSelectIds}
+                      typeUrl={lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : "lampgroup2"}
                     />
                     <DetectorConfigLeft {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
@@ -2342,7 +2345,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
                       roadNodeNo={roadNodeNo}
                       isClick={stepThreeFlag}
                       isMoveFlag={stepThreeFlag}
-                      typeUrl={lightStatus === 2 ? "lampgroup2" : lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : null}
+                      lightSelectIds={lightSelectIds}
+                      typeUrl={lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : "lampgroup2"}
                     />
                     <DetectorConfigLeft {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 
@@ -2369,7 +2373,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
                       roadNodeNo={roadNodeNo}
                       isClick={stepThreeFlag}
                       isMoveFlag={stepThreeFlag}
-                      typeUrl={lightStatus === 2 ? "lampgroup2" : lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : null}
+                      lightSelectIds={lightSelectIds}
+                      typeUrl={lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : "lampgroup2"}
                     />
                     <DetectorConfigLeft {...this.props} 
                       popLayerShowHide={this.popLayerShowHide} 

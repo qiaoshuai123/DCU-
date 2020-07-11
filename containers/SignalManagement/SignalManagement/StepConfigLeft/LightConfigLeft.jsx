@@ -45,7 +45,7 @@ class LightConfigLeft extends PureComponent {
       <div>
         {
           lightPicLists.length > 0 && lightPicLists.map((item, i) => {
-            return <ImgEvent {...this.props} key={'light'+item.id} isMoveFlag={this.props.isMoveFlag} isClick={this.props.isClick} imgMsg={item} typeUrl={this.props.typeUrl} popLayerShowHide={this.popLayerShowHide} />
+            return <ImgEvent {...this.props} key={'light'+item.id} lightSelectIds={this.props.lightSelectIds} isMoveFlag={this.props.isMoveFlag} isClick={this.props.isClick} imgMsg={item} typeUrl={this.props.typeUrl} popLayerShowHide={this.popLayerShowHide} />
           })
         }
       </div>
