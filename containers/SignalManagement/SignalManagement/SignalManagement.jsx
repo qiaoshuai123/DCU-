@@ -122,6 +122,10 @@ class SignalManagement extends PureComponent {
       cycleLength: 0, // 周期
       nowCycleLength: 0, // 当前时间周期
       timePlanFlag: null, // 是否显示
+      priorityData: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], //优先级
+      weekData: null, //星期
+      monthData: null, //月
+      dayData: null, //日
     }
     this.map = null
     this.moveFlag = false // 是否是移动状态
@@ -236,6 +240,55 @@ class SignalManagement extends PureComponent {
       }
       this.visibleShowLeft('', '', false)
     })
+    // 加载日
+    const dayData = [], monthData = [], weekData = []
+    for( let num = 0; num < 31; num++){
+      if (num < 7) {
+        let weekStr = ''
+        switch(num){
+          case 0:
+            weekStr = '日'
+            break;
+          case 1:
+            weekStr = '一'
+            break;
+          case 2:
+            weekStr = '二'
+            break;
+          case 3:
+            weekStr = '三'
+            break;
+          case 4:
+            weekStr = '四'
+            break;
+          case 5:
+            weekStr = '五'
+            break;
+          case 6:
+            weekStr = '六'
+            break;
+        }
+        const newWeek = {
+          value: num, 
+          label: weekStr,
+        }
+        weekData.push(newWeek)
+      }
+      if (num < 12) {
+        const newMonth = {
+          value: num+1, 
+          label: num+1,
+        }
+        monthData.push(newMonth)
+      }
+      const newObj = {
+        value: num+1, 
+        label: num+1,
+      }
+      dayData.push(newObj)
+      
+    }
+    this.setState({ dayData, monthData, weekData })
     // 初始化地图
     this.loadingMap()
     window.showHidePop = this.showHidePop
@@ -343,6 +396,7 @@ class SignalManagement extends PureComponent {
         this.setState({ [name]: newObj })  
       } else {
         // key === 'dailyplanNo' ? this[type][name][key] = Number(event.target.value) : this[type][name][key] = event.target.value
+        this[type][name][key] = event.target.value
         const newObj = JSON.parse(JSON.stringify(this[type][name]))
         this.setState({ [name]: newObj })
       }
@@ -390,13 +444,20 @@ class SignalManagement extends PureComponent {
     
   }
   // 复选框
-  handleChangeCheck = (checkValues, type, name, key) => {
-    if (key) {
-      this[type][name][key] = checkValues.join()
+  handleChangeCheck = (checkValues, type, name, key, index, keyValue) => {
+    debugger
+    if (index !== undefined) {
+      this[type][name][key][index][keyValue] = checkValues.join()
       const newObj = JSON.parse(JSON.stringify(this[type][name]))
       this.setState({ [name]: newObj })
     } else {
-      this[type][name] = checkValues
+      if (key) {
+        this[type][name][key] = checkValues.join()
+        const newObj = JSON.parse(JSON.stringify(this[type][name]))
+        this.setState({ [name]: newObj })
+      } else {
+        this[type][name] = checkValues
+      }
     }
   }
   hanleSelectInter = (e, item) => {
@@ -708,7 +769,7 @@ class SignalManagement extends PureComponent {
           break;
           case "DAYPLAN":
             const dayplanShowDetail = {
-              "dailyplanNo": 1, //日计划编号
+              "dailyplanNo": "", //日计划编号
               "interId": this.state.roadInterId,  //
               "nodeNo": this.state.roadNodeNo, //
               "timeintervalList":[],
@@ -720,21 +781,19 @@ class SignalManagement extends PureComponent {
           break;
           case "DISPATCH":
             const dispatchShowDetail = {
-              "scheduleCenter": {
-                "interId": this.state.roadInterId,  //
-                "nodeNo": this.state.roadNodeNo, //
-                "scheduleNo": 0    //调度号
-              },
+              "interId": this.state.roadInterId,  //
+              "nodeNo": this.state.roadNodeNo, //
+              "scheduleNo": '',    //调度号
               "scheduleDetailList": [
                 {
                   "interId": this.state.roadInterId,  //
                   "nodeNo": this.state.roadNodeNo, //
+                  "scheduleNo": '',   //调度号
                   "dailyPlanId": 0,   //日计划编号
-                  "dataValueCodes": "",  //日期值code，逗号拼接
+                  "dataValueCodes": "0",  //日期值code，逗号拼接
                   "dateType": 0,  //日期类型                    
                   "monthValueCodes": "", //月份
                   "priority": 0,  //优先级
-                  "scheduleNo": 0   //调度号
                 }
               ]
             }
@@ -896,6 +955,9 @@ class SignalManagement extends PureComponent {
         typeStr = '调度'
         showStr = 'stepNineAddEdit'
         detailStr = 'dispatchShowDetail'
+        itemDetailData.scheduleDetailList.map((item) => {
+          item.scheduleNo = itemDetailData.scheduleNo
+        })
         break;
     }
     if (eventType) {
@@ -1314,6 +1376,31 @@ btnSelectOver = (flag, defaultSelectLists) => {
       message.info('请至少保留一条数据！')
     }
   }
+  // 调度计划添加
+  addDispatch = () => {
+    const dispatchShowDetail = JSON.parse(JSON.stringify(this.state.dispatchShowDetail))
+    dispatchShowDetail.scheduleDetailList.push({
+      "interId": this.state.roadInterId,  //
+      "nodeNo": this.state.roadNodeNo, //
+      "scheduleNo": '',   //调度号
+      "dailyPlanId": 0,   //日计划编号
+      "dataValueCodes": "0",  //日期值code，逗号拼接
+      "dateType": 0,  //日期类型                    
+      "monthValueCodes": "", //月份
+      "priority": 0,  //优先级
+    })
+    this.setState({ dispatchShowDetail })
+  }
+  // 调度计划删除
+  reduceDispatch = () => {
+    const dispatchShowDetail = JSON.parse(JSON.stringify(this.state.dispatchShowDetail))
+    if (dispatchShowDetail.scheduleDetailList.length > 1) {
+      dispatchShowDetail.scheduleDetailList.splice(dispatchShowDetail.scheduleDetailList.length-1, 1)
+      this.setState({ dispatchShowDetail })
+    } else {
+      message.info('请至少保留一条数据！')
+    }
+  }
   // stepRoadAddForList = () => {
   //   message.info("车道添加成功！")
   //   this.popLayerShowHide("stepRoadAddEdit", null)
@@ -1405,7 +1492,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
       laneShowDetail, laneIconLists, fDir8NoData, turnDirNoListData, 
       lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists, showFlag, nowCycleLength, cycleLength,
       lampgroupType, controlDir, controlTurn, detectorType, phaseForbidenData, phaseShieldData, typeData, planStageLists, planChainsLists,
-      phaseShowDetail, stageShowDetail, planShowDetail, dayplanShowDetail, dispatchShowDetail, laneSelectLists, lightSelectLists, detectorSelectLists, selectFlag, phaseDefaultSelectLists, laneDefaultSelectLists, lightDefaultSelectLists, detectorDefaultSelectLists,  phaseIconLists, phaseSelectLists, phaseFlag, schemePhasestageTypeData, timeintervalModelChainData
+      phaseShowDetail, stageShowDetail, planShowDetail, dayplanShowDetail, dispatchShowDetail, laneSelectLists, lightSelectLists, detectorSelectLists, selectFlag, phaseDefaultSelectLists, laneDefaultSelectLists, lightDefaultSelectLists, detectorDefaultSelectLists,  phaseIconLists, phaseSelectLists, phaseFlag, schemePhasestageTypeData, timeintervalModelChainData,
+      priorityData, monthData, dayData, weekData
     } = this.state
     const { Search } = Input
     return (
@@ -2182,7 +2270,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
               { dayplanShowDetail && 
               <div className={classNames(styles.popCon, styles.popConTurn)} style={{padding: '15px 50px 15px 0'}}>
                 <div className={styles.itemInputBox}>
-                  <span>日计划编号：</span><Input type='number' value={Number(dayplanShowDetail.dailyplanNo)} onChange={e => this.handleChangeInput(e,'state','dayplanShowDetail','dailyplanNo')} placeholder="请输入" />
+                  <span>日计划编号：</span><Input type='number' value={dayplanShowDetail.dailyplanNo} onChange={e => this.handleChangeInput(e,'state','dayplanShowDetail','dailyplanNo')} placeholder="请输入" />
                 </div>
                 <div className={styles.itemInputBox} style={{width: '100%', alignSelf: 'flex-start'}}>
                   <span style={{alignSelf: 'flex-start'}}>开始时间方案模式链：</span>
@@ -2238,12 +2326,93 @@ btnSelectOver = (flag, defaultSelectLists) => {
         }
         { stepNineAddEdit ?  // 调度配置添加编辑弹层
           <div className={styles.maskBg}> 
-            <div className={styles.popBox}>
+            <div className={styles.popBox} style={{ width: '810px' }}>
               <div className={styles.popTit}>{popAddEditText}调度<Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepNineAddEdit", null)} } /></div>
-              <div className={styles.popCon}> 调度的内容 </div>
+              { dispatchShowDetail && 
+              <div className={classNames(styles.popCon, styles.popConTurn)} style={{padding: '15px 50px 15px 0'}}>
+                <div className={styles.itemInputBox}>
+                  <span>调度方案编号：</span><Input type='number' value={dispatchShowDetail.scheduleNo} onChange={e => this.handleChangeInput(e,'state','dispatchShowDetail','scheduleNo')} placeholder="请输入" />
+                </div>
+                <div className={styles.itemInputBox} style={{width: '100%', alignSelf: 'flex-start'}}>
+                  <span style={{alignSelf: 'flex-start'}}>调度方案项：</span>
+                  <div className={styles.phaseStageBox}>
+                    <div className={styles.phaseStageIdBox} style={{maxHeight:'220px'}}>
+                      { dispatchShowDetail.scheduleDetailList && 
+                        dispatchShowDetail.scheduleDetailList.map((item, i) =>{
+                          return <div key={'dispatch'+i}  className={styles.dispatchBox}  style={item.dateType === 0 ? {height:'40px'} : item.dateType === 2 ? {height:'80px'} : null}>
+                            <span>日计划：</span>
+                            <Select
+                              value={Number(item.dailyPlanId) ? Number(item.dailyPlanId) : 0}
+                              onChange={v => this.handleChangeSel(v, 'state', 'dispatchShowDetail', 'scheduleDetailList', i ,'dailyPlanId')}>
+                              <Option value={0}>请选择编号</Option>
+                              {
+                                this.props.data.dayPlanLists.map((items, key) => {
+                                  return <Option key={"dailyplan" + items.dailyplanNo} value={items.dailyplanNo}>{items.dailyplanNo}</Option>
+                                })
+                              }
+                            </Select>
+                            <span>优先级：</span>
+                            <Select
+                              value={Number(item.priority) ? Number(item.priority) : 0}
+                              onChange={v => this.handleChangeSel(v, 'state', 'dispatchShowDetail', 'scheduleDetailList', i ,'priority')}>
+                              <Option value={0}>请选择优先级</Option>
+                              {
+                                priorityData.map((items) => {
+                                  return <Option key={"priority" + items} value={items}>{items}</Option>
+                                })
+                              }
+                            </Select>
+                            <span>调度类型：</span>
+                            <Select
+                              value={Number(item.dateType) ? Number(item.dateType) : 0}
+                              onChange={v => this.handleChangeSel(v, 'state', 'dispatchShowDetail', 'scheduleDetailList', i ,'dateType')}>
+                              <Option value={0}>请选择类型</Option>
+                              {
+                                [1,2].map((items, key) => {
+                                  return <Option key={"dailyType" + items} value={items}>{items === 1 ? "日期" : items === 2 ? "星期" : "请选择类型" }</Option>
+                                })
+                              }
+                            </Select>
+                            { item.dateType === 1 ?
+                              <div>
+                                <div className={styles.dateDisBox} style={{height:'40px'}}>
+                                  <span className={styles.spanWidth} style={{ alignSelf: 'flex-start' }}>月：</span>
+                                  <Checkbox.Group options={monthData} value={item.monthValueCodes.split(",").map(Number)}
+                                    onChange={v => this.handleChangeCheck(v, 'state', 'dispatchShowDetail', 'scheduleDetailList', i, 'monthValueCodes')} />
+                                </div>
+                                <div className={styles.dateDisBox}>
+                                  <span className={styles.spanWidth} style={{ alignSelf: 'flex-start' }}>日：</span>
+                                  <Checkbox.Group options={dayData} value={item.dataValueCodes.split(",").map(Number)}
+                                    onChange={v => this.handleChangeCheck(v, 'state', 'dispatchShowDetail', 'scheduleDetailList', i, 'dataValueCodes')} />
+                                </div>
+                              </div> :
+                              item.dateType === 2 ?
+                              <div className={styles.dateDisBox}>
+                                <span className={styles.spanWidth} style={{ alignSelf: 'flex-start' }}>星期：</span>
+                                <Checkbox.Group options={weekData} value={item.dataValueCodes.split(",").map(Number)}
+                                  onChange={v => this.handleChangeCheck(v, 'state', 'dispatchShowDetail', 'scheduleDetailList', i, 'dataValueCodes')} />
+                              </div> : null
+                            }
+                            
+                          </div>
+                        })
+                      }
+                    </div>
+                    <div className={styles.addReduceBtn}>
+                      <s>
+                        <Icon type="plus" onClick={this.addDispatch} />
+                        <Icon type="minus" onClick={this.reduceDispatch} />
+                      </s>
+                    </div>
+                  </div>
+                </div>                
+              </div>
+              }
               <div className={styles.popBottom}>
-                <em onClick={ () => {this.stepNineAddForList()}}>确 定</em>
-                <em onClick={ () => {this.popLayerShowHide("stepNineAddEdit", null)} }>取 消</em>
+                {
+                  popAddEditText === '编辑' ? <em onClick={ () => {this.postAddUpdateItem(dispatchShowDetail, 'DISPATCH')}}>编辑确定</em> : <em onClick={ () => {this.postAddUpdateItem(dispatchShowDetail, 'DISPATCH', true)}}>新增确定</em>
+                }
+                  <em onClick={ () => {this.popLayerShowHide("stepNineAddEdit", null)} }>取 消</em>
               </div>
             </div>
           </div> : null

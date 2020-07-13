@@ -32,6 +32,7 @@ class DetectorConfigRight extends PureComponent {
   }
   componentDidMount = () => {
     console.log(this.props, '状态')
+    this.props.getInfoListsTypeMore(this.props.roadInterId, this.props.roadNodeNo, 'DAYPLAN')
     this.props.getInfoListsTypeMore(this.props.roadInterId, this.props.roadNodeNo, 'DISPATCH')
   }
   getListData = (data) => {
