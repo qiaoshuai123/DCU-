@@ -271,12 +271,52 @@ $stepBor_col: #393f4f;
                     flex:7.5;
                     .phaseStageIdBox{
                         width: 99%;
+                        min-height: 40px;
                         max-height: 150px;
                         overflow-y: auto;
                         display: flex;
                         justify-content: space-between;
                         align-items: center;
                         flex-wrap: wrap;
+                        .dispatchBox{
+                            height: 200px;
+                            width: 100%;
+                            border-bottom:1px solid #292a2d;
+                            margin-bottom:10px;
+                            >span{
+                                margin:0 5px 8px;
+                            }
+                            .dateDisBox{
+                                width: 100%;
+                                display: flex;
+                                justify-content: flex-start;
+                                align-content: flex-start;
+                                margin:10px 0;
+                                :global(.ant-checkbox-group) {
+                                    width: 80%;
+                                    display: flex;
+                                    justify-content: flex-start;
+                                    align-items: flex-start;
+                                }
+                                :global(.ant-checkbox-group-item) {
+                                    width: 48px;
+                                    height: 25px;
+                                    position: relative;
+                                    top:-4px;
+                                }
+                                .spanWidth{
+                                    width:58px;
+                                    justify-content: right;
+                                    align-content: flex-start;
+                                    text-align: right;
+                                    margin: 0 5px 8px;
+                                }
+                            }
+                            :global(.ant-select) {
+                                width: 100px;
+                            }
+                            
+                        }
                         .timeThreeBox{
                             width: 100%;
                             >span{
