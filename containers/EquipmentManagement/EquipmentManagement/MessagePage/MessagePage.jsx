@@ -138,7 +138,7 @@ class MessagePage extends Component {
     // 验证是否为空
     const as = await this.Verification(bos)
     // as不为真做提交请求
-    console.log(as, this.addMsg, '2333')
+    // console.log(as, this.addMsg, '2333')
     if (!as && this.addMsg) {
       const { interId, interName, lat, lng, nodeId } = this.state
       const strMsg = {

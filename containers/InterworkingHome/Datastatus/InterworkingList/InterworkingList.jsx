@@ -6,6 +6,8 @@ class InterworkingList extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      current: 1,
+      currnum: '',
       systemList: [
         {
           id: 1,
@@ -56,7 +58,7 @@ class InterworkingList extends Component {
     console.log(page, pageSize)
   }
   render() {
-    const { systemList } = this.state
+    const { systemList, current, currnum } = this.state
     const { Option } = Select
     return (
       <div className={styles.syetem_bg} ref={(input) => { this.userLimitBox = input }}>
@@ -135,6 +137,7 @@ class InterworkingList extends Component {
           </div>
           <div className={styles.paginations}>
             <Pagination showQuickJumper defaultCurrent={2} onChange={this.pageChange} total={500} />
+            {currnum && <Pagination showQuickJumper onChange={this.pageChange} defaultCurrent={current} total={currnum} />}
           </div>
         </div>
       </div>

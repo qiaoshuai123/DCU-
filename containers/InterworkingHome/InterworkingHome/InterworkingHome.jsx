@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Input, message } from 'antd'
+import { Input, message, Select } from 'antd'
 import Websocket from 'react-websocket';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -18,6 +18,7 @@ class InterworkingHome extends Component {
       mapPointsData: null, // 地图中所有的点
       offlineNum: '',
       onlineNum: '',
+      namesList: [],//搜索查询地图点位
     }
   }
 
@@ -251,9 +252,14 @@ class InterworkingHome extends Component {
       onlineNum,
     })
   }
+  // 搜索查询参数 
+  handleChange = (e, optios) => {
+
+  }
   render() {
     const { Search } = Input
-    const { isInterworkingList, offlineNum, onlineNum } = this.state
+    const { Option } = Select
+    const { isInterworkingList, offlineNum, onlineNum, namesList } = this.state
     return (
       <div className={styles.InterworkingHomeBox}>
         <Websocket
@@ -269,6 +275,26 @@ class InterworkingHome extends Component {
               onSearch={value => console.log(value)}
               style={{ width: 200 }}
             />
+            {/* <div className={styles.syetem_item}>
+              <span className={styles.item}>点位名称:</span>
+              <div className={styles.inSle}>
+                <Select
+                  showSearch
+                  defaultValue="全部"
+                  style={{ width: 200, margin: 0 }}
+                  onChange={this.handleChange}
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  <Option pname="names" value="">全部</Option>
+                  {
+                    namesList && namesList.map((item, ind) => <Option key={item + ind} pname="names" value={item.id}>{item.interName}</Option>)
+                  }
+                </Select>
+              </div>
+            </div> */}
           </div>
           <div className={styles.InterworkLeft_Title}>
             <span />DCU点位列表
