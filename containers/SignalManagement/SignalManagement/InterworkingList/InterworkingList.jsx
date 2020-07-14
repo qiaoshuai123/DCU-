@@ -1,50 +1,119 @@
 import React, { Component } from 'react'
 import { Input, Pagination, Select } from 'antd'
+import Websocket from 'react-websocket'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { signalList, systemCodeListByCodeType, unitInfoList, signalListByPage } from '../../../../reactRedux/actions/equipmentManagement'
 import styles from './InterworkingList.scss'
-import Websocket from 'react-websocket';
+
 class InterworkingList extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      systemList: [
-        {
-          id: 1,
-        },
-        {
-          id: 2,
-        },
-        {
-          id: 3,
-        },
-        {
-          id: 4,
-        }
-      ],
+      systemList: [],
+      optionSelect: [],
+      namesList: [],
+      current: 1,
+      currnum: '',
+      stylesList: [],
     }
-    this.statePointPopUrl = 'ws://192.168.1.213:20203/DCU/websocket/allInterRunState/0/0/0' // 切换视图
+    this.statePointPopUrl = 'ws://192.168.1.213:20203/DCU/websocket/signalState/0/0/0' // 切换视图
+    this.objs = {
+      keyword: '',
+      regions: '',
+      names: '',
+      pageNo: 1,
+    }
   }
   componentDidMount = () => {
-
+    this.props.signalList()
+    this.props.systemCodeListByCodeType(1)
+    this.props.unitInfoList()
+    this.pageChange(1, 1)
   }
-  getresetPwd = (id) => {
-    window.open(`#roaddetail/${id}`)
+  componentDidUpdate = (prevState) => {
+    const { signalLists, systemCodeListByCodeTypes, unitInfoLists, signalListByPages } = this.props.data
+    if (prevState.data.signalLists !== signalLists) {
+      this.getsignalLists(signalLists)
+    }
+    if (prevState.data.systemCodeListByCodeTypes !== systemCodeListByCodeTypes) {
+      this.getsystemCodeListByCodeTypes(systemCodeListByCodeTypes)
+    }
+    if (prevState.data.unitInfoLists !== unitInfoLists) {
+      this.getunitInfoLists(unitInfoLists)
+    }
+    if (prevState.data.signalListByPages !== signalListByPages) {
+      this.getsignalListByPages(signalListByPages)
+    }
   }
-  handleChange = () => {
-
+  getsignalListByPages = (signalListByPages) => {
+    this.setState({
+      currnum: signalListByPages.total,
+      current: signalListByPages.pageNum,
+      systemList: signalListByPages.data,
+    })
   }
-  handleLookData(data) {
-    let result = JSON.parse(data);
-    console.log(result,'实时监控socket 数据')
+  getunitInfoLists = (unitInfoLists) => {
+    this.setState({
+      namesList: unitInfoLists,
+    })
+  }
+  getsystemCodeListByCodeTypes = (systemCodeListByCodeTypes) => {
+    this.setState({
+      optionSelect: systemCodeListByCodeTypes,
+    })
+  }
+  getsignalLists = (signalLists) => {
+    this.setState({
+      systemList: signalLists,
+      currnum: signalLists.length,
+    })
+  }
+  getresetPwd = (e, dataItem) => {
+    e.stopPropagation();
+    this.props.getresetPwd(dataItem)
   }
   backPage = () => {
     this.props.showInterworkingList(null)
   }
+  // 更改查询关键字
+  handleChange = (e, optios) => {
+    if (optios) {
+      const { pname } = optios.props
+      this.objs[pname] = e
+    } else {
+      const names = e.target.getAttribute('pname')
+      const { value } = e.target
+      this.objs[names] = value
+    }
+  }
+  handlePaginatiosn = () => {
+    const { keyword, regions, pageNo, names } = this.objs
+    const objs = `areaCode=${regions}&keyword=${keyword}&pageNo=${pageNo}&unitId=${names}`
+    this.props.signalListByPage(objs)
+  }
+  // 更改底部分页器
+  pageChange = (page, pageSize) => {
+    debugger
+    this.objs.pageNo = page
+    const { keyword, regions, names } = this.objs
+    const objs = `areaCode=${regions}&keyword=${keyword}&pageNo=${page}&unitId=${names}`
+    this.props.signalListByPage(objs)
+  }
+  handleData = (e) => {
+    const { signalStateList } = JSON.parse(e)
+    this.setState(
+      {
+        stylesList: signalStateList,
+      }
+    )
+  }
   render() {
-    const { systemList } = this.state
+    const { systemList, optionSelect, current, currnum, namesList, stylesList } = this.state
     const { Option } = Select
     return (
       <div className={styles.syetem_bg} ref={(input) => { this.userLimitBox = input }}>
-        <Websocket url={this.statePointPopUrl} onMessage={this.handleLookData.bind(this)}/>
+        <Websocket url={this.statePointPopUrl} onMessage={this.handleData.bind(this)} />
         <div className={styles.syetem_title}>
           <div className={styles.syetem_titleLeft}>信号状态监视</div>
           <div title="切换视图" className={styles.turnBtn} onClick={this.backPage} />
@@ -52,18 +121,40 @@ class InterworkingList extends Component {
         <div className={styles.syetem_top}>
           <div className={styles.syetem_item}>
             <span className={styles.item}>关键词:</span>
-            <div className={styles.inSle}><Input onChange={this.handleInputChange} placeholder="请输入" /></div>
+            <div className={styles.inSle}><Input pname="keyword" onChange={this.handleChange} /></div>
           </div>
           <div className={styles.syetem_item}>
             <span className={styles.item}>行政区:</span>
             <div className={styles.inSle}>
-              <Select defaultValue="行政一" style={{ width: 200, margin: 0 }} onChange={this.handleChange}>
-                <Option value="行政一">行政一</Option>
-                <Option value="行政二">行政二</Option>
+              <Select defaultValue="全部" style={{ width: 200, margin: 0 }} onChange={this.handleChange}>
+                <Option pname="regions" value="">全部</Option>
+                {
+                  optionSelect && optionSelect.map((item, ind) => <Option key={item + ind} pname="regions" value={item.dictCode}>{item.codeName}</Option>)
+                }
               </Select>
             </div>
           </div>
-          <span className={styles.searchBtn} onClick={() => { this.handlePagination('1') }} limitid="13">查询</span>
+          <div className={styles.syetem_item}>
+            <span className={styles.item}>点位名称:</span>
+            <div className={styles.inSle}>
+              <Select
+                showSearch
+                defaultValue="全部"
+                style={{ width: 200, margin: 0 }}
+                onChange={this.handleChange}
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+              >
+                <Option pname="names" value="">全部</Option>
+                {
+                  namesList && namesList.map((item, ind) => <Option key={item + ind} pname="names" value={item.id}>{item.interName}</Option>)
+                }
+              </Select>
+            </div>
+          </div>
+          <span className={styles.searchBtn} onClick={this.handlePaginatiosn}>查询</span>
         </div>
         <div className={styles.equipmentList}>
           设备列表
@@ -75,7 +166,8 @@ class InterworkingList extends Component {
               <div className={styles.listTd} >信号机编号</div>
               <div className={styles.listTd} >信号品牌</div>
               <div className={styles.listTd} >设备IP</div>
-              <div className={styles.listTd} >经纬度</div>
+              <div className={styles.listTd} >经度</div>
+              <div className={styles.listTd} >纬度</div>
               <div className={styles.listTd} >维护电话</div>
               <div className={styles.listTd} >设备状态</div>
               <div className={styles.listTd} >信号控制状态</div>
@@ -83,22 +175,28 @@ class InterworkingList extends Component {
               <div className={styles.listTd} >操作</div>
             </div>
             {systemList && systemList.map((item, index) => {
+              let isc = {}
+              stylesList.map((items) => {
+                if (item.interId === items.interId) {
+                  isc.phasestageNo = items.phasestageNo
+                  isc.nodeModelName = items.nodeModelName
+                  isc.phasestageName = items.phasestageName
+                }
+              })
               return (
-                <div className={styles.listItems} key={item.id + index}>
-                  <div className={styles.listTd} >11213213212222222222222222222222</div>
-                  <div className={styles.listTd} >2</div>
-                  <div className={styles.listTd} >3</div>
-                  <div className={styles.listTd} >4</div>
-                  <div className={styles.listTd} >5</div>
-                  <div className={styles.listTd} >6</div>
-                  <div className={styles.listTd} >7</div>
-                  <div className={styles.listTd} >8</div>
-                  <div className={styles.listTd} >9</div>
-                  <div className={styles.listTd} >10</div>
+                <div className={styles.listItems} key={'list' + index}>
+                  <div className={styles.listTd} >{item.interName}</div>
+                  <div className={styles.listTd} >{item.deviceId}</div>
+                  <div className={styles.listTd} >{item.brand}</div>
+                  <div className={styles.listTd} >{item.ip}</div>
+                  <div className={styles.listTd} >{item.lat}</div>
+                  <div className={styles.listTd} >{item.lng}</div>
+                  <div className={styles.listTd} >{item.maintainPhone}</div>
+                  <div className={styles.listTd} >{isc.phasestageNo === 1 ? '正常运行' : '停止运行'}</div>
+                  <div className={styles.listTd} >{isc.nodeModelName}</div>
+                  <div className={styles.listTd} >{isc.phasestageName}</div>
                   <div className={styles.listTd} >
-                    <span className={styles.delectName} onClick={() => { this.getresetPwd(item.id) }}>
-                      参数配置
-                    </span>
+                    <span className={styles.delectName} onClick={(e) => { this.getresetPwd(e, item) }}>参数配置</span>
                   </div>
                 </div>)
             })}
@@ -107,7 +205,9 @@ class InterworkingList extends Component {
             }
           </div>
           <div className={styles.paginations}>
-            <Pagination showQuickJumper defaultCurrent={2} total={500} />
+            {
+              currnum && <Pagination showQuickJumper onChange={this.pageChange} current={current} total={currnum} />
+            }
           </div>
         </div>
       </div>
@@ -115,4 +215,17 @@ class InterworkingList extends Component {
   }
 }
 
-export default InterworkingList
+const mapStateToProps = (state) => {
+  return {
+    data: { ...state.equipmentManagement },
+  }
+}
+const mapDisPatchToProps = (dispatch) => {
+  return {
+    signalList: bindActionCreators(signalList, dispatch),
+    systemCodeListByCodeType: bindActionCreators(systemCodeListByCodeType, dispatch),
+    unitInfoList: bindActionCreators(unitInfoList, dispatch),
+    signalListByPage: bindActionCreators(signalListByPage, dispatch),
+  }
+}
+export default connect(mapStateToProps, mapDisPatchToProps)(InterworkingList)

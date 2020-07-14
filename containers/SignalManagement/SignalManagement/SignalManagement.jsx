@@ -669,7 +669,6 @@ class SignalManagement extends PureComponent {
   }
   // 更新参数
   setGetParams = params => {
-    // debugger
     console.log(params, '更新名称')
     this.setState({
       stepOneText: params.interName,
@@ -1159,6 +1158,15 @@ btnSelectOver = (flag, defaultSelectLists) => {
       })
     }
   }
+  getresetPwd = (item) => {
+    debugger
+    this.showInterworkingList(null)
+
+    const resultP = Promise.resolve(this.props.getUnitPop(item.interId))
+    resultP.then(()=>{
+      this.setGetParams(item)
+    })
+  }
   // 创建地图层
   loadingMap = () => {
     const map = new AMap.Map('mapContent', {
@@ -1195,20 +1203,15 @@ btnSelectOver = (flag, defaultSelectLists) => {
     }
     if (map) {
       for (let i = 0; i < positions.length; i++) {
-        // const latlng = positions[i]
-        // const latlng = positions[i].latlng
         const marker = new AMap.Marker({
           position: new AMap.LngLat(positions[i].lng, positions[i].lat),
           offset: new AMap.Pixel(-16, -16),
           content: "<div inter-id='"+positions[i].interId+"' id='roadKey"+positions[i].id+"' class='marker-online'></div>",
         })
-        // marker.id =
         marker.on('click', (e) => {
           map.emit('click', {
             lnglat: map.getCenter()
           })
-          
-          // console.log(marker,'aaaaaaaaaaaaaaaaaaaaaaaaaa')
           marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='"+positions[i].interId+"' id='roadKey"+positions[i].id+"' class='marker-online'></div></div>");
           const nowZoom = map.getZoom()
           map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
@@ -1222,7 +1225,6 @@ btnSelectOver = (flag, defaultSelectLists) => {
               this.openInfoWin(map, positions[i], marker, positions[i].interName)
             })
           })
-          // console.log(marker.getContent(), 'ppppppppppppppppppppp')
         })
         this[layer].push(marker)
       }
@@ -1496,15 +1498,16 @@ btnSelectOver = (flag, defaultSelectLists) => {
   handlePopData(data) {
     // debugger
     let result = JSON.parse(data);
-    console.log(result,this,'socket POP数据')
+    // console.log(result,this,'socket POP数据')
     $('#phasestageName').text(result.phasestageName).attr("tag-src",`${this.phaseBgUrl}${result.phasestageImage}`)
     $('#schemeName').text(result.schemeName)
     $('#nodeModelName').text(result.nodeModelName)
-    $('#phasestageImage').prop('src', `${this.phaseBgUrl}${result.phasestageImage}`).attr('style','width:30px;height:30px;margin-left:8px;')
+    result !== -1 ? $('#phasestageImage').prop('src', `${this.phaseBgUrl}${result.phasestageImage}`).attr('style','width:30px;height:30px;margin-left:8px;') : null
     this.setState({
       roadUnitId: false,
     })
   }
+
   render() {
     const { interListHeight, searchInterList, stepStatusData, popAddEditText, popAddEditName, moveFlag, stepOneFlag, stepTwoFlag, 
       stepRoadFlag, stepRoadAddEdit,
@@ -1526,7 +1529,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
     const { Search } = Input
     return (
       <div className={styles.SignalManagement}>
-      <Websocket url={this.socketPointStatusUrl} onMessage={this.handleData.bind(this)}/>
+      <Websocket url={this.socketPointStatusUrl} onMessage={this.handleData.bind(this)} />
       { !!roadUnitId && !!roadInterId && !!roadNodeNo ? <Websocket url={`${this.socketPointPopUrl}${roadUnitId}/${roadInterId}/${roadNodeNo}`} onMessage={ this.handlePopData.bind(this)} /> : null }
         <Header {...this.props} />
         {/* 调度点击行弹层 */}
@@ -2786,7 +2789,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
           </div> : null
         }
         {turnTab ?
-          <InterworkingList showInterworkingList={this.showInterworkingList} /> : null
+          <InterworkingList showInterworkingList={this.showInterworkingList} getresetPwd={this.getresetPwd} /> : null
         }
         {/* step 导示 */}
         <StepNavMenu {...this.props }
@@ -2803,13 +2806,6 @@ btnSelectOver = (flag, defaultSelectLists) => {
           stepNineFlag={stepNineFlag}
         showHidePop={this.showHidePop} stepStatusData={stepStatusData} />
         <div className={styles.Interwork_left}>
-          {/* <div className={styles.InterworkLeft_search}>
-            <Search
-              placeholder="关键词搜索"
-              onSearch={value => console.log(value)}
-              style={{ width: 200 }}
-            />
-          </div> */}
           <div className={styles.searchBox}>
           <input
                 className={styles.searchInput}
