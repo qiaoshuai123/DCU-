@@ -210,7 +210,7 @@ class Usergroup extends React.Component {
             </div>
             <div className={styles.syetem_buttom}>
               {
-                userLimit && userLimit.indexOf(28) !== -1 ?
+                userLimit && userLimit.indexOf(531) !== -1 ?
                   <div className={styles.title}><span onClick={this.handleAddGroup}>+添加部门</span></div> : null
               }
               <div className={styles.listBox}>
@@ -236,13 +236,13 @@ class Usergroup extends React.Component {
                         <div className={styles.listTd} ><span className={styles.roadName}>{item.leaderName}</span></div>
                         <div className={styles.listTd} >
                           {
-                            userLimit && userLimit.indexOf(30) !== -1 ?
+                            userLimit && userLimit.indexOf(532) !== -1 ?
                               <span className={styles.updateName} onClick={() => { this.handleEditItems(item.id) }}>
                                 <Icon type="edit" className={styles.icon} />修改
                               </span> : null
                           }
                           {
-                            userLimit && userLimit.indexOf(29) !== -1 ?
+                            userLimit && userLimit.indexOf(533) !== -1 ?
                               <span className={styles.delectName} onClick={() => { this.handleDeleteItem(item.id) }}>
                                 <Icon type="close" className={styles.icon} />删除
                               </span> : null

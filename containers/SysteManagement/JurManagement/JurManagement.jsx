@@ -80,13 +80,12 @@ class JurManagement extends Component {
 
   onCheck = (checkedKeys, e) => {
     console.log('onCheck', checkedKeys, e)
-    this.defaultparams.menuIds = checkedKeys.checked
-    /*  this.defaultparams.menuIds = [...e.halfCheckedKeys, ...checkedKeys] */
-    this.setState({ checkedKeys: checkedKeys.checked })
+    this.defaultparams.menuIds = checkedKeys
+    this.setState({ checkedKeys })
   }
 
   onSelect = (selectedKeys, info) => {
-    console.log('onSelect', info)
+    console.log('onSelect', selectedKeys, info)
     this.setState({ selectedKeys })
   }
   getSystemMenu = () => {
@@ -287,7 +286,7 @@ class JurManagement extends Component {
             </div>
             <div className={styles.syetem_buttom}>
               {
-                userLimit && userLimit.indexOf(19) !== -1 ?
+                userLimit && userLimit.indexOf(521) !== -1 ?
                   <div className={styles.title}><span onClick={this.handleAddGroup}>+添加角色</span></div> : null
               }
               <div className={styles.listBox}>
@@ -309,13 +308,13 @@ class JurManagement extends Component {
                         <div className={styles.listTd} ><span className={styles.roadName}>{item.createTime}</span></div>
                         <div className={styles.listTd} >
                           {
-                            userLimit && userLimit.indexOf(20) !== -1 ?
+                            userLimit && userLimit.indexOf(522) !== -1 ?
                               <span className={styles.updateName} onClick={() => { this.handleEditItems(item.id) }}>
                                 <Icon type="edit" className={styles.icon} />修改
                               </span> : null
                           }
                           {
-                            userLimit && userLimit.indexOf(21) !== -1 ?
+                            userLimit && userLimit.indexOf(523) !== -1 ?
                               <span className={styles.delectName} onClick={() => { this.handleDeleteItem(item.id) }}>
                                 <Icon type="close" className={styles.icon} />删除
                               </span> : null
@@ -356,8 +355,17 @@ class JurManagement extends Component {
                   <div className={styles.inSle} style={{ maxHeight: '201px', overflowY: 'auto' }}>
                     {treeData ?
                       <Tree
+                        // checkable
+                        // checkStrictly
+                        // onExpand={this.onExpand}
+                        // expandedKeys={this.state.expandedKeys}
+                        // autoExpandParent={this.state.autoExpandParent}
+                        // onCheck={this.onCheck}
+                        // checkedKeys={this.state.checkedKeys}
+                        // onSelect={this.onSelect}
+                        // selectedKeys={this.state.selectedKeys}
+                        // defaultExpandAll="true"
                         checkable
-                        checkStrictly
                         onExpand={this.onExpand}
                         expandedKeys={this.state.expandedKeys}
                         autoExpandParent={this.state.autoExpandParent}
@@ -365,7 +373,6 @@ class JurManagement extends Component {
                         checkedKeys={this.state.checkedKeys}
                         onSelect={this.onSelect}
                         selectedKeys={this.state.selectedKeys}
-                        defaultExpandAll={true}
                       >
                         {this.renderTreeNodes(treeData)}
                       </Tree> : null}

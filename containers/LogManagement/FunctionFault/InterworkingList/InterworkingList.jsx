@@ -15,20 +15,24 @@ class InterworkingList extends Component {
       currentPage: 1,
       totalPage: 0,
     }
-    this.logTypeUrl = '/DCU/sys/code/systemCodeListByCodeType?dictType=5'
-    this.logList = '/DCU/dcuLog/dcuLogListByPage'
-    this.exportUrl = '/DCU/dcuLog/exportDcuLogList'
+    this.logTypeUrl = '/DCU/sys/code/systemCodeListByCodeType?dictType=6'
+    this.logsource = '/DCU/sys/code/systemCodeListByCodeType?dictType=34'
+    this.logList = '/DCU/runLog/runLogListByPage'
+    this.exportUrl = '/DCU/runLog/exportRunLogList'
     this.logListParams = {
       endTime: '',
-      faultType: null,
       keyword: '',
       pageNo: 1,
       startTime: '',
+      dircetion: null,
+      logSource: null,
+      logType: null,
     }
   }
   componentDidMount = () => {
     this.getLogTypes()
     this.getLogList()
+    this.getLogSource()
   }
   getResetParams = (params) => {
     if (JSON.stringify(params) !== '{}') {
@@ -54,6 +58,16 @@ class InterworkingList extends Component {
       }
     })
   }
+  getLogSource = () => {
+    getResponseDatas('get', this.logsource).then((res) => {
+      const { code, data } = res.data
+      if (code === 0 && data.length) {
+        this.setState({ logSource: data })
+      } else {
+        this.setState({ logSource: [] })
+      }
+    })
+  }
   getLogTypes = () => {
     getResponseDatas('get', this.logTypeUrl).then((res) => {
       const { code, data } = res.data
@@ -73,8 +87,9 @@ class InterworkingList extends Component {
     // this.sigexportExcelThing(str)
   }
   handleChangeType = (value, options) => {
+    const { pname } = options.props
     const types = options.key === 'null' ? null : options.key
-    this.logListParams.faultType = types
+    this.logListParams[pname] = types
   }
   handleStartTimeChange = (moments) => {
     const timeStep = moments._d.getTime()
@@ -96,7 +111,7 @@ class InterworkingList extends Component {
     this.logListParams.keyword = e.target.vlaue
   }
   render() {
-    const { systemList, logTypes, totalPage, currentPage } = this.state
+    const { systemList, logTypes, totalPage, currentPage, logSource } = this.state
     return (
       <div className={styles.syetem_bg} ref={(input) => { this.userLimitBox = input }}>
         <div className={styles.syetem_title}>
@@ -108,22 +123,44 @@ class InterworkingList extends Component {
             <div className={styles.inSle}><Input onChange={this.handleKeyWordChange} /></div>
           </div>
           <div className={styles.syetem_item}>
-            <span className={styles.item}>故障类型:</span>
+            <span className={styles.item}>日志类型:</span>
             <div className={styles.inSle}>
               <Select defaultValue="全部" onChange={this.handleChangeType}>
                 <Option value="全部" key={null}>全部</Option>
                 {
                   logTypes &&
-                  logTypes.map(item => <Option value={item.codeName} key={item.dictCode}>{item.codeName}</Option>)
+                  logTypes.map(item => <Option value={item.codeName} key={item.dictCode} pname="logType">{item.codeName}</Option>)
                 }
               </Select>
             </div>
           </div>
           <div className={styles.syetem_item}>
+            <span className={styles.item}>日志来源:</span>
+            <div className={styles.inSle}>
+              <Select defaultValue="全部" onChange={this.handleChangeType}>
+                <Option value="全部" key={null}>全部</Option>
+                {
+                  logSource &&
+                  logSource.map(item => <Option value={item.codeName} key={item.dictCode} pname="logSource">{item.codeName}</Option>)
+                }
+              </Select>
+            </div>
+          </div>
+          <div className={styles.syetem_item}>
+            <span className={styles.item}>请求响应:</span>
+            <div className={styles.inSle}>
+              <Select defaultValue="全部" onChange={this.handleChangeType}>
+                <Option value="全部" key={null}>全部</Option>
+                <Option value="request" key="request" pname="dircetion">request</Option>
+                <Option value="response" key="response" pname="dircetion">response</Option>
+              </Select>
+            </div>
+          </div>
+          <div className={styles.syetem_item} style={{ flex: 1.2 }}>
             <span className={styles.item}>故障时间:</span>
-            <div className={styles.inSle}><DatePicker showTime onChange={this.handleStartTimeChange} /></div>
+            <div className={styles.inSle}><DatePicker showTime onChange={this.handleStartTimeChange} style={{ minWidth: '100px' }} /></div>
             <span style={{ margin: '0 10px' }}>至</span>
-            <div className={styles.inSle}><DatePicker showTime onChange={this.handleEndTimeChange} /></div>
+            <div className={styles.inSle}><DatePicker showTime onChange={this.handleEndTimeChange} style={{ minWidth: '100px' }} /></div>
           </div>
           <span className={styles.searchBtn} onClick={this.handleSearchLogList} limitid="13">查询</span>
         </div>
@@ -133,28 +170,24 @@ class InterworkingList extends Component {
         <div className={styles.syetem_buttom}>
           <div className={styles.listBox}>
             <div className={styles.listItems}>
-              <div className={styles.listTd} >点位编号</div>
-              <div className={styles.listTd} >点位名称</div>
-              <div className={styles.listTd} >设备IP</div>
-              <div className={styles.listTd} >故障类型</div>
-              <div className={styles.listTd} >故障时间</div>
-              <div className={styles.listTd} >故障恢复时间</div>
-              <div className={styles.listTd} >故障描述</div>
+              <div className={styles.listTd} >日志来源</div>
+              <div className={styles.listTd} >日志类型</div>
+              <div className={styles.listTd} >请求响应</div>
+              <div className={styles.listTd} >操作人</div>
+              <div className={styles.listTd} >IP</div>
+              <div className={styles.listTd} >日志内容</div>
+              <div className={styles.listTd} >日志时间</div>
             </div>
             {systemList && systemList.map((item, index) => {
               return (
                 <div className={styles.listItems} key={item.id + index}>
-                  <div className={styles.listTd} >{item.dcuId}</div>
-                  <div className={styles.listTd} >{item.interName}</div>
+                  <div className={styles.listTd} >{item.logSourceName}</div>
+                  <div className={styles.listTd} >{item.logTypeName}</div>
+                  <div className={styles.listTd} >{item.direction}</div>
+                  <div className={styles.listTd} >{item.loginName}</div>
                   <div className={styles.listTd} >{item.ip}</div>
-                  <div className={styles.listTd} >{item.faultTypeName}</div>
-                  <div className={styles.listTd} >{resetTimeStep(item.faultTime)}</div>
-                  <div className={styles.listTd} >{resetTimeStep(item.recoverTime)}</div>
-                  <div className={styles.listTd} >
-                    <span className={styles.delectName} onClick={() => { this.getresetPwd(item.id) }}>
-                      路口监视
-                    </span>
-                  </div>
+                  <div className={styles.listTd} >{item.data}</div>
+                  <div className={styles.listTd} >{item.timeStr}</div>
                 </div>)
             })}
             {

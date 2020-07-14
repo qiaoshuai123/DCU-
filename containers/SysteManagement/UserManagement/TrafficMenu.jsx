@@ -259,8 +259,8 @@ class TrafficMenu extends React.Component {
             </div>
             <div className={styles.syetem_buttom}>
               {
-                userLimit && userLimit.indexOf(23) !== -1 ?
-                  <div className={styles.title}><span onClick={this.getaddMenu} limitid="23">+添加菜单</span></div> : null
+                userLimit && userLimit.indexOf(541) !== -1 ?
+                  <div className={styles.title}><span onClick={this.getaddMenu} limitid="541">+添加菜单</span></div> : null
               }
               <div className={styles.listBox}>
                 <div className={styles.listItems}>
@@ -281,14 +281,14 @@ class TrafficMenu extends React.Component {
                       <div className={styles.listTd} ><span className={styles.roadName}>{item['sort']}</span></div>
                       <div className={styles.listTd} >
                         {
-                          userLimit && userLimit.indexOf(25) !== -1 ?
-                            <span className={styles.updateName} onClick={() => { this.handleDataLists(item) }} limitid="25">
+                          userLimit && userLimit.indexOf(542) !== -1 ?
+                            <span className={styles.updateName} onClick={() => { this.handleDataLists(item) }} limitid="542">
                               <Icon type="edit" className={styles.icon} />修改
                             </span> : null
                         }
                         {
-                          userLimit && userLimit.indexOf(26) !== -1 ?
-                            <span className={styles.delectName} onClick={() => { this.getfaciDelete(item.id) }} limitid="26">
+                          userLimit && userLimit.indexOf(543) !== -1 ?
+                            <span className={styles.delectName} onClick={() => { this.getfaciDelete(item.id) }} limitid="543">
                               <Icon type="close" className={styles.icon} />删除
                             </span> : null
                         }

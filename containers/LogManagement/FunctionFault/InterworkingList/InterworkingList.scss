@@ -45,12 +45,12 @@ $bor-color: #2e3440;
         font-size: 16px;
       }
       .inSle {
-        width: 200px;
+        width: 170px;
         height: 100%;
         display: flex;
         align-items: center;
         :global(.ant-select-selection) {
-          width: 190px;
+          width: 150px;
           background-color: #26394a;
           border: 1px solid #26394a;
           outline: none;
@@ -63,7 +63,7 @@ $bor-color: #2e3440;
         color: #07f8ff;
       }
       :global(.ant-select-selection__rendered) {
-        width: 200px;
+        width: 150px;
         line-height: 30px;
       }
       :global(.ant-input) {
@@ -77,7 +77,7 @@ $bor-color: #2e3440;
         color: #fff;
       }
       :global(.ant-calendar-picker) {
-        width: 200px;
+        width: 170px;
       }
     }
   }

@@ -13,9 +13,9 @@ class Header extends React.Component {
       showSysMsg: false,
       userName: null,
       showChangePwd: false,
+      userLimit: null,
     }
     this.paths = this.props.match.url
-    console.log(this.paths)
     this.navItems = [
       {
         id: 1,
@@ -28,29 +28,37 @@ class Header extends React.Component {
             name: 'DCU状态',
             role: 1,
             path: '/interworkinghome',
+            limitId: 11,
           },
           {
             id: '1_2',
             name: '信号机实时状态',
             role: 1,
             path: '/signalstatus',
+            limitId: 12,
           },
           {
             id: '1_3',
             name: '数据实时状态',
             role: 1,
             path: '/datastatus',
+            limitId: 13,
           },
           {
             id: '1_4',
             name: '检测器数据',
             role: 1,
             path: '/detectordata',
+            limitId: 14,
           },
         ],
       },
-      { id: 2, name: '信号参数管理', role: 2, path: '/signalmanagement' },
-      { id: 3, name: '设备参数管理', role: 3, path: '/equipmentManagement' },
+      {
+        id: 2, name: '信号参数管理', role: 2, path: '/signalmanagement', limitId: 2,
+      },
+      {
+        id: 3, name: '设备参数管理', role: 3, path: '/equipmentManagement', limitId: 3,
+      },
       {
         id: 4,
         name: '日志管理',
@@ -62,30 +70,35 @@ class Header extends React.Component {
             name: 'DCU设备故障',
             role: 4,
             path: '/dcufault',
+            limitId: 41,
           },
           {
             id: '4_2',
             name: '信号机故障',
             role: 4,
             path: '/signalfault',
+            limitId: 42,
           },
           {
             id: '4_3',
             name: '通讯故障',
             role: 4,
             path: '/communicationfault',
+            limitId: 43,
           },
           {
             id: '4_4',
             name: '操作日志',
             role: 4,
             path: '/logfault',
+            limitId: 44,
           },
           {
             id: '4_5',
             name: '运行日志',
             role: 4,
             path: '/functionfault',
+            limitId: 45,
           },
         ],
       },
@@ -100,28 +113,34 @@ class Header extends React.Component {
             name: '用户管理',
             role: 5,
             path: '/usermanagement',
+            limitId: 51,
           },
           {
             id: '5_2',
             name: '权限角色管理',
             role: 5,
             path: '/jurmanagement',
+            limitId: 52,
           },
           {
             id: '5_3',
             name: '菜单管理',
             role: 5,
             path: '/menumanage',
+            limitId: 54,
           },
           {
             id: '5_4',
             name: '部门管理',
             role: 5,
             path: '/usergroup',
+            limitId: 53,
           },
         ],
       },
-      { id: 6, name: '关于系统', role: 6, path: '' },
+      {
+        id: 6, name: '关于系统', role: 6, path: '',
+      },
     ]
     this.menu = (
       <Menu onClick={this.handleUserMenu}>
@@ -147,7 +166,8 @@ class Header extends React.Component {
   }
   componentDidMount = () => {
     const userMsg = JSON.parse(localStorage.getItem('userInfo'))
-    this.setState({ userName: userMsg.userName })
+    const userLimit = (JSON.parse(localStorage.getItem('userLimit'))).map(item => item.id)
+    this.setState({ userName: userMsg.userName, userLimit })
     this.loginKeys.id = userMsg.id
     this.pageRouter()
   }
@@ -218,10 +238,10 @@ class Header extends React.Component {
       }
     }
   }
-  SelectButton = (e) => {
-    if (e.path) {
-      this.props.history.push(e.path)
-    } else {
+  SelectButton = (navItem) => {
+    if (navItem.path && !navItem.child && this.state.userLimit.indexOf(navItem.limitId) >= 0) {
+      this.props.history.push(navItem.path)
+    } else if (!navItem.path) {
       this.setState({ showSysMsg: true })
     }
   }
@@ -259,7 +279,7 @@ class Header extends React.Component {
   }
   render() {
     const {
-      selectNum, navItem, showSysMsg, userName, showChangePwd,
+      selectNum, navItem, showSysMsg, userName, showChangePwd, userLimit,
     } = this.state
     return (
       <div className={styles.headerWrapper}>
@@ -294,13 +314,20 @@ class Header extends React.Component {
         </div>
         <div className={styles.header_center}>
           {
+            userLimit &&
             navItem.map(item =>
               (
                 <div className={selectNum === item.id ? styles.active : ''} onClick={() => this.SelectButton(item)} key={item.id}>
                   {item.name}
                   <div className={styles.child}>
                     {
-                      item.child && item.child.map(items => <div key={items.id} onClick={e => this.SelectButtonChild(e, items)}>{items.name}</div>)
+                      item.child && item.child.map((items) => {
+                        if (userLimit.indexOf(items.limitId) >= 0) {
+                          return (
+                            <div key={items.id} onClick={e => this.SelectButtonChild(e, items)}>{items.name}</div>
+                          )
+                        }
+                      })
                     }
                   </div>
                 </div>

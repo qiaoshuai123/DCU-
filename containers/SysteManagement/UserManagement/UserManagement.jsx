@@ -7,6 +7,7 @@ import Header from '../../../components/Header/Header'
 import styles from './UserManagement.scss'
 import getResponseDatas from '../../../utils/getResponseDatas'
 
+const { confirm } = Modal
 class UserManagement extends Component {
   constructor(props) {
     super(props)
@@ -291,8 +292,8 @@ class UserManagement extends Component {
             </div>
             <div className={styles.syetem_buttom}>
               {
-                userLimit && userLimit.indexOf(14) !== -1 ?
-                  <div className={styles.title}><span onClick={this.getAddUser} limitid="14">+添加用户</span></div> : null
+                userLimit && userLimit.indexOf(511) !== -1 ?
+                  <div className={styles.title}><span onClick={this.getAddUser} limitid="511">+添加用户</span></div> : null
               }
               <div className={styles.listBox}>
                 <div className={styles.listItems}>
@@ -318,18 +319,21 @@ class UserManagement extends Component {
                       <div className={styles.listTd} ><span className={styles.roadName}>{item.lastTime}</span></div>
                       <div className={styles.listTd} ><span className={styles.roadName}>{item.status ? '已禁用' : '已启用'}</span></div>
                       <div className={styles.listTd} >
-                        <span className={styles.delectName} onClick={() => { this.getresetPwd(item.id) }}>
-                          <Icon type="reload" className={styles.icon} />重置密码
-                        </span>
                         {
-                          userLimit && userLimit.indexOf(16) !== -1 ?
-                            <span className={styles.updateName} onClick={() => { this.handleDataLists(item.id) }} limitid="16">
+                          userLimit && userLimit.indexOf(514) !== -1 ?
+                            <span className={styles.delectName} onClick={() => { this.getresetPwd(item.id) }}>
+                              <Icon type="reload" className={styles.icon} />重置密码
+                            </span> : null
+                        }
+                        {
+                          userLimit && userLimit.indexOf(512) !== -1 ?
+                            <span className={styles.updateName} onClick={() => { this.handleDataLists(item.id) }} limitid="512">
                               <Icon type="edit" className={styles.icon} />修改
                             </span> : null
                         }
                         {
-                          userLimit && userLimit.indexOf(15) !== -1 ?
-                            <span className={styles.delectName} onClick={() => { this.getfaciDelete(item.id) }} limitid="15">
+                          userLimit && userLimit.indexOf(513) !== -1 ?
+                            <span className={styles.delectName} onClick={() => { this.getfaciDelete(item.id) }} limitid="513">
                               <Icon type="close" className={styles.icon} />删除
                             </span> : null
                         }

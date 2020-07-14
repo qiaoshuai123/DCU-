@@ -67,9 +67,6 @@ class InterworkingList extends Component {
       }
     })
   }
-  getresetPwd = (id) => {
-    window.open(`#roaddetail/${id}`)
-  }
   // 导出excel表格
   exportTable = () => {
     window.location.href = `${this.exportUrl}${this.getResetParams(this.logListParams)}`
@@ -146,17 +143,13 @@ class InterworkingList extends Component {
             {systemList && systemList.map((item, index) => {
               return (
                 <div className={styles.listItems} key={item.id + index}>
-                  <div className={styles.listTd} >{item.dcuId}</div>
+                  <div className={styles.listTd} >{item.interId}</div>
                   <div className={styles.listTd} >{item.interName}</div>
                   <div className={styles.listTd} >{item.ip}</div>
                   <div className={styles.listTd} >{item.faultTypeName}</div>
                   <div className={styles.listTd} >{resetTimeStep(item.faultTime)}</div>
                   <div className={styles.listTd} >{resetTimeStep(item.recoverTime)}</div>
-                  <div className={styles.listTd} >
-                    <span className={styles.delectName} onClick={() => { this.getresetPwd(item.id) }}>
-                      路口监视
-                    </span>
-                  </div>
+                  <div className={styles.listTd} >{item.faultDetail}</div>
                 </div>)
             })}
             {

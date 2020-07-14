@@ -36,6 +36,7 @@ class Login extends React.Component {
        const { code, data } = res.data
        if (code === 0) {
          localStorage.setItem('userLimit', JSON.stringify(data))
+         this.props.history.push('/interworkinghome')
        }
      })
    }
@@ -51,7 +52,6 @@ class Login extends React.Component {
             loginName: '',
             passWord: '',
           }
-          this.props.history.push('/interworkinghome')
         } else {
           message.warning(msg)
         }
