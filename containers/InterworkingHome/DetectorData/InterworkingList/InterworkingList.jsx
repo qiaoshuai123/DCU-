@@ -1,36 +1,62 @@
 import React, { Component } from 'react'
-import { Input, Pagination, DatePicker } from 'antd'
+import { Input, Pagination, DatePicker, Select } from 'antd'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { unitInfoList, detectorDataListByPage, exportDetectorDataList } from '../../../../reactRedux/actions/equipmentManagement'
 import styles from './InterworkingList.scss'
 
 class InterworkingList extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      systemList: [
-        {
-          id: 1,
-        },
-        {
-          id: 2,
-        },
-        {
-          id: 3,
-        },
-        {
-          id: 4,
-        }
-      ],
+      systemList: [],
+      namesList: [],
+      current: 1,
+      currnum: '',
+    }
+    this.objs = {
+      names: '',
+      keyword: '',
+      startDate: '',
+      endDate: '',
+      pageNo: 1,
     }
   }
   componentDidMount = () => {
-
+    this.props.detectorDataListByPage('pageNo=1')
+    this.props.unitInfoList()
+  }
+  componentDidUpdate = (prevState) => {
+    const { unitInfoLists, detectorDataListByPages, } = this.props.data
+    if (prevState.data.unitInfoLists !== unitInfoLists) {
+      this.getunitInfoLists(unitInfoLists)
+    }
+    if (prevState.data.detectorDataListByPages !== detectorDataListByPages) {
+      this.getdetectorDataListByPages(detectorDataListByPages)
+    }
+  }
+  onChangDateStart = (date, dateString) => { // 上报时间
+    console.log(new Date(dateString) * 1, '出厂日期')
+    this.objs.startDate = new Date(dateString) * 1
+  }
+  onChangDateEnd = (date, dateString) => { // 结束上报时间
+    console.log(new Date(dateString) * 1, '配置日期')
+    this.objs.endDate = new Date(dateString) * 1
+  }
+  getunitInfoLists = (unitInfoLists) => {
+    this.setState({
+      namesList: unitInfoLists,
+    })
+  }
+  getdetectorDataListByPages = (detectorDataListByPages) => {
+    const { pageSize, data } = detectorDataListByPages
+    this.setState({
+      currnum: pageSize,
+      systemList: data,
+    })
   }
   getresetPwd = (id) => {
     window.open(`#roaddetail/${id}`)
-  }
-  exportTable = () => {
-    const str = `districtId=${this.changeRegionValue}&keyword=${this.changeFontValue}&signalType=${this.changeSignalValue}&unitId=${this.changeIntctionValue}`
-    this.props.gettimingInfoByExcel(str)
   }
   getTimingInfoByExcels = (getTimingInfoByExcel) => {
     const blob = new Blob([getTimingInfoByExcel], { type: 'application/vnd.ms-excel,charset=utf-8' })
@@ -43,8 +69,56 @@ class InterworkingList extends Component {
     document.body.removeChild(a)
     window.URL.revokeObjectURL(href)
   }
+  exportTable = () => {
+    const { keyword, startDate, endDate, pageNo, names } = this.objs
+    const objs = `endTime=${endDate}&keyword=${keyword}&startTime=${startDate}&unitId=${names}`
+    this.props.exportDetectorDataList(objs).then(res=>{
+      this.getTimingInfoByExcels(res.data)
+    })
+  }
+  handleChange = (e, optios) => {
+    if (optios) {
+      const { pname } = optios.props
+      this.objs[pname] = e
+    } else {
+      const names = e.target.getAttribute('pname')
+      const { value } = e.target
+      this.objs[names] = value
+    }
+  }
+  handlePagination = () => {
+    const { keyword, startDate, endDate, pageNo, names } = this.objs
+    const objs = `endTime=${endDate}&keyword=${keyword}&pageNo=${pageNo}&startTime=${startDate}&unitId=${names}`
+    this.props.detectorDataListByPage(objs)
+  }
+  // 更改底部分页器
+  pageChange = (page, pageSize) => {
+    this.objs.pageNo = page
+    const { keyword, startDate, endDate, pageNo, names } = this.objs
+    const objs = `endTime=${endDate}&keyword=${keyword}&pageNo=${pageNo}&startTime=${startDate}&unitId=${names}`
+    this.props.detectorDataListByPage(objs)
+  }
+  formatDate = (value) => { // 时间戳转换日期格式方法
+    if (value == null) {
+      return ''
+    }
+    const date = new Date(value)
+    const y = date.getFullYear()// 年
+    let MM = date.getMonth() + 1// 月
+    MM = MM < 10 ? (`0${MM}`) : MM
+    let d = date.getDate()// 日
+    d = d < 10 ? (`0${d}`) : d
+    let h = date.getHours()// 时
+    h = h < 10 ? (`0${h}`) : h
+    let m = date.getMinutes()// 分
+    m = m < 10 ? (`0${m}`) : m
+    let s = date.getSeconds()// 秒
+    s = s < 10 ? (`0${s}`) : s
+    return `${y}-${MM}-${d} ${h}:${m}:${s}`
+  }
   render() {
-    const { systemList } = this.state
+    const { systemList, namesList, current, currnum, } = this.state
+    const { Option } = Select
     return (
       <div className={styles.syetem_bg} ref={(input) => { this.userLimitBox = input }}>
         <div className={styles.syetem_title}>
@@ -53,17 +127,33 @@ class InterworkingList extends Component {
         <div className={styles.syetem_top}>
           <div className={styles.syetem_item}>
             <span className={styles.item}>关键词:</span>
-            <div className={styles.inSle}><Input onChange={this.handleInputChange} /></div>
+            <div className={styles.inSle}><Input pname="keyword" onChange={this.handleChange} /></div>
           </div>
           <div className={styles.syetem_item}>
             <span className={styles.item}>点位名称:</span>
-            <div className={styles.inSle}><Input onChange={this.handleInputChange} /></div>
+            <div className={styles.inSle}>
+              <Select
+                showSearch
+                defaultValue="全部"
+                style={{ width: 200, margin: 0 }}
+                onChange={this.handleChange}
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+              >
+                <Option pname="names" value="">全部</Option>
+                {
+                  namesList && namesList.map((item, ind) => <Option key={item + ind} pname="names" value={item.id}>{item.interName}</Option>)
+                }
+              </Select>
+            </div>
           </div>
           <div className={styles.syetem_item}>
             <span className={styles.item}>上报时间:</span>
-            <div className={styles.inSle}><DatePicker /></div><span style={{ margin: '0 10px' }}>至</span><div className={styles.inSle}><DatePicker /></div>
+            <div className={styles.inSle}><DatePicker onChange={this.onChangDateStart} /></div><span style={{ margin: '0 10px' }}>至</span><div className={styles.inSle}><DatePicker onChange={this.onChangDateEnd} /></div>
           </div>
-          <span className={styles.searchBtn} onClick={() => { this.handlePagination('1') }} limitid="13">查询</span>
+          <span className={styles.searchBtn} onClick={this.handlePagination}>查询</span>
         </div>
         <div className={styles.equipmentList}>
           设备列表
@@ -85,17 +175,13 @@ class InterworkingList extends Component {
             {systemList && systemList.map((item, index) => {
               return (
                 <div className={styles.listItems} key={item.id + index}>
-                  <div className={styles.listTd} >11213213212222222222222222222222</div>
-                  <div className={styles.listTd} >2</div>
-                  <div className={styles.listTd} >3</div>
-                  <div className={styles.listTd} >4</div>
-                  <div className={styles.listTd} >5</div>
-                  <div className={styles.listTd} >6</div>
-                  <div className={styles.listTd} >
-                    <span className={styles.delectName} onClick={() => { this.getresetPwd(item.id) }}>
-                      路口监视
-                    </span>
-                  </div>
+                  <div className={styles.listTd} >{item.interName}</div>
+                  <div className={styles.listTd} >{item.dirName}</div>
+                  <div className={styles.listTd} >{item.reportTimeForStr}</div>
+                  <div className={styles.listTd} >{item.laneId}</div>
+                  <div className={styles.listTd} >{item.flow}</div>
+                  <div className={styles.listTd} >{item.occupancy}</div>
+                  <div className={styles.listTd} >{item.speed}</div>
                 </div>)
             })}
             {
@@ -103,7 +189,7 @@ class InterworkingList extends Component {
             }
           </div>
           <div className={styles.paginations}>
-            <Pagination showQuickJumper defaultCurrent={2} total={500} />
+            {currnum && <Pagination showQuickJumper onChange={this.pageChange} defaultCurrent={current} total={currnum} />}
           </div>
         </div>
       </div>
@@ -111,4 +197,16 @@ class InterworkingList extends Component {
   }
 }
 
-export default InterworkingList
+const mapStateToProps = (state) => {
+  return {
+    data: { ...state.equipmentManagement },
+  }
+}
+const mapDisPatchToProps = (dispatch) => {
+  return {
+    unitInfoList: bindActionCreators(unitInfoList, dispatch),
+    detectorDataListByPage: bindActionCreators(detectorDataListByPage, dispatch),
+    exportDetectorDataList: bindActionCreators(exportDetectorDataList, dispatch),
+  }
+}
+export default connect(mapStateToProps, mapDisPatchToProps)(InterworkingList)

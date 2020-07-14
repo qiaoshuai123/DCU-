@@ -33,6 +33,10 @@ const equipmentManagement = (state = {}, action) => {
       return Object.assign({}, state, { signalLists: payload })
     case types.GET_SIG_SIGNALLISTBYPAGE:
       return Object.assign({}, state, { signalListByPages: payload })
+    case types.GET_DCU_DETECTORREALTIMELISTBYPAGE:
+      return Object.assign({}, state, { detectorRealTimeListByPages: payload })
+    case types.GET_DET_DETECTORDATALISTBYPAGE:
+      return Object.assign({}, state, { detectorDataListByPages: payload })
     default:
       return state
   }

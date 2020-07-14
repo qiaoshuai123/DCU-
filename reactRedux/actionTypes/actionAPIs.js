@@ -119,6 +119,7 @@ export const API_UNI_UNITINFOLIST = '/DCU/unitInfo/unitInfoList' // 获取所有
 // 信号机实时状态
 export const API_SIG_SIGNALLIST = '/DCU/signalInfo/signalList' // 查询全部信号机数据
 export const API_SIG_SIGNALLISTBYPAGE = '/DCU/signalInfo/signalListByPage' // 分页查询信号机
+export const API_DCU_DETECTORREALTIMELISTBYPAGE = '/DCU/dcuInfo/detectorRealTimeListByPage' // 分页查询数据状态
 
 // 检测器数据
 export const API_DET_DETECTORDATALISTBYPAGE = '/DCU/detectorData/detectorDataListByPage' // 分页查询检测器数据
