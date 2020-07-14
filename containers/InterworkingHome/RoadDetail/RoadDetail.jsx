@@ -27,6 +27,7 @@ class RoadDetail extends Component {
       schemeInfoListinfo: [], // 当前方案全部阶段F
       lockStateListinfo: [], // 控制模式
       nowPhasestageInfos: [], // 当前路口全部方案
+      schemeDcu: {},// 点击dcu弹出详细信息
       planRunStage: [],
       remainingTime: null,
       schemeName: '',
@@ -183,7 +184,7 @@ class RoadDetail extends Component {
     })
   }
   handleData = (e) => {
-    console.log(JSON.parse(e), 'ssa')
+    // console.log(JSON.parse(e), 'ssa')
     const { lampgroupState, phasestageState, running, isOnline } = JSON.parse(e)
     const { remainingTime, phasestageNo, runningTime } = phasestageState
     const { localTime } = running
@@ -206,6 +207,13 @@ class RoadDetail extends Component {
     })
     // const { lampgroupState, phasestageState } = JSON.parse(e)
   }
+  handleDcu = (e) => {
+    console.log(JSON.parse(e), 'namesss')
+    const schemeDcu = JSON.parse(e)
+    this.setState({
+      schemeDcu,
+    })
+  }
   startWidth = (time, no) => {
     const { planRunStage } = this.state
     if (planRunStage) {
@@ -222,7 +230,7 @@ class RoadDetail extends Component {
   }
   phasestageNos = (phasestageNo) => {
     const { planRunStage } = this.state
-    console.log(planRunStage, phasestageNo, 'cccssss')
+    // console.log(planRunStage, phasestageNo, 'cccssss')
     if (planRunStage) {
       const { phasestageName, imagePath } = planRunStage.find(item => item.phasestageNo == phasestageNo)
       this.setState({
@@ -236,6 +244,7 @@ class RoadDetail extends Component {
       IsspanMessage, RoadImg, laneInfoAndDetailinfo, lampgroupDetailListinfo, detectorDetailListinfo,
       isMeessage, dcuPopData, schemeInfoListinfo, lockStateListinfo, nowPhasestageInfos, planRunStage,
       arrs, remainingTime, schemeName, imgPaths, phasestageNames, widths, isOnline, phasestageNo,
+      schemeDcu,
     } = this.state
     return (
       <div className={styles.RoadDetail}>
@@ -270,6 +279,12 @@ class RoadDetail extends Component {
           onMessage={this.handleDataSc.bind(this)}
           onClose={() => this.handleCloseSc()}
         />
+        {
+          isMeessage && <Websocket
+            url={`ws://192.168.1.213:20203/DCU/websocket/dcuRunState/${this.unitId}/${this.interId}/${this.nodeId}`}
+            onMessage={this.handleDcu.bind(this)}
+          />
+        }
         <div className={styles.dcuStyles} onClick={this.showImgMessage}>
           DCU
           {
@@ -281,9 +296,9 @@ class RoadDetail extends Component {
               <div>设备IP:{dcuPopData.ip}</div>
               <div>生产厂商:{dcuPopData.deviceVersion}</div>
               <div>维护电话:{dcuPopData.maintainPhone}</div>
-              <div>设备状态:<span>正常状态</span></div>
-              <div>信号接入状态:<span>正常</span></div>
-              <div>发布服务状态:<span>正常</span></div>
+              <div>设备状态:<span>{schemeDcu.isOnline == 1 ? '正常在线' : '离线状态'}</span></div>
+              <div>信号接入状态:<span></span></div>
+              <div>发布服务状态:<span></span></div>
             </div>
           }
         </div>
@@ -302,15 +317,25 @@ class RoadDetail extends Component {
               })
               str = `${str + as}/`
               return (
-                <img key={`${str}${ind}`} src={`${str}${item.imageUrl}`} style={{ left: `${item.x}px`, top: `${item.y}px` }} className={styles.laneInfoAndDetailinfo} alt="" />
+                <div key={`${str}${ind}`} style={{ left: `${item.x}px`, top: `${item.y}px` }} className={styles.laneInfoAndDetailinfo}>
+                  <img src={`${str}${item.imageUrl}`} alt="" />
+                </div>
+
               )
             })
           }
           {
-            detectorDetailListinfo && detectorDetailListinfo.map((item, ind) => <img key={`${item}${ind}`} src={`${this.detectorBgUrl}${item.imageUrl}`} style={{ left: `${item.x}px`, top: `${item.y}px` }} className={styles.laneInfoAndDetailinfo} alt="" />)
+            detectorDetailListinfo && detectorDetailListinfo.map((item, ind) => {
+              return (
+                <div key={`${item}${ind}`} style={{ left: `${item.x}px`, top: `${item.y}px` }} className={styles.laneInfoAndDetailinfo}><img src={`${this.detectorBgUrl}${item.imageUrl}`} alt="" /></div>)
+            })
           }
           {
-            laneInfoAndDetailinfo && laneInfoAndDetailinfo.map((item, ind) => <img key={`${item}${ind}`} src={`${this.laneBgUrl}${item.imageUrl}`} style={{ left: `${item.x}px`, top: `${item.y}px` }} className={styles.laneInfoAndDetailinfo} alt="" />)
+            laneInfoAndDetailinfo && laneInfoAndDetailinfo.map((item, ind) => {
+              return (
+                <div key={`${item}${ind}`} style={{ left: `${item.x}px`, top: `${item.y}px` }} className={styles.laneInfoAndDetailinfo}><img src={`${this.laneBgUrl}${item.imageUrl}`} alt="" /></div>
+              )
+            })
           }
         </div>
         <div className={styles.roadName}>

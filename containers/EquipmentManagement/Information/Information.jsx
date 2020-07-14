@@ -149,16 +149,16 @@ class Information extends Component {
       baseMapValue: e.target.value,
     })
   }
-  onChangDateStart = (date) => { // 出厂日期
-    // console.log(this.formatDate(new Date(date._d) * 1), '出厂日期')
+  onChangDateStart = (date, dateString) => { // 出厂日期
+    console.log(this.formatDate(new Date(dateString) * 1), '出厂日期')
     this.setState({
-      productionDate: this.formatDate(new Date(date._d) * 1),
+      productionDate: this.formatDate(new Date(dateString) * 1),
     })
   }
-  onChangDateEnd = (date) => {
-    // console.log(this.formatDate(new Date(date._d) * 1), '配置日期')
+  onChangDateEnd = (date, dateString) => {
+    console.log(this.formatDate(new Date(dateString) * 1), '配置日期')
     this.setState({
-      configurationDate: this.formatDate(new Date(date._d) * 1),
+      configurationDate: this.formatDate(new Date(dateString) * 1),
     })
   }
   getbasicSelSuccess = (basicSelSuccess) => {
