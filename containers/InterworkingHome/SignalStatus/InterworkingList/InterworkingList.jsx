@@ -45,6 +45,7 @@ class InterworkingList extends Component {
     }
   }
   getsignalListByPages = (signalListByPages) => {
+    console.log(signalListByPages, 'vvvss')
     this.setState({
       currnum: signalListByPages.pageSize,
       current: signalListByPages.pages,
@@ -98,7 +99,6 @@ class InterworkingList extends Component {
     this.props.signalListByPage(objs)
   }
   handleData = (e) => {
-    console.log(JSON.parse(e), 'sdssdsd')
     const { signalStateList } = JSON.parse(e)
     this.setState(
       {
@@ -186,7 +186,7 @@ class InterworkingList extends Component {
                 }
               })
               return (
-                <div className={styles.listItems} key={item.id + index}>
+                <div className={styles.listItems} key={item + index}>
                   <div className={styles.listTd} >{item.interName}</div>
                   <div className={styles.listTd} >{item.deviceId}</div>
                   <div className={styles.listTd} >{item.brand}</div>

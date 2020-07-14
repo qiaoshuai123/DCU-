@@ -66,12 +66,12 @@ $bor-color: #2e3440;
         color: $ft_color;
       }
       :global(.ant-select-selection) {
-        // background: url(./imgs/flowBorder.png) center center no-repeat;
-        background-size: 100% 100%;
-        color: #fff;
+        border: 1px solid #26394a;
+        background: #26394a;
+        color: $ft_color;
       }
-      :global(.ant-calendar-picker) {
-        width: 200px;
+      :global(path) {
+        color: $ft_color;
       }
     }
   }

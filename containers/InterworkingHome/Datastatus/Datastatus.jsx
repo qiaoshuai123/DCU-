@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
-import { Input } from 'antd'
+import { Input, message, Icon } from 'antd'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import Websocket from 'react-websocket'
 import { getMapUnitInfoList, getUnitPop } from '../../../reactRedux/actions/publicActions'
+import { unitInfoList } from '../../../reactRedux/actions/equipmentManagement'
 import Header from '../../..//components/Header/Header'
 import CustomTree from '../../../components/CustomTree/CustomTree'
 import InterworkingList from './InterworkingList/InterworkingList'
@@ -14,26 +16,43 @@ class Datastatus extends Component {
     this.state = {
       isInterworkingList: false,
       mapPointsData: null, // 地图中所有的点
+      interListHeight: 0,
+      searchInterList: [],
+      normal: 0,
+      notNormal: 0,
+
     }
+    this.searchInterList = []
   }
   componentDidMount = () => {
     this.loadingMap()
+    document.addEventListener('click', (e) => {
+      if (e.target !== this.searchInputBox) {
+        if (e.target !== this.searchBtn) {
+          this.setState({ interListHeight: 0 })
+        }
+      }
+    })
     window.showHidePop = this.showHidePop
     window.setGetParams = this.setGetParams
+    this.props.unitInfoList()
     this.props.getMapUnitInfoList()
     document.addEventListener('click', (e) => {
       this.visibleShowLeft('', '', false)
     })
   }
   componentDidUpdate = (prevState) => {
-    const { mapPointsData } = this.props.data
-    if (prevState.data !== this.props.data) {
-      console.log(this.props.data, "data中所有的数据")
-    }
+    const { mapPointsData, unitInfoLists } = this.props.data
     if (prevState.data.mapPointsData !== mapPointsData) {
       console.log(mapPointsData, '点数据')
       this.getmapPointsData(mapPointsData)
     }
+    if (prevState.data.unitInfoLists !== unitInfoLists) {
+      this.getunitInfoLists(unitInfoLists)
+    }
+  }
+  getunitInfoLists = (unitInfoLists) => {
+    this.searchInterList = unitInfoLists
   }
   // 从子集获取区域id和index 请求路口
   getSelectTreeId = (id) => {
@@ -85,9 +104,8 @@ class Datastatus extends Component {
     })
   }
   setGetParams = (dataItem) => {
-    console.log(dataItem, 'sdsdsd')
     localStorage.setItem('bac', JSON.stringify(dataItem.background))
-    window.open(`#/roaddetail?id=${dataItem.interId}&ids=${dataItem.nodeId}`)
+    window.open(`#/roaddetail?id=${dataItem.interId}&ids=${dataItem.nodeId}&ider=${dataItem.id}`)
     // window.open(`#roaddetail/1`)
   }
   visibleShowLeft = (top, id, show) => { // 框的跳转与位置
@@ -213,22 +231,105 @@ class Datastatus extends Component {
       infoWindow.close()
     })
   }
+  hanleSelectInter = (e, item) => {
+    let marker
+    const _this = this;
+    marker = new AMap.Marker({
+      position: new AMap.LngLat(item.lng, item.lat),
+      offset: new AMap.Pixel(-16, -16),
+      content: "<div id='roadKey" + item.interId + "'></div>",
+    })
+    marker.on('click', function () {
+      _this.setState({
+        roadUnitId: item.id,
+        roadInterId: item.interId,
+        roadNodeNo: item.nodeId,
+      })
+      const resultP = Promise.resolve(_this.props.getUnitPop(item.id))
+      resultP.then(() => {
+        _this.openInfoWin(_this.map, item, marker, item.interName)
+      })
+    })
+
+    if (marker && this.map) {
+      this.map.setCenter([item.lng, item.lat])
+      this.searchInputBox.value = item.interName
+      this.setState({ interListHeight: 0 })
+      marker.emit('click', {
+        lnglat: this.map.getCenter()
+      })
+    } else {
+      message.info('该路口尚未接入')
+    }
+  }
+  searchBtnSelect = (event) => {
+    this.searchBtn = event.target
+    this.handleSearchInterFocus()
+  }
+
+  handleSearchInterFocus = (e) => {
+    const values = e.target.value
+    const searchInterList = this.searchInterList.filter(item => item.interName.includes(values))
+    this.setState({
+      searchInterList,
+    })
+  }
+  btnClicks = () => {
+    this.setState({
+      interListHeight: 300,
+      searchInterList: this.searchInterList,
+    })
+  }
+  handleData = (e) => {
+    console.log(JSON.parse(e), 'ss')
+    const { normal, notNormal } = JSON.parse(e)
+    this.setState({
+      normal,
+      notNormal,
+    })
+  }
   render() {
-    const { Search } = Input
-    const { isInterworkingList } = this.state
+    const { isInterworkingList, searchInterList, interListHeight, normal, notNormal } = this.state
     return (
       <div className={styles.Datastatus}>
+        <Websocket
+          url="ws://192.168.1.213:20203/DCU/websocket/allDetectorRunState/0/0/0"
+          onMessage={this.handleData.bind(this)}
+        // onClose={() => this.handleClose()}
+        />
         <Header {...this.props} />
         <div className={styles.Interwork_left}>
-          <div className={styles.InterworkLeft_search}>
-            <Search
+          <div className={styles.searchBox}>
+            <input
+              className={styles.searchInput}
+              onChange={this.handleSearchInterFocus}
+              onClick={this.btnClicks}
+              type="text"
               placeholder="关键词搜索"
-              onSearch={value => console.log(value)}
-              style={{ width: 200 }}
+              autoComplete="off"
+              ref={(input) => { this.searchInputBox = input }}
+              style={{ width: '100%' }}
+              id="searchBox"
             />
+            <Icon className={styles.searchIcon} type="search" onClick={this.searchBtnSelect} />
+          </div>
+          <div className={styles.interList} style={{ maxHeight: `${interListHeight}px`, overflowY: 'auto' }}>
+            <div>
+              {
+                searchInterList &&
+                searchInterList.map(item => (
+                  <div
+                    className={styles.interItem}
+                    key={item.id}
+                    onClick={e => this.hanleSelectInter(e, item)}
+                  >{item.interName}
+                  </div>
+                ))
+              }
+            </div>
           </div>
           <div className={styles.InterworkLeft_Title}>
-            <span />数据实时状态
+            <span />DCU点位列表
           </div>
           <CustomTree
             {...this.props}
@@ -238,8 +339,8 @@ class Datastatus extends Component {
           />
         </div>
         <div className={styles.promptBox}>
-          <div><span className={styles.spanTop} />数据正常7处</div>
-          <div><span className={styles.spanBom} />数据异常2处</div>
+          <div><span className={styles.spanTop} />数据正常{normal}处</div>
+          <div><span className={styles.spanBom} />数据异常{notNormal}处</div>
         </div>
         <div onClick={() => this.showInterworkingList(true)} className={styles.switch} />
         {
@@ -256,13 +357,14 @@ class Datastatus extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    data: { ...state.publicData, ...state.SignalManagement },
+    data: { ...state.publicData, ...state.SignalManagement, ...state.equipmentManagement },
   }
 }
 const mapDisPatchToProps = (dispatch) => {
   return {
     getMapUnitInfoList: bindActionCreators(getMapUnitInfoList, dispatch),
     getUnitPop: bindActionCreators(getUnitPop, dispatch),
+    unitInfoList: bindActionCreators(unitInfoList, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(Datastatus)

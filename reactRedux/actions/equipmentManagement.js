@@ -29,6 +29,9 @@ import {
   API_DCU_LOADDATA,
   API_DCU_EDITDATA,
   API_UNI_REBOOT,
+  API_DCU_DETECTORREALTIMELISTBYPAGE,
+  API_DET_DETECTORDATALISTBYPAGE,
+  API_DET_EXPORTDETECTORDATALIST,
 } from '../actionTypes/actionAPIs'
 
 // 更改点位信息名称
@@ -345,5 +348,42 @@ export const signalListByPage = (params) => {
     } catch (e) {
       console.log(e)
     }
+  }
+}
+// 获取所有点位
+export const detectorRealTimeListByPage = (params) => {
+  return async (dispatch) => {
+    try {
+      const result = await RestUtil.get(`${API_DCU_DETECTORREALTIMELISTBYPAGE}?${params}`)
+      if (result.data.code === 0) {
+        dispatch({ type: types.GET_DCU_DETECTORREALTIMELISTBYPAGE, payload: result.data.data })
+      } else {
+        console.error(result.data.message)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+}
+// 分页查询检测器数据
+export const detectorDataListByPage = (params) => {
+  return async (dispatch) => {
+    try {
+      const result = await RestUtil.get(`${API_DET_DETECTORDATALISTBYPAGE}?${params}`)
+      if (result.data.code === 0) {
+        dispatch({ type: types.GET_DET_DETECTORDATALISTBYPAGE, payload: result.data.data })
+      } else {
+        console.error(result.data.message)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+}
+// 导出检测器数据
+export const exportDetectorDataList = (params) => {
+  return async () => {
+    const result = await RestUtil.get(`${API_DET_EXPORTDETECTORDATALIST}?${params}`)
+    return result
   }
 }

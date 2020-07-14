@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
-import { Input, message, Select } from 'antd'
+import { Input, message, Select, Icon } from 'antd'
 import Websocket from 'react-websocket';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { getMapUnitInfoList, getUnitPop, } from '../../../reactRedux/actions/publicActions'
+import { unitInfoList } from '../../../reactRedux/actions/equipmentManagement'
 import Header from '../../../components/Header/Header'
 import CustomTree from '../../../components/CustomTree/CustomTree'
 import InterworkingList from './InterworkingList/InterworkingList'
@@ -14,29 +15,35 @@ class InterworkingHome extends Component {
     super(props)
     this.state = {
       dcuPopData: null,
+      interListHeight: 0,
       isInterworkingList: false,
       mapPointsData: null, // 地图中所有的点
       offlineNum: '',
       onlineNum: '',
-      namesList: [],//搜索查询地图点位
+      searchInterList: [],
     }
+    this.searchInterList = []
   }
 
   componentDidMount = () => {
     this.loadingMap()
+    document.addEventListener('click', (e) => {
+      if (e.target !== this.searchInputBox) {
+        if (e.target !== this.searchBtn) {
+          this.setState({ interListHeight: 0 })
+        }
+      }
+    })
     window.showHidePop = this.showHidePop
     window.setGetParams = this.setGetParams
     this.props.getMapUnitInfoList()
     document.addEventListener('click', (e) => {
       this.visibleShowLeft('', '', false)
     })
+    this.props.unitInfoList()
   }
   componentDidUpdate = (prevState) => {
-    const { mapPointsData, dcuPopData } = this.props.data
-    if (prevState.data.mapPointsData !== mapPointsData) {
-      console.log(mapPointsData, '点数据')
-      this.getmapPointsData(mapPointsData)
-    }
+    const { mapPointsData, dcuPopData, unitInfoLists } = this.props.data
     if (prevState.data.mapPointsData !== mapPointsData) {
       console.log(mapPointsData, '点数据')
       this.getmapPointsData(mapPointsData)
@@ -45,6 +52,12 @@ class InterworkingHome extends Component {
       // console.log(dcuPopData, '弹层数据')
       this.getdcuPopData(dcuPopData)
     }
+    if (prevState.data.unitInfoLists !== unitInfoLists) {
+      this.getunitInfoLists(unitInfoLists)
+    }
+  }
+  getunitInfoLists = (unitInfoLists) => {
+    this.searchInterList = unitInfoLists
   }
   getdcuPopData = (dcuPopData) => {
     this.setState({ dcuPopData })
@@ -162,53 +175,35 @@ class InterworkingHome extends Component {
       window[layer].removeLayers(this[layer])
     }
     this[layer] = []
-    // if (this.infoWindow) {
-    //   this.infoWindow.close()
-    // }
+    if (this.infoWindow) {
+      this.infoWindow.close()
+    }
     if (map) {
       for (let i = 0; i < positions.length; i++) {
-        updatePoint.map((item) => {
-          let isc = ''
-          if (item.interId == positions[i].interId) {
-            isc = item.state
-          }
-          // const latlng = positions[i]
-          // const latlng = positions[i].latlng
-          let marker = ''
-          if (isc == 1) {
-            marker = new AMap.Marker({
-              position: new AMap.LngLat(positions[i].lng, positions[i].lat),
-              offset: new AMap.Pixel(-16, -16),
-              content: "<div id='roadKey" + positions[i].id + "' class='marker-online'></div>",
-            })
-          } else {
-            marker = new AMap.Marker({
-              position: new AMap.LngLat(positions[i].lng, positions[i].lat),
-              offset: new AMap.Pixel(-16, -16),
-              content: "<div id='roadKey" + positions[i].id + "' class='marker-offline'></div>",
-            })
-          }
-          // marker.id =
-          marker.on('click', () => {
-            map.emit('click', {
-              lnglat: map.getCenter()
-            })
-            marker.setContent("<div class='drawCircle'><div class='inner'></div><div id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
-            const nowZoom = map.getZoom()
-            map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
-            this.setState({
-              roadUnitId: positions[i].id,
-              roadInterId: positions[i].interId,
-              roadNodeNo: positions[i].nodeId,
-            }, () => {
-              const resultP = Promise.resolve(this.props.getUnitPop(positions[i].interId))
-              resultP.then(() => {
-                this.openInfoWin(map, positions[i], marker, positions[i].interName)
-              })
+        const marker = new AMap.Marker({
+          position: new AMap.LngLat(positions[i].lng, positions[i].lat),
+          offset: new AMap.Pixel(-16, -16),
+          content: "<div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
+        })
+        marker.on('click', () => {
+          map.emit('click', {
+            lnglat: map.getCenter()
+          })
+          marker.setContent("<div class='drawCircle'><div class='inner'></div><div id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
+          const nowZoom = map.getZoom()
+          map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
+          this.setState({
+            roadUnitId: positions[i].id,
+            roadInterId: positions[i].interId,
+            roadNodeNo: positions[i].nodeId,
+          }, () => {
+            const resultP = Promise.resolve(this.props.getUnitPop(positions[i].interId))
+            resultP.then(() => {
+              this.openInfoWin(map, positions[i], marker, positions[i].interName)
             })
           })
-          this[layer].push(marker)
         })
+        this[layer].push(marker)
       }
       window[layer].addLayers(this[layer]) // 把点添加到层组中
       window[layer].setMap(map) // 层组渲染到地图中
@@ -244,22 +239,66 @@ class InterworkingHome extends Component {
     })
   }
   handleData = (e) => {
-    console.log(JSON.parse(e), '内容')
     const { offlineNum, onlineNum, dcuStateList } = JSON.parse(e)
-    this.drawMarkers(this.state.mapPointsData, 'pointLayers', dcuStateList)
+    // this.drawMarkers(this.state.mapPointsData, 'pointLayers', dcuStateList)
     this.setState({
       offlineNum,
       onlineNum,
     })
   }
-  // 搜索查询参数 
-  handleChange = (e, optios) => {
+  hanleSelectInter = (e, item) => {
+    let marker
+    const _this = this;
+    marker = new AMap.Marker({
+      position: new AMap.LngLat(item.lng, item.lat),
+      offset: new AMap.Pixel(-16, -16),
+      content: "<div id='roadKey" + item.interId + "'></div>",
+    })
+    marker.on('click', function () {
+      _this.setState({
+        roadUnitId: item.id,
+        roadInterId: item.interId,
+        roadNodeNo: item.nodeId,
+      })
+      const resultP = Promise.resolve(_this.props.getUnitPop(item.id))
+      resultP.then(() => {
+        _this.openInfoWin(_this.map, item, marker, item.interName)
+      })
+    })
 
+    if (marker && this.map) {
+      this.map.setCenter([item.lng, item.lat])
+      this.searchInputBox.value = item.interName
+      this.setState({ interListHeight: 0 })
+      marker.emit('click', {
+        lnglat: this.map.getCenter()
+      })
+    } else {
+      message.info('该路口尚未接入')
+    }
+  }
+  searchBtnSelect = (event) => {
+    this.searchBtn = event.target
+    this.handleSearchInterFocus()
+  }
+
+  handleSearchInterFocus = (e) => {
+    const { value } = e.target
+    const searchInterList = this.searchInterList.filter(item => item.interName.includes(value))
+    this.setState({
+      searchInterList,
+    })
+  }
+  btnClicks = () => {
+    this.setState({
+      interListHeight: 300,
+      searchInterList: this.searchInterList,
+    })
   }
   render() {
     const { Search } = Input
     const { Option } = Select
-    const { isInterworkingList, offlineNum, onlineNum, namesList } = this.state
+    const { isInterworkingList, offlineNum, onlineNum, searchInterList, interListHeight } = this.state
     return (
       <div className={styles.InterworkingHomeBox}>
         <Websocket
@@ -269,32 +308,34 @@ class InterworkingHome extends Component {
         />
         <Header {...this.props} />
         <div className={styles.Interwork_left}>
-          <div className={styles.InterworkLeft_search}>
-            <Search
+          <div className={styles.searchBox}>
+            <input
+              className={styles.searchInput}
+              onChange={this.handleSearchInterFocus}
+              onClick={this.btnClicks}
+              type="text"
               placeholder="关键词搜索"
-              onSearch={value => console.log(value)}
-              style={{ width: 200 }}
+              autoComplete="off"
+              ref={(input) => { this.searchInputBox = input }}
+              style={{ width: '100%' }}
+              id="searchBox"
             />
-            {/* <div className={styles.syetem_item}>
-              <span className={styles.item}>点位名称:</span>
-              <div className={styles.inSle}>
-                <Select
-                  showSearch
-                  defaultValue="全部"
-                  style={{ width: 200, margin: 0 }}
-                  onChange={this.handleChange}
-                  optionFilterProp="children"
-                  filterOption={(input, option) =>
-                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                  }
-                >
-                  <Option pname="names" value="">全部</Option>
-                  {
-                    namesList && namesList.map((item, ind) => <Option key={item + ind} pname="names" value={item.id}>{item.interName}</Option>)
-                  }
-                </Select>
-              </div>
-            </div> */}
+            {/* <Icon className={styles.searchIcon} type="search" onClick={this.searchBtnSelect} /> */}
+          </div>
+          <div className={styles.interList} style={{ maxHeight: `${interListHeight}px`, overflowY: 'auto' }}>
+            <div>
+              {
+                searchInterList &&
+                searchInterList.map(item => (
+                  <div
+                    className={styles.interItem}
+                    key={item.id}
+                    onClick={e => this.hanleSelectInter(e, item)}
+                  >{item.interName}
+                  </div>
+                ))
+              }
+            </div>
           </div>
           <div className={styles.InterworkLeft_Title}>
             <span />DCU点位列表
@@ -325,13 +366,14 @@ class InterworkingHome extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    data: { ...state.publicData, ...state.SignalManagement },
+    data: { ...state.publicData, ...state.SignalManagement, ...state.equipmentManagement },
   }
 }
 const mapDisPatchToProps = (dispatch) => {
   return {
     getMapUnitInfoList: bindActionCreators(getMapUnitInfoList, dispatch),
     getUnitPop: bindActionCreators(getUnitPop, dispatch),
+    unitInfoList: bindActionCreators(unitInfoList, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(InterworkingHome)
