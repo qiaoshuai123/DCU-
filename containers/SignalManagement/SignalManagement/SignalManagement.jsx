@@ -126,6 +126,11 @@ class SignalManagement extends PureComponent {
       weekData: null, //星期
       monthData: null, //月
       dayData: null, //日
+      dayPlanClickInfo: null, // 日计划点击后的数据 
+      dispatchClickInfo: null, // 调度点击后的数据
+      dispatchClickInfoCopy: null, // 调度点击后的数据备份
+      popItemFlag: true,
+      listNames: null,
     }
     this.map = null
     this.moveFlag = false // 是否是移动状态
@@ -142,7 +147,7 @@ class SignalManagement extends PureComponent {
   }
   componentDidUpdate = (prevState) => {
     const { mapPointsData, dcuPopData, stepStatusData, basicBgLists, basicUplSuccess, dcuTreeData, codeTypeData, phaseLists,
-    laneShowDetail, laneIconLists, lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists, laneSelectLists, lightSelectLists, detectorSelectLists, phaseIconLists, planChainsLists } = this.props.data
+    laneShowDetail, laneIconLists, lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists, laneSelectLists, lightSelectLists, detectorSelectLists, phaseIconLists, planChainsLists, dayPlanClickInfo, dispatchClickInfo } = this.props.data
     if (prevState.data !== this.props.data) {
       console.log(this.props,this.props.data, "data中所有的数据")
     }
@@ -220,12 +225,19 @@ class SignalManagement extends PureComponent {
     if (prevState.data.phaseLists !== phaseLists) {
       this.setState({ phaseSelectLists: phaseLists })
     }
+    
     if (prevState.data.planChainsLists !== planChainsLists) {
       this.setState({ planChainsLists: null, cycleLength: planChainsLists.allTime  }, () => {
         this.setState({ planChainsLists: planChainsLists.phasestageList }, () => {
           this.getScrollTime(this.state.planChainsLists)
         })
       })
+    }
+    if (prevState.data.dayPlanClickInfo !== dayPlanClickInfo) {
+      this.getListData(dayPlanClickInfo)
+    }
+    if (prevState.data.dispatchClickInfo !== dispatchClickInfo) {
+      this.getListDayData(dispatchClickInfo)
     }
   }
   componentDidMount = () => {
@@ -305,6 +317,57 @@ class SignalManagement extends PureComponent {
     this.getSystemCodeType(29) // 相位禁止
     this.getSystemCodeType(32) // 方案相位阶段出现类型
     this.getSystemCodeType(33) // 方案相位阶段出现类型
+  }
+  // toPlan
+  getListData = (data) => {
+    const listNames = [], dayPlanClickInfo = []
+    dayPlanClickInfo.push(data)
+    for (let p in data) {
+      let newObj;
+      switch(p){     
+        case 'schemeNo':
+          newObj = {key: p, label: '方案序号'}
+          break;
+        case 'schemeName':
+          newObj = {key: p, label: '方案名称'}
+          break;
+        case 'schemeCycle':
+          newObj = {key: p, label: '方案周期'}
+          break;
+        case 'schemeCoordinationNo':
+          newObj = {key: p, label: '方案协调序号'}
+          break;
+        case 'schemePhaseDiferenceTime':
+          newObj = {key: p, label: '方案相位差时间'}
+          break;
+        case 'phaseStageInfoList':
+          newObj = {key: p, label: '放行阶段列表'}
+          break;
+        case 'coordinationImagePath':
+          newObj = {key: p, label: '协调阶段'}
+          break; 
+      }
+      if (newObj) listNames.push(newObj) 
+    }
+    this.setState({ listNames, dayPlanClickInfo, popItemFlag: false })
+  }
+  // toDayPlan
+  getListDayData = (data) => {
+    const listNames = [], dispatchClickInfo= []
+    dispatchClickInfo.push(data)
+    for (let p in data) {
+      let newObj;
+      switch(p){     
+        case 'dailyplanNo':
+          newObj = {key: p, label: '计划编号'}
+          break;
+        case 'timeintervalList':
+          newObj = {key: p, label: '计划列表'}
+          break;
+      }
+      if (newObj) listNames.push(newObj) 
+    }
+    this.setState({ listNames, dispatchClickInfo, popItemFlag: true })
   }
   // 字典code
   getSystemCodeType = (num) => {
@@ -606,7 +669,6 @@ class SignalManagement extends PureComponent {
   }
   // 更新参数
   setGetParams = params => {
-    // debugger
     console.log(params, '更新名称')
     this.setState({
       stepOneText: params.interName,
@@ -642,9 +704,12 @@ class SignalManagement extends PureComponent {
   }
   // 显示隐藏弹层
   popLayerShowHide = (name, flag, eventType, stepType) => {
+    if (name === 'dayPlanClickInfo' && this.state.dispatchClickInfo ) this.getListDayData(this.state.dispatchClickInfo[0])
     this.setState({
       [name]: flag,
       popAddEditText: eventType ? '编辑' : '添加',
+      popItemFlag: true,
+      // dispatchClickInfo: name === 'dayPlanClickInfo' ? this.state.dispatchClickInfoCopy : null
     })
     if(flag){
       switch(stepType){
@@ -801,6 +866,11 @@ class SignalManagement extends PureComponent {
           break;
       }
     }
+  }
+  // 点击列表中某一条时
+  handleLineClick = (id, stepType) => {
+    console.log(id,stepType)
+    this.props.getInfoListsTypeMore(this.state.roadInterId, this.state.roadNodeNo, stepType, id)
   }
   // 编辑时回显内容 相位、阶段、配时方案、日计划、调度
   updateListItem = (itemDetailData, stepType) => {
@@ -1088,6 +1158,15 @@ btnSelectOver = (flag, defaultSelectLists) => {
       })
     }
   }
+  getresetPwd = (item) => {
+    debugger
+    this.showInterworkingList(null)
+
+    const resultP = Promise.resolve(this.props.getUnitPop(item.interId))
+    resultP.then(()=>{
+      this.setGetParams(item)
+    })
+  }
   // 创建地图层
   loadingMap = () => {
     const map = new AMap.Map('mapContent', {
@@ -1124,20 +1203,15 @@ btnSelectOver = (flag, defaultSelectLists) => {
     }
     if (map) {
       for (let i = 0; i < positions.length; i++) {
-        // const latlng = positions[i]
-        // const latlng = positions[i].latlng
         const marker = new AMap.Marker({
           position: new AMap.LngLat(positions[i].lng, positions[i].lat),
           offset: new AMap.Pixel(-16, -16),
           content: "<div inter-id='"+positions[i].interId+"' id='roadKey"+positions[i].id+"' class='marker-online'></div>",
         })
-        // marker.id =
         marker.on('click', (e) => {
           map.emit('click', {
             lnglat: map.getCenter()
           })
-          
-          // console.log(marker,'aaaaaaaaaaaaaaaaaaaaaaaaaa')
           marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='"+positions[i].interId+"' id='roadKey"+positions[i].id+"' class='marker-online'></div></div>");
           const nowZoom = map.getZoom()
           map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
@@ -1151,7 +1225,6 @@ btnSelectOver = (flag, defaultSelectLists) => {
               this.openInfoWin(map, positions[i], marker, positions[i].interName)
             })
           })
-          // console.log(marker.getContent(), 'ppppppppppppppppppppp')
         })
         this[layer].push(marker)
       }
@@ -1401,49 +1474,6 @@ btnSelectOver = (flag, defaultSelectLists) => {
       message.info('请至少保留一条数据！')
     }
   }
-  // stepRoadAddForList = () => {
-  //   message.info("车道添加成功！")
-  //   this.popLayerShowHide("stepRoadAddEdit", null)
-  // }
-  // step 3 灯组添加
-  // stepThreeAddForList = () => {
-  //   const obj = {name: 'new', left: '50%', top: '50%', width: '32px', height: '32px', src: markerIcon}
-  //   const lights = JSON.parse(JSON.stringify(this.props.data.lightPicLists))
-  //   lights.push(obj)
-  //   this.setState({ lights })
-  //   message.info("灯组添加成功！")
-  //   this.popLayerShowHide("stepThreeAddEdit", null)
-  // }
-  // step 4 检测器添加
-  // stepFourAddForList = () => {
-  //   message.info("检测器添加成功！")
-  //   this.popLayerShowHide("stepFourAddEdit", null)
-  // }
-  // step 5 相位添加
-  // stepFiveAddForList = () => {
-  //   message.info("相位添加成功！")
-  //   this.popLayerShowHide("stepFiveAddEdit", null)
-  // }
-  // // step 6 阶段添加
-  // stepSixAddForList = () => {
-  //   message.info("阶段添加成功！")
-  //   this.popLayerShowHide("stepSixAddEdit", null)
-  // }
-  // // step 7 配时方案添加
-  // stepSevenAddForList = () => {
-  //   message.info("配时方案添加成功！")
-  //   this.popLayerShowHide("stepSevenAddEdit", null)
-  // }
-  // step 8 日计划添加
-  stepEightAddForList = () => {
-    message.info("日计划添加成功！")
-    this.popLayerShowHide("stepEightAddEdit", null)
-  }
-  // step 9 调度添加
-  stepNineAddForList = () => {
-    message.info("调度添加成功！")
-    this.popLayerShowHide("stepNineAddEdit", null)
-  }
   updateMapPonitsColor = (data) => {
     for (let i = 0; i < $('div[inter-id]').length; i++){
       const timeDiv = $($('div[inter-id]')[i])
@@ -1468,15 +1498,16 @@ btnSelectOver = (flag, defaultSelectLists) => {
   handlePopData(data) {
     // debugger
     let result = JSON.parse(data);
-    console.log(result,this,'socket POP数据')
+    // console.log(result,this,'socket POP数据')
     $('#phasestageName').text(result.phasestageName).attr("tag-src",`${this.phaseBgUrl}${result.phasestageImage}`)
     $('#schemeName').text(result.schemeName)
     $('#nodeModelName').text(result.nodeModelName)
-    $('#phasestageImage').prop('src', `${this.phaseBgUrl}${result.phasestageImage}`).attr('style','width:30px;height:30px;margin-left:8px;')
+    result !== -1 ? $('#phasestageImage').prop('src', `${this.phaseBgUrl}${result.phasestageImage}`).attr('style','width:30px;height:30px;margin-left:8px;') : null
     this.setState({
       roadUnitId: false,
     })
   }
+
   render() {
     const { interListHeight, searchInterList, stepStatusData, popAddEditText, popAddEditName, moveFlag, stepOneFlag, stepTwoFlag, 
       stepRoadFlag, stepRoadAddEdit,
@@ -1493,14 +1524,38 @@ btnSelectOver = (flag, defaultSelectLists) => {
       lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists, showFlag, nowCycleLength, cycleLength,
       lampgroupType, controlDir, controlTurn, detectorType, phaseForbidenData, phaseShieldData, typeData, planStageLists, planChainsLists,
       phaseShowDetail, stageShowDetail, planShowDetail, dayplanShowDetail, dispatchShowDetail, laneSelectLists, lightSelectLists, detectorSelectLists, selectFlag, phaseDefaultSelectLists, laneDefaultSelectLists, lightDefaultSelectLists, detectorDefaultSelectLists,  phaseIconLists, phaseSelectLists, phaseFlag, schemePhasestageTypeData, timeintervalModelChainData,
-      priorityData, monthData, dayData, weekData
+      priorityData, monthData, dayData, weekData, dayPlanClickInfo, dispatchClickInfo, popItemFlag, listNames
     } = this.state
     const { Search } = Input
     return (
       <div className={styles.SignalManagement}>
-      <Websocket url={this.socketPointStatusUrl} onMessage={this.handleData.bind(this)}/>
+      <Websocket url={this.socketPointStatusUrl} onMessage={this.handleData.bind(this)} />
       { !!roadUnitId && !!roadInterId && !!roadNodeNo ? <Websocket url={`${this.socketPointPopUrl}${roadUnitId}/${roadInterId}/${roadNodeNo}`} onMessage={ this.handlePopData.bind(this)} /> : null }
         <Header {...this.props} />
+        {/* 调度点击行弹层 */}
+        { dispatchClickInfo || dayPlanClickInfo ?
+          <div className={styles.maskBg}> 
+            {/* 日计划点击行弹层 */}
+            { dayPlanClickInfo && !popItemFlag ?
+              <div className={styles.popBox} style={{width: '600px', zIndex: '101'}}>
+                <div className={styles.rTit} style={{lineHeight: '35px'}}>配时方案配置</div>
+                <ListForAntd {...this.props} dataSourse={dayPlanClickInfo} listNames={listNames} listType={'PLAN'} imgIconUrl={this.phaseBgUrl} showIndex={3} nothing={false} />
+                <div className={styles.popBottom}>
+                  <em onClick={ () => {this.popLayerShowHide("dayPlanClickInfo", null)} }>返 回</em>
+                </div>
+              </div> : null
+            }
+            { dispatchClickInfo && popItemFlag  ?
+              <div className={styles.popBox} style={{width: '600px'}}>
+                <div className={styles.rTit} style={{lineHeight: '35px'}}>日计划配置</div>
+                <ListForAntd {...this.props} handleLineClick={this.handleLineClick} dataSourse={dispatchClickInfo} listNames={listNames} listType={'DAYPLAN'} imgIconUrl={this.phaseBgUrl} showIndex={2} nothing={false} />
+                <div className={styles.popBottom}>
+                  <em onClick={ () => {this.popLayerShowHide("dispatchClickInfo", null)} }>返 回</em>
+                </div>
+              </div> : null
+            }
+          </div> : null
+        }
         {/* 编辑弹层列表用于多选 车道、灯组、检测器 */}
         { laneSelectLists && !selectFlag || lightSelectLists && !selectFlag || detectorSelectLists && !selectFlag  || phaseSelectLists && !selectFlag ?
           <div className={styles.maskBg}> 
@@ -2202,7 +2257,17 @@ btnSelectOver = (flag, defaultSelectLists) => {
                   <span>方案名称：</span><Input value={planShowDetail.schemeName} onChange={e => this.handleChangeInput(e,'state','planShowDetail','schemeName')} placeholder="请输入" />
                 </div>
                 <div className={styles.itemInputBox}>
-                  <span>方案协调序号：</span><Input type='number' value={planShowDetail.schemeCoordinationNo} onChange={e => this.handleChangeInput(e,'state','planShowDetail','schemeCoordinationNo')} placeholder="请输入" />
+                  <span>方案协调序号：</span>
+                  <Select
+                      value={planShowDetail.schemeCoordinationNo ? planShowDetail.schemeCoordinationNo : 0 }
+                      onChange={ v =>  this.handleChangeSel(v, 'state', 'planShowDetail', 'schemeCoordinationNo') }>
+                      <Option value={0}>请选择阶段</Option>
+                      {
+                        this.props.data.stageLists.map((items, key) => {
+                          return <Option key={"IdList" + items.phasestageNo} value={items.phasestageNo}>{items.phasestageName}</Option>
+                        })
+                      }
+                    </Select>
                 </div>
                 <div className={styles.itemInputBox}>
                   <span>方案周期：</span><Input type='number' value={planShowDetail.schemeCycle} onChange={e => this.handleChangeInput(e,'state','planShowDetail','schemeCycle')} placeholder="请输入" />
@@ -2709,6 +2774,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
                     roadNodeNo={roadNodeNo}
                     popLayerShowHide={this.popLayerShowHide}
                     updateListItem={this.updateListItem}
+                    handleLineClick={this.handleLineClick}
                      /> : 
                   stepNineFlag ?
                     <DispatchConfigRight 
@@ -2717,12 +2783,13 @@ btnSelectOver = (flag, defaultSelectLists) => {
                     roadNodeNo={roadNodeNo}
                     popLayerShowHide={this.popLayerShowHide}
                     updateListItem={this.updateListItem}
+                    handleLineClick={this.handleLineClick}
                      /> : null}
             </div>
           </div> : null
         }
         {turnTab ?
-          <InterworkingList showInterworkingList={this.showInterworkingList} /> : null
+          <InterworkingList showInterworkingList={this.showInterworkingList} getresetPwd={this.getresetPwd} /> : null
         }
         {/* step 导示 */}
         <StepNavMenu {...this.props }
@@ -2739,13 +2806,6 @@ btnSelectOver = (flag, defaultSelectLists) => {
           stepNineFlag={stepNineFlag}
         showHidePop={this.showHidePop} stepStatusData={stepStatusData} />
         <div className={styles.Interwork_left}>
-          {/* <div className={styles.InterworkLeft_search}>
-            <Search
-              placeholder="关键词搜索"
-              onSearch={value => console.log(value)}
-              style={{ width: 200 }}
-            />
-          </div> */}
           <div className={styles.searchBox}>
           <input
                 className={styles.searchInput}

@@ -75,11 +75,13 @@ export const API_DAYPLAN_INFO_LISTS = '/DCU/dailyPlan/dailyPlanList' // 日计�
 export const API_ADD_DAYPLAN_OTHERS = '/DCU/dailyPlan/addDailyPlan' // 日计划新增
 export const API_UPDATE_DAYPLAN_OTHERS = '/DCU/dailyPlan/updateDailyPlan' // 日计划修改
 export const API_DEL_DAYPLAN_INFO = '/DCU/dailyPlan/deleteDailyPlan' // 日计划删除
+export const API_LINE_DAYPLAN_CLICK = '/DCU/schemeInfo/schemeInfoBySchemeNo' // 日计划点击 根据方案号查询配时方案
 // 调度配置
 export const API_DISPATCH_INFO_LISTS = '/DCU/schedule/scheduleList' // 调度配置查询列表
 export const API_ADD_DISPATCH_OTHERS = '/DCU/schedule/addSchedule' // 调度配置新增
 export const API_UPDATE_DISPATCH_OTHERS = '/DCU/schedule/updateSchedule' // 调度配置修改
 export const API_DEL_DISPATCH_INFO = '/DCU/schedule/deleteSchedule' // 调度配置删除
+export const API_LINE_DISPATCH_CLICK = '/DCU/dailyPlan/dailyPlanByDailyplanNo' // 调度点击 根据方案号查询配时方案
 
 /** *********** 设备参数管理模块 ************* */
 export const API_DCU_INTERCHECK_INFO = '/DCU/unitInfo/interCheck' // 判断是否存在点位

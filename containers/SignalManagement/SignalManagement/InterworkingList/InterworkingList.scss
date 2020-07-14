@@ -157,10 +157,19 @@ $bor-color: #2e3440;
             cursor: pointer;
             text-align: center;
             margin: 0 5px;
+            &:hover{
+              color:yellow;
+              font-weight: bold;
+            }
           }
         }
         &:hover{
           background-color: #31869b;
+        }
+        &:first-child{
+          &:hover{
+            background-color: #232c3b;
+          }
         }
       }
       .noData {

@@ -338,30 +338,47 @@ export const getInfoListsType = (interId, stepType) => {
 }
 // 右侧列表 配时方案、日计划、调度的列表以此为准
 export const getInfoListsTypeMore = (interId, nodeNo, stepType, schemeNo) => {
-  let thisAPI, thisTYPE;
+  let thisAPI, thisTYPE, resUrl;
   switch(stepType){
     case "PLAN":
       debugger
       if (!schemeNo){
         thisAPI = APIs.API_PLAN_INFO_LISTS
         thisTYPE = types.GET_PLAN_INFO_LISTS
+        resUrl = `${thisAPI}?interId=${interId}&nodeNo=${nodeNo}`
       } else {
         thisAPI = APIs.API_S_PHASE_STAGE_CHAINS
         thisTYPE = types.GET_S_PHASE_STAGE_CHAINS
+        resUrl = `${thisAPI}?interId=${interId}&nodeNo=${nodeNo}&schemeNo=${schemeNo}`
       }
       break;
     case "DAYPLAN":
-      thisAPI = APIs.API_DAYPLAN_INFO_LISTS
-      thisTYPE = types.GET_DAYPLAN_INFO_LISTS
+      debugger
+      if (!schemeNo){
+        thisAPI = APIs.API_DAYPLAN_INFO_LISTS
+        thisTYPE = types.GET_DAYPLAN_INFO_LISTS
+        resUrl = `${thisAPI}?interId=${interId}&nodeNo=${nodeNo}`
+      } else {
+        thisAPI = APIs.API_LINE_DAYPLAN_CLICK
+        thisTYPE = types.GET_LINE_DAYPLAN_CLICK
+        resUrl = `${thisAPI}?interId=${interId}&nodeNo=${nodeNo}&schemeNo=${schemeNo}`
+      }
       break;
     case "DISPATCH":
-      thisAPI = APIs.API_DISPATCH_INFO_LISTS
-      thisTYPE = types.GET_DISPATCH_INFO_LISTS
+      if (!schemeNo){
+        thisAPI = APIs.API_DISPATCH_INFO_LISTS
+        thisTYPE = types.GET_DISPATCH_INFO_LISTS
+        resUrl = `${thisAPI}?interId=${interId}&nodeNo=${nodeNo}`
+      } else {
+        thisAPI = APIs.API_LINE_DISPATCH_CLICK
+        thisTYPE = types.GET_LINE_DISPATCH_CLICK
+        resUrl = `${thisAPI}?interId=${interId}&nodeNo=${nodeNo}&dailyplanNo=${schemeNo}`
+      }
       break;
   }
   return async (dispatch) => {
     try {
-      const result = await RestUtil.get(!schemeNo ? `${thisAPI}?interId=${interId}&nodeNo=${nodeNo}` : `${thisAPI}?interId=${interId}&nodeNo=${nodeNo}&schemeNo=${schemeNo}`)
+      const result = await RestUtil.get(resUrl)
       if (result.data.code === 0) {
         dispatch({ type: thisTYPE, payload: result.data.data })
       } else {

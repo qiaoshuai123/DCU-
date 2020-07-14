@@ -135,6 +135,8 @@ const signalmanagement = (state = {}, action) => {
       return Object.assign({}, state, { dayPlanUpdateOthers: payload })
     case types.GET_DEL_DAYPLAN_INFO:
       return Object.assign({}, state, { dayPlanDelInfo: payload })
+    case types.GET_LINE_DAYPLAN_CLICK:
+      return Object.assign({}, state, { dayPlanClickInfo: payload })
     // 调度配置
     case types.GET_DISPATCH_INFO_LISTS:
       return Object.assign({}, state, { dispatchLists: payload })
@@ -144,6 +146,8 @@ const signalmanagement = (state = {}, action) => {
       return Object.assign({}, state, { dispatchUpdateOthers: payload })
     case types.GET_DEL_DISPATCH_INFO:
       return Object.assign({}, state, { dispatchDelInfo: payload })
+    case types.GET_LINE_DISPATCH_CLICK:
+      return Object.assign({}, state, { dispatchClickInfo: payload })
     default:
       return state
   }
