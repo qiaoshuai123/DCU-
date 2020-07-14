@@ -33,6 +33,8 @@ class ListForAntd extends Component {
     // }
   }
   componentDidMount = () => {
+    debugger
+    console.log(this.state.dataSourse, 'look~~~~~~~~~~~~~~~~~~~~~~~')
     // 根据数据源填充到显示与隐藏的列表
     const listNames = JSON.parse(JSON.stringify(this.props.listNames)), showListDatas = [], hideListDatas = [];
       for (let i = 0; i < listNames.length; i++) {
@@ -91,6 +93,10 @@ class ListForAntd extends Component {
       this.setState({ dataSourse: oldDatas, showListDatas, hideListDatas })
     })
   }
+  handleLineClick = (e, id, stepType) => {
+    e.stopPropagation()
+    this.props.handleLineClick(id, stepType)
+  }
   render() {
     const { rowSelect, dataSourse, showListDatas, hideListDatas, handleFlag } = this.state
     return (
@@ -118,11 +124,11 @@ class ListForAntd extends Component {
 
                     })
                   }
-                  {handleFlag ? <em>操作</em> : null}
+                  {handleFlag && this.props.nothing === undefined ? <em>操作</em> : null}
                 </div>
                 {
                   !!dataSourse && dataSourse.map((item, i) => {
-                    return <div key={'List' + i} className={classNames(styles.listItem)} tag-mark={item.phaseLampgroupId} onClick={ e => this.handleClick(e, item) }>
+                    return <div key={'List' + i} className={classNames(styles.listItem)} tag-mark={item.phaseLampgroupId} onClick={ this.props.nothing === undefined ? e => this.handleClick(e, item) : null }>
                       {!!showListDatas && showListDatas.map((val, k) => {
                         return <span key={"spanText" + k}>
                         { item[val.key] instanceof Array && this.props.listType === 'PLAN'? 
@@ -137,20 +143,24 @@ class ListForAntd extends Component {
                             item[val.key].map((items, d) => {
                               return <div className={styles.dayPlanBox} key={'ListItem' + d}>
                                       { d === 0 ? <div><b>开始时间</b><b>执行方案</b><b>运行模式</b></div> : null }
-                                      <s>{!items.timeintervalStarttime ? '暂无' : items.timeintervalStarttime }</s>
-                                      <s>{!items.timeintervalScheme ? '暂无' : items.timeintervalScheme }</s>
-                                      <s>{!items.timeintervalModelName ? '暂无' : items.timeintervalModelName }</s>
+                                      <div className={styles.hLine} onClick={(e) => this.handleLineClick(e, items.timeintervalScheme, 'DAYPLAN')}>
+                                        <s>{!items.timeintervalStarttime ? '暂无' : items.timeintervalStarttime }</s>
+                                        <s>{!items.timeintervalScheme ? '暂无' : items.timeintervalScheme }</s>
+                                        <s>{!items.timeintervalModelName ? '暂无' : items.timeintervalModelName }</s>
+                                      </div>
                                     </div>
                             }) : 
                             item[val.key] instanceof Array && this.props.listType === 'DISPATCH' ? 
                             item[val.key].map((items, d) => {
                               return <div className={styles.dayPlanBox} key={'ListItem' + d}>
                                       { d === 0 ? <div><b>调度类型</b><b>优先级</b><b>调度类型值</b><b>日计划编号</b></div> : null }
-                                      <s>{items.dateTypeName ? items.dateTypeName : '' }</s>
-                                      <s>{items.priority ? items.priority : '' }</s>
-                                      {/* dateType 1 日期 星期 dataValueCodes  monthValueCodes */}
-                                      <s>{items.dataValueNames ? (items.monthValueCodes !== '' ? ( "（" +this.formatNumberStr(items.monthValueCodes) +"）" + "月" + "（" + this.formatNumberStr(items.dataValueCodes) +" ）日" ) : "星期：（"+this.formatNumberStr(items.dataValueCodes)+ "）" )  : '' }</s>
-                                      <s>{items.dailyPlanId ? items.dailyPlanId : '' }</s>
+                                      <div className={styles.hLine} onClick={(e) => this.handleLineClick(e, items.dailyPlanId, 'DISPATCH')}>
+                                        <s>{items.dateTypeName ? items.dateTypeName : '' }</s>
+                                        <s>{items.priority ? items.priority : '' }</s>
+                                        {/* dateType 1 日期 星期 dataValueCodes  monthValueCodes */}
+                                        <s>{items.dataValueNames ? (items.monthValueCodes !== '' ? ( "（" +this.formatNumberStr(items.monthValueCodes) +"）" + "月" + "（" + this.formatNumberStr(items.dataValueCodes) +" ）日" ) : "星期：（"+this.formatNumberStr(items.dataValueCodes)+ "）" )  : '' }</s>
+                                        <s>{items.dailyPlanId ? items.dailyPlanId : '' }</s>
+                                      </div>
                                     </div>
                             }) : 
                             val.key === 'coordinationImagePath' && !!item[val.key] ? <img style={{width: '30px', height: '30px'}} src={`${this.props.imgIconUrl}${item[val.key]}`} /> :
@@ -159,7 +169,7 @@ class ListForAntd extends Component {
                         </span>
                       })
                       }
-                      {handleFlag ? <span><b onClick={(e) => { this.updateListItem(item, this.props.listType, e) }}>修改</b><b onClick={(e) => { this.delListItem(e, item.id) }}>删除</b></span> : null}
+                      {handleFlag && this.props.nothing === undefined ? <span><b onClick={(e) => { this.updateListItem(item, this.props.listType, e) }}>修改</b><b onClick={(e) => { this.delListItem(e, item.id) }}>删除</b></span> : null}
                     </div>
                   })
                 }

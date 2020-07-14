@@ -74,11 +74,13 @@ export const GET_DAYPLAN_INFO_LISTS = 'GET_DAYPLAN_INFO_LISTS' // 日计划查�
 export const POST_ADD_DAYPLAN_OTHERS = 'POST_ADD_DAYPLAN_OTHERS' // 日计划新增
 export const POST_UPDATE_DAYPLAN_OTHERS = 'POST_UPDATE_DAYPLAN_OTHERS' // 日计划修改
 export const GET_DEL_DAYPLAN_INFO = 'GET_DEL_DAYPLAN_INFO' // 日计划删除
+export const GET_LINE_DAYPLAN_CLICK = 'GET_LINE_DAYPLAN_CLICK' // 日计划点击 根据方案号查询配时方案
 // 调度配置
 export const GET_DISPATCH_INFO_LISTS = 'GET_DISPATCH_INFO_LISTS' // 调度配置查询列表
 export const POST_ADD_DISPATCH_OTHERS = 'POST_ADD_DISPATCH_OTHERS' // 调度配置新增
 export const POST_UPDATE_DISPATCH_OTHERS = 'POST_UPDATE_DISPATCH_OTHERS' // 调度配置修改
 export const GET_DEL_DISPATCH_INFO = 'GET_DEL_DISPATCH_INFO' // 调度配置删除
+export const GET_LINE_DISPATCH_CLICK = 'GET_LINE_DISPATCH_CLICK' // 调度点击 根据方案号查询配时方案
 
 /** *************设备参数管理************* */
 export const GET_DELNUM = 'GET_DELNUM' // 修改添加弹窗

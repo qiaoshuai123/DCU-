@@ -19,7 +19,6 @@ class DayPlanConfigRight extends PureComponent {
   componentDidUpdate = (prevState) => {
     const { dayPlanLists } = this.props.data
     if (prevState.data.dayPlanLists !== dayPlanLists) {
-      debugger
       this.setState({ dayPlanLists: null, listNames: null, },()=>{
         this.setState({
           dayPlanLists
@@ -115,12 +114,15 @@ class DayPlanConfigRight extends PureComponent {
   updateListItem = (itemDetailData, stepType) => {
     this.props.updateListItem(itemDetailData, stepType)
   }
+  handleLineClick = (id, stepType) => {
+    this.props.handleLineClick(id, stepType)
+  }
   render() {
     const { dayPlanLists, listNames } = this.state
     return (
       <div className={styles.conBox}>
         <div className={styles.rTit}>日计划配置列表<em onClick={() => { this.popLayerShowHide("stepEightAddEdit", true, null, 'DAYPLAN') }}>添加</em></div>
-        { !!dayPlanLists && !!listNames ? <ListForAntd {...this.props} dataSourse={dayPlanLists} listNames={listNames} showIndex={2} listType={'DAYPLAN'} handleClickFind={this.handleClickFind} updateListItem={this.updateListItem} delListItem={this.delListItem} /> : <div className={styles.noData}>暂无数据</div> }
+        { !!dayPlanLists && !!listNames ? <ListForAntd {...this.props}  handleLineClick={this.handleLineClick} dataSourse={dayPlanLists} listNames={listNames} showIndex={2} listType={'DAYPLAN'} handleClickFind={this.handleClickFind} updateListItem={this.updateListItem} delListItem={this.delListItem} /> : <div className={styles.noData}>暂无数据</div> }
       </div>
     )
   }
