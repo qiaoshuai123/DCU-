@@ -12,6 +12,7 @@ class LightConfigRight extends PureComponent {
     this.state = {
       lightLists: null,
       clickFlag: null,
+      userLimit: null,
     }
   }
   componentDidUpdate = (prevState) => {
@@ -21,8 +22,13 @@ class LightConfigRight extends PureComponent {
     }
   }
   componentDidMount = () => {
-    console.log(this.props.isMoveFlag, '状态')
-    console.log(this.props, 'look look')
+    // 获取用户权限
+    const limitArr = JSON.parse(localStorage.getItem('userLimit'))
+    limitArr.forEach((item) => {
+      if (item.id === 201){
+        this.setState({ userLimit: true })
+      }
+    })
     this.props.getInfoListsType(this.props.roadInterId, 'LIGHT')
   }
   popLayerShowHide = (name, flag, event, stepType) => {
@@ -55,10 +61,10 @@ class LightConfigRight extends PureComponent {
     this.props.getUpdateAllTypes(itemDetailData.interId, this.props.roadNodeNo, itemDetailData.lampgroupNo, stepType, true)
   }
   render() {
-    const { lightLists, clickFlag } = this.state
+    const { lightLists, clickFlag, userLimit } = this.state
     return (
       <div className={styles.conBox}>
-        <div className={styles.rTit}>灯组配置列表<em onClick={() => { this.popLayerShowHide("stepThreeAddEdit", true, null, 'LIGHT') }}>添加</em></div>
+        <div className={styles.rTit}>灯组配置列表{ userLimit ? <em onClick={() => { this.popLayerShowHide("stepThreeAddEdit", true, null, 'LIGHT') }}>添加</em> : null }</div>
 
         <div className={styles.rList}>
           { lightLists === null || lightLists.length === 0  ? <div className={styles.noData}>暂无数据</div> : <div className={styles.listItem}>
@@ -66,7 +72,7 @@ class LightConfigRight extends PureComponent {
             <em>灯组类型</em>
             <em>控制转向</em>
             <em>控制方向</em>
-            <em>操作</em>
+            { userLimit ? <em>操作</em> : null }
           </div> }
           {
             lightLists && lightLists.map((item) => {
@@ -75,7 +81,7 @@ class LightConfigRight extends PureComponent {
                         <span>{!item.lampgroupTypeName ? '无' : item.lampgroupTypeName}</span>
                         <span>{!item.controlTurnName ? '无' : item.controlTurnName}</span>
                         <span>{!item.controlDirName ? '无' : item.controlDirName}</span>
-                        <span className={styles.del}><b onClick={(e) => this.updateListItem(item, 'LIGHT', e)}>修改</b><b onClick={(e) => this.delListItem(e, item.id)}>删除</b></span>
+                        { userLimit ? <span className={styles.del}><b onClick={(e) => this.updateListItem(item, 'LIGHT', e)}>修改</b><b onClick={(e) => this.delListItem(e, item.id)}>删除</b></span> : null }
                       </div>
             })
           }

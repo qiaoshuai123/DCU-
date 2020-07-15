@@ -11,10 +11,18 @@ class ImgEvent extends React.Component {
     super(props)
     this.state = {
       showCloseTag: false,
+      userLimit: null,
     }
     this.drag = false
   }
   componentDidMount = () => {
+    // 获取用户权限
+    const limitArr = JSON.parse(localStorage.getItem('userLimit'))
+    limitArr.forEach((item) => {
+      if (item.id === 201){
+        this.setState({ userLimit: true })
+      }
+    })
     document.addEventListener('mousemove', (e) => {
       if (this.drag) {
         const movePageX = e.pageX
@@ -190,6 +198,7 @@ class ImgEvent extends React.Component {
     }
   }
   handleUpdate = (thisName) => {
+    debugger
     this.popLayerShowHide(thisName, true, true)
     let selId = null
     switch(thisName){
@@ -235,7 +244,7 @@ class ImgEvent extends React.Component {
       y,
       angle
     } = this.props.imgMsg
-    const { showCloseTag } = this.state
+    const { showCloseTag, userLimit } = this.state
     const imgStyle = {
       position: 'absolute', display: 'inline-block', top: `${y}px`, left: `${x}px`, userSelect: 'none', cursor: 'pointer',
       paddingTop: '14px', transform: `translate(-50%,-50%) rotate(${angle}deg)`,
@@ -267,17 +276,17 @@ class ImgEvent extends React.Component {
       <React.Fragment>
         {
           id ?
-            <div onMouseDown={(!this.props.isMoveFlag ? null : this.handleDeviceDown)}
+            <div onMouseDown={(!this.props.isMoveFlag || !userLimit ? null : this.handleDeviceDown)}
               onClick={(!this.props.isClick ? null : this.handleClick)}
-              onMouseOver={(!this.props.isMoveFlag ? null : this.handleHover)}
-              onMouseOut={this.handleLink}
-              onMouseUp={this.handleDeviceUp}
-              onDoubleClick={()=>{ (!this.props.isMoveFlag ? null : this.handleUpdate(thisName)) }}
+              onMouseOver={(!this.props.isMoveFlag || !userLimit ? null : this.handleHover)}
+              onMouseOut={userLimit ? this.handleLink : null}
+              onMouseUp={userLimit ? this.handleDeviceUp : null}
+              onDoubleClick={()=>{ (!this.props.isMoveFlag || !userLimit) ? null : this.handleUpdate(thisName) }}
               style={(!this.props.isMoveFlag ? imgStyleL : imgStyle)}
               pic-mark={tagMark}
               ref={(input) => { this.imgBox = input }}
               draggable="false">
-              { showCloseTag ? <Icon style={{position:'absolute', right:'-6px', top: '0', cursor: 'pointer'}} title='删除' type="close"  onClick={ (e) => this.handleDel(e, id) } /> : null }
+              { showCloseTag && userLimit ? <Icon style={{position:'absolute', right:'-6px', top: '0', cursor: 'pointer'}} title='删除' type="close"  onClick={ (e) => this.handleDel(e, id) } /> : null }
               <img style={{pointerEvents:'none'}} src={`http://192.168.1.213:20203/DCU/dcuImage/${thisUrl}/${imageUrl}`}
                 alt="" />
             </div> : null

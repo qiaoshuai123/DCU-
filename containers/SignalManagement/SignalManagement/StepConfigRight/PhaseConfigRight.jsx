@@ -14,6 +14,7 @@ class PhaseConfigRight extends PureComponent {
     this.state = {
       phaseLists: null,
       listNames: null,
+      userLimit: null,
     }
   }
   componentDidUpdate = (prevState) => {
@@ -34,7 +35,13 @@ class PhaseConfigRight extends PureComponent {
     }
   }
   componentDidMount = () => {
-    console.log(this.props, '状态')
+    // 获取用户权限
+    const limitArr = JSON.parse(localStorage.getItem('userLimit'))
+    limitArr.forEach((item) => {
+      if (item.id === 201){
+        this.setState({ userLimit: true })
+      }
+    })
     this.props.getInfoListsType(this.props.roadInterId, 'PHASE')
   }
   getListData = (data) => {
@@ -229,10 +236,10 @@ class PhaseConfigRight extends PureComponent {
     this.props.updateListItem(itemDetailData, stepType)
   }
   render() {
-    const { phaseLists, listNames } = this.state
+    const { phaseLists, listNames, userLimit } = this.state
     return (
       <div className={styles.conBox} >
-        <div className={styles.rTit}>相位配置列表<em onClick={() => { this.popLayerShowHide("stepFiveAddEdit", true, null, 'PHASE') }}>添加</em></div>
+        <div className={styles.rTit}>相位配置列表{ userLimit ? <em onClick={() => { this.popLayerShowHide("stepFiveAddEdit", true, null, 'PHASE') }}>添加</em> : null }</div>
         { !!phaseLists && !!listNames ? <ListForAntd {...this.props} dataSourse={phaseLists} listNames={listNames} showIndex={3} listType={'PHASE'} handleClickFind={this.handleClickFind} updateListItem={this.updateListItem} delListItem={this.delListItem} /> : <div className={styles.noData}>暂无数据</div> }
       </div>
     )

@@ -12,6 +12,7 @@ class DetectorConfigRight extends PureComponent {
     this.state = {
       detectorLists: null,
       clickFlag: null,
+      userLimit: null,
     }
   }
   componentDidUpdate = (prevState) => {
@@ -21,8 +22,13 @@ class DetectorConfigRight extends PureComponent {
     }
   }
   componentDidMount = () => {
-    console.log(this.props.isMoveFlag, '状态')
-    console.log(this.props, 'look look')
+    // 获取用户权限
+    const limitArr = JSON.parse(localStorage.getItem('userLimit'))
+    limitArr.forEach((item) => {
+      if (item.id === 201){
+        this.setState({ userLimit: true })
+      }
+    })
     this.props.getInfoListsType(this.props.roadInterId, 'DETECTOR')
   }
   popLayerShowHide = (name, flag, event, stepType) => {
@@ -55,10 +61,10 @@ class DetectorConfigRight extends PureComponent {
     this.props.getUpdateAllTypes(itemDetailData.interId, this.props.roadNodeNo, itemDetailData.detectorId, stepType, true)
   }
   render() {
-    const { detectorLists, clickFlag } = this.state
+    const { detectorLists, clickFlag, userLimit } = this.state
     return (
       <div className={styles.conBox}>
-        <div className={styles.rTit}>检测器配置列表<em onClick={() => { this.popLayerShowHide("stepFourAddEdit", true, null, 'DETECTOR') }}>添加</em></div>
+        <div className={styles.rTit}>检测器配置列表{ userLimit ? <em onClick={() => { this.popLayerShowHide("stepFourAddEdit", true, null, 'DETECTOR') }}>添加</em> : null }</div>
 
         <div className={styles.rList}>
           {  detectorLists === null || detectorLists.length === 0 ? <div className={styles.noData}>暂无数据</div> : <div className={styles.listItem}>
@@ -66,7 +72,7 @@ class DetectorConfigRight extends PureComponent {
             <em>检测器类型</em>
             <em>流量采集周期</em>
             <em>占有率采集周期</em>
-            <em>操作</em>
+            { userLimit ? <em>操作</em> : null }
           </div> }
           {
             detectorLists && detectorLists.map((item) => {
@@ -75,7 +81,7 @@ class DetectorConfigRight extends PureComponent {
                         <span>{!item.detectorTypeName ? '无' : item.detectorTypeName}</span>
                         <span>{!item.flowCollectionCycle ? '无' : item.flowCollectionCycle}</span>
                         <span>{!item.occupancyCollectionCycle ? '无' : item.occupancyCollectionCycle}</span>
-                        <span className={styles.del}><b onClick={(e) => this.updateListItem(item, 'DETECTOR', e)}>修改</b><b onClick={(e) => this.delListItem(e, item.id)}>删除</b></span>
+                        { userLimit ? <span className={styles.del}><b onClick={(e) => this.updateListItem(item, 'DETECTOR', e)}>修改</b><b onClick={(e) => this.delListItem(e, item.id)}>删除</b></span> : null }
                       </div>
             })
           }

@@ -75,6 +75,42 @@ $stepBor_col: #393f4f;
             border-bottom: 1px solid #292a2d;
             flex-wrap: wrap;
             overflow-y: auto;
+            .loadItemBox{
+                width: 100%;
+                margin-bottom: 8px;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                > span{
+                    width: 120px;
+                    text-align: right;
+                    font-size: 16px;
+                    color: yellowgreen;
+                    font-weight: bold;
+                    display: inline-block;
+                    margin-right:10px;
+                }
+                > em{
+                    padding-left:10px;
+                    color: orangered;
+                    font-style: normal;
+                    font-size: 12px;
+                }
+                :global(.anticon-check-circle){
+                    color:greenyellow;
+                    font-size: 16px;
+                }
+                :global(.anticon-close-circle){
+                    color:orangered;
+                    font-size: 16px;
+                }
+                :global(.ant-spin-spinning){
+                    margin-right:20px;
+                }
+                :global(.ant-spin-lg .ant-spin-dot i){
+                    background: green;
+                }
+            }
             :global(.ant-radio-wrapper){
                 color:#fff;
                 font-size: 12px;

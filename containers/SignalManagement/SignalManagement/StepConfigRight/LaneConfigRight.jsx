@@ -12,6 +12,7 @@ class LaneConfigRight extends PureComponent {
     this.state = {
       laneLists: null,
       clickFlag: null,
+      userLimit: null,
     }
   }
   componentDidUpdate = (prevState) => {
@@ -21,7 +22,13 @@ class LaneConfigRight extends PureComponent {
     }
   }
   componentDidMount = () => {
-    console.log(this.props, '状态')
+    // 获取用户权限
+    const limitArr = JSON.parse(localStorage.getItem('userLimit'))
+    limitArr.forEach((item) => {
+      if (item.id === 201){
+        this.setState({ userLimit: true })
+      }
+    })
     this.props.getInfoListsType(this.props.roadInterId, 'LANE')
   }
   popLayerShowHide = (name, flag, event, stepType) => {
@@ -54,10 +61,10 @@ class LaneConfigRight extends PureComponent {
     this.props.getUpdateAllTypes(itemDetailData.interId, this.props.roadNodeNo, itemDetailData.laneId, stepType, true)
   }
   render() {
-    const { laneLists, clickFlag, itemDetailData } = this.state
+    const { laneLists, clickFlag, itemDetailData, userLimit } = this.state
     return (
       <div className={styles.conBox}>
-        <div className={styles.rTit}>车道配置列表<em onClick={() => { this.popLayerShowHide("stepRoadAddEdit", true, null, 'LANE') }}>添加</em></div>
+        <div className={styles.rTit}>车道配置列表{ userLimit ? <em onClick={() => { this.popLayerShowHide("stepRoadAddEdit", true, null, 'LANE') }}>添加</em> : null }</div>
         <div className={styles.rList}>
           { laneLists === null || laneLists.length === 0 ? <div className={styles.noData}>暂无数据</div> : <div className={styles.listItem}>
             <em>车道号</em>
@@ -65,7 +72,7 @@ class LaneConfigRight extends PureComponent {
             <em>转向</em>
             <em>通行方向描述</em>
             <em>外部车道号</em>
-            <em>操作</em>
+            { userLimit ? <em>操作</em> : null }
           </div> }
           {
             laneLists && laneLists.map((item) => {
@@ -75,7 +82,7 @@ class LaneConfigRight extends PureComponent {
                         <span>{!item.turnDirNoName ? '无' : item.turnDirNoName}</span>
                         <span>{!item.dirName ? '无' : item.dirName}</span>
                         <span>{!item.laneIdCust ? '无' : item.laneIdCust}</span>
-                        <span className={styles.del}><b onClick={(e) => this.updateListItem(item, 'LANE', e)}>修改</b> <b onClick={(e) => this.delListItem(e, item.id)}>删除</b></span>
+                        { userLimit ? <span className={styles.del}><b onClick={(e) => this.updateListItem(item, 'LANE', e)}>修改</b> <b onClick={(e) => this.delListItem(e, item.id)}>删除</b></span> : null }
                       </div>
             })
           }
