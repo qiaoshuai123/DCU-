@@ -14,6 +14,7 @@ class DayPlanConfigRight extends PureComponent {
     this.state = {
       dayPlanLists: null,
       listNames: null,
+      userLimit: null,
     }
   }
   componentDidUpdate = (prevState) => {
@@ -31,7 +32,13 @@ class DayPlanConfigRight extends PureComponent {
     }
   }
   componentDidMount = () => {
-    console.log(this.props, '状态')
+    // 获取用户权限
+    const limitArr = JSON.parse(localStorage.getItem('userLimit'))
+    limitArr.forEach((item) => {
+      if (item.id === 201){
+        this.setState({ userLimit: true })
+      }
+    })
     this.props.getInfoListsTypeMore(this.props.roadInterId, this.props.roadNodeNo, 'PLAN')
     this.props.getInfoListsTypeMore(this.props.roadInterId, this.props.roadNodeNo, 'DAYPLAN')
   }
@@ -118,10 +125,10 @@ class DayPlanConfigRight extends PureComponent {
     this.props.handleLineClick(id, stepType)
   }
   render() {
-    const { dayPlanLists, listNames } = this.state
+    const { dayPlanLists, listNames, userLimit } = this.state
     return (
       <div className={styles.conBox}>
-        <div className={styles.rTit}>日计划配置列表<em onClick={() => { this.popLayerShowHide("stepEightAddEdit", true, null, 'DAYPLAN') }}>添加</em></div>
+        <div className={styles.rTit}>日计划配置列表{ userLimit ? <em onClick={() => { this.popLayerShowHide("stepEightAddEdit", true, null, 'DAYPLAN') }}>添加</em> : null }</div>
         { !!dayPlanLists && !!listNames ? <ListForAntd {...this.props}  handleLineClick={this.handleLineClick} dataSourse={dayPlanLists} listNames={listNames} showIndex={2} listType={'DAYPLAN'} handleClickFind={this.handleClickFind} updateListItem={this.updateListItem} delListItem={this.delListItem} /> : <div className={styles.noData}>暂无数据</div> }
       </div>
     )

@@ -22,6 +22,7 @@ class ListForAntd extends Component {
       handleFlag: true,
       showListDatas: [],
       hideListDatas: [],
+      userLimit: null,
     }
     this.selectIndex = null
   }
@@ -33,8 +34,13 @@ class ListForAntd extends Component {
     // }
   }
   componentDidMount = () => {
-    debugger
-    console.log(this.state.dataSourse, 'look~~~~~~~~~~~~~~~~~~~~~~~')
+    // 获取用户权限
+    const limitArr = JSON.parse(localStorage.getItem('userLimit'))
+    limitArr.forEach((item) => {
+      if (item.id === 201){
+        this.setState({ userLimit: true })
+      }
+    })
     // 根据数据源填充到显示与隐藏的列表
     const listNames = JSON.parse(JSON.stringify(this.props.listNames)), showListDatas = [], hideListDatas = [];
       for (let i = 0; i < listNames.length; i++) {
@@ -98,7 +104,7 @@ class ListForAntd extends Component {
     this.props.handleLineClick(id, stepType)
   }
   render() {
-    const { rowSelect, dataSourse, showListDatas, hideListDatas, handleFlag } = this.state
+    const { rowSelect, dataSourse, showListDatas, hideListDatas, handleFlag, userLimit } = this.state
     return (
       <div className={styles.SignalManagement}>
         <div className={styles.stepBoxContent}>
@@ -124,7 +130,7 @@ class ListForAntd extends Component {
 
                     })
                   }
-                  {handleFlag && this.props.nothing === undefined ? <em>操作</em> : null}
+                  {handleFlag && this.props.nothing === undefined && userLimit ? <em>操作</em> : null}
                 </div>
                 {
                   !!dataSourse && dataSourse.map((item, i) => {
@@ -169,7 +175,7 @@ class ListForAntd extends Component {
                         </span>
                       })
                       }
-                      {handleFlag && this.props.nothing === undefined ? <span><b onClick={(e) => { this.updateListItem(item, this.props.listType, e) }}>修改</b><b onClick={(e) => { this.delListItem(e, item.id) }}>删除</b></span> : null}
+                      {handleFlag && this.props.nothing === undefined && userLimit ? <span><b onClick={(e) => { this.updateListItem(item, this.props.listType, e) }}>修改</b><b onClick={(e) => { this.delListItem(e, item.id) }}>删除</b></span> : null}
                     </div>
                   })
                 }

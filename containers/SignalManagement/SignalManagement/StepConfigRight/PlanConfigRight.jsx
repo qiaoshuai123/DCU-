@@ -14,6 +14,7 @@ class PlanConfigRight extends PureComponent {
     this.state = {
       planLists: null,
       listNames: null,
+      userLimit: null,
     }
     this.imgIconUrl = 'http://192.168.1.213:20203/DCU/dcuImage/phasestage/'
   }
@@ -32,7 +33,13 @@ class PlanConfigRight extends PureComponent {
     }
   }
   componentDidMount = () => {
-    console.log(this.props, '状态')
+    // 获取用户权限
+    const limitArr = JSON.parse(localStorage.getItem('userLimit'))
+    limitArr.forEach((item) => {
+      if (item.id === 201){
+        this.setState({ userLimit: true })
+      }
+    })
     this.props.getInfoListsType(this.props.roadInterId, 'STAGE')
     this.props.getInfoListsTypeMore(this.props.roadInterId, this.props.roadNodeNo, 'PLAN')
   }
@@ -101,10 +108,10 @@ class PlanConfigRight extends PureComponent {
     this.props.updateListItem(itemDetailData, stepType)
   }
   render() {
-    const { planLists, listNames } = this.state
+    const { planLists, listNames, userLimit } = this.state
     return (
       <div className={styles.conBox}>
-        <div className={styles.rTit}>配时方案配置列表<em onClick={() => { this.popLayerShowHide("stepSevenAddEdit", true, null, 'PLAN') }}>添加</em></div>
+        <div className={styles.rTit}>配时方案配置列表{ userLimit ? <em onClick={() => { this.popLayerShowHide("stepSevenAddEdit", true, null, 'PLAN') }}>添加</em> : null }</div>
         { !!planLists && !!listNames ? <ListForAntd {...this.props} dataSourse={planLists} listNames={listNames} listType={'PLAN'} imgIconUrl={this.imgIconUrl} showIndex={3} handleClickFind={this.handleClickFind} updateListItem={this.updateListItem} delListItem={this.delListItem} /> : <div className={styles.noData}>暂无数据</div> }
       </div>
     )

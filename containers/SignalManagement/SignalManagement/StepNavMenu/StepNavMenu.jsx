@@ -12,6 +12,7 @@ class StepNavMenu extends PureComponent {
     super(props)
     this.state = {
       // stepStatusData: null,
+      userLimit: null,
     }
   }
   componentDidUpdate = (prevState) => {
@@ -21,12 +22,26 @@ class StepNavMenu extends PureComponent {
     // }
   }
   componentDidMount = () => {
+    // 获取用户权限
+    const limitArr = JSON.parse(localStorage.getItem('userLimit'))
+    limitArr.forEach((item) => {
+      if (item.id === 201){
+        this.setState({ userLimit: true })
+      }
+    })
   }
   showHidePop = (name, flag) => {
     this.props.showHidePop(name, flag)
   }
+  loadDataType = () => {
+    this.props.loadDataType(true)
+  }
+  editDataType = () => {
+    this.props.editDataType(true)
+  }
 
   render() {
+    const { userLimit } = this.state
     return (
       <div className={styles.navContent}>
         <div className={styles.navBoxMenu}>
@@ -49,10 +64,12 @@ class StepNavMenu extends PureComponent {
           <span className={classNames(this.props.stepEightFlag ? styles.hover : null, !!this.props.stepStatusData && !!this.props.stepStatusData[7] ? styles.link : null)} onClick={() => { this.showHidePop("stepEightFlag", true) }}>日计划配置</span>
           <s className={this.props.stepNineFlag ? styles.hover : ""}></s>
           <span className={classNames(this.props.stepNineFlag ? styles.hover : null, !!this.props.stepStatusData && !!this.props.stepStatusData[8] ? styles.link : null)} onClick={() => { this.showHidePop("stepNineFlag", true) }}>调度配置</span>
-          <div className={styles.controlBtnBox}>
-            <em>上传配置</em>
-            <em>下发配置</em>
-          </div>
+          { this.props.stepOneText !== '请选择路口' && userLimit ? 
+            <div className={styles.controlBtnBox}>
+              <em onClick={this.loadDataType}>上传配置</em>
+              <em onClick={this.editDataType}>下发配置</em>
+            </div> : null
+          }
         </div>
       </div>
     )

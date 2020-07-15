@@ -14,6 +14,7 @@ class DetectorConfigRight extends PureComponent {
     this.state = {
       dispatchLists: null,
       listNames: null,
+      userLimit: null,
     }
   }
   componentDidUpdate = (prevState) => {
@@ -31,7 +32,13 @@ class DetectorConfigRight extends PureComponent {
     }
   }
   componentDidMount = () => {
-    console.log(this.props, '状态')
+    // 获取用户权限
+    const limitArr = JSON.parse(localStorage.getItem('userLimit'))
+    limitArr.forEach((item) => {
+      if (item.id === 201){
+        this.setState({ userLimit: true })
+      }
+    })
     this.props.getInfoListsTypeMore(this.props.roadInterId, this.props.roadNodeNo, 'DAYPLAN')
     this.props.getInfoListsTypeMore(this.props.roadInterId, this.props.roadNodeNo, 'DISPATCH')
   }
@@ -118,10 +125,10 @@ class DetectorConfigRight extends PureComponent {
     this.props.handleLineClick(id, stepType)
   }
   render() {
-    const { dispatchLists, listNames } = this.state
+    const { dispatchLists, listNames, userLimit } = this.state
     return (
       <div className={styles.conBox}>
-        <div className={styles.rTit}>调度配置列表<em onClick={() => { this.popLayerShowHide("stepNineAddEdit", true, null, 'DISPATCH') }}>添加</em></div>
+        <div className={styles.rTit}>调度配置列表{ userLimit ? <em onClick={() => { this.popLayerShowHide("stepNineAddEdit", true, null, 'DISPATCH') }}>添加</em> : null }</div>
         { !!dispatchLists && !!listNames ? <ListForAntd {...this.props} handleLineClick={this.handleLineClick} dataSourse={dispatchLists} listType={'DISPATCH'} listNames={listNames} showIndex={2} handleClickFind={this.handleClickFind} updateListItem={this.updateListItem} delListItem={this.delListItem} /> : <div className={styles.noData}>暂无数据</div> }
       </div>
     )

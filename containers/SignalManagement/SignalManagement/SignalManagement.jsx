@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-import { Input, Icon, Radio, Upload, Modal, message, Select, Checkbox, Row, Col, TimePicker  } from 'antd'
+import { Input, Icon, Radio, Upload, Modal, message, Select, Checkbox, Row, Col, TimePicker, Spin } from 'antd'
 import moment from 'moment';
 import classNames from 'classnames'
 import Header from '../../../components/Header/Header'
@@ -131,6 +131,9 @@ class SignalManagement extends PureComponent {
       dispatchClickInfoCopy: null, // 调度点击后的数据备份
       popItemFlag: true,
       listNames: null,
+      loadFlag: null,
+      editFlag: null,
+      userLimit: null, // 权限标识
     }
     this.map = null
     this.moveFlag = false // 是否是移动状态
@@ -141,6 +144,8 @@ class SignalManagement extends PureComponent {
     this.phaseBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/phasestage/'
     this.socketPointStatusUrl = 'ws://192.168.1.213:20203/DCU/websocket/dcuState/0/0/0' // 实时请求地图点的状态
     this.socketPointPopUrl = 'ws://192.168.1.213:20203/DCU/websocket/interRunState/' // 点击显示实时弹层
+    this.socketLoadDataUrl = 'ws://192.168.1.213:20203/DCU/websocket/loadData/' // 上传配置
+    this.socketEditDataUrl = 'ws://192.168.1.213:20203/DCU/websocket/editData/' // 下发配置
     this.searchInterList = []
     this.itemDetailData = null
     this.selImage = null
@@ -241,6 +246,13 @@ class SignalManagement extends PureComponent {
     }
   }
   componentDidMount = () => {
+    // 获取用户权限
+    const limitArr = JSON.parse(localStorage.getItem('userLimit'))
+    limitArr.forEach((item) => {
+      if (item.id === 201){
+        this.setState({ userLimit: true })
+      }
+    })
     document.addEventListener('click', (e) => {
       if (e.target !== this.searchInputBox) {
         if ( e.target !== this.searchBtn ) {
@@ -489,6 +501,12 @@ class SignalManagement extends PureComponent {
   stageIdCancel = () => {
     this.setState({ showFlag: true })
   }
+  // 时间
+  handleChangeTime = (v, time, type, name, key, index, keyValue ) => {
+    this[type][name][key][index][keyValue] = time
+    const newObj = JSON.parse(JSON.stringify(this[type][name]))
+    this.setState({ [name]: newObj })
+  }    
   // 下拉选择值
   handleChangeSel = (value, type, name, key, index, keyValue) => {
     if (index !== undefined) {
@@ -705,6 +723,7 @@ class SignalManagement extends PureComponent {
   // 显示隐藏弹层
   popLayerShowHide = (name, flag, eventType, stepType) => {
     if (name === 'dayPlanClickInfo' && this.state.dispatchClickInfo ) this.getListDayData(this.state.dispatchClickInfo[0])
+    if (name === 'loadFlag') this.setState({ loadFlag: flag, editFlag: flag })
     this.setState({
       [name]: flag,
       popAddEditText: eventType ? '编辑' : '添加',
@@ -1486,6 +1505,20 @@ btnSelectOver = (flag, defaultSelectLists) => {
       })
     }
   }
+  loadDataType = (flag) => {
+    this.setState({ loadFlag: flag })
+  }
+  loadData(data) {
+    let result = JSON.parse(data);
+    console.log(result,'socket 上传数据')
+  }
+  editDataType = (flag) => {
+    this.setState({ editFlag: flag })
+  }
+  editData(data) {
+    let result = JSON.parse(data);
+    console.log(result,'socket 下发数据')
+  }
   handleData(data) {
     let result = JSON.parse(data);
     // console.log(result,'socket 数据')
@@ -1524,11 +1557,42 @@ btnSelectOver = (flag, defaultSelectLists) => {
       lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists, showFlag, nowCycleLength, cycleLength,
       lampgroupType, controlDir, controlTurn, detectorType, phaseForbidenData, phaseShieldData, typeData, planStageLists, planChainsLists,
       phaseShowDetail, stageShowDetail, planShowDetail, dayplanShowDetail, dispatchShowDetail, laneSelectLists, lightSelectLists, detectorSelectLists, selectFlag, phaseDefaultSelectLists, laneDefaultSelectLists, lightDefaultSelectLists, detectorDefaultSelectLists,  phaseIconLists, phaseSelectLists, phaseFlag, schemePhasestageTypeData, timeintervalModelChainData,
-      priorityData, monthData, dayData, weekData, dayPlanClickInfo, dispatchClickInfo, popItemFlag, listNames
+      priorityData, monthData, dayData, weekData, dayPlanClickInfo, dispatchClickInfo, popItemFlag, listNames, loadFlag, editFlag, userLimit
     } = this.state
     const { Search } = Input
     return (
       <div className={styles.SignalManagement}>
+      { loadFlag || editFlag ?
+        <div className={styles.maskBg}> 
+          <div className={styles.popBox} style={{width: '600px'}}>
+            <div className={styles.popTit}>
+            { loadFlag ? '上传配置' : editFlag ? '下发配置' : null }
+              <Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("loadFlag", null)} } />
+            </div>
+            { loadFlag ? 
+              <div className={styles.popCon} style={{width: '380px', margin: '0 auto'}}>
+                <div className={styles.loadItemBox}><span>基础信息配置：</span><Icon type="check-circle" /></div>
+                <div className={styles.loadItemBox}><span>车道配置：</span><Icon type="close-circle" /><em>错误信息</em></div>
+                <div className={styles.loadItemBox}><span>灯组配置：</span><Icon type="close-circle" /><em>错误信息</em></div>
+                <div className={styles.loadItemBox}><span>检测器配置：</span><Icon type="close-circle" /><em>错误信息</em></div>
+                <div className={styles.loadItemBox}><span>相位配置：</span><Icon type="close-circle" /><em>错误信息</em></div>
+                <div className={styles.loadItemBox}><span>阶段配置：</span><Icon type="close-circle" /><em>错误信息</em></div>
+                <div className={styles.loadItemBox}><span>配时方案配置：</span><Icon type="close-circle" /><em>错误信息</em></div>
+                <div className={styles.loadItemBox}><span>日计划配置：</span><Icon type="close-circle" /><em>错误信息</em></div>
+                <div className={styles.loadItemBox}><span>调度配置：</span><Icon type="close-circle" /><em>错误信息</em></div>
+                <div className={styles.loadItemBox} style={{padding: '35px 0 15px', justifyContent:'center', color: 'yellowgreen'}}>
+                  <Spin size="large" /> XXX配置上传/下发中...
+                </div>
+              </div> : null
+            }
+            <div className={styles.popBottom} style={{padding: '15px 0'}}>
+              <em onClick={ () => {this.popLayerShowHide("loadFlag", null)} }>关 闭</em>
+            </div>
+          </div>
+        </div> : null 
+      }
+      {/* { loadFlag ? <Websocket url={`${this.socketLoadDataUrl}${0}/${roadInterId}/${0}`} onMessage={this.loadData.bind(this)} /> : null }
+      { editFlag ? <Websocket url={`${this.socketEditDataUrl}${0}/${roadInterId}/${0}`} onMessage={this.editData.bind(this)} /> : null } */}
       <Websocket url={this.socketPointStatusUrl} onMessage={this.handleData.bind(this)} />
       { !!roadUnitId && !!roadInterId && !!roadNodeNo ? <Websocket url={`${this.socketPointPopUrl}${roadUnitId}/${roadInterId}/${roadNodeNo}`} onMessage={ this.handlePopData.bind(this)} /> : null }
         <Header {...this.props} />
@@ -2345,7 +2409,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
                         dayplanShowDetail.timeintervalList.map((item, i) =>{
                           return <div key={'dayPlan'+i}  className={styles.timeThreeBox}>
       
-                            <span>开始时间：</span><TimePicker defaultValue={moment(item.timeintervalStarttime, format)} format={format} />
+                            <span>开始时间：</span>
+                            <TimePicker key={item.timeintervalStarttime} defaultValue={moment(item.timeintervalStarttime, format)} format={format} allowClear={false} onChange={(v,time) => this.handleChangeTime(v,time,'state', 'dayplanShowDetail', 'timeintervalList', i ,'timeintervalStarttime')} />
                             <span>运行方案：</span><Select
                               value={Number(item.timeintervalScheme) ? Number(item.timeintervalScheme) : 0}
                               onChange={v => this.handleChangeSel(v, 'state', 'dayplanShowDetail', 'timeintervalList', i ,'timeintervalScheme')}>
@@ -2497,7 +2562,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
               }
               <div className={styles.leftItemCon} style={interRoadBg !== '' ? { background: `url(${interRoadBg}) center center / 100% 100% no-repeat` } : {}}>
                 {/* 左侧基础信息回显 */}
-                {stepTwoFlag ? <div className={styles.turnBgBtn} onClick={ () => {this.popLayerShowHide("baseMapFlag", true)} }>路口底图</div> : null }
+                {stepTwoFlag && userLimit ? <div className={styles.turnBgBtn} onClick={ () => {this.popLayerShowHide("baseMapFlag", true)} }>路口底图</div> : null }
                 {baseMapFlag ?
                   <BasicInfoLeft {...this.props} 
                     popLayerShowHide={this.popLayerShowHide} 
@@ -2804,6 +2869,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
           stepSevenFlag={stepSevenFlag}
           stepEightFlag={stepEightFlag}
           stepNineFlag={stepNineFlag}
+          loadDataType={this.loadDataType}
+          editDataType={this.editDataType}
         showHidePop={this.showHidePop} stepStatusData={stepStatusData} />
         <div className={styles.Interwork_left}>
           <div className={styles.searchBox}>
