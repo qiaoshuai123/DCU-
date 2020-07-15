@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Input, message, Select, Icon } from 'antd'
-import Websocket from 'react-websocket';
+import Websocket from 'react-websocket'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { getMapUnitInfoList, getUnitPop, } from '../../../reactRedux/actions/publicActions'
@@ -189,7 +189,7 @@ class InterworkingHome extends Component {
           map.emit('click', {
             lnglat: map.getCenter()
           })
-          marker.setContent("<div class='drawCircle'><div class='inner'></div><div id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
+          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
           const nowZoom = map.getZoom()
           map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
           this.setState({
@@ -223,9 +223,9 @@ class InterworkingHome extends Component {
     info.push(`<p class='input-item'>设备IP：<span>` + itemData.ip + `</span></p>`);
     info.push(`<p class='input-item'>生产厂商：<span>` + itemData.deviceVersion + `</span></p>`);
     info.push(`<p class='input-item'>维护电话：<span>` + itemData.maintainPhone + `</span></p>`);
-    info.push(`<p class='input-item'>设备状态：<span>` + '01086861234' + `</span></p>`);
-    info.push(`<p class='input-item'>信号接入状态：<span>` + '01086861234' + `</span></p>`);
-    info.push(`<p class='input-item'>发布服务状态：<span>` + '01086861234' + `</span></p>`);
+    info.push(`<p class='input-item'>设备状态：<span id='phasestageName'></span></p>`);
+    info.push(`<p class='input-item'>信号接入状态：<span>` + '暂不设置' + `</span></p>`);
+    info.push(`<p class='input-item'>发布服务状态：<span>` + '暂不设置' + `</span></p>`);
     info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>路口监视</span></p>`);
     const infoWindow = new AMap.InfoWindow({
       content: info.join("")  //使用默认信息窗体框样式，显示信息内容
@@ -234,7 +234,7 @@ class InterworkingHome extends Component {
     this.infoWindow = infoWindow
     window.infoWindowClose = infoWindow
     map.on('click', (e) => {
-      marker.setContent("<div class='marker-online'></div>");
+      marker.setContent("<div inter-id='"+dataItem.interId+"' class='marker-online'></div>");
       infoWindow.close()
     })
   }
@@ -245,6 +245,7 @@ class InterworkingHome extends Component {
       offlineNum,
       onlineNum,
     })
+    this.updateMapPonitsColor(dcuStateList)
   }
   hanleSelectInter = (e, item) => {
     let marker
@@ -277,6 +278,30 @@ class InterworkingHome extends Component {
       message.info('该路口尚未接入')
     }
   }
+  updateMapPonitsColor = (data) => {
+    for (let i = 0; i < $('div[inter-id]').length; i++) {
+      const timeDiv = $($('div[inter-id]')[i])
+      data.map((item) => {
+        if (item.interId === timeDiv.attr('inter-id') && !!item.state) {
+          timeDiv.removeClass('marker-offline')
+        } else {
+          timeDiv.addClass('marker-offline')
+        }
+      })
+    }
+  }
+  handlePopData(data) {
+    // debugger
+    const { isOnline } = JSON.parse(data);
+    // console.log(result,this,'socket POP数据')
+    isOnline === '1' ? $('#phasestageName').text('正常在线') : $('#phasestageName').text('离线状态')
+    // $('#schemeName').text(result.schemeName)
+    // $('#nodeModelName').text(result.nodeModelName)
+    // result !== -1 ? $('#phasestageImage').prop('src', `${this.phaseBgUrl}${result.phasestageImage}`).attr('style', 'width:30px;height:30px;margin-left:8px;') : null
+    this.setState({
+      roadUnitId: false,
+    })
+  }
   searchBtnSelect = (event) => {
     this.searchBtn = event.target
     this.handleSearchInterFocus()
@@ -298,7 +323,7 @@ class InterworkingHome extends Component {
   render() {
     const { Search } = Input
     const { Option } = Select
-    const { isInterworkingList, offlineNum, onlineNum, searchInterList, interListHeight } = this.state
+    const { isInterworkingList, offlineNum, onlineNum, searchInterList, interListHeight, roadUnitId, roadInterId, roadNodeNo } = this.state
     return (
       <div className={styles.InterworkingHomeBox}>
         <Websocket
@@ -306,6 +331,7 @@ class InterworkingHome extends Component {
           onMessage={this.handleData.bind(this)}
         // onClose={() => this.handleClose()}
         />
+        {!!roadUnitId && !!roadInterId && !!roadNodeNo && <Websocket url={`ws://192.168.1.213:20203/DCU/websocket/dcuRunState/${roadUnitId}/${roadInterId}/${roadNodeNo}`} onMessage={this.handlePopData.bind(this)} />}
         <Header {...this.props} />
         <div className={styles.Interwork_left}>
           <div className={styles.searchBox}>

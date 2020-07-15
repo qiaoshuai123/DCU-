@@ -105,7 +105,7 @@ $bor_color: #27343b;
     top: 70px;
     z-index: 9;
     cursor: pointer;
-    background:url(../../../images/icon_turn.png) no-repeat;
+    background: url(../../../images/icon_turn.png) no-repeat;
     background-size: contain;
   }
   .promptBox {
@@ -130,9 +130,29 @@ $bor_color: #27343b;
         background: url("./img/04.png") no-repeat;
         background-size: contain;
       }
-      .spanBom {
-        background: url("./img/05.png") no-repeat;
-        background-size: contain;
+      &:nth-child(2) {
+        span {
+          background: url("./img/06.png") no-repeat;
+          background-size: contain;
+        }
+      }
+      &:nth-child(3) {
+        span {
+          background: url("./img/01.png") no-repeat;
+          background-size: contain;
+        }
+      }
+      &:nth-child(4) {
+        span {
+          background: url("./img/02.png") no-repeat;
+          background-size: contain;
+        }
+      }
+      &:nth-child(5) {
+        span {
+          background: url("./img/05.png") no-repeat;
+          background-size: contain;
+        }
       }
     }
   }
@@ -158,7 +178,7 @@ $bor_color: #27343b;
   }
 }
 
-.SignalStatus{
+.SignalStatus {
   :global(.amap-info-contentContainer) {
     width: 410px;
     height: 350px;
@@ -268,6 +288,15 @@ $bor_color: #27343b;
     height: 32px;
     display: block;
     background: url(../../../images/markerGreen.png) no-repeat;
+  }
+  :global(.marker-offline) {
+    background: url(../../../images/markerRed.png) no-repeat;
+  }
+  :global(.marker-offline) {
+    background: url(../../../images/markerRed.png) no-repeat;
+  }
+  :global(.marker-offline) {
+    background: url(../../../images/markerRed.png) no-repeat;
   }
   :global(.marker-offline) {
     background: url(../../../images/markerRed.png) no-repeat;

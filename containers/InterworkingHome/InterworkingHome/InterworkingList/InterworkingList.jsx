@@ -3,7 +3,7 @@ import { Input, Pagination, Select } from 'antd'
 import Websocket from 'react-websocket'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { dcuLists, dcuListByPages, systemCodeListByCodeType, unitInfoList } from '../../../../reactRedux/actions/equipmentManagement'
+import { dcuListByPages, systemCodeListByCodeType, unitInfoList } from '../../../../reactRedux/actions/equipmentManagement'
 import styles from './InterworkingList.scss'
 
 class InterworkingList extends Component {
@@ -25,15 +25,12 @@ class InterworkingList extends Component {
     }
   }
   componentDidMount = () => {
-    this.props.dcuLists()
+    this.props.dcuListByPages(`pageNo=${1}`)
     this.props.systemCodeListByCodeType(1)
     this.props.unitInfoList()
   }
   componentDidUpdate = (prevState) => {
-    const { dcuList, dcuListByPage, systemCodeListByCodeTypes, unitInfoLists } = this.props.data
-    if (prevState.data.dcuList !== dcuList) {
-      this.getdcuList(dcuList)
-    }
+    const { dcuListByPage, systemCodeListByCodeTypes, unitInfoLists } = this.props.data
     if (prevState.data.dcuListByPage !== dcuListByPage) {
       this.getdcuListByPage(dcuListByPage)
     }
@@ -57,17 +54,11 @@ class InterworkingList extends Component {
       optionSelect: systemCodeListByCodeTypes,
     })
   }
-  getdcuList = (dcuList) => {
-    this.setState({
-      systemList: dcuList,
-      currnum: dcuList.length,
-    })
-  }
   getdcuListByPage = (dcuListByPage) => {
-    // console.log(dcuListByPage, 'fenye')
+    console.log(dcuListByPage, 'fenye')
     this.setState({
-      currnum: dcuListByPage.pageSize,
-      current: dcuListByPage.pages,
+      currnum: dcuListByPage.total,
+      current: dcuListByPage.pageNum,
       systemList: dcuListByPage.data,
     })
   }
@@ -103,7 +94,6 @@ class InterworkingList extends Component {
     this.props.dcuListByPages(objs)
   }
   handleData = (e) => {
-    console.log(JSON.parse(e))
     const { dcuStateList } = JSON.parse(e)
     this.setState(
       {
@@ -214,7 +204,7 @@ class InterworkingList extends Component {
           </div>
           <div className={styles.paginations}>
             {
-              currnum && <Pagination showQuickJumper onChange={this.pageChange} defaultCurrent={current} total={currnum} />
+              currnum && <Pagination showQuickJumper onChange={this.pageChange} pageSize={10} defaultCurrent={current} total={currnum} />
             }
           </div>
         </div>
@@ -229,7 +219,6 @@ const mapStateToProps = (state) => {
 }
 const mapDisPatchToProps = (dispatch) => {
   return {
-    dcuLists: bindActionCreators(dcuLists, dispatch),
     dcuListByPages: bindActionCreators(dcuListByPages, dispatch),
     systemCodeListByCodeType: bindActionCreators(systemCodeListByCodeType, dispatch),
     unitInfoList: bindActionCreators(unitInfoList, dispatch),

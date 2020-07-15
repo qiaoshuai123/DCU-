@@ -37,6 +37,8 @@ const equipmentManagement = (state = {}, action) => {
       return Object.assign({}, state, { detectorRealTimeListByPages: payload })
     case types.GET_DET_DETECTORDATALISTBYPAGE:
       return Object.assign({}, state, { detectorDataListByPages: payload })
+    case types.GET_DET_DETECTORTYPENAMEBYINTERID:
+      return Object.assign({}, state, { detectorTypeNameByInterIds: payload })
     default:
       return state
   }

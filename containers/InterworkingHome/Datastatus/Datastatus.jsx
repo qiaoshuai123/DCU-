@@ -3,8 +3,8 @@ import { Input, message, Icon } from 'antd'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import Websocket from 'react-websocket'
-import { getMapUnitInfoList, getUnitPop } from '../../../reactRedux/actions/publicActions'
-import { unitInfoList } from '../../../reactRedux/actions/equipmentManagement'
+import { getMapUnitInfoList } from '../../../reactRedux/actions/publicActions'
+import { unitInfoList, detectorTypeNameByInterId } from '../../../reactRedux/actions/equipmentManagement'
 import Header from '../../..//components/Header/Header'
 import CustomTree from '../../../components/CustomTree/CustomTree'
 import InterworkingList from './InterworkingList/InterworkingList'
@@ -79,7 +79,7 @@ class Datastatus extends Component {
               roadInterId: item.interId,
               roadNodeNo: item.nodeId,
             })
-            const resultP = Promise.resolve(_this.props.getUnitPop(item.interId))
+            const resultP = Promise.resolve(_this.props.detectorTypeNameByInterId(item.interId))
             resultP.then(() => {
               _this.openInfoWin(_this.map, item, marker, item.interName)
             })
@@ -175,7 +175,7 @@ class Datastatus extends Component {
         const marker = new AMap.Marker({
           position: new AMap.LngLat(positions[i].lng, positions[i].lat),
           offset: new AMap.Pixel(-16, -16),
-          content: "<div id='roadKey" + positions[i].id + "' class='marker-online'></div>",
+          content: "<div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
         })
         // marker.id =
         marker.on('click', () => {
@@ -190,7 +190,7 @@ class Datastatus extends Component {
             roadInterId: positions[i].interId,
             roadNodeNo: positions[i].nodeId,
           }, () => {
-            const resultP = Promise.resolve(this.props.getUnitPop(positions[i].interId))
+            const resultP = Promise.resolve(this.props.detectorTypeNameByInterId(positions[i].interId))
             resultP.then(() => {
               this.openInfoWin(map, positions[i], marker, positions[i].interName)
             })
@@ -204,21 +204,15 @@ class Datastatus extends Component {
   }
   //在指定位置打开信息窗体
   openInfoWin = (map, dataItem, marker, name) => {
-    console.log(dataItem, 'qiaoshuaisss')
     var info = [];
-    let itemData = JSON.parse(JSON.stringify(this.props.data.dcuPopData))
+    let itemData = JSON.parse(JSON.stringify(this.props.data.detectorTypeNameByInterIds))
     // this.dataItem = JSON.parse(JSON.stringify(dataItem))
     info.push(`<div class='content_box'>`);
     info.push(`<div class='content_box_title'><h4>点位详情</h4>`);
     info.push(`<p class='input-item' style='border-top: 1px #838a9a solid;margin-top:-10px;padding-top:15px;'>点位名称：<span>` + name + `</span></p>`);
-    info.push(`<p class='input-item'>设备编号：<span>` + itemData.deviceId + `</span></p>`);
-    info.push(`<p class='input-item'>设备型号：<span>` + itemData.brand + `</span></p>`);
-    info.push(`<p class='input-item'>设备IP：<span>` + itemData.ip + `</span></p>`);
-    info.push(`<p class='input-item'>生产厂商：<span>` + itemData.deviceVersion + `</span></p>`);
-    info.push(`<p class='input-item'>维护电话：<span>` + itemData.maintainPhone + `</span></p>`);
-    info.push(`<p class='input-item'>设备状态：<span>` + '01086861234' + `</span></p>`);
-    info.push(`<p class='input-item'>信号接入状态：<span>` + '01086861234' + `</span></p>`);
-    info.push(`<p class='input-item'>发布服务状态：<span>` + '01086861234' + `</span></p>`);
+    info.push(`<p class='input-item'>数据来源：<span>` + itemData + `</span></p>`);
+    info.push(`<p class='input-item'>数据接入状态：<span>` + '暂无' + `</span></p>`);
+    info.push(`<p class='input-item'>数据输出状态：<span>` + '暂无' + `</span></p>`);
     info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>参数配置</span></p>`);
     const infoWindow = new AMap.InfoWindow({
       content: info.join("")  //使用默认信息窗体框样式，显示信息内容
@@ -227,7 +221,7 @@ class Datastatus extends Component {
     this.infoWindow = infoWindow
     window.infoWindowClose = infoWindow
     map.on('click', (e) => {
-      marker.setContent("<div class='marker-online'></div>");
+      marker.setContent("<div inter-id='"+dataItem.interId+"' class='marker-online'></div>");
       infoWindow.close()
     })
   }
@@ -245,7 +239,7 @@ class Datastatus extends Component {
         roadInterId: item.interId,
         roadNodeNo: item.nodeId,
       })
-      const resultP = Promise.resolve(_this.props.getUnitPop(item.id))
+      const resultP = Promise.resolve(_this.props.detectorTypeNameByInterId(item.id))
       resultP.then(() => {
         _this.openInfoWin(_this.map, item, marker, item.interName)
       })
@@ -281,12 +275,29 @@ class Datastatus extends Component {
     })
   }
   handleData = (e) => {
-    console.log(JSON.parse(e), 'ss')
-    const { normal, notNormal } = JSON.parse(e)
+    const { normal, notNormal, stateList } = JSON.parse(e)
     this.setState({
       normal,
       notNormal,
     })
+    this.updateMapPonitsColor(stateList)
+  }
+  updateMapPonitsColor = (data) => {
+    for (let i = 0; i < $('div[inter-id]').length; i++) {
+      const timeDiv = $($('div[inter-id]')[i])
+      data.map((item) => {
+        if (item.interId === timeDiv.attr('inter-id') && !!item.state) {
+          console.log(item.isNormal, 'vvcc')
+          if (item.isNormal === '1') {
+            timeDiv.removeClass('marker-offline')
+          } else {
+            timeDiv.addClass('marker-offline')
+          }
+        } else {
+          timeDiv.addClass('marker-offline')
+        }
+      })
+    }
   }
   render() {
     const { isInterworkingList, searchInterList, interListHeight, normal, notNormal } = this.state
@@ -363,7 +374,7 @@ const mapStateToProps = (state) => {
 const mapDisPatchToProps = (dispatch) => {
   return {
     getMapUnitInfoList: bindActionCreators(getMapUnitInfoList, dispatch),
-    getUnitPop: bindActionCreators(getUnitPop, dispatch),
+    detectorTypeNameByInterId: bindActionCreators(detectorTypeNameByInterId, dispatch),
     unitInfoList: bindActionCreators(unitInfoList, dispatch),
   }
 }

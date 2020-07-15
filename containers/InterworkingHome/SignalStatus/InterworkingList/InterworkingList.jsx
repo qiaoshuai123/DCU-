@@ -3,7 +3,7 @@ import { Input, Pagination, Select } from 'antd'
 import Websocket from 'react-websocket'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { signalList, systemCodeListByCodeType, unitInfoList, signalListByPage } from '../../../../reactRedux/actions/equipmentManagement'
+import { systemCodeListByCodeType, unitInfoList, signalListByPage } from '../../../../reactRedux/actions/equipmentManagement'
 import styles from './InterworkingList.scss'
 
 class InterworkingList extends Component {
@@ -25,15 +25,12 @@ class InterworkingList extends Component {
     }
   }
   componentDidMount = () => {
-    this.props.signalList()
+    this.props.signalListByPage(`pageNo=1`)
     this.props.systemCodeListByCodeType(1)
     this.props.unitInfoList()
   }
   componentDidUpdate = (prevState) => {
-    const { signalLists, systemCodeListByCodeTypes, unitInfoLists, signalListByPages } = this.props.data
-    if (prevState.data.signalLists !== signalLists) {
-      this.getsignalLists(signalLists)
-    }
+    const { systemCodeListByCodeTypes, unitInfoLists, signalListByPages } = this.props.data
     if (prevState.data.systemCodeListByCodeTypes !== systemCodeListByCodeTypes) {
       this.getsystemCodeListByCodeTypes(systemCodeListByCodeTypes)
     }
@@ -45,10 +42,9 @@ class InterworkingList extends Component {
     }
   }
   getsignalListByPages = (signalListByPages) => {
-    console.log(signalListByPages, 'vvvss')
     this.setState({
-      currnum: signalListByPages.pageSize,
-      current: signalListByPages.pages,
+      currnum: signalListByPages.total,
+      current: signalListByPages.pageNum,
       systemList: signalListByPages.data,
     })
   }
@@ -60,12 +56,6 @@ class InterworkingList extends Component {
   getsystemCodeListByCodeTypes = (systemCodeListByCodeTypes) => {
     this.setState({
       optionSelect: systemCodeListByCodeTypes,
-    })
-  }
-  getsignalLists = (signalLists) => {
-    this.setState({
-      systemList: signalLists,
-      currnum: signalLists.length,
     })
   }
   getresetPwd = (dataItem) => {
@@ -210,7 +200,7 @@ class InterworkingList extends Component {
           </div>
           <div className={styles.paginations}>
             {
-              currnum && <Pagination showQuickJumper onChange={this.pageChange} defaultCurrent={current} total={currnum} />
+              currnum && <Pagination showQuickJumper onChange={this.pageChange} pageSize={10} current={current} total={currnum} />
             }
           </div>
         </div>
@@ -226,7 +216,6 @@ const mapStateToProps = (state) => {
 }
 const mapDisPatchToProps = (dispatch) => {
   return {
-    signalList: bindActionCreators(signalList, dispatch),
     systemCodeListByCodeType: bindActionCreators(systemCodeListByCodeType, dispatch),
     unitInfoList: bindActionCreators(unitInfoList, dispatch),
     signalListByPage: bindActionCreators(signalListByPage, dispatch),

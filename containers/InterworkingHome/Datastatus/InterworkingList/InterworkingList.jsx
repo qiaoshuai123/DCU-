@@ -47,9 +47,11 @@ class InterworkingList extends Component {
     })
   }
   getdetectorRealTimeListByPages = (detectorRealTimeListByPages) => {
-    const { pageSize, data } = detectorRealTimeListByPages
+    console.log(detectorRealTimeListByPages, 'scsc')
+    const { total, data, pageNum } = detectorRealTimeListByPages
     this.setState({
-      currnum: pageSize,
+      currnum: total,
+      current: pageNum,
       systemList: data,
     })
   }
@@ -96,6 +98,7 @@ class InterworkingList extends Component {
       stylesList: stateList,
     })
   }
+
   render() {
     const { systemList, current, currnum, namesList, optionSelect, stylesList } = this.state
     const { Option } = Select
@@ -201,7 +204,7 @@ class InterworkingList extends Component {
             }
           </div>
           <div className={styles.paginations}>
-            {currnum && <Pagination showQuickJumper onChange={this.pageChange} defaultCurrent={current} total={currnum} />}
+            {currnum && <Pagination showQuickJumper onChange={this.pageChange} pageSize={10} current={current} total={currnum} />}
           </div>
         </div>
       </div>

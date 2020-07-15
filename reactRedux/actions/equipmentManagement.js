@@ -32,6 +32,7 @@ import {
   API_DCU_DETECTORREALTIMELISTBYPAGE,
   API_DET_DETECTORDATALISTBYPAGE,
   API_DET_EXPORTDETECTORDATALIST,
+  API_DET_DETECTORTYPENAMEBYINTERID,
 } from '../actionTypes/actionAPIs'
 
 // 更改点位信息名称
@@ -385,5 +386,20 @@ export const exportDetectorDataList = (params) => {
   return async () => {
     const result = await RestUtil.get(`${API_DET_EXPORTDETECTORDATALIST}?${params}`)
     return result
+  }
+}
+// 根据路口编号查询数据来源
+export const detectorTypeNameByInterId = (params) => {
+  return async (dispatch) => {
+    try {
+      const result = await RestUtil.get(`${API_DET_DETECTORTYPENAMEBYINTERID}?interId=${params}`)
+      if (result.data.code === 0) {
+        dispatch({ type: types.GET_DET_DETECTORTYPENAMEBYINTERID, payload: result.data.data })
+      } else {
+        console.error(result.data.message)
+      }
+    } catch (e) {
+      console.log(e)
+    }
   }
 }

@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Input, message, Modal } from 'antd'
+import Websocket from 'react-websocket'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { getMapUnitInfoList, getUnitTree, getUnitPop } from '../../../reactRedux/actions/publicActions'
@@ -194,7 +195,7 @@ class EquipmentManagement extends Component {
         const marker = new AMap.Marker({
           position: new AMap.LngLat(positions[i].lng, positions[i].lat),
           offset: new AMap.Pixel(-16, -16),
-          content: "<div id='roadKey" + positions[i].id + "' class='marker-online'></div>",
+          content: "<div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
         })
         // marker.id =
         marker.on('click', () => {
@@ -242,7 +243,7 @@ class EquipmentManagement extends Component {
     this.infoWindow = infoWindow
     window.infoWindowClose = infoWindow
     map.on('click', (e) => {
-      marker.setContent("<div class='marker-online'></div>");
+      marker.setContent("<div inter-id='"+dataItem.interId+"' class='marker-online'></div>");
       infoWindow.close()
     })
   }
@@ -302,11 +303,33 @@ class EquipmentManagement extends Component {
       isMessagePage: false,
     })
   }
+  handleData = (e) => {
+    const { dcuStateList } = JSON.parse(e)
+    // this.drawMarkers(this.state.mapPointsData, 'pointLayers', dcuStateList)
+    this.updateMapPonitsColor(dcuStateList)
+  }
+  updateMapPonitsColor = (data) => {
+    for (let i = 0; i < $('div[inter-id]').length; i++) {
+      const timeDiv = $($('div[inter-id]')[i])
+      data.map((item) => {
+        if (item.interId === timeDiv.attr('inter-id') && !!item.state) {
+          timeDiv.removeClass('marker-offline')
+        } else {
+          timeDiv.addClass('marker-offline')
+        }
+      })
+    }
+  }
   render() {
     const { Search } = Input
     const { isAddPoint, isMessagePage, lng, lat, visible, visibleTop } = this.state
     return (
       <div className={styles.EquipmentManagementBox}>
+        <Websocket
+          url="ws://192.168.1.213:20203/DCU/websocket/dcuState/0/0/0"
+          onMessage={this.handleData.bind(this)}
+        // onClose={() => this.handleClose()}
+        />
         <Header {...this.props} />
         <div onClick={this.btnClick} className={styles.Interwork_left}>
           <div className={styles.InterworkLeft_search}>

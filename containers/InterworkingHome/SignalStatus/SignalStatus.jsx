@@ -21,6 +21,7 @@ class SignalStatus extends Component {
       searchInterList: [],
     }
     this.searchInterList = []
+    this.phaseBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/phasestage/'
   }
   componentDidMount = () => {
     this.loadingMap()
@@ -173,12 +174,13 @@ class SignalStatus extends Component {
     }
     if (map) {
       for (let i = 0; i < positions.length; i++) {
+        console.log(positions[i], 'sssvv')
         // const latlng = positions[i]
         // const latlng = positions[i].latlng
         const marker = new AMap.Marker({
           position: new AMap.LngLat(positions[i].lng, positions[i].lat),
           offset: new AMap.Pixel(-16, -16),
-          content: "<div id='roadKey" + positions[i].id + "' class='marker-online'></div>",
+          content: "<div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
         })
         // marker.id =
         marker.on('click', () => {
@@ -214,14 +216,13 @@ class SignalStatus extends Component {
     info.push(`<div class='content_box'>`);
     info.push(`<div class='content_box_title'><h4>点位详情</h4>`);
     info.push(`<p class='input-item' style='border-top: 1px #838a9a solid;margin-top:-10px;padding-top:15px;'>点位名称：<span>` + name + `</span></p>`);
-    info.push(`<p class='input-item'>设备编号：<span>` + itemData.deviceId + `</span></p>`);
-    info.push(`<p class='input-item'>设备型号：<span>` + itemData.brand + `</span></p>`);
+    info.push(`<p class='input-item'>信号机编号：<span>` + itemData.deviceId + `</span></p>`);
+    info.push(`<p class='input-item'>信号机品牌：<span>` + itemData.brand + `</span></p>`);
     info.push(`<p class='input-item'>设备IP：<span>` + itemData.ip + `</span></p>`);
-    info.push(`<p class='input-item'>生产厂商：<span>` + itemData.deviceVersion + `</span></p>`);
     info.push(`<p class='input-item'>维护电话：<span>` + itemData.maintainPhone + `</span></p>`);
-    info.push(`<p class='input-item'>设备状态：<span>` + '01086861234' + `</span></p>`);
-    info.push(`<p class='input-item'>信号接入状态：<span>` + '01086861234' + `</span></p>`);
-    info.push(`<p class='input-item'>发布服务状态：<span>` + '01086861234' + `</span></p>`);
+    info.push(`<p class='input-item'>信号运行阶段：<span class='greenFont'><span id='phasestageName'>暂无</span><img id='phasestageImage' style='display:none' src='' /></span></p>`);
+    info.push(`<p class='input-item'>信号运行方案：<span class='greenFont' id='schemeName'>暂无</span></p>`);
+    info.push(`<p class='input-item'>信号控制方式：<span class='greenFont' id='nodeModelName'>暂无</span></p>`);
     info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>路口监视</span></p>`);
     const infoWindow = new AMap.InfoWindow({
       content: info.join("")  //使用默认信息窗体框样式，显示信息内容
@@ -230,16 +231,52 @@ class SignalStatus extends Component {
     this.infoWindow = infoWindow
     window.infoWindowClose = infoWindow
     map.on('click', (e) => {
-      marker.setContent("<div class='marker-online'></div>");
+      marker.setContent("<div inter-id='"+dataItem.interId+"' class='marker-online'></div>");
       infoWindow.close()
     })
   }
   handleData = (e) => {
+    const { signalStateList } = JSON.parse(e)
     this.setState(
       {
         statisticsMap: JSON.parse(e),
       }
     )
+    this.updateMapPonitsColor(signalStateList)
+  }
+  updateMapPonitsColor = (data) => {
+    for (let i = 0; i < $('div[inter-id]').length; i++) {
+      const timeDiv = $($('div[inter-id]')[i])
+      data.map((item) => {
+        if (item.interId === timeDiv.attr('inter-id') && !!item.state) {
+          if (item.nodeModelType === 'special') {
+            timeDiv.removeClass('marker-offline')
+            timeDiv.addClass('marker-offline')
+          } else if (item.nodeModelType === 'manual') {
+            timeDiv.removeClass('marker-offline')
+            timeDiv.addClass('marker-offline')
+          } else if (item.nodeModelType === 'local') {
+            timeDiv.removeClass('marker-offline')
+            timeDiv.addClass('marker-offline')
+          } else if (item.nodeModelType === 'optimize') {
+            timeDiv.removeClass('marker-offline')
+            timeDiv.addClass('marker-offline')
+          }
+        } else {
+          timeDiv.addClass('marker-offline')
+        }
+      })
+    }
+  }
+  handlePopData = (data) => {
+    let result = JSON.parse(data);
+    $('#phasestageName').text(`${result.phasestageName}`).attr("tag-src", `${this.phaseBgUrl}${result.phasestageImage}`)
+    $('#schemeName').text(`${result.schemeName || '暂无'}`)
+    $('#nodeModelName').text(`${result.nodeModelName || '暂无'}`)
+    result !== -1 ? $('#phasestageImage').prop('src', `${this.phaseBgUrl}${result.phasestageImage}`).attr('style', 'width:30px;height:30px;margin-left:8px;') : null
+    this.setState({
+      roadUnitId: false,
+    })
   }
   hanleSelectInter = (e, item) => {
     let marker
@@ -292,7 +329,7 @@ class SignalStatus extends Component {
   }
   render() {
     const { Search } = Input
-    const { isInterworkingList, statisticsMap, searchInterList, interListHeight } = this.state
+    const { isInterworkingList, statisticsMap, searchInterList, interListHeight, roadUnitId, roadInterId, roadNodeNo } = this.state
     return (
       <div className={styles.SignalStatus}>
         <Websocket
@@ -300,6 +337,7 @@ class SignalStatus extends Component {
           onMessage={this.handleData.bind(this)}
         // onClose={() => this.handleClose()}
         />
+        {!!roadUnitId && !!roadInterId && !!roadNodeNo && <Websocket url={`ws://192.168.1.213:20203/DCU/websocket/interRunState/${roadUnitId}/${roadInterId}/${roadNodeNo}`} onMessage={this.handlePopData.bind(this)} />}
         <Header {...this.props} />
         <div className={styles.Interwork_left}>
           <div className={styles.searchBox}>

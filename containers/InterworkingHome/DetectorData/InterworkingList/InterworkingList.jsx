@@ -49,9 +49,11 @@ class InterworkingList extends Component {
     })
   }
   getdetectorDataListByPages = (detectorDataListByPages) => {
-    const { pageSize, data } = detectorDataListByPages
+    console.log(detectorDataListByPages, 'sfsfs')
+    const { pageNum, data, total } = detectorDataListByPages
     this.setState({
-      currnum: pageSize,
+      currnum: total,
+      current: pageNum,
       systemList: data,
     })
   }
@@ -72,7 +74,7 @@ class InterworkingList extends Component {
   exportTable = () => {
     const { keyword, startDate, endDate, pageNo, names } = this.objs
     const objs = `endTime=${endDate}&keyword=${keyword}&startTime=${startDate}&unitId=${names}`
-    this.props.exportDetectorDataList(objs).then(res=>{
+    this.props.exportDetectorDataList(objs).then(res => {
       this.getTimingInfoByExcels(res.data)
     })
   }
@@ -189,7 +191,7 @@ class InterworkingList extends Component {
             }
           </div>
           <div className={styles.paginations}>
-            {currnum && <Pagination showQuickJumper onChange={this.pageChange} defaultCurrent={current} total={currnum} />}
+            {currnum && <Pagination showQuickJumper onChange={this.pageChange} pageSize={10} current={current} total={currnum} />}
           </div>
         </div>
       </div>
