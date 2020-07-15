@@ -24,6 +24,7 @@ class JurManagement extends Component {
       treeData: null,
       userLimit: null,
       current: 1,
+      isCheckStrictly: true,
     }
     this.deptListUrl = '/DCU/sys/role/listPage'
     this.addListUrl = '/DCU/sys/role/save'
@@ -77,11 +78,46 @@ class JurManagement extends Component {
       autoExpandParent: false,
     })
   }
-
+  //
+  getChildKeys = (children) => {
+    children.forEach((item) => {
+      this.defaultparams.menuIds += ',' + item.key
+      if (item.props.children.length > 0) {
+        this.getChildKeys(item.props.children)
+      }
+    })
+  }
+  removeChildKeys = (children) => {
+    children.forEach((item) => {
+      const idIndex = this.currentMenuIds.indexOf(item.key)
+      this.currentMenuIds.splice(idIndex, 1)
+      if (item.props.children.length > 0) {
+        this.getChildKeys(item.props.children)
+      }
+    })
+  }
   onCheck = (checkedKeys, e) => {
     console.log('onCheck', checkedKeys, e)
-    this.defaultparams.menuIds = checkedKeys
-    this.setState({ checkedKeys })
+    const { children, eventKey } = e.node.props
+    if (children.length > 0) {
+      if (e.checked) {
+        this.defaultparams.menuIds += ',' + eventKey
+        this.getChildKeys(children)
+        const allCheckedKeys = Array.from(new Set(this.defaultparams.menuIds.split(',')))
+        this.defaultparams.menuIds = allCheckedKeys.join(',')
+        this.setState({ checkedKeys: allCheckedKeys })
+      } else {
+        this.currentMenuIds = this.defaultparams.menuIds.split(',')
+        const idIndex = this.currentMenuIds.indexOf(eventKey)
+        this.currentMenuIds.splice(idIndex, 1)
+        this.removeChildKeys(children)
+        this.setState({ checkedKeys: this.currentMenuIds })
+        this.defaultparams.menuIds = this.currentMenuIds.join(',')
+      }
+    } else {
+      this.defaultparams.menuIds = checkedKeys.checked.join(',')
+      this.setState({ checkedKeys: checkedKeys.checked })
+    }
   }
 
   onSelect = (selectedKeys, info) => {
@@ -261,7 +297,7 @@ class JurManagement extends Component {
     this.listParams.keyword = value
   }
   render() {
-    const { listDatas, showGroupMsg, treeData, listItems, totalCount, userLimit, current } = this.state
+    const { listDatas, showGroupMsg, treeData, listItems, totalCount, userLimit, current, isCheckStrictly } = this.state
     return (
       <div className={(roadStyles.Roadtcontent)}>
         <Header {...this.props} />
@@ -366,6 +402,7 @@ class JurManagement extends Component {
                         // selectedKeys={this.state.selectedKeys}
                         // defaultExpandAll="true"
                         checkable
+                        checkStrictly={isCheckStrictly}
                         onExpand={this.onExpand}
                         expandedKeys={this.state.expandedKeys}
                         autoExpandParent={this.state.autoExpandParent}

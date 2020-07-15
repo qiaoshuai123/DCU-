@@ -239,10 +239,14 @@ class Header extends React.Component {
     }
   }
   SelectButton = (navItem) => {
-    if (navItem.path && !navItem.child && this.state.userLimit.indexOf(navItem.limitId) >= 0) {
-      this.props.history.push(navItem.path)
-    } else if (!navItem.path) {
-      this.setState({ showSysMsg: true })
+    if (this.state.userLimit.indexOf(navItem.limitId) < 0) {
+      message.warning('暂无此权限')
+    } else {
+      if (navItem.path && !navItem.child) {
+        this.props.history.push(navItem.path)
+      } else if (!navItem.path) {
+        this.setState({ showSysMsg: true })
+      }
     }
   }
   SelectButtonChild = (e, item) => {
