@@ -134,6 +134,26 @@ class SignalManagement extends PureComponent {
       loadFlag: null,
       editFlag: null,
       userLimit: null, // 权限标识
+      oneFlag: null,
+      oneText: '传输中~~~',
+      twoFlag: null,
+      twoText: '等待中...',
+      threeFlag: null,
+      threeText: '等待中...',
+      fourFlag: null,
+      fourText: '等待中...',
+      fiveFlag: null,
+      fiveText: '等待中...',
+      sixFlag: null,
+      sixText: '等待中...',
+      sevenFlag: null,
+      sevenText: '等待中...',
+      eightFlag: null,
+      eightText: '等待中...',
+      nineFlag: null,
+      nineText: '等待中...',
+      tenFlag: null,
+      nowText: '基础信息配置',
     }
     this.map = null
     this.moveFlag = false // 是否是移动状态
@@ -723,7 +743,13 @@ class SignalManagement extends PureComponent {
   // 显示隐藏弹层
   popLayerShowHide = (name, flag, eventType, stepType) => {
     if (name === 'dayPlanClickInfo' && this.state.dispatchClickInfo ) this.getListDayData(this.state.dispatchClickInfo[0])
-    if (name === 'loadFlag') this.setState({ loadFlag: flag, editFlag: flag })
+    if (name === 'loadFlag' && this.state.loadFlag) {
+      this.setState({ loadFlag: flag, editFlag: flag }, () => {
+        this.showHidePop('stepTwoFlag', true)
+      })
+    } else {
+      this.setState({ loadFlag: flag, editFlag: flag })
+    }
     this.setState({
       [name]: flag,
       popAddEditText: eventType ? '编辑' : '添加',
@@ -1505,18 +1531,144 @@ btnSelectOver = (flag, defaultSelectLists) => {
       })
     }
   }
+  returnStep = (result) => {
+    switch(result.step){
+      case 1:
+        this.setState({
+          oneFlag: Boolean(result.code),
+          oneText: result.msg,
+          twoText: '传输中~~~',
+          nowText: '车道配置',
+        })
+        break;
+      case 2:
+        this.setState({
+          twoFlag: Boolean(result.code),
+          twoText: result.msg,
+          threeText: '传输中~~~',
+          nowText: '灯组配置',
+        })
+        break;
+      case 3:
+        this.setState({
+          threeFlag: Boolean(result.code),
+          threeText: result.msg,
+          fourText: '传输中~~~',
+          nowText: '检测器配置',
+        })
+        break;
+      case 4:
+        this.setState({
+          fourFlag: Boolean(result.code),
+          fourText: result.msg,
+          fiveText: '传输中~~~',
+          nowText: '相位配置',
+        })
+        break;
+      case 5:
+        this.setState({
+          fiveFlag: Boolean(result.code),
+          fiveText: result.msg,
+          sixText: '传输中~~~',
+          nowText: '阶段配置',
+        })
+        break;
+      case 6:
+        this.setState({
+          sixFlag: Boolean(result.code),
+          sixText: result.msg,
+          sevenText: '传输中~~~',
+          nowText: '配时方案',
+        })
+        break;
+      case 7:
+        this.setState({
+          sevenFlag: Boolean(result.code),
+          sevenText: result.msg,
+          eightText: '传输中~~~',
+          nowText: '日计划配置',
+        })
+        break;
+      case 8:
+        this.setState({
+          eightFlag: Boolean(result.code),
+          eightText: result.msg,
+          nineText: '传输中~~~',
+          nowText: '调度配置',
+        })
+        break;
+      case 9:
+        this.setState({
+          nineFlag: Boolean(result.code),
+          nineText: result.msg,
+          nowText: '全部内容结束！',
+        })
+        break;
+        case 10:
+          this.setState({
+          tenFlag: Boolean(result.code),
+        })
+        break;
+      }
+  }
   loadDataType = (flag) => {
-    this.setState({ loadFlag: flag })
+    this.setState({ 
+      loadFlag: flag,
+      oneFlag: null,
+      oneText: '传输中~~~',
+      twoFlag: null,
+      twoText: '等待中...',
+      threeFlag: null,
+      threeText: '等待中...',
+      fourFlag: null,
+      fourText: '等待中...',
+      fiveFlag: null,
+      fiveText: '等待中...',
+      sixFlag: null,
+      sixText: '等待中...',
+      sevenFlag: null,
+      sevenText: '等待中...',
+      eightFlag: null,
+      eightText: '等待中...',
+      nineFlag: null,
+      nineText: '等待中...',
+      tenFlag: null,
+      nowText: '基础信息配置',
+     })
   }
   loadData(data) {
     let result = JSON.parse(data);
+    this.returnStep(result)
     console.log(result,'socket 上传数据')
   }
   editDataType = (flag) => {
-    this.setState({ editFlag: flag })
+    this.setState({ 
+      editFlag: flag,
+      oneFlag: null,
+      oneText: '传输中~~~',
+      twoFlag: null,
+      twoText: '等待中...',
+      threeFlag: null,
+      threeText: '等待中...',
+      fourFlag: null,
+      fourText: '等待中...',
+      fiveFlag: null,
+      fiveText: '等待中...',
+      sixFlag: null,
+      sixText: '等待中...',
+      sevenFlag: null,
+      sevenText: '等待中...',
+      eightFlag: null,
+      eightText: '等待中...',
+      nineFlag: null,
+      nineText: '等待中...',
+      tenFlag: null,
+      nowText: '基础信息配置',
+     })
   }
   editData(data) {
     let result = JSON.parse(data);
+    this.returnStep(result)
     console.log(result,'socket 下发数据')
   }
   handleData(data) {
@@ -1557,7 +1709,9 @@ btnSelectOver = (flag, defaultSelectLists) => {
       lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists, showFlag, nowCycleLength, cycleLength,
       lampgroupType, controlDir, controlTurn, detectorType, phaseForbidenData, phaseShieldData, typeData, planStageLists, planChainsLists,
       phaseShowDetail, stageShowDetail, planShowDetail, dayplanShowDetail, dispatchShowDetail, laneSelectLists, lightSelectLists, detectorSelectLists, selectFlag, phaseDefaultSelectLists, laneDefaultSelectLists, lightDefaultSelectLists, detectorDefaultSelectLists,  phaseIconLists, phaseSelectLists, phaseFlag, schemePhasestageTypeData, timeintervalModelChainData,
-      priorityData, monthData, dayData, weekData, dayPlanClickInfo, dispatchClickInfo, popItemFlag, listNames, loadFlag, editFlag, userLimit
+      priorityData, monthData, dayData, weekData, dayPlanClickInfo, dispatchClickInfo, popItemFlag, listNames, loadFlag, editFlag, userLimit,
+      oneFlag, twoFlag, threeFlag, fourFlag, fiveFlag, sixFlag, sevenFlag, eightFlag, nineFlag, tenFlag,
+      oneText, twoText, threeText, fourText, fiveText, sixText, sevenText, eightText, nineText, nowText
     } = this.state
     const { Search } = Input
     return (
@@ -1567,32 +1721,30 @@ btnSelectOver = (flag, defaultSelectLists) => {
           <div className={styles.popBox} style={{width: '600px'}}>
             <div className={styles.popTit}>
             { loadFlag ? '上传配置' : editFlag ? '下发配置' : null }
-              <Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("loadFlag", null)} } />
+            { tenFlag ? <Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("loadFlag", null)} } /> : null }
             </div>
-            { loadFlag ? 
-              <div className={styles.popCon} style={{width: '380px', margin: '0 auto'}}>
-                <div className={styles.loadItemBox}><span>基础信息配置：</span><Icon type="check-circle" /></div>
-                <div className={styles.loadItemBox}><span>车道配置：</span><Icon type="close-circle" /><em>错误信息</em></div>
-                <div className={styles.loadItemBox}><span>灯组配置：</span><Icon type="close-circle" /><em>错误信息</em></div>
-                <div className={styles.loadItemBox}><span>检测器配置：</span><Icon type="close-circle" /><em>错误信息</em></div>
-                <div className={styles.loadItemBox}><span>相位配置：</span><Icon type="close-circle" /><em>错误信息</em></div>
-                <div className={styles.loadItemBox}><span>阶段配置：</span><Icon type="close-circle" /><em>错误信息</em></div>
-                <div className={styles.loadItemBox}><span>配时方案配置：</span><Icon type="close-circle" /><em>错误信息</em></div>
-                <div className={styles.loadItemBox}><span>日计划配置：</span><Icon type="close-circle" /><em>错误信息</em></div>
-                <div className={styles.loadItemBox}><span>调度配置：</span><Icon type="close-circle" /><em>错误信息</em></div>
-                <div className={styles.loadItemBox} style={{padding: '35px 0 15px', justifyContent:'center', color: 'yellowgreen'}}>
-                  <Spin size="large" /> XXX配置上传/下发中...
-                </div>
-              </div> : null
-            }
+            <div className={styles.popCon} style={{width: '380px', margin: '0 auto'}}>
+              <div className={styles.loadItemBox}><span>基础信息配置：</span>{ oneFlag === null ? <Spin size="small" /> : ( oneFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" /> ) }<em>{oneText}</em></div>
+              <div className={styles.loadItemBox}><span>车道配置：</span>{ twoFlag === null ? <Spin size="small" /> : (  twoFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" /> ) }<em>{twoText}</em></div>
+              <div className={styles.loadItemBox}><span>灯组配置：</span>{ threeFlag === null ? <Spin size="small" /> : (  threeFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" /> ) }<em>{threeText}</em></div>
+              <div className={styles.loadItemBox}><span>检测器配置：</span>{ fourFlag === null ? <Spin size="small" /> : (  fourFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" /> ) }<em>{fourText}</em></div>
+              <div className={styles.loadItemBox}><span>相位配置：</span>{ fiveFlag === null ? <Spin size="small" /> : (  fiveFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" /> ) }<em>{fiveText}</em></div>
+              <div className={styles.loadItemBox}><span>阶段配置：</span>{ sixFlag === null ? <Spin size="small" /> : ( sixFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" /> ) }<em>{sixText}</em></div>
+              <div className={styles.loadItemBox}><span>配时方案配置：</span>{ sevenFlag === null ? <Spin size="small" /> : (  sevenFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" /> ) }<em>{sevenText}</em></div>
+              <div className={styles.loadItemBox}><span>日计划配置：</span>{ eightFlag === null ? <Spin size="small" /> : (  eightFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" /> ) }<em>{eightText}</em></div>
+              <div className={styles.loadItemBox}><span>调度配置：</span>{ nineFlag === null ? <Spin size="small" /> : ( nineFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" /> ) }<em>{nineText}</em></div>
+              <div className={styles.loadItemBox} style={{padding: '35px 0 15px', justifyContent:'center'}}>
+                { tenFlag ? null : <Spin size="large" /> }<div style={{marginLeft: '20px'}}>{nowText}{ tenFlag ? null : ( loadFlag ? '上传中...' : editFlag ? '下发中...' : null ) }</div>
+              </div>
+            </div>
             <div className={styles.popBottom} style={{padding: '15px 0'}}>
-              <em onClick={ () => {this.popLayerShowHide("loadFlag", null)} }>关 闭</em>
+              { tenFlag ? <em onClick={ () => {this.popLayerShowHide("loadFlag", null)} }>关 闭</em> : null}
             </div>
           </div>
         </div> : null 
       }
-      {/* { loadFlag ? <Websocket url={`${this.socketLoadDataUrl}${0}/${roadInterId}/${0}`} onMessage={this.loadData.bind(this)} /> : null }
-      { editFlag ? <Websocket url={`${this.socketEditDataUrl}${0}/${roadInterId}/${0}`} onMessage={this.editData.bind(this)} /> : null } */}
+      { loadFlag ? <Websocket url={`${this.socketLoadDataUrl}${0}/${roadInterId}/${0}`} onMessage={this.loadData.bind(this)} /> : null }
+      { editFlag ? <Websocket url={`${this.socketEditDataUrl}${0}/${roadInterId}/${0}`} onMessage={this.editData.bind(this)} /> : null }
       <Websocket url={this.socketPointStatusUrl} onMessage={this.handleData.bind(this)} />
       { !!roadUnitId && !!roadInterId && !!roadNodeNo ? <Websocket url={`${this.socketPointPopUrl}${roadUnitId}/${roadInterId}/${roadNodeNo}`} onMessage={ this.handlePopData.bind(this)} /> : null }
         <Header {...this.props} />
@@ -2877,7 +3029,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
           <input
                 className={styles.searchInput}
                 onClick={this.handleSearchInterFocus}
-                // onChange={this.handleSearchInputChange}
+                onChange={this.handleSearchInputChange}
                 type="text"
                 placeholder="关键词搜索"
                 ref={(input) => { this.searchInputBox = input }}

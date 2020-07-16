@@ -114,6 +114,11 @@ class StageConfigRight extends PureComponent {
           }
         })
       } else {
+        $('div[pic-mark]').map(( i, item ) => {
+          if (item.getAttribute('pic-mark').indexOf('lampgroup') > -1 || item.getAttribute('pic-mark').indexOf('lane') > -1) {
+            $(item).removeClass(styles.imgCurrent)
+          }
+        })
         const leftSelArr = itemData.phasestageLampgroup.split(',')
         leftSelArr.map((items) => {
           $('div[pic-mark]').map(( i, item ) => {
