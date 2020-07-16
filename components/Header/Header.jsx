@@ -251,7 +251,12 @@ class Header extends React.Component {
   }
   SelectButtonChild = (e, item) => {
     e.stopPropagation()
-    this.props.history.push(item.path)
+    // console.log(this.state.userLimit, item.limitId, 'sv')
+    if (this.state.userLimit.indexOf(item.limitId) < 0) {
+      message.warning('暂无此权限')
+    } else {
+      this.props.history.push(item.path)
+    }
   }
   handleHideMsg = () => {
     this.setState({

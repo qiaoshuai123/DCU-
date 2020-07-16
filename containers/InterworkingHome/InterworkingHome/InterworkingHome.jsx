@@ -37,6 +37,7 @@ class InterworkingHome extends Component {
     window.showHidePop = this.showHidePop
     window.setGetParams = this.setGetParams
     this.props.getMapUnitInfoList()
+    this.userLimit = (JSON.parse(localStorage.getItem('userLimit'))).map(item => item.id)
     document.addEventListener('click', (e) => {
       this.visibleShowLeft('', '', false)
     })
@@ -226,7 +227,7 @@ class InterworkingHome extends Component {
     info.push(`<p class='input-item'>设备状态：<span id='phasestageName'></span></p>`);
     info.push(`<p class='input-item'>信号接入状态：<span>` + '暂不设置' + `</span></p>`);
     info.push(`<p class='input-item'>发布服务状态：<span>` + '暂不设置' + `</span></p>`);
-    info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>路口监视</span></p>`);
+    this.userLimit.indexOf(301) !== -1 ? info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>路口监视</span></p>`) : '';
     const infoWindow = new AMap.InfoWindow({
       content: info.join("")  //使用默认信息窗体框样式，显示信息内容
     });
@@ -234,7 +235,7 @@ class InterworkingHome extends Component {
     this.infoWindow = infoWindow
     window.infoWindowClose = infoWindow
     map.on('click', (e) => {
-      marker.setContent("<div inter-id='"+dataItem.interId+"' class='marker-online'></div>");
+      marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online'></div>");
       infoWindow.close()
     })
   }
@@ -346,7 +347,7 @@ class InterworkingHome extends Component {
               style={{ width: '100%' }}
               id="searchBox"
             />
-            {/* <Icon className={styles.searchIcon} type="search" onClick={this.searchBtnSelect} /> */}
+            <Icon className={styles.searchIcon} type="search" onClick={this.searchBtnSelect} />
           </div>
           <div className={styles.interList} style={{ maxHeight: `${interListHeight}px`, overflowY: 'auto' }}>
             <div>

@@ -169,7 +169,9 @@ $bor_color: #27343b;
     line-height: 1.4;
     overflow: auto;
   }
-
+  :global(.amap-overlays) {
+    z-index: 17;
+  }
   :global(.content_box) {
     background: rgba(9, 9, 9, 0.8) !important;
     padding: 0px !important;

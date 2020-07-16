@@ -126,6 +126,7 @@ class SignalManagement extends PureComponent {
       weekData: null, //星期
       monthData: null, //月
       dayData: null, //日
+      Dcu_Io_Ids: null,
       dayPlanClickInfo: null, // 日计划点击后的数据 
       dispatchClickInfo: null, // 调度点击后的数据
       dispatchClickInfoCopy: null, // 调度点击后的数据备份
@@ -284,6 +285,14 @@ class SignalManagement extends PureComponent {
       }
       this.visibleShowLeft('', '', false)
     })
+    // 加载DCU IO接口号
+    const Dcu_Io_Ids = []
+    for( let m = 1; m < 33; m++){
+      const ioId = {
+        dcuIoId: m
+      }
+      Dcu_Io_Ids.push(ioId)
+    }
     // 加载日
     const dayData = [], monthData = [], weekData = []
     for( let num = 0; num < 31; num++){
@@ -332,7 +341,7 @@ class SignalManagement extends PureComponent {
       dayData.push(newObj)
       
     }
-    this.setState({ dayData, monthData, weekData })
+    this.setState({ dayData, monthData, weekData, Dcu_Io_Ids })
     // 初始化地图
     this.loadingMap()
     window.showHidePop = this.showHidePop
@@ -349,6 +358,18 @@ class SignalManagement extends PureComponent {
     this.getSystemCodeType(29) // 相位禁止
     this.getSystemCodeType(32) // 方案相位阶段出现类型
     this.getSystemCodeType(33) // 方案相位阶段出现类型
+  }
+  // 各种ID重复验证
+  verificationID = (resData, id, keyVal, msg) => {
+    debugger
+    for (let i = 0; i < resData.length; i++){
+      if (Number(resData[i][id]) === Number(keyVal)){
+        message.error(msg)
+        $("#"+id).focus()
+        return true
+
+      }
+    }
   }
   // toPlan
   getListData = (data) => {
@@ -743,12 +764,14 @@ class SignalManagement extends PureComponent {
   // 显示隐藏弹层
   popLayerShowHide = (name, flag, eventType, stepType) => {
     if (name === 'dayPlanClickInfo' && this.state.dispatchClickInfo ) this.getListDayData(this.state.dispatchClickInfo[0])
-    if (name === 'loadFlag' && this.state.loadFlag) {
-      this.setState({ loadFlag: flag, editFlag: flag }, () => {
-        this.showHidePop('stepTwoFlag', true)
-      })
-    } else {
-      this.setState({ loadFlag: flag, editFlag: flag })
+    if (name === 'loadFlag') {
+      if (this.state.loadFlag) {
+        this.setState({ loadFlag: flag, editFlag: flag }, () => {
+          this.showHidePop('stepTwoFlag', true)
+        })
+      } else {
+        this.setState({ loadFlag: flag, editFlag: flag })
+      }
     }
     this.setState({
       [name]: flag,
@@ -764,6 +787,9 @@ class SignalManagement extends PureComponent {
             "angle": 0, //角度
             "fDir8No": 0,//方向
             "fRid": '', //道路ID
+            "detectorId": 0, //检测器编号
+            "detectorDeviceId": "", //检测器设备编号
+            "dcuIoId": 0, //DCU IO接口号
             "imageUrl": "", // 图片
             "interId": this.state.roadInterId, //当前路口interId  隐藏项
             "laneId": '',//车道ID
@@ -781,7 +807,7 @@ class SignalManagement extends PureComponent {
             "controlDir": "0",  //方向  字典  9
             "controlTurn": "0", //转向  字典  10
             "imageUrl": "", //图片地址
-            "lampgroupNo": 0, //灯组序号
+            "lampgroupNo": '', //灯组序号
             "lampgroupType": 0, //灯组类型   字典 8 
             "interId": this.state.roadInterId, //当前路口interId  隐藏项
             "nodeNo": this.state.roadNodeNo,//当前路口nodeNo  隐藏项
@@ -793,7 +819,7 @@ class SignalManagement extends PureComponent {
         case "DETECTOR":
           const detectorShowDetail = {
             "interId": this.state.roadInterId, //当前路口interId  隐藏项
-            "detectorId": 1, //检测器序号
+            "detectorId": '', //检测器序号
             "flowCollectionCycle": 300, //流量采集周期 
             "occupancyCollectionCycle": 300, //占有率采集周期
             "detectorType": 0, //检测器类型 字典 12
@@ -815,7 +841,7 @@ class SignalManagement extends PureComponent {
             "phaseMaxgreen2Time": 0, //相位最大绿时间2
             "phaseMingreenTime": 0, //相位最小绿时间
             "phaseName": "", //相位名称
-            "phaseNo": 0, //相位序号手写
+            "phaseNo": '', //相位序号手写
             "phaseShield": 0, //相位屏蔽 0 正常，1 屏蔽输出（强红），
             "rightofwayAccessLamp1Time": 0,
             "rightofwayAccessLamp1Type": "",
@@ -854,7 +880,7 @@ class SignalManagement extends PureComponent {
               "phasestageLampgroup": "",
               "phasestageLane": "",  //相位阶段包含的车道
               "phasestageName": "",  //阶段名称
-              "phasestageNo": 0,  //阶段编号
+              "phasestageNo": '',  //阶段编号
               "phasestagePhase": "", //相位阶段包含的相位
               "phasestageShield": 0,   //相位阶段屏蔽标志
               "schemePhaseTime": "",
@@ -869,7 +895,7 @@ class SignalManagement extends PureComponent {
               "schemeCoordinationNo": 0,  //方案协调序号
               "schemeCycle": 0,   //方案周期
               "schemeName": "",  //方案名称
-              "schemeNo": 0,   //方案号
+              "schemeNo": '',   //方案号
               "schemePhaseDiferenceTime": 0,   //方案相位差时间
               "schemePhasestageChains": "",  //方案相位阶段链
               "schemePhasestageChainsTime": "",  //方案相位阶段链时间
@@ -1042,16 +1068,31 @@ class SignalManagement extends PureComponent {
         this.cyclicComparison(this.state.typeData, 'rightofwayStartingupLoseLamp2Type', itemDetailData.rightofwayStartingupLoseLamp2Type, 'phaseShowDetail', true)
         this.cyclicComparison(this.state.typeData, 'rightofwayStartingupLoseLamp3Type', itemDetailData.rightofwayStartingupLoseLamp3Type, 'phaseShowDetail', true)
         itemDetailData = JSON.parse(JSON.stringify(this.state.phaseShowDetail))
+        if ( itemDetailData.phaseNo === '' ) {
+          message.info('相位序号不能为空！');
+          return
+        }
+        if ( this.verificationID(this.props.data.phaseLists, 'phaseNo', itemDetailData.phaseNo, '相位序号已存在') ) return 
         break;
       case 'STAGE':
         typeStr = '阶段'
         showStr = 'stepSixAddEdit'
         detailStr = 'stageShowDetail'
+        if ( itemDetailData.phasestageNo === '' ) {
+          message.info('阶段编号不能为空！');
+          return
+        }
+        if ( this.verificationID(this.props.data.stageLists, 'phasestageNo', itemDetailData.phasestageNo, '阶段编号已存在') ) return 
         break;
       case 'PLAN':
         typeStr = '配时方案'
         showStr = 'stepSevenAddEdit'
         detailStr = 'planShowDetail'
+        if ( itemDetailData.schemeNo === '' ) {
+          message.info('方案编号不能为空！');
+          return
+        }
+        if ( this.verificationID(this.props.data.planLists, 'schemeNo', itemDetailData.schemeNo, '方案编号已存在') ) return 
         break;
       case 'DAYPLAN':
         itemDetailData.timeintervalList.map((dayPlanitem) =>{
@@ -1065,6 +1106,11 @@ class SignalManagement extends PureComponent {
         typeStr = '日计划'
         showStr = 'stepEightAddEdit'
         detailStr = 'dayplanShowDetail'
+        if ( itemDetailData.dailyplanNo === '' ) {
+          message.info('日计划编号不能为空！');
+          return
+        }
+        if ( this.verificationID(this.props.data.dayPlanLists, 'dailyplanNo', itemDetailData.dailyplanNo, '日计划编号已存在') ) return 
         break;
       case 'DISPATCH':
         typeStr = '调度'
@@ -1073,6 +1119,11 @@ class SignalManagement extends PureComponent {
         itemDetailData.scheduleDetailList.map((item) => {
           item.scheduleNo = itemDetailData.scheduleNo
         })
+        if ( itemDetailData.scheduleNo === '' ) {
+          message.info('调度方案编号不能为空！');
+          return
+        }
+        if ( this.verificationID(this.props.data.dispatchLists, 'scheduleNo', itemDetailData.scheduleNo, '调度编号已存在') ) return 
         break;
     }
     if (eventType) {
@@ -1361,6 +1412,11 @@ btnSelectOver = (flag, defaultSelectLists) => {
         typeStr = '车道'
         showStr = 'stepRoadAddEdit'
         detailStr = 'laneShowDetail'
+        if ( itemDetailData.laneId === '' ) {
+          message.info('车道ID不能为空！');
+          return
+        }
+        if ( this.verificationID(this.props.data.laneLists, 'laneId', itemDetailData.laneId, '车道ID已存在') ) return 
         break;
       case 'LIGHT':
         typeStr = '灯组'
@@ -1369,6 +1425,11 @@ btnSelectOver = (flag, defaultSelectLists) => {
         this.cyclicComparison(this.state.controlDir, 'controlDir', itemDetailData.controlDir, 'lightShowDetail', true)
         this.cyclicComparison(this.state.controlTurn, 'controlTurn', itemDetailData.controlTurn, 'lightShowDetail', true)
         itemDetailData = JSON.parse(JSON.stringify(this.state.lightShowDetail))
+        if ( itemDetailData.lampgroupNo === '' ) {
+          message.info('灯组序号不能为空！');
+          return
+        }
+        if ( this.verificationID(this.props.data.lightLists, 'lampgroupNo', itemDetailData.lampgroupNo, '灯组ID已存在') ) return 
         break;
       case 'DETECTOR':
         typeStr = '检测器'
@@ -1376,6 +1437,11 @@ btnSelectOver = (flag, defaultSelectLists) => {
         detailStr = 'detectorShowDetail'
         this.cyclicComparison(this.state.detectorType, 'detectorType', itemDetailData.detectorType, 'detectorShowDetail', true)
         itemDetailData = JSON.parse(JSON.stringify(this.state.detectorShowDetail))
+        if ( itemDetailData.detectorId === '' ) {
+          message.info('检测器序号不能为空！');
+          return
+        }
+        if ( this.verificationID(this.props.data.detectorLists, 'detectorId', itemDetailData.detectorId, '检测器ID已存在') ) return 
         break;
     }
     this.props.postAddAllType(itemDetailData, stepType).then(() => {
@@ -1399,6 +1465,11 @@ btnSelectOver = (flag, defaultSelectLists) => {
         typeStr = '车道'
         showStr = 'stepRoadAddEdit'
         detailStr = 'laneShowDetail'
+        if ( itemDetailData.laneId === '' ) {
+          message.info('车道ID不能为空！');
+          return
+        }
+        if ( this.verificationID(this.props.data.laneLists, 'laneId', itemDetailData.laneId, '车道ID已存在') ) return 
         break;
       case 'LIGHT':
         typeStr = '灯组'
@@ -1407,6 +1478,11 @@ btnSelectOver = (flag, defaultSelectLists) => {
         this.cyclicComparison(this.state.controlDir, 'controlDir', itemDetailData.controlDir, 'lightShowDetail', true)
         this.cyclicComparison(this.state.controlTurn, 'controlTurn', itemDetailData.controlTurn, 'lightShowDetail', true)
         itemDetailData = JSON.parse(JSON.stringify(this.state.lightShowDetail))
+        if ( itemDetailData.lampgroupNo === '' ) {
+          message.info('灯组序号不能为空！');
+          return
+        }
+        if ( this.verificationID(this.props.data.lightLists, 'lampgroupNo', itemDetailData.lampgroupNo, '灯组序号已存在') ) return 
         break;
       case 'DETECTOR':
         typeStr = '检测器'
@@ -1414,6 +1490,11 @@ btnSelectOver = (flag, defaultSelectLists) => {
         detailStr = 'detectorShowDetail'
         this.cyclicComparison(this.state.detectorType, 'detectorType', itemDetailData.detectorType, 'detectorShowDetail', true)
         itemDetailData = JSON.parse(JSON.stringify(this.state.detectorShowDetail))
+        if ( itemDetailData.detectorId === '' ) {
+          message.info('检测器序号不能为空！');
+          return
+        }
+        if ( this.verificationID(this.props.data.detectorLists, 'detectorId', itemDetailData.detectorId, '检测器序号已存在') ) return 
         break;
     }
     this.props.postUpdateAllType(itemDetailData, stepType).then(() => {
@@ -1709,7 +1790,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
       lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists, showFlag, nowCycleLength, cycleLength,
       lampgroupType, controlDir, controlTurn, detectorType, phaseForbidenData, phaseShieldData, typeData, planStageLists, planChainsLists,
       phaseShowDetail, stageShowDetail, planShowDetail, dayplanShowDetail, dispatchShowDetail, laneSelectLists, lightSelectLists, detectorSelectLists, selectFlag, phaseDefaultSelectLists, laneDefaultSelectLists, lightDefaultSelectLists, detectorDefaultSelectLists,  phaseIconLists, phaseSelectLists, phaseFlag, schemePhasestageTypeData, timeintervalModelChainData,
-      priorityData, monthData, dayData, weekData, dayPlanClickInfo, dispatchClickInfo, popItemFlag, listNames, loadFlag, editFlag, userLimit,
+      priorityData, monthData, dayData, weekData, Dcu_Io_Ids, dayPlanClickInfo, dispatchClickInfo, popItemFlag, listNames, loadFlag, editFlag, userLimit,
       oneFlag, twoFlag, threeFlag, fourFlag, fiveFlag, sixFlag, sevenFlag, eightFlag, nineFlag, tenFlag,
       oneText, twoText, threeText, fourText, fiveText, sixText, sevenText, eightText, nineText, nowText
     } = this.state
@@ -1884,7 +1965,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
         {/* 弹层 > 添加编辑 */}
         { stepRoadAddEdit ?  // 车道配置添加编辑弹层
           <div className={styles.maskBg}> 
-            <div className={styles.popBox} style={{width: '600px'}}>
+            <div className={styles.popBox} style={{width: '660px'}}>
               <div className={styles.popTit}>{popAddEditText}车道{ !showFlag ? ' > 点击图标选中 (若不想改变图标则占空白处)' : null }{ !showFlag ? null : <Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepRoadAddEdit", null)} } />}</div>
               {/* 车道图标层 */}
               { !showFlag && laneIconLists &&
@@ -1896,28 +1977,44 @@ btnSelectOver = (flag, defaultSelectLists) => {
                 </div>
               }
               { showFlag && laneShowDetail && 
-                <div className={styles.popCon}>
+                <div className={classNames(styles.popCon)}>
                   <div className={styles.itemInputBox}>
-                    <span>道路ID：</span><Input value={laneShowDetail.fRid} onChange={e => this.handleChangeInput(e,'state','laneShowDetail','fRid')} placeholder="请输入道路ID" />
+                    <span>车道ID：</span><Input type='number' id='laneId' value={laneShowDetail.laneId} onChange={e => this.handleChangeInput(e,'state','laneShowDetail','laneId')} placeholder="请输入车道ID" />
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>车道ID：</span><Input type='number' value={laneShowDetail.laneId} onChange={e => this.handleChangeInput(e,'state','laneShowDetail','laneId')} placeholder="请输入车道ID" />
+                    <span>道路ID：</span><Input value={laneShowDetail.fRid} onChange={e => this.handleChangeInput(e,'state','laneShowDetail','fRid')} placeholder="请输入道路ID" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>外部车道ID：</span><Input value={laneShowDetail.laneIdCust} onChange={e => this.handleChangeInput(e,'state','laneShowDetail','laneIdCust')} placeholder="请输入外部车道ID" />
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>方 向：</span>
+                    <span>IO接口号：</span>
                     <Select
-                      value={laneShowDetail.fDir8No ? laneShowDetail.fDir8No : 0 }
-                      onChange={ v =>  this.handleChangeSel(v, 'state', 'laneShowDetail', 'fDir8No') }>
-                      <Option value={0}>请选择方向</Option>
+                      value={laneShowDetail.dcuIoId ? laneShowDetail.dcuIoId : 0 }
+                      onChange={ v =>  this.handleChangeSel(v, 'state', 'laneShowDetail', 'dcuIoId') }>
+                      <Option value={0}>请选择接口号</Option>
                       {
-                        fDir8NoData.map((items, key) => {
-                          return <Option key={"optionList" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
+                        Dcu_Io_Ids.map((items, key) => {
+                          return <Option key={"IoId" + items.dcuIoId} value={items.dcuIoId}>{items.dcuIoId}</Option>
                         })
                       }
                     </Select>
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>检测器编号：</span>
+                    <Select
+                      value={laneShowDetail.detectorId ? laneShowDetail.detectorId : 0 }
+                      onChange={ v =>  this.handleChangeSel(v, 'state', 'laneShowDetail', 'detectorId') }>
+                      <Option value={0}>请选择编号</Option>
+                      {
+                        this.props.data.detectorLists.map((items, key) => {
+                          return <Option key={"detectorId" + items.detectorId} value={items.detectorId}>{items.detectorId}</Option>
+                        })
+                      }
+                    </Select>
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>设备编号：</span><Input value={laneShowDetail.detectorDeviceId} onChange={e => this.handleChangeInput(e,'state','laneShowDetail','detectorDeviceId')} placeholder="请输入检测器设备编号" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>角 度：</span>
@@ -1935,9 +2032,17 @@ btnSelectOver = (flag, defaultSelectLists) => {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>转 向：</span>
-                    <Checkbox.Group options={turnDirNoListData} value={laneShowDetail.turnDirNoList.split(",").map(Number)} 
-                    onChange={ v =>  this.handleChangeCheck(v, 'state', 'laneShowDetail', 'turnDirNoList')} />
+                    <span>方 向：</span>
+                    <Select
+                      value={laneShowDetail.fDir8No ? laneShowDetail.fDir8No : 0 }
+                      onChange={ v =>  this.handleChangeSel(v, 'state', 'laneShowDetail', 'fDir8No') }>
+                      <Option value={0}>请选择方向</Option>
+                      {
+                        fDir8NoData.map((items, key) => {
+                          return <Option key={"optionList" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
+                        })
+                      }
+                    </Select>
                   </div>
                   <div className={styles.itemInputBox}>
                     <span style={{alignSelf: 'flex-start'}}>图 片：</span>
@@ -1945,6 +2050,12 @@ btnSelectOver = (flag, defaultSelectLists) => {
                       { !!laneShowDetail.imageUrl ? <div className={styles.yesImage} onClick={(e) => this.getIconImageList(e, 'LANE')}><img src={`${this.laneBgUrl}${laneShowDetail.imageUrl}`} /></div> : <div onClick={(e) => this.getIconImageList(e, 'LANE')} className={styles.noImage}>点击选图</div> }
                     </div>
                   </div>
+                  <div className={styles.itemInputBox} style={{alignSelf: 'flex-start'}}>
+                    <span>转 向：</span>
+                    <Checkbox.Group options={turnDirNoListData} value={laneShowDetail.turnDirNoList.split(",").map(Number)} 
+                    onChange={ v =>  this.handleChangeCheck(v, 'state', 'laneShowDetail', 'turnDirNoList')} />
+                  </div>
+                  
                 </div>
               }
               { showFlag ?
@@ -1975,7 +2086,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
               { showFlag && lightShowDetail && 
                 <div className={styles.popCon}>
                   <div className={styles.itemInputBox}>
-                    <span>灯组序号：</span><Input type='number' value={lightShowDetail.lampgroupNo} onChange={e => this.handleChangeInput(e,'state','lightShowDetail','lampgroupNo')} placeholder="请输入车道ID" />
+                    <span>灯组序号：</span><Input id='lampgroupNo' type='number' value={lightShowDetail.lampgroupNo} onChange={e => this.handleChangeInput(e,'state','lightShowDetail','lampgroupNo')} placeholder="请输入灯组序号" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>灯组类型：</span>
@@ -2067,13 +2178,13 @@ btnSelectOver = (flag, defaultSelectLists) => {
               { showFlag && detectorShowDetail && 
                 <div className={styles.popCon}>
                   <div className={styles.itemInputBox}>
-                    <span>检测器序号：</span><Input type='number' value={detectorShowDetail.detectorId} onChange={e => this.handleChangeInput(e,'state','detectorShowDetail','detectorId')} placeholder="请输入车道ID" />
+                    <span>检测器序号：</span><Input id='detectorId' type='number' value={detectorShowDetail.detectorId} onChange={e => this.handleChangeInput(e,'state','detectorShowDetail','detectorId')} placeholder="请输入检测器序号" />
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>流量周期：</span><Input type='number' value={detectorShowDetail.flowCollectionCycle} onChange={e => this.handleChangeInput(e,'state','detectorShowDetail','flowCollectionCycle')} placeholder="请输入车道ID" />
+                    <span>流量周期：</span><Input type='number' value={detectorShowDetail.flowCollectionCycle} onChange={e => this.handleChangeInput(e,'state','detectorShowDetail','flowCollectionCycle')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>占有率周期：</span><Input type='number' value={detectorShowDetail.occupancyCollectionCycle} onChange={e => this.handleChangeInput(e,'state','detectorShowDetail','occupancyCollectionCycle')} placeholder="请输入车道ID" />
+                    <span>占有率周期：</span><Input type='number' value={detectorShowDetail.occupancyCollectionCycle} onChange={e => this.handleChangeInput(e,'state','detectorShowDetail','occupancyCollectionCycle')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>检测器类型：</span>
@@ -2114,7 +2225,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
               { phaseShowDetail && 
                 <div className={classNames(styles.popCon, styles.popConTurn)}>
                   <div className={styles.itemInputBox}>
-                    <span>相位序号：</span><Input type='number' value={phaseShowDetail.phaseNo} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','phaseNo')} placeholder="请输入" />
+                    <span>相位序号：</span><Input id='phaseNo' type='number' value={phaseShowDetail.phaseNo} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','phaseNo')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>相位名称：</span><Input value={phaseShowDetail.phaseName} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','phaseName')} placeholder="请输入" />
@@ -2383,7 +2494,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
               { showFlag && stageShowDetail && 
               <div className={classNames(styles.popCon, styles.popConTurn)}>
                 <div className={styles.itemInputBox}>
-                  <span>阶段编号：</span><Input type='number' value={stageShowDetail.phasestageNo} onChange={e => this.handleChangeInput(e,'state','stageShowDetail','phasestageNo')} placeholder="请输入" />
+                  <span>阶段编号：</span><Input id='phasestageNo' type='number' value={stageShowDetail.phasestageNo} onChange={e => this.handleChangeInput(e,'state','stageShowDetail','phasestageNo')} placeholder="请输入" />
                 </div>
                 <div className={styles.itemInputBox}>
                   <span>阶段名称：</span><Input value={stageShowDetail.phasestageName} onChange={e => this.handleChangeInput(e,'state','stageShowDetail','phasestageName')} placeholder="请输入" />
@@ -2467,7 +2578,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
               { showFlag && planShowDetail && 
               <div className={classNames(styles.popCon, styles.popConTurn)} style={{padding: '15px 50px 15px 0'}}>
                 <div className={styles.itemInputBox}>
-                  <span>方案编号：</span><Input type='number' value={planShowDetail.schemeNo} onChange={e => this.handleChangeInput(e,'state','planShowDetail','schemeNo')} placeholder="请输入" />
+                  <span>方案编号：</span><Input id='schemeNo' type='number' value={planShowDetail.schemeNo} onChange={e => this.handleChangeInput(e,'state','planShowDetail','schemeNo')} placeholder="请输入" />
                 </div>
                 <div className={styles.itemInputBox}>
                   <span>方案名称：</span><Input value={planShowDetail.schemeName} onChange={e => this.handleChangeInput(e,'state','planShowDetail','schemeName')} placeholder="请输入" />
@@ -2551,7 +2662,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
               { dayplanShowDetail && 
               <div className={classNames(styles.popCon, styles.popConTurn)} style={{padding: '15px 50px 15px 0'}}>
                 <div className={styles.itemInputBox}>
-                  <span>日计划编号：</span><Input type='number' value={dayplanShowDetail.dailyplanNo} onChange={e => this.handleChangeInput(e,'state','dayplanShowDetail','dailyplanNo')} placeholder="请输入" />
+                  <span>日计划编号：</span><Input id='dailyplanNo' type='number' value={dayplanShowDetail.dailyplanNo} onChange={e => this.handleChangeInput(e,'state','dayplanShowDetail','dailyplanNo')} placeholder="请输入" />
                 </div>
                 <div className={styles.itemInputBox} style={{width: '100%', alignSelf: 'flex-start'}}>
                   <span style={{alignSelf: 'flex-start'}}>开始时间方案模式链：</span>
@@ -2613,7 +2724,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
               { dispatchShowDetail && 
               <div className={classNames(styles.popCon, styles.popConTurn)} style={{padding: '15px 50px 15px 0'}}>
                 <div className={styles.itemInputBox}>
-                  <span>调度方案编号：</span><Input type='number' value={dispatchShowDetail.scheduleNo} onChange={e => this.handleChangeInput(e,'state','dispatchShowDetail','scheduleNo')} placeholder="请输入" />
+                  <span>调度方案编号：</span><Input id='scheduleNo' type='number' value={dispatchShowDetail.scheduleNo} onChange={e => this.handleChangeInput(e,'state','dispatchShowDetail','scheduleNo')} placeholder="请输入" />
                 </div>
                 <div className={styles.itemInputBox} style={{width: '100%', alignSelf: 'flex-start'}}>
                   <span style={{alignSelf: 'flex-start'}}>调度方案项：</span>
