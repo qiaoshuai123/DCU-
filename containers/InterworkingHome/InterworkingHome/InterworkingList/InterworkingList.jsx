@@ -28,6 +28,7 @@ class InterworkingList extends Component {
     this.props.dcuListByPages(`pageNo=${1}`)
     this.props.systemCodeListByCodeType(1)
     this.props.unitInfoList()
+    this.userLimit = (JSON.parse(localStorage.getItem('userLimit'))).map(item => item.id)
   }
   componentDidUpdate = (prevState) => {
     const { dcuListByPage, systemCodeListByCodeTypes, unitInfoLists } = this.props.data
@@ -192,9 +193,12 @@ class InterworkingList extends Component {
                   <div className={styles.listTd} >{item.maintainPhone}</div>
                   <div className={styles.listTd} >{isc === 1 ? '正常运行' : '停止运行'}</div>
                   <div className={styles.listTd} >
-                    <span className={styles.delectName} onClick={() => { this.getresetPwd(item) }}>
-                      路口监视
-                    </span>
+                    {
+                      this.userLimit.indexOf(301) !== -1 ?
+                        <span className={styles.delectName} onClick={() => { this.getresetPwd(item) }}>
+                          路口监视
+                        </span> : '暂无权限'
+                    }
                   </div>
                 </div>)
             })}

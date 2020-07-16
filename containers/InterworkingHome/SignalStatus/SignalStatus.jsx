@@ -35,6 +35,7 @@ class SignalStatus extends Component {
     window.showHidePop = this.showHidePop
     window.setGetParams = this.setGetParams
     this.props.getMapUnitInfoList()
+    this.userLimit = (JSON.parse(localStorage.getItem('userLimit'))).map(item => item.id)
     this.props.unitInfoList()
     document.addEventListener('click', (e) => {
       this.visibleShowLeft('', '', false)
@@ -223,7 +224,7 @@ class SignalStatus extends Component {
     info.push(`<p class='input-item'>信号运行阶段：<span class='greenFont'><span id='phasestageName'>暂无</span><img id='phasestageImage' style='display:none' src='' /></span></p>`);
     info.push(`<p class='input-item'>信号运行方案：<span class='greenFont' id='schemeName'>暂无</span></p>`);
     info.push(`<p class='input-item'>信号控制方式：<span class='greenFont' id='nodeModelName'>暂无</span></p>`);
-    info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>路口监视</span></p>`);
+    this.userLimit.indexOf(301) !== -1 ? info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>路口监视</span></p>`) : '';
     const infoWindow = new AMap.InfoWindow({
       content: info.join("")  //使用默认信息窗体框样式，显示信息内容
     });
@@ -251,16 +252,16 @@ class SignalStatus extends Component {
         if (item.interId === timeDiv.attr('inter-id') && !!item.state) {
           if (item.nodeModelType === 'special') {
             timeDiv.removeClass('marker-offline')
-            timeDiv.addClass('marker-offline')
+            timeDiv.addClass('marker-online')
           } else if (item.nodeModelType === 'manual') {
             timeDiv.removeClass('marker-offline')
-            timeDiv.addClass('marker-offline')
+            timeDiv.addClass('marker-yellow')
           } else if (item.nodeModelType === 'local') {
             timeDiv.removeClass('marker-offline')
-            timeDiv.addClass('marker-offline')
+            timeDiv.addClass('marker-blackishGreen')
           } else if (item.nodeModelType === 'optimize') {
             timeDiv.removeClass('marker-offline')
-            timeDiv.addClass('marker-offline')
+            timeDiv.addClass('marker-blue')
           }
         } else {
           timeDiv.addClass('marker-offline')

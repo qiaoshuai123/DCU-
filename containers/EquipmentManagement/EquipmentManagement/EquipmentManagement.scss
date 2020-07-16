@@ -33,13 +33,58 @@ $bor_color: #27343b;
     z-index: 9;
     left: 0;
     top: 60px;
-    .InterworkLeft_search {
+    .searchBox {
+      margin: 0 0 0;
       border-top: 1px solid $bor_color;
       border-bottom: 1px solid $bor_color;
       height: 60px;
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
+      .searchInput {
+        width: 200px;
+        height: 32px;
+        padding-left: 5px;
+        color: #fff;
+        background-color: #1b2d2f;
+        border: none;
+        outline: none;
+        border-radius: 4px;
+        outline: none;
+        color: #f1f1fb;
+        margin: 0 15px;
+      }
+      .searchIcon {
+        position: absolute;
+        right: 25px;
+        top: 20px;
+        font-size: 18px;
+        color: #07bdfb;
+        cursor: pointer;
+      }
+    }
+    .interList {
+      position: absolute;
+      top: 48px;
+      left: 15px;
+      right: 15px;
+      border-radius: 4px;
+      background-color: rgba(0, 0, 0, 0.6);
+      transition: all 0.2s;
+      overflow-y: hidden;
+      z-index: 99;
+      .interItem {
+        height: 30px;
+        padding-left: 10px;
+        font-size: 14px;
+        line-height: 30px;
+        transition: all 0.2s;
+        cursor: pointer;
+        &:hover {
+          background-color: #06234f;
+        }
+      }
     }
     .InterworkLeft_Title {
       height: 110px;
