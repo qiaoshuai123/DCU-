@@ -28,6 +28,7 @@ class InterworkingList extends Component {
     this.props.detectorRealTimeListByPage('pageNo=1')
     this.props.unitInfoList()
     this.props.systemCodeListByCodeType(1)
+    this.userLimit = (JSON.parse(localStorage.getItem('userLimit'))).map(item => item.id)
   }
   componentDidUpdate = (prevState) => {
     const { unitInfoLists, detectorRealTimeListByPages, systemCodeListByCodeTypes } = this.props.data
@@ -193,9 +194,12 @@ class InterworkingList extends Component {
                   <div className={styles.listTd} ></div>
                   <div className={styles.listTd} >{isc.phasestageName}</div>
                   <div className={styles.listTd} >
-                    <span className={styles.delectName} onClick={() => { this.getresetPwd(item) }}>
-                      路口监视
-                    </span>
+                    {
+                      this.userLimit.indexOf(301) !== -1 ?
+                        <span className={styles.delectName} onClick={() => { this.getresetPwd(item) }}>
+                          路口监视
+                        </span> : '暂无权限'
+                    }
                   </div>
                 </div>)
             })}

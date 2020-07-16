@@ -9,7 +9,7 @@ import {
   getdcuByInterId, getsignalByInterId, postupdateDcuinfo, postupdateSignal,
   loadData, editData, dculoadData, dcueditData, reboot,
 } from '../../../reactRedux/actions/equipmentManagement'
-import { getBgLists, postBgBySelect } from '../../../reactRedux/actions/signalmanagementActions'
+import { getBgLists, postBgBySelect, postBgByUpload } from '../../../reactRedux/actions/signalmanagementActions'
 import styles from './Information.scss'
 
 // 图片转64位
@@ -127,7 +127,7 @@ class Information extends Component {
     })
   }
   componentDidUpdate = (prevState) => {
-    const { getInterId, signalByInterId, basicBgLists, basicSelSuccess } = this.props.data
+    const { getInterId, signalByInterId, basicBgLists, basicSelSuccess, basicUplSuccess } = this.props.data
     if (prevState.data.getInterId !== getInterId) {
       this.getgetInterId(getInterId)
     }
@@ -140,14 +140,28 @@ class Information extends Component {
     if (prevState.data.basicSelSuccess !== basicSelSuccess) {
       this.getbasicSelSuccess(basicSelSuccess)
     }
+    if (prevState.data.basicUplSuccess !== basicUplSuccess) {
+      this.getbasicUplSuccess(basicUplSuccess)
+    }
   }
 
   // step2 底图选择
   onChangeBaseMap = (e) => {
     console.log('radio checked', e.target.value)
-    this.setState({
-      baseMapValue: e.target.value,
-    })
+    if (e.target.value === 1) {
+      this.setState({
+        baseMapValue: e.target.value,
+        bacimghref: 'http://192.168.1.213:20203/DCU/dcuImage/background/',
+        imageUrl: '',
+      })
+    } else {
+      this.setState({
+        baseMapValue: e.target.value,
+        bacimghref: '',
+        imageUrl: '',
+      })
+    }
+
   }
   onChangDateStart = (date, dateString) => { // 出厂日期
     console.log(this.formatDate(new Date(dateString) * 1), '出厂日期')
@@ -159,6 +173,14 @@ class Information extends Component {
     console.log(this.formatDate(new Date(dateString) * 1), '配置日期')
     this.setState({
       configurationDate: this.formatDate(new Date(dateString) * 1),
+    })
+  }
+  getbasicUplSuccess = (basicUplSuccess) => {
+    console.log(basicUplSuccess, 'sccsss')
+    this.setState({
+      interRoadBg: basicUplSuccess,
+    }, () => {
+      localStorage.setItem('bac', JSON.stringify(basicUplSuccess))
     })
   }
   getbasicSelSuccess = (basicSelSuccess) => {
@@ -407,17 +429,21 @@ class Information extends Component {
     // }
   }
   handleChangeBaseMap = (info) => {
-    if (info.file.status === 'uploading') {
-      this.setState({ baseLoading: true })
-      return
+    if (info.file.status === "uploading") {
+      this.setState({ baseLoading: true });
+      return;
     }
-    if (info.file.status === 'done') {
-      getBase64(info.file.originFileObj, imageUrl =>
+    if (info.file.status === "done") {
+      getBase64(info.file.originFileObj, (imageUrl) => {
+        const formData = new FormData()
+        formData.append('file', info.file.originFileObj)
         this.setState({
-          bacimghref: '',
           imageUrl,
+          imageFile: formData,
           baseLoading: false,
-        }))
+        })
+      }
+      )
     }
   }
   handleUpdateImageUrl = (imageName) => {
@@ -425,6 +451,7 @@ class Information extends Component {
       bacimghref: 'http://192.168.1.213:20203/DCU/dcuImage/background/',
       imageUrl: imageName,
       bgListFlag: false,
+      baseMapFlag: true,
     })
   }
   handleClickBaseMap = () => {
@@ -433,11 +460,22 @@ class Information extends Component {
       const objs = {
         background: imageUrl,
         id: this.id,
+        baseMapValue: 1,
+        bacimghref: 'http://192.168.1.213:20203/DCU/dcuImage/background/',
       }
       this.props.postBgBySelect(objs)
     } else {
       if (this.state.baseMapValue === 2) {
-
+        if (this.state.imageFile !== null) {
+          message.info("底图设置成功！")
+          this.setState({
+            baseMapValue: 1,
+            bacimghref: 'http://192.168.1.213:20203/DCU/dcuImage/background/',
+          }, () => {
+            this.popLayerShowHide("baseMapFlag", null)
+            this.props.postBgByUpload(this.interId, this.state.imageFile)
+          })
+        }
       }
     }
   }
@@ -465,6 +503,7 @@ class Information extends Component {
     // this.props.postBgBySelect({id: this.props.roadId, background: item})
     this.setState({
       bgListFlag: true,
+      baseMapFlag: false,
     }, () => {
       this.props.getBgLists()
     })
@@ -513,6 +552,23 @@ class Information extends Component {
       }
     })
   }
+  btnClicks = (e) => {
+    e.stopPropagation()
+    this.showListBg()
+  }
+  popLayerShowHides = () => {
+    this.setState({
+      baseMapFlag: false,
+      bgListFlag: false,
+      baseMapValue: 1,
+    })
+  }
+  backgo = () => {
+    this.setState({
+      baseMapFlag: true,
+      bgListFlag: false,
+    })
+  }
   render() {
     const {
       interRoadBg, baseMapFlag, imageUrl, deviceIdDCU, serverTimeZone,
@@ -522,7 +578,7 @@ class Information extends Component {
       signalType, detectorType, brand, deviceVersion, deviceIdsignal,
       productionDate, configurationDate, serverIp, timeZone, ip,
       port, gpsClockSign, subnetMask, gateway, serverPort, maintainPhonesignal,
-      bgListFlag, basicBgLists, imgshref, bacimghref,
+      bgListFlag, basicBgLists, imgshref, bacimghref, baseMapValue,
     } = this.state
     const uploadButton = (
       <em>{this.state.baseLoading ? <span><Icon type="loading" /> loading</span> : '上 传'}</em>
@@ -544,22 +600,23 @@ class Information extends Component {
             }}
           >
             {/* 内部变化内容 */}
-            {baseMapFlag ?
+
+            {bgListFlag &&
+              <div className={styles.popBox}>
+                <div className={styles.popTit}>请点击图片 > 已选中当前图片为底图</div>
+                <div className={styles.popCon} style={{ width: '470px', maxHeight: '464px', justifyContent: 'flex-start', overflowY: 'auto', flexWrap: 'wrap' }}>
+                  {
+                    !!basicBgLists && basicBgLists.map((item, i) => {
+                      return <div key={"bg" + i} className={styles.bgImgBox} onClick={() => { this.handleUpdateImageUrl(item) }} style={{ backgroundImage: `url(${imgshref}${item})` }}></div>
+                    })
+                  }
+                </div>
+                <div className={styles.popBottom}>
+                  <em onClick={this.backgo}>返 回</em>
+                </div>
+              </div>}
+            {baseMapFlag &&
               <div className={styles.maskBg}>
-                {bgListFlag &&
-                  <div className={styles.popBox}>
-                    <div className={styles.popTit}>请点击图片 > 已选中当前图片为底图</div>
-                    <div className={styles.popCon} style={{ width: '464px', maxHeight: '464px', justifyContent: 'flex-start', overflowY: 'auto', flexWrap: 'wrap' }}>
-                      {
-                        !!basicBgLists && basicBgLists.map((item, i) => {
-                          return <div key={"bg" + i} className={styles.bgImgBox} onClick={() => { this.handleUpdateImageUrl(item) }} style={{ background: `url(${imgshref}${item})`, backgroundSize: 'contain' }}></div>
-                        })
-                      }
-                    </div>
-                    <div className={styles.popBottom}>
-                      <em onClick={() => { this.setState({ bgListFlag: false }) }}>返 回</em>
-                    </div>
-                  </div>}
                 <div className={styles.popBox} style={{ top: '75%' }} >
                   <div className={styles.popTit}>选择底图<Icon className={styles.Close} type="close" onClick={() => { this.popLayerShowHide("baseMapFlag", null) }} /></div>
                   <div className={styles.popCon}>
@@ -575,9 +632,13 @@ class Information extends Component {
                         listType="picture-card"
                         className="avatar-uploader"
                         showUploadList={false}
+                        action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                         beforeUpload={beforeUpload}
                         onChange={this.handleChangeBaseMap}
                       >
+                        {
+                          this.state.baseMapValue === 1 && <div onClick={this.btnClicks} className={styles.bigBox} />
+                        }
                         {imageUrl ?
                           <img src={`${bacimghref}${imageUrl}`} alt="底图" style={{ width: "100%" }} /> : <s>图片预览</s>
                         }
@@ -588,11 +649,11 @@ class Information extends Component {
                     </div>
                   </div>
                   <div className={styles.popBottom}>
-                    <em onClick={() => { this.handleClickBaseMap() }}>确 定</em>
-                    <em onClick={() => { this.popLayerShowHide('baseMapFlag', null) }}>取 消</em>
+                    <em onClick={this.handleClickBaseMap}>确 定</em>
+                    <em onClick={this.popLayerShowHides}>取 消</em>
                   </div>
                 </div>
-              </div> : null
+              </div>
             }
             <div className={styles.turnBgBtn} onClick={() => { this.popLayerShowHide("baseMapFlag", true) }}>路口底图</div>
           </div>
@@ -729,6 +790,7 @@ const mapDisPatchToProps = (dispatch) => {
     dculoadData: bindActionCreators(dculoadData, dispatch),
     dcueditData: bindActionCreators(dcueditData, dispatch),
     reboot: bindActionCreators(reboot, dispatch),
+    postBgByUpload: bindActionCreators(postBgByUpload, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(Information)

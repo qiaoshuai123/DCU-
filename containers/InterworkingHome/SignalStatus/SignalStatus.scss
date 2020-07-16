@@ -190,7 +190,9 @@ $bor_color: #27343b;
     line-height: 1.4;
     overflow: auto;
   }
-
+  :global(.amap-overlays) {
+    z-index: 17;
+  }
   :global(.content_box) {
     background: rgba(9, 9, 9, 0.8) !important;
     padding: 0px !important;
@@ -292,14 +294,14 @@ $bor_color: #27343b;
   :global(.marker-offline) {
     background: url(../../../images/markerRed.png) no-repeat;
   }
-  :global(.marker-offline) {
-    background: url(../../../images/markerRed.png) no-repeat;
+  :global(.marker-yellow) {
+    background: url(../../../images/markerYellow.png) no-repeat;
   }
-  :global(.marker-offline) {
-    background: url(../../../images/markerRed.png) no-repeat;
+  :global(.marker-blackishGreen) {
+    background: url(../../../images/markerblackishGreen.png) no-repeat;
   }
-  :global(.marker-offline) {
-    background: url(../../../images/markerRed.png) no-repeat;
+  :global(.marker-blue) {
+    background: url(../../../images/markerBlue.png) no-repeat;
   }
   :global(.marker-hoverline) {
     background-color: green;

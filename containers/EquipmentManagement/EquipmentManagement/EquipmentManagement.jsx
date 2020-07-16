@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
-import { Input, message, Modal } from 'antd'
+import { Input, message, Modal, Icon } from 'antd'
 import Websocket from 'react-websocket'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { getMapUnitInfoList, getUnitTree, getUnitPop } from '../../../reactRedux/actions/publicActions'
-import { postdeleteUnit } from '../../../reactRedux/actions/equipmentManagement'
+import { postdeleteUnit, unitInfoList } from '../../../reactRedux/actions/equipmentManagement'
 import Header from '../../../components/Header/Header'
 import CustomTree from '../../../components/CustomTree/CustomTree'
 import MessagePage from './MessagePage/MessagePage'
@@ -23,19 +23,27 @@ class EquipmentManagement extends Component {
       mapPointsData: null, // 地图中所有的点
       lng: '',
       lat: '',
+      interListHeight: 0,
+      searchInterList: [],
     }
+    this.searchInterList = []
   }
   componentDidMount = () => {
     this.loadingMap()
     window.showHidePop = this.showHidePop
     window.setGetParams = this.setGetParams
     this.props.getMapUnitInfoList()
+    this.userLimit = (JSON.parse(localStorage.getItem('userLimit'))).map(item => item.id)
+    this.props.unitInfoList()
+    document.addEventListener('click', (e) => {
+      this.visibleShowLeft('', '', false)
+    })
     // document.addEventListener('click', (e) => {
     //   this.visibleShowLeft('', '', false)
     // })
   }
   componentDidUpdate = (prevState) => {
-    const { mapPointsData, getObjNum, dcuPopData } = this.props.data
+    const { mapPointsData, getObjNum, dcuPopData, unitInfoLists } = this.props.data
     if (prevState.data !== this.props.data) {
       // console.log(this.props.data, "data中所有的数据")
     }
@@ -49,6 +57,12 @@ class EquipmentManagement extends Component {
       // console.log(dcuPopData, '弹层数据')
       this.getdcuPopData(dcuPopData)
     }
+    if (prevState.data.unitInfoLists !== unitInfoLists) {
+      this.getunitInfoLists(unitInfoLists)
+    }
+  }
+  getunitInfoLists = (unitInfoLists) => {
+    this.searchInterList = unitInfoLists
   }
   getdcuPopData = (dcuPopData) => {
     this.setState({ dcuPopData })
@@ -235,7 +249,7 @@ class EquipmentManagement extends Component {
     info.push(`<p class='input-item'>设备IP：<span>` + itemData.ip + `</span></p>`);
     info.push(`<p class='input-item'>生产厂商：<span>` + itemData.deviceVersion + `</span></p>`);
     info.push(`<p class='input-item'>维护电话：<span>` + itemData.maintainPhone + `</span></p>`);
-    info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `) '>设备配置</span></p>`);
+    this.userLimit.indexOf(301) !== -1 ? info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `) '>设备配置</span></p>`) : '';
     const infoWindow = new AMap.InfoWindow({
       content: info.join("")  //使用默认信息窗体框样式，显示信息内容
     });
@@ -243,7 +257,7 @@ class EquipmentManagement extends Component {
     this.infoWindow = infoWindow
     window.infoWindowClose = infoWindow
     map.on('click', (e) => {
-      marker.setContent("<div inter-id='"+dataItem.interId+"' class='marker-online'></div>");
+      marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online'></div>");
       infoWindow.close()
     })
   }
@@ -320,9 +334,58 @@ class EquipmentManagement extends Component {
       })
     }
   }
+  searchBtnSelect = (event) => {
+    this.searchBtn = event.target
+    this.handleSearchInterFocus()
+  }
+
+  handleSearchInterFocus = (e) => {
+    const values = e.target.value
+    const searchInterList = this.searchInterList.filter(item => item.interName.includes(values))
+    this.setState({
+      searchInterList,
+    })
+  }
+  btnClicks = () => {
+    this.setState({
+      interListHeight: 300,
+      searchInterList: this.searchInterList,
+    })
+  }
+  hanleSelectInter = (e, item) => {
+    let marker
+    const _this = this;
+    marker = new AMap.Marker({
+      position: new AMap.LngLat(item.lng, item.lat),
+      offset: new AMap.Pixel(-16, -16),
+      content: "<div id='roadKey" + item.interId + "'></div>",
+    })
+    marker.on('click', function () {
+      _this.setState({
+        roadUnitId: item.id,
+        roadInterId: item.interId,
+        roadNodeNo: item.nodeId,
+      })
+      const resultP = Promise.resolve(_this.props.getUnitPop(item.id))
+      resultP.then(() => {
+        _this.openInfoWin(_this.map, item, marker, item.interName)
+      })
+    })
+
+    if (marker && this.map) {
+      this.map.setCenter([item.lng, item.lat])
+      this.searchInputBox.value = item.interName
+      this.setState({ interListHeight: 0 })
+      marker.emit('click', {
+        lnglat: this.map.getCenter()
+      })
+    } else {
+      message.info('该路口尚未接入')
+    }
+  }
   render() {
     const { Search } = Input
-    const { isAddPoint, isMessagePage, lng, lat, visible, visibleTop } = this.state
+    const { isAddPoint, isMessagePage, lng, lat, visible, visibleTop, searchInterList, interListHeight } = this.state
     return (
       <div className={styles.EquipmentManagementBox}>
         <Websocket
@@ -332,12 +395,34 @@ class EquipmentManagement extends Component {
         />
         <Header {...this.props} />
         <div onClick={this.btnClick} className={styles.Interwork_left}>
-          <div className={styles.InterworkLeft_search}>
-            <Search
+          <div className={styles.searchBox}>
+            <input
+              className={styles.searchInput}
+              onChange={this.handleSearchInterFocus}
+              onClick={this.btnClicks}
+              type="text"
               placeholder="关键词搜索"
-              onSearch={value => console.log(value)}
-              style={{ width: 200 }}
+              autoComplete="off"
+              ref={(input) => { this.searchInputBox = input }}
+              style={{ width: '100%' }}
+              id="searchBox"
             />
+            <Icon className={styles.searchIcon} type="search" onClick={this.searchBtnSelect} />
+          </div>
+          <div className={styles.interList} style={{ maxHeight: `${interListHeight}px`, overflowY: 'auto' }}>
+            <div>
+              {
+                searchInterList &&
+                searchInterList.map(item => (
+                  <div
+                    className={styles.interItem}
+                    key={item.id}
+                    onClick={e => this.hanleSelectInter(e, item)}
+                  >{item.interName}
+                  </div>
+                ))
+              }
+            </div>
           </div>
           <div className={styles.InterworkLeft_Title}>
             <span />DCU点位列表
@@ -349,10 +434,10 @@ class EquipmentManagement extends Component {
             visibleShowLeft={this.visibleShowLeft}
           />
           {
-            isAddPoint &&
-            <div onClick={this.addPoint} className={styles.addPoint}>
-              添加点位
-            </div>
+            isAddPoint && this.userLimit.indexOf(301) !== -1 ?
+              <div onClick={this.addPoint} className={styles.addPoint}>
+                添加点位
+              </div> : ''
           }
         </div>
         {
@@ -366,7 +451,7 @@ class EquipmentManagement extends Component {
             <li onClick={this.showConfirm}>删除</li>
           </ul>
         }
-      </div>
+      </div >
     )
   }
 }
@@ -382,6 +467,7 @@ const mapDisPatchToProps = (dispatch) => {
     getUnitTree: bindActionCreators(getUnitTree, dispatch),
     postdeleteUnit: bindActionCreators(postdeleteUnit, dispatch),
     getUnitPop: bindActionCreators(getUnitPop, dispatch),
+    unitInfoList: bindActionCreators(unitInfoList, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(EquipmentManagement)
