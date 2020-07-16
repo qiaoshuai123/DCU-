@@ -114,7 +114,7 @@ class ListForAntd extends Component {
                 <div className={styles.listItem}>
                   {
                     !!showListDatas && showListDatas.map((item, i) => {
-                      return <em key={"emTit" + i}>
+                      return <em key={"emTit" + i} style={ i === 0 && (this.props.listType === 'DAYPLAN' || this.props.listType === 'DISPATCH') ? {flex: '0.3'} : null }>
                         <Select
                           labelInValue
                           defaultValue={{ key: item.label }}
@@ -130,14 +130,14 @@ class ListForAntd extends Component {
 
                     })
                   }
-                  {handleFlag && this.props.nothing === undefined && userLimit ? <em>操作</em> : null}
+                  {handleFlag && this.props.nothing === undefined && userLimit ? <em style={ this.props.listType === 'DAYPLAN' || this.props.listType === 'DISPATCH' ? {flex: '0.3'} : null }>操作</em> : null}
                 </div>
                 {
                   !!dataSourse && dataSourse.map((item, i) => {
                     return <div key={'List' + i} className={classNames(styles.listItem)} tag-mark={item.phaseLampgroupId} onClick={ this.props.nothing === undefined ? e => this.handleClick(e, item) : null }>
                       {!!showListDatas && showListDatas.map((val, k) => {
-                        return <span key={"spanText" + k}>
-                        { item[val.key] instanceof Array && this.props.listType === 'PLAN'? 
+                        return <span key={"spanText" + k}  style={ (k === 0 && this.props.listType === 'DAYPLAN' || this.props.listType === 'DISPATCH') ? {flex: '1'} : null }>
+                        { item[val.key] instanceof Array && this.props.listType === 'PLAN' ? 
                             item[val.key].map((items, d) => {
                               return <div className={styles.stageImgText} key={'ListItem' + d}>
                                       <s>{!items.imagePath ? '暂无' : <img style={{width: '30px', height: '30px'}} src={`${this.props.imgIconUrl}${items.imagePath}`} /> }</s>

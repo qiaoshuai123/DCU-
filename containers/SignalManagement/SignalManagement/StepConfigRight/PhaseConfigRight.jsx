@@ -160,6 +160,7 @@ class PhaseConfigRight extends PureComponent {
     this.props.popLayerShowHide(name, flag, event, stepType)
   }
   handleClickFind = (e, itemData) => {
+    debugger
     if ($(e.currentTarget).hasClass(Liststyles.hover)){
       $(e.currentTarget).removeClass(Liststyles.hover)
       if (itemData.phaseLampgroupId.indexOf(',') === -1) {
@@ -195,6 +196,11 @@ class PhaseConfigRight extends PureComponent {
           }
         })
       } else {
+        $('div[pic-mark]').map(( i, item ) => {
+          if (item.getAttribute('pic-mark').indexOf('lampgroup') > -1 || item.getAttribute('pic-mark').indexOf('detector') > -1) {
+            $(item).removeClass(styles.imgCurrent)
+          }
+        })
         const leftSelArr = itemData.phaseLampgroupId.split(',')
         leftSelArr.map((items) => {
           $('div[pic-mark]').map(( i, item ) => {

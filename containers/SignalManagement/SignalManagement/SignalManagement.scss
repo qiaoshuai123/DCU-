@@ -81,6 +81,7 @@ $stepBor_col: #393f4f;
                 display: flex;
                 justify-content: flex-start;
                 align-items: center;
+                color: yellowgreen;
                 > span{
                     width: 120px;
                     text-align: right;
@@ -105,7 +106,7 @@ $stepBor_col: #393f4f;
                     font-size: 16px;
                 }
                 :global(.ant-spin-spinning){
-                    margin-right:20px;
+                    margin-top:6px;
                 }
                 :global(.ant-spin-lg .ant-spin-dot i){
                     background: green;
