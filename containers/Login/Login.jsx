@@ -16,7 +16,7 @@ class Login extends React.Component {
     }
   }
   componentDidMount = () => {
-    document.addEventListener('keydown', (e) => {
+    this.loginBox.addEventListener('keydown', (e) => {
       if (e.keyCode === 13) {
         console.log(e, e.keCode)
         this.handleLogin()
@@ -72,7 +72,7 @@ class Login extends React.Component {
             <div className={styles.welcome}>欢迎来到<span className={styles.commingIcon} /></div>
             <div className={styles.systext}>双向互通管控系统</div>
           </div>
-          <div className={styles.rightContent}>
+          <div className={styles.rightContent} ref={(input) => { this.loginBox = input }}>
             <div className={styles.loginMsg}>
               <h3 className={styles.loginTit}>用户登录</h3>
               <div className={styles.inputBox}>
