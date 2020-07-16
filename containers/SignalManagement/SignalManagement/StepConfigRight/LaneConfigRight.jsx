@@ -29,6 +29,7 @@ class LaneConfigRight extends PureComponent {
         this.setState({ userLimit: true })
       }
     })
+    this.props.getInfoListsType(this.props.roadInterId, 'DETECTOR')
     this.props.getInfoListsType(this.props.roadInterId, 'LANE')
   }
   popLayerShowHide = (name, flag, event, stepType) => {
@@ -57,6 +58,7 @@ class LaneConfigRight extends PureComponent {
     })
   }
   updateListItem = (itemDetailData, stepType, e) => {
+    console.log(itemDetailData, '修改的数据')
     e.stopPropagation();
     this.props.getUpdateAllTypes(itemDetailData.interId, this.props.roadNodeNo, itemDetailData.laneId, stepType, true)
   }
