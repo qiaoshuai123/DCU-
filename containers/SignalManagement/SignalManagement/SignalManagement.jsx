@@ -672,7 +672,7 @@ class SignalManagement extends PureComponent {
           marker = new AMap.Marker({
             position: new AMap.LngLat(item.lng, item.lat),
             offset: new AMap.Pixel(-16, -16),
-            content: "<div id='roadKey"+item.id+"'></div>",
+            content: "<div inter-id='"+item.interId+"' id='roadKey"+item.id+"' class='marker-online'></div>",
           })
           marker.on('click',function(){
             _this.setState({
@@ -690,6 +690,9 @@ class SignalManagement extends PureComponent {
     })
     if (marker && this.map) {
       this.map.setCenter([lng, lat])
+      this.map.emit('click', {
+        lnglat : this.map.getCenter()
+      })
       marker.emit('click', {
         lnglat : this.map.getCenter()
       })
