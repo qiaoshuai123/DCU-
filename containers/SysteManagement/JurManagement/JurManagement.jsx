@@ -182,6 +182,7 @@ class JurManagement extends Component {
   }
   handleAddGroup = () => {
     this.isAdd = true
+    this.defaultparams.menuIds = []
     this.setState({
       listItems: null,
       showGroupMsg: true,
