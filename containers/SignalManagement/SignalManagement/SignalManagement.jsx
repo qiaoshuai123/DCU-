@@ -359,6 +359,14 @@ class SignalManagement extends PureComponent {
     this.getSystemCodeType(32) // 方案相位阶段出现类型
     this.getSystemCodeType(33) // 方案相位阶段出现类型
   }
+  // 非空验证
+  isNotEmpty = (keyVal, msg) => {
+    debugger
+    if ( keyVal === '' ) {
+      message.info(msg);
+      return true
+    }
+  }
   // 各种ID重复验证
   verificationID = (resData, id, keyVal, msg) => {
     debugger
@@ -768,6 +776,11 @@ class SignalManagement extends PureComponent {
       if (this.state.loadFlag) {
         this.setState({ loadFlag: flag, editFlag: flag }, () => {
           this.showHidePop('stepTwoFlag', true)
+          const resultP = Promise.resolve(this.props.getUnitPop(this.state.roadInterId))
+          resultP.then(()=>{
+            this.setGetParams(this.props.data.dcuPopData)
+          })
+          this.props.getStepStatus(this.state.roadId, this.state.roadNodeNo)
         })
       } else {
         this.setState({ loadFlag: flag, editFlag: flag })
@@ -1067,31 +1080,27 @@ class SignalManagement extends PureComponent {
         this.cyclicComparison(this.state.typeData, 'rightofwayStartingupLoseLamp1Type', itemDetailData.rightofwayStartingupLoseLamp1Type, 'phaseShowDetail', true)
         this.cyclicComparison(this.state.typeData, 'rightofwayStartingupLoseLamp2Type', itemDetailData.rightofwayStartingupLoseLamp2Type, 'phaseShowDetail', true)
         this.cyclicComparison(this.state.typeData, 'rightofwayStartingupLoseLamp3Type', itemDetailData.rightofwayStartingupLoseLamp3Type, 'phaseShowDetail', true)
+        itemDetailData.phaseLampgroupId === '请点击进行编辑' ? itemDetailData.phaseLampgroupId = null : ''
+        itemDetailData.phaseDemand === '请点击进行编辑' ? itemDetailData.phaseDemand = null : ''
         itemDetailData = JSON.parse(JSON.stringify(this.state.phaseShowDetail))
-        if ( itemDetailData.phaseNo === '' ) {
-          message.info('相位序号不能为空！');
-          return
-        }
+        if ( this.isNotEmpty(itemDetailData.phaseNo, '相位序号不能为空！') ) return
         if ( this.verificationID(this.props.data.phaseLists, 'phaseNo', itemDetailData.phaseNo, '相位序号已存在') ) return 
         break;
       case 'STAGE':
         typeStr = '阶段'
         showStr = 'stepSixAddEdit'
         detailStr = 'stageShowDetail'
-        if ( itemDetailData.phasestageNo === '' ) {
-          message.info('阶段编号不能为空！');
-          return
-        }
+        itemDetailData.phasestagePhase === '请点击进行编辑' ? itemDetailData.phasestagePhase = null : ''
+        itemDetailData.softwareRequirement === '请点击进行编辑' ? itemDetailData.softwareRequirement = null : ''
+        itemDetailData.phasestageLane === '请点击进行编辑' ? itemDetailData.phasestageLane = null : ''
+        if ( this.isNotEmpty(itemDetailData.phasestageNo, '阶段编号不能为空！') ) return
         if ( this.verificationID(this.props.data.stageLists, 'phasestageNo', itemDetailData.phasestageNo, '阶段编号已存在') ) return 
         break;
       case 'PLAN':
         typeStr = '配时方案'
         showStr = 'stepSevenAddEdit'
         detailStr = 'planShowDetail'
-        if ( itemDetailData.schemeNo === '' ) {
-          message.info('方案编号不能为空！');
-          return
-        }
+        if ( this.isNotEmpty(itemDetailData.schemeNo, '方案编号不能为空！') ) return
         if ( this.verificationID(this.props.data.planLists, 'schemeNo', itemDetailData.schemeNo, '方案编号已存在') ) return 
         break;
       case 'DAYPLAN':
@@ -1106,10 +1115,7 @@ class SignalManagement extends PureComponent {
         typeStr = '日计划'
         showStr = 'stepEightAddEdit'
         detailStr = 'dayplanShowDetail'
-        if ( itemDetailData.dailyplanNo === '' ) {
-          message.info('日计划编号不能为空！');
-          return
-        }
+        if ( this.isNotEmpty(itemDetailData.dailyplanNo, '日计划编号不能为空！') ) return
         if ( this.verificationID(this.props.data.dayPlanLists, 'dailyplanNo', itemDetailData.dailyplanNo, '日计划编号已存在') ) return 
         break;
       case 'DISPATCH':
@@ -1119,10 +1125,7 @@ class SignalManagement extends PureComponent {
         itemDetailData.scheduleDetailList.map((item) => {
           item.scheduleNo = itemDetailData.scheduleNo
         })
-        if ( itemDetailData.scheduleNo === '' ) {
-          message.info('调度方案编号不能为空！');
-          return
-        }
+        if ( this.isNotEmpty(itemDetailData.scheduleNo, '调度方案编号不能为空！') ) return
         if ( this.verificationID(this.props.data.dispatchLists, 'scheduleNo', itemDetailData.scheduleNo, '调度编号已存在') ) return 
         break;
     }
@@ -1255,9 +1258,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
     }
   }
   getresetPwd = (item) => {
-    debugger
     this.showInterworkingList(null)
-
     const resultP = Promise.resolve(this.props.getUnitPop(item.interId))
     resultP.then(()=>{
       this.setGetParams(item)
@@ -1412,10 +1413,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
         typeStr = '车道'
         showStr = 'stepRoadAddEdit'
         detailStr = 'laneShowDetail'
-        if ( itemDetailData.laneId === '' ) {
-          message.info('车道ID不能为空！');
-          return
-        }
+        if ( this.isNotEmpty(itemDetailData.laneId, '车道ID不能为空！') ) return
         if ( this.verificationID(this.props.data.laneLists, 'laneId', itemDetailData.laneId, '车道ID已存在') ) return 
         break;
       case 'LIGHT':
@@ -1425,10 +1423,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
         this.cyclicComparison(this.state.controlDir, 'controlDir', itemDetailData.controlDir, 'lightShowDetail', true)
         this.cyclicComparison(this.state.controlTurn, 'controlTurn', itemDetailData.controlTurn, 'lightShowDetail', true)
         itemDetailData = JSON.parse(JSON.stringify(this.state.lightShowDetail))
-        if ( itemDetailData.lampgroupNo === '' ) {
-          message.info('灯组序号不能为空！');
-          return
-        }
+        if ( this.isNotEmpty(itemDetailData.lampgroupNo, '灯组序号不能为空！') ) return
         if ( this.verificationID(this.props.data.lightLists, 'lampgroupNo', itemDetailData.lampgroupNo, '灯组ID已存在') ) return 
         break;
       case 'DETECTOR':
@@ -1437,10 +1432,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
         detailStr = 'detectorShowDetail'
         this.cyclicComparison(this.state.detectorType, 'detectorType', itemDetailData.detectorType, 'detectorShowDetail', true)
         itemDetailData = JSON.parse(JSON.stringify(this.state.detectorShowDetail))
-        if ( itemDetailData.detectorId === '' ) {
-          message.info('检测器序号不能为空！');
-          return
-        }
+        if ( this.isNotEmpty(itemDetailData.detectorId, '检测器序号不能为空！') ) return
         if ( this.verificationID(this.props.data.detectorLists, 'detectorId', itemDetailData.detectorId, '检测器ID已存在') ) return 
         break;
     }
@@ -1465,10 +1457,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
         typeStr = '车道'
         showStr = 'stepRoadAddEdit'
         detailStr = 'laneShowDetail'
-        if ( itemDetailData.laneId === '' ) {
-          message.info('车道ID不能为空！');
-          return
-        }
+        if ( this.isNotEmpty(itemDetailData.laneId, '车道ID不能为空！') ) return
         if ( this.verificationID(this.props.data.laneLists, 'laneId', itemDetailData.laneId, '车道ID已存在') ) return 
         break;
       case 'LIGHT':
@@ -1478,10 +1467,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
         this.cyclicComparison(this.state.controlDir, 'controlDir', itemDetailData.controlDir, 'lightShowDetail', true)
         this.cyclicComparison(this.state.controlTurn, 'controlTurn', itemDetailData.controlTurn, 'lightShowDetail', true)
         itemDetailData = JSON.parse(JSON.stringify(this.state.lightShowDetail))
-        if ( itemDetailData.lampgroupNo === '' ) {
-          message.info('灯组序号不能为空！');
-          return
-        }
+        if ( this.isNotEmpty(itemDetailData.lampgroupNo, '灯组序号不能为空！') ) return
         if ( this.verificationID(this.props.data.lightLists, 'lampgroupNo', itemDetailData.lampgroupNo, '灯组序号已存在') ) return 
         break;
       case 'DETECTOR':
@@ -1490,10 +1476,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
         detailStr = 'detectorShowDetail'
         this.cyclicComparison(this.state.detectorType, 'detectorType', itemDetailData.detectorType, 'detectorShowDetail', true)
         itemDetailData = JSON.parse(JSON.stringify(this.state.detectorShowDetail))
-        if ( itemDetailData.detectorId === '' ) {
-          message.info('检测器序号不能为空！');
-          return
-        }
+        if ( this.isNotEmpty(itemDetailData.detectorId, '检测器序号不能为空！') ) return
         if ( this.verificationID(this.props.data.detectorLists, 'detectorId', itemDetailData.detectorId, '检测器序号已存在') ) return 
         break;
     }
