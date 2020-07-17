@@ -139,7 +139,7 @@ class Header extends React.Component {
         ],
       },
       {
-        id: 6, name: '关于系统', role: 6, path: '',
+        id: 6, name: '关于系统', role: 6,
       },
     ]
     this.menu = (
@@ -239,8 +239,7 @@ class Header extends React.Component {
     }
   }
   SelectButton = (navItem) => {
-    // console.log(this.state.userLimit, navItem.limitId, 'ss')
-    if (this.state.userLimit.indexOf(navItem.limitId) < 0) {
+    if (navItem.limitId && this.state.userLimit.indexOf(navItem.limitId) < 0) {
       message.warning('暂无此权限')
     } else {
       if (navItem.path && !navItem.child) {

@@ -396,10 +396,11 @@ class UserManagement extends Component {
                 </div>
                 <div className={styles.syetemItem}><span className={styles.item}>所属用户组</span>
                   <div className={styles.inSle}>
-                    <Select defaultValue={dataList.deptId} placeholder="请输入所属用户组" style={{ width: 300 }} onChange={(e) => { this.handleSetChange('deptIds', e) }}>
+                    <Select defaultValue={Number(dataList.deptId)} placeholder="请输入所属用户组" style={{ width: 300 }} onChange={(e) => { this.handleSetChange('deptIds', e) }}>
                       <Option value="">请选择所属用户组</Option>
                       {
                         !!depList && depList.map((item, index) => {
+                          console.log(item, dataList.deptId)
                           return (<Option value={item.id} key={item.deptCode + index}>{item.deptName}</Option>)
                         })
                       }
@@ -408,7 +409,7 @@ class UserManagement extends Component {
                 </div>
                 <div className={styles.syetemItem}><span className={styles.item}>用户角色</span>
                   <div className={styles.inSle}>
-                    <Select defaultValue={dataList.roleId} placeholder="用户角色" style={{ width: 300 }} onChange={(e) => { this.handleSetChange('roleIds', e) }}>
+                    <Select defaultValue={Number(dataList.roleId)} placeholder="用户角色" style={{ width: 300 }} onChange={(e) => { this.handleSetChange('roleIds', e) }}>
                       <Option value="">请选择用户角色</Option>
                       {
                         !!roleList && roleList.map((item, index) => {

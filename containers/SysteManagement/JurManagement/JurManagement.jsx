@@ -78,7 +78,7 @@ class JurManagement extends Component {
       autoExpandParent: false,
     })
   }
-  //
+  // 添加子菜单的选中
   getChildKeys = (children) => {
     children.forEach((item) => {
       this.defaultparams.menuIds += ',' + item.key
@@ -87,6 +87,7 @@ class JurManagement extends Component {
       }
     })
   }
+  // 取消子菜单的选中
   removeChildKeys = (children) => {
     children.forEach((item) => {
       const idIndex = this.currentMenuIds.indexOf(item.key)
@@ -98,7 +99,7 @@ class JurManagement extends Component {
   }
   onCheck = (checkedKeys, e) => {
     console.log('onCheck', checkedKeys, e)
-    const { children, eventKey } = e.node.props
+    const { children, eventKey, dataRef } = e.node.props
     if (children.length > 0) {
       if (e.checked) {
         this.defaultparams.menuIds += ',' + eventKey
@@ -115,8 +116,16 @@ class JurManagement extends Component {
         this.defaultparams.menuIds = this.currentMenuIds.join(',')
       }
     } else {
-      this.defaultparams.menuIds = checkedKeys.checked.join(',')
-      this.setState({ checkedKeys: checkedKeys.checked })
+      if (e.checked) {
+        this.checkedMenuIds = checkedKeys.checked
+        if (dataRef.parentId > 0 && this.checkedMenuIds.indexOf(dataRef.parentId) < 0) {
+          this.checkedMenuIds.push(dataRef.parentId)
+        }
+      } else {
+        this.checkedMenuIds = checkedKeys.checked
+      }
+      this.defaultparams.menuIds = this.checkedMenuIds.join(',')
+      this.setState({ checkedKeys: this.checkedMenuIds })
     }
   }
 
@@ -173,6 +182,7 @@ class JurManagement extends Component {
   }
   handleAddGroup = () => {
     this.isAdd = true
+    this.defaultparams.menuIds = []
     this.setState({
       listItems: null,
       showGroupMsg: true,
