@@ -776,6 +776,11 @@ class SignalManagement extends PureComponent {
       if (this.state.loadFlag) {
         this.setState({ loadFlag: flag, editFlag: flag }, () => {
           this.showHidePop('stepTwoFlag', true)
+          const resultP = Promise.resolve(this.props.getUnitPop(this.state.roadInterId))
+          resultP.then(()=>{
+            this.setGetParams(this.props.data.dcuPopData)
+          })
+          this.props.getStepStatus(this.state.roadId, this.state.roadNodeNo)
         })
       } else {
         this.setState({ loadFlag: flag, editFlag: flag })
@@ -1253,9 +1258,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
     }
   }
   getresetPwd = (item) => {
-    debugger
     this.showInterworkingList(null)
-
     const resultP = Promise.resolve(this.props.getUnitPop(item.interId))
     resultP.then(()=>{
       this.setGetParams(item)
