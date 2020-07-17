@@ -88,6 +88,7 @@ class InterworkingList extends Component {
   }
   handleChangeType = (value, options) => {
     const { pname } = options.props
+    console.log(options.key === 'null', options.key)
     const types = options.key === 'null' ? null : options.key
     this.logListParams[pname] = types
   }
@@ -126,7 +127,7 @@ class InterworkingList extends Component {
             <span className={styles.item}>日志类型:</span>
             <div className={styles.inSle}>
               <Select defaultValue="全部" onChange={this.handleChangeType}>
-                <Option value="全部" key={null}>全部</Option>
+                <Option value="全部" key={null} pname="logType">全部</Option>
                 {
                   logTypes &&
                   logTypes.map(item => <Option value={item.codeName} key={item.dictCode} pname="logType">{item.codeName}</Option>)
@@ -138,7 +139,7 @@ class InterworkingList extends Component {
             <span className={styles.item}>日志来源:</span>
             <div className={styles.inSle}>
               <Select defaultValue="全部" onChange={this.handleChangeType}>
-                <Option value="全部" key={null}>全部</Option>
+                <Option value="全部" key={null} pname="logSource">全部</Option>
                 {
                   logSource &&
                   logSource.map(item => <Option value={item.codeName} key={item.dictCode} pname="logSource">{item.codeName}</Option>)
@@ -150,7 +151,7 @@ class InterworkingList extends Component {
             <span className={styles.item}>请求响应:</span>
             <div className={styles.inSle}>
               <Select defaultValue="全部" onChange={this.handleChangeType}>
-                <Option value="全部" key={null}>全部</Option>
+                <Option value="全部" key={null} pname="dircetion">全部</Option>
                 <Option value="request" key="request" pname="dircetion">request</Option>
                 <Option value="response" key="response" pname="dircetion">response</Option>
               </Select>
