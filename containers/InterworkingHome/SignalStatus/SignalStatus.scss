@@ -97,65 +97,113 @@ $bor_color: #27343b;
       }
     }
   }
-  .switch {
+  .tagMarker {
+    display: flex;
+    justify-content: space-around;
     position: absolute;
-    width: 40px;
-    height: 40px;
-    right: 40px;
     top: 70px;
-    z-index: 9;
-    cursor: pointer;
-    background: url(../../../images/icon_turn.png) no-repeat;
-    background-size: contain;
-  }
-  .promptBox {
-    width: 190px;
-    border: 1px solid $bor_color;
-    background-color: rgba(28, 33, 39, 0.9);
-    position: absolute;
-    right: 80px;
-    top: 70px;
-    z-index: 9;
-    div {
-      height: 45px;
+    right: 20px;
+    z-index: 17;
+    .statusBox {
+      width: 270px;
       display: flex;
-      align-items: center;
-      padding-left: 15px;
-      span {
-        width: 30px;
-        height: 30px;
-        margin-right: 8px;
-      }
-      .spanTop {
-        background: url("./img/04.png") no-repeat;
-        background-size: contain;
-      }
-      &:nth-child(2) {
-        span {
+      flex-wrap: wrap;
+      background-color: rgba(28, 33, 39, 0.9);
+      border: 1px #353c46 solid;
+      padding: 6px 0 6px 5px;
+      margin-right: 5px;
+      > span {
+        line-height: 18px;
+        padding-left: 35px;
+        margin: 3px 0;
+        width: 50%;
+        &:nth-child(1) {
+          background: url("./img/04.png") no-repeat;
+          background-size: contain;
+          background-position: 10px center;
+          background-size: 18px 18px;
+        }
+        &:nth-child(2) {
           background: url("./img/06.png") no-repeat;
           background-size: contain;
+          background-position: 10px center;
+          background-size: 18px 18px;
         }
-      }
-      &:nth-child(3) {
-        span {
+        &:nth-child(3) {
           background: url("./img/01.png") no-repeat;
           background-size: contain;
+          background-position: 10px center;
+          background-size: 18px 18px;
         }
-      }
-      &:nth-child(4) {
-        span {
+        &:nth-child(4) {
           background: url("./img/02.png") no-repeat;
           background-size: contain;
+          background-position: 10px center;
+          background-size: 18px 18px;
         }
-      }
-      &:nth-child(5) {
-        span {
+        &:nth-child(5) {
           background: url("./img/05.png") no-repeat;
           background-size: contain;
+          background-position: 10px center;
+          background-size: 18px 18px;
         }
       }
     }
+    .turnBtn {
+      width: 32px;
+      height: 32px;
+      background: url(../../../images/icon_turn.png) no-repeat;
+      cursor: pointer;
+    }
   }
+  // .promptBox {
+  //   width: 190px;
+  //   border: 1px solid $bor_color;
+  //   background-color: rgba(28, 33, 39, 0.9);
+  //   position: absolute;
+  //   right: 80px;
+  //   top: 70px;
+  //   z-index: 9;
+  //   div {
+  //     height: 45px;
+  //     display: flex;
+  //     align-items: center;
+  //     padding-left: 15px;
+  //     span {
+  //       width: 30px;
+  //       height: 30px;
+  //       margin-right: 8px;
+  //     }
+  //     .spanTop {
+  //       background: url("./img/04.png") no-repeat;
+  //       background-size: contain;
+  //     }
+  //     &:nth-child(2) {
+  //       span {
+  //         background: url("./img/06.png") no-repeat;
+  //         background-size: contain;
+  //       }
+  //     }
+  //     &:nth-child(3) {
+  //       span {
+  //         background: url("./img/01.png") no-repeat;
+  //         background-size: contain;
+  //       }
+  //     }
+  //     &:nth-child(4) {
+  //       span {
+  //         background: url("./img/02.png") no-repeat;
+  //         background-size: contain;
+  //       }
+  //     }
+  //     &:nth-child(5) {
+  //       span {
+  //         background: url("./img/05.png") no-repeat;
+  //         background-size: contain;
+  //       }
+  //     }
+  //   }
+  // }
   .InterworkingList {
     width: 100%;
     height: calc(100% - 60px);

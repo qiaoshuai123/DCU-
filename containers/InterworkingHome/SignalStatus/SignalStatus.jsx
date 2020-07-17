@@ -232,7 +232,7 @@ class SignalStatus extends Component {
     this.infoWindow = infoWindow
     window.infoWindowClose = infoWindow
     map.on('click', (e) => {
-      marker.setContent("<div inter-id='"+dataItem.interId+"' class='marker-online'></div>");
+      marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online'></div>");
       infoWindow.close()
     })
   }
@@ -380,14 +380,24 @@ class SignalStatus extends Component {
             visibleShowLeft={this.visibleShowLeft}
           />
         </div>
-        <div className={styles.promptBox}>
+        {/* <div className={styles.promptBox}>
           <div><span className={styles.spanTop} />特殊控制{statisticsMap.special}处</div>
           <div><span className={styles.spanBom} />手动控制{statisticsMap.manual}处</div>
           <div><span className={styles.spanBom} />本地控制{statisticsMap.local}处</div>
           <div><span className={styles.spanBom} />优化控制{statisticsMap.optimize}处</div>
           <div><span className={styles.spanBom} />设备离线{statisticsMap.offline}处</div>
         </div>
-        <div onClick={() => this.showInterworkingList(true)} className={styles.switch} />
+        <div onClick={() => this.showInterworkingList(true)} className={styles.switch} /> */}
+        <div className={styles.tagMarker}>
+          <div className={styles.statusBox}>
+            <span>特殊控制{statisticsMap.special}处</span>
+            <span>手动控制{statisticsMap.manual}处</span>
+            <span>本地控制{statisticsMap.local}处</span>
+            <span>优化控制{statisticsMap.optimize}处</span>
+            <span>设备离线{statisticsMap.offline}处</span>
+          </div>
+          <div className={styles.turnBtn} onClick={() => this.showInterworkingList(true)} />
+        </div>
         {
           isInterworkingList &&
           <div className={styles.InterworkingList}>

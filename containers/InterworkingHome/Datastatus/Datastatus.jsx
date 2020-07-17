@@ -350,11 +350,13 @@ class Datastatus extends Component {
             visibleShowLeft={this.visibleShowLeft}
           />
         </div>
-        <div className={styles.promptBox}>
-          <div><span className={styles.spanTop} />数据正常{normal}处</div>
-          <div><span className={styles.spanBom} />数据异常{notNormal}处</div>
+        <div className={styles.tagMarker}>
+          <div className={styles.statusBox}>
+            <span className={styles.tagOnLine}>数据正常{normal}处</span>
+            <span className={styles.tagOffLine}>数据异常{notNormal}处</span>
+          </div>
+          <div className={styles.turnBtn} onClick={() => this.showInterworkingList(true)} />
         </div>
-        <div onClick={() => this.showInterworkingList(true)} className={styles.switch} />
         {
           isInterworkingList &&
           <div className={styles.InterworkingList}>

@@ -308,6 +308,9 @@ class RoadDetail extends Component {
           </div>
           {
             lampgroupDetailListinfo && lampgroupDetailListinfo.map((item, ind) => {
+              const imgStyleL = {
+                position: 'absolute', display: 'inline-block', top: `${item.y}px`, left: `${item.x}px`, paddingTop: '14px', transform: `translate(-50%,-50%) rotate(${item.angle}deg)`,
+              }
               let as = ''
               let str = 'http://192.168.1.213:20203/DCU/dcuImage/lampgroup'
               arrs.map((items) => {
@@ -317,8 +320,8 @@ class RoadDetail extends Component {
               })
               str = `${str + as}/`
               return (
-                <div key={`${str}${ind}`} style={{ left: `${item.x}px`, top: `${item.y}px` }} className={styles.laneInfoAndDetailinfo}>
-                  <img src={`${str}${item.imageUrl}`} alt="" />
+                <div key={`${str}${ind}`} style={imgStyleL} className={styles.laneInfoAndDetailinfo}>
+                  <img style={{ userSelect: 'none' }} src={`${str}${item.imageUrl}`} alt="" />
                 </div>
 
               )
@@ -326,14 +329,20 @@ class RoadDetail extends Component {
           }
           {
             detectorDetailListinfo && detectorDetailListinfo.map((item, ind) => {
+              const imgStyleL = {
+                position: 'absolute', display: 'inline-block', top: `${item.y}px`, left: `${item.x}px`, userSelect: 'none', paddingTop: '14px', transform: `translate(-50%,-50%) rotate(${item.angle}deg)`,
+              }
               return (
-                <div key={`${item}${ind}`} style={{ left: `${item.x}px`, top: `${item.y}px` }} className={styles.laneInfoAndDetailinfo}><img src={`${this.detectorBgUrl}${item.imageUrl}`} alt="" /></div>)
+                <div key={`${item}${ind}`} style={imgStyleL} className={styles.laneInfoAndDetailinfo}><img style={{ userSelect: 'none' }} src={`${this.detectorBgUrl}${item.imageUrl}`} alt="" /></div>)
             })
           }
           {
             laneInfoAndDetailinfo && laneInfoAndDetailinfo.map((item, ind) => {
+              const imgStyleL = {
+                position: 'absolute', display: 'inline-block', top: `${item.y}px`, left: `${item.x}px`, userSelect: 'none', paddingTop: '14px', transform: `translate(-50%,-50%) rotate(${item.angle}deg)`,
+              }
               return (
-                <div key={`${item}${ind}`} style={{ left: `${item.x}px`, top: `${item.y}px` }} className={styles.laneInfoAndDetailinfo}><img src={`${this.laneBgUrl}${item.imageUrl}`} alt="" /></div>
+                <div key={`${item}${ind}`} style={imgStyleL} className={styles.laneInfoAndDetailinfo}><img style={{ userSelect: 'none' }} src={`${this.laneBgUrl}${item.imageUrl}`} alt="" /></div>
               )
             })
           }

@@ -21,6 +21,7 @@ class InterworkingList extends Component {
       endDate: '',
       pageNo: 1,
     }
+    this.userLimit = (JSON.parse(localStorage.getItem('userLimit'))).map(item => item.id)
   }
   componentDidMount = () => {
     this.props.detectorDataListByPage('pageNo=1')
@@ -153,15 +154,19 @@ class InterworkingList extends Component {
           </div>
           <div className={styles.syetem_item}>
             <span className={styles.item}>上报时间:</span>
-            <div className={styles.inSle}><DatePicker onChange={this.onChangDateStart} /></div><span style={{ margin: '0 10px' }}>至</span><div className={styles.inSle}><DatePicker onChange={this.onChangDateEnd} /></div>
+            <div className={styles.inSle}><DatePicker style={{ width: 200, margin: 0 }} onChange={this.onChangDateStart} /></div><span style={{ margin: '0 10px' }}>至</span><div className={styles.inSle}><DatePicker style={{ width: 200, margin: 0 }} onChange={this.onChangDateEnd} /></div>
           </div>
           <span className={styles.searchBtn} onClick={this.handlePagination}>查询</span>
         </div>
         <div className={styles.equipmentList}>
           设备列表
-          <span onClick={this.exportTable}>
-            导出数据表
-          </span>
+          {
+            this.userLimit.indexOf(301) !== -1 ?
+              <span onClick={this.exportTable}>
+                导出数据表
+              </span> : ''
+          }
+
         </div>
         <div className={styles.syetem_buttom}>
           <div className={styles.listBox}>
