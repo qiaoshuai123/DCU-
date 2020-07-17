@@ -102,7 +102,8 @@ class JurManagement extends Component {
     const { children, eventKey, dataRef } = e.node.props
     if (children.length > 0) {
       if (e.checked) {
-        this.defaultparams.menuIds += ',' + eventKey
+        const lengths = this.defaultparams.menuIds.length
+        this.defaultparams.menuIds += lengths > 0 ? ',' + eventKey: eventKey
         this.getChildKeys(children)
         const allCheckedKeys = Array.from(new Set(this.defaultparams.menuIds.split(',')))
         this.defaultparams.menuIds = allCheckedKeys.join(',')
@@ -182,6 +183,7 @@ class JurManagement extends Component {
   }
   handleAddGroup = () => {
     this.isAdd = true
+    this.defaultparams.menuIds = []
     this.setState({
       listItems: null,
       showGroupMsg: true,
