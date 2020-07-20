@@ -8,7 +8,7 @@ function createInstance() {
   if (process.env.NODE_ENV === 'development') {
     axios.defaults.baseURL = '/'
   } else if (process.env.NODE_ENV === 'production') {
-    axios.defaults.baseURL = 'http://192.168.1.213:20203'
+    axios.defaults.baseURL = 'http://192.168.1.213:20203' // http://192.168.1.213:20203
   }
   // 添加请求拦截器
   axios.interceptors.request.use((config) => {

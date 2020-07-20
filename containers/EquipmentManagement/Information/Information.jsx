@@ -113,6 +113,7 @@ class Information extends Component {
       serverPort: '通信端口', // 通信端口
       maintainPhonesignal: '维护电话', // 维护电话
     }
+    this.dateFormat = 'YYYY-MM-DD'
   }
   componentWillMount = () => {
     this.getInter()

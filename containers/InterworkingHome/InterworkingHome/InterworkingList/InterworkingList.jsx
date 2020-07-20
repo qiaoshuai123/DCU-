@@ -208,7 +208,7 @@ class InterworkingList extends Component {
           </div>
           <div className={styles.paginations}>
             {
-              currnum && <Pagination showQuickJumper onChange={this.pageChange} pageSize={10} defaultCurrent={current} total={currnum} />
+              currnum ? <Pagination showQuickJumper onChange={this.pageChange} pageSize={10} defaultCurrent={current} total={currnum} /> : ''
             }
           </div>
         </div>

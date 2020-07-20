@@ -117,13 +117,13 @@ if (!httpENV) { // 如果是开发环境
   webpackConfig.devServer = {
     proxy: {
       '/DCU': {
-        target: 'http://192.168.1.213:20203', // 'http://39.100.128.220:20199',
+        target: 'http://192.168.1.213:20203', // 'http://39.100.128.220:20199',http://192.168.1.213:20203
         // pathRewrite: { '^/api': '' },
         // changeOrigion: true, // 这个参数可以让target参数是域名。
         secure: false, // 设置后，可以接受运行在 HTTPS 上，可以使用无效证书的后端服务器
       },
     },
-    port: 3000,
+    port: 20204,
     contentBase: './build',
     historyApiFallback: true,
     hot: true,
