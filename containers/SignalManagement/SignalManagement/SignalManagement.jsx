@@ -1616,11 +1616,10 @@ class SignalManagement extends PureComponent {
   updateMapPonitsColor = (data) => {
     for (let i = 0; i < $('div[inter-id]').length; i++) {
       const timeDiv = $($('div[inter-id]')[i])
-      data.map((item) => {
+      timeDiv.addClass('marker-offline')
+      data && data.map((item) => {
         if (item.interId === timeDiv.attr('inter-id') && !!item.state) {
-          timeDiv.removeClass('marker-offline')
-        } else {
-          timeDiv.addClass('marker-offline')
+          timeDiv.removeClass('marker-offline') 
         }
       })
     }
