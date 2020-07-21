@@ -361,7 +361,6 @@ class SignalManagement extends PureComponent {
   }
   // 非空验证
   isNotEmpty = (keyVal, msg) => {
-    debugger
     if ( keyVal === '' ) {
       message.info(msg);
       return true
@@ -370,12 +369,14 @@ class SignalManagement extends PureComponent {
   // 各种ID重复验证
   verificationID = (resData, id, keyVal, msg) => {
     debugger
+    // console.log($("#"+id).text(), Number(keyVal), 'asdfadsasdfa')
     for (let i = 0; i < resData.length; i++){
-      if (Number(resData[i][id]) === Number(keyVal)){
+      if (this.state.popAddEditText === '编辑' && Number(resData[i][id]) === Number(keyVal)) {
+        continue
+      } else if (Number(resData[i][id]) === Number(keyVal)){
         message.error(msg)
         $("#"+id).focus()
         return true
-
       }
     }
   }
@@ -1846,7 +1847,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
               <div className={styles.popTit}>{popAddEditText}{popAddEditName}</div>
               <div className={styles.popCon} style={{padding:'0'}}>
               { phaseFlag && phaseSelectLists &&
-                <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'PHASE')} value={phaseDefaultSelectLists.split(",").map(Number)}>
+                <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'PHASE')} value={phaseDefaultSelectLists && phaseDefaultSelectLists.split(",").map(Number)}>
                   <Row>
                     <Col span={4}>相位序号</Col>
                     <Col span={10}>相位名称</Col>
@@ -1865,7 +1866,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
                 </Checkbox.Group>
               }
               { laneSelectLists &&
-                <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'LANE')} value={laneDefaultSelectLists.split(",").map(Number)}>
+                <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'LANE')} value={laneDefaultSelectLists && laneDefaultSelectLists.split(",").map(Number)}>
                   <Row>
                     <Col span={4}>车道号</Col>
                     <Col span={5}>道路编号</Col>
@@ -1888,7 +1889,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
                 </Checkbox.Group>
               }
               { lightSelectLists &&
-                <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'LIGHT')} value={lightDefaultSelectLists.split(",").map(Number)}>
+                <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'LIGHT')} value={lightDefaultSelectLists && lightDefaultSelectLists.split(",").map(Number)}>
                   <Row>
                     <Col span={6}>灯组序号</Col>
                     <Col span={6}>灯组类型</Col>
@@ -1909,7 +1910,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
                 </Checkbox.Group>
               }
               { detectorSelectLists &&
-                <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'DETECTOR')} value={detectorDefaultSelectLists.split(",").map(Number)}>
+                <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'DETECTOR')} value={detectorDefaultSelectLists && detectorDefaultSelectLists.split(",").map(Number)}>
                   <Row>
                     <Col span={6}>检测器编号</Col>
                     <Col span={6}>检测器类型</Col>
