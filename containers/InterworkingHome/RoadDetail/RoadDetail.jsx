@@ -36,11 +36,11 @@ class RoadDetail extends Component {
       phasestageNames: '',
       isOnline: '',
     }
-    this.imgshref = 'http://192.168.1.213:20203/DCU/dcuImage/background/'
-    this.laneBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/lane/' // 车道
-    this.lightBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/lampgroup/' // 灯组
-    this.detectorBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/detector/' // 检测器
-    this.phaseBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/phasestage/' // 相位图标
+    this.imgshref = '/DCU/dcuImage/background/'
+    this.laneBgUrl = '/DCU/dcuImage/lane/' // 车道
+    this.lightBgUrl = '/DCU/dcuImage/lampgroup/' // 灯组
+    this.detectorBgUrl = '/DCU/dcuImage/detector/' // 检测器
+    this.phaseBgUrl = '/DCU/dcuImage/phasestage/' // 相位图标
     this.token = JSON.parse(localStorage.getItem('userInfo')).token
   }
   componentWillMount = () => {
@@ -273,12 +273,12 @@ class RoadDetail extends Component {
         <Websocket
           url={`${this.props.data.devSockets}/DCU/websocket/interMonitorRealTime/${this.unitId}/${this.interId}/${this.nodeId}?Authorization=${this.token}`}
           onMessage={this.handleData.bind(this)}
-          // onClose={() => this.handleClose()}
+        // onClose={() => this.handleClose()}
         />
         <Websocket
           url={`${this.props.data.devSockets}/DCU/websocket/interMonitorScheme/${this.unitId}/${this.interId}/${this.nodeId}?Authorization=${this.token}`}
           onMessage={this.handleDataSc.bind(this)}
-          // onClose={() => this.handleCloseSc()}
+        // onClose={() => this.handleCloseSc()}
         />
         {
           isMeessage && <Websocket
@@ -303,7 +303,7 @@ class RoadDetail extends Component {
             </div>
           }
         </div>
-        <div style={{ backgroundImage: `url(${this.imgshref}${RoadImg})` }} className={styles.imgBox} >
+        <div style={{ backgroundImage: `url(${this.props.data.devImage}${this.imgshref}${RoadImg})` }} className={styles.imgBox} >
           <div className={styles.centralBox}>
             20
           </div>
@@ -313,7 +313,7 @@ class RoadDetail extends Component {
                 position: 'absolute', display: 'inline-block', top: `${item.y}px`, left: `${item.x}px`, paddingTop: '14px', transform: `translate(-50%,-50%) rotate(${item.angle}deg)`,
               }
               let as = ''
-              let str = 'http://192.168.1.213:20203/DCU/dcuImage/lampgroup'
+              let str = `${this.props.data.devImage}/DCU/dcuImage/lampgroup`
               arrs.map((items) => {
                 if (item.lampgroupNo === items.lampgroupNo) {
                   as = items.lamogroupStatus
@@ -334,7 +334,7 @@ class RoadDetail extends Component {
                 position: 'absolute', display: 'inline-block', top: `${item.y}px`, left: `${item.x}px`, userSelect: 'none', paddingTop: '14px', transform: `translate(-50%,-50%) rotate(${item.angle}deg)`,
               }
               return (
-                <div key={`${item}${ind}`} style={imgStyleL} className={styles.laneInfoAndDetailinfo}><img style={{ userSelect: 'none' }} src={`${this.detectorBgUrl}${item.imageUrl}`} alt="" /></div>)
+                <div key={`${item}${ind}`} style={imgStyleL} className={styles.laneInfoAndDetailinfo}><img style={{ userSelect: 'none' }} src={`${this.props.data.devImage}${this.detectorBgUrl}${item.imageUrl}`} alt="" /></div>)
             })
           }
           {
@@ -343,7 +343,7 @@ class RoadDetail extends Component {
                 position: 'absolute', display: 'inline-block', top: `${item.y}px`, left: `${item.x}px`, userSelect: 'none', paddingTop: '14px', transform: `translate(-50%,-50%) rotate(${item.angle}deg)`,
               }
               return (
-                <div key={`${item}${ind}`} style={imgStyleL} className={styles.laneInfoAndDetailinfo}><img style={{ userSelect: 'none' }} src={`${this.laneBgUrl}${item.imageUrl}`} alt="" /></div>
+                <div key={`${item}${ind}`} style={imgStyleL} className={styles.laneInfoAndDetailinfo}><img style={{ userSelect: 'none' }} src={`${this.props.data.devImage}${this.laneBgUrl}${item.imageUrl}`} alt="" /></div>
               )
             })
           }
@@ -361,7 +361,7 @@ class RoadDetail extends Component {
             <li>
               当前阶段:<span className={styles.fontColor}>{phasestageNames}</span>
               <span className={styles.stageImgBox}>
-                <img width="30px" height="30px" src={`http://192.168.1.213:20203/DCU/dcuImage/phasestage1/${imgPaths}`} alt="" />
+                <img width="30px" height="30px" src={`${this.props.data.devImage}/DCU/dcuImage/phasestage1/${imgPaths}`} alt="" />
               </span>
             </li>
             <li>当前方案:<span className={styles.fontColor}></span>{schemeName}</li>
@@ -374,7 +374,7 @@ class RoadDetail extends Component {
                 if (item.phasestageNo == phasestageNo) { num = 1 }
                 return (
                   <dl key={item + index} className={styles.deviceControlBtn}>
-                    <dt><span className={styles.stageImgBox}><img src={`http://192.168.1.213:20203/DCU/dcuImage/phasestage${num}/` + item.imagePath} alt="" /></span></dt>
+                    <dt><span className={styles.stageImgBox}><img src={`${this.props.data.devImage}/DCU/dcuImage/phasestage${num}/` + item.imagePath} alt="" /></span></dt>
                     <dd>{item.phasestageName}</dd>
                   </dl>
                 )
@@ -389,7 +389,7 @@ class RoadDetail extends Component {
               <div className={styles.stageLeft}>锁定阶段控制:</div>
               <ul className={styles.stageRight}>
                 {
-                  nowPhasestageInfos && nowPhasestageInfos.map(item => <li key={item.id} onDoubleClick={() => this.centerControls(item.phasestageNo, '锁定阶段控制', 1)} style={{ backgroundImage: `url(${this.phaseBgUrl}${item.imagePath})` }} />)
+                  nowPhasestageInfos && nowPhasestageInfos.map(item => <li key={item.id} onDoubleClick={() => this.centerControls(item.phasestageNo, '锁定阶段控制', 1)} style={{ backgroundImage: `url(${this.props.data.devImage}${this.phaseBgUrl}${item.imagePath})` }} />)
                 }
               </ul>
             </div>

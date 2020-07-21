@@ -287,7 +287,7 @@ class ImgEvent extends React.Component {
               ref={(input) => { this.imgBox = input }}
               draggable="false">
               { showCloseTag && userLimit ? <Icon style={{position:'absolute', right:'-6px', top: '0', cursor: 'pointer'}} title='删除' type="close"  onClick={ (e) => this.handleDel(e, id) } /> : null }
-              <img style={{pointerEvents:'none'}} src={`http://192.168.1.213:20203/DCU/dcuImage/${thisUrl}/${imageUrl}`}
+              <img style={{pointerEvents:'none'}} src={`${this.props.data.devImage}/DCU/dcuImage/${thisUrl}/${imageUrl}`}
                 alt="" />
             </div> : null
         }

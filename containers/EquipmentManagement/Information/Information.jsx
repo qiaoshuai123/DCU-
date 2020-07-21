@@ -1,3 +1,4 @@
+
 import React, { Component } from 'react'
 import { Input, Icon, Radio, message, Upload, DatePicker } from 'antd'
 import axios from 'axios'
@@ -34,8 +35,8 @@ class Information extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      imgshref: 'http://192.168.1.213:20203/DCU/dcuImage/background/',
-      bacimghref: 'http://192.168.1.213:20203/DCU/dcuImage/background/',
+      imgshref: `${this.props.data.devImage}/DCU/dcuImage/background/`,
+      bacimghref: `${this.props.data.devImage}/DCU/dcuImage/background/`,
       fileList: [],
       imageUrl: '',
       basicBgLists: [],
@@ -152,7 +153,7 @@ class Information extends Component {
     if (e.target.value === 1) {
       this.setState({
         baseMapValue: e.target.value,
-        bacimghref: 'http://192.168.1.213:20203/DCU/dcuImage/background/',
+        bacimghref: `${this.props.data.devImage}/DCU/dcuImage/background/`,
         imageUrl: '',
       })
     } else {
@@ -449,7 +450,7 @@ class Information extends Component {
   }
   handleUpdateImageUrl = (imageName) => {
     this.setState({
-      bacimghref: 'http://192.168.1.213:20203/DCU/dcuImage/background/',
+      bacimghref: `${this.props.data.devImage}/DCU/dcuImage/background/`,
       imageUrl: imageName,
       bgListFlag: false,
       baseMapFlag: true,
@@ -462,7 +463,7 @@ class Information extends Component {
         background: imageUrl,
         id: this.id,
         baseMapValue: 1,
-        bacimghref: 'http://192.168.1.213:20203/DCU/dcuImage/background/',
+        bacimghref: `${this.props.data.devImage}/DCU/dcuImage/background/`,
       }
       this.props.postBgBySelect(objs)
     } else {
@@ -471,7 +472,7 @@ class Information extends Component {
           message.info("底图设置成功！")
           this.setState({
             baseMapValue: 1,
-            bacimghref: 'http://192.168.1.213:20203/DCU/dcuImage/background/',
+            bacimghref: `${this.props.data.devImage}/DCU/dcuImage/background/`,
           }, () => {
             this.popLayerShowHide("baseMapFlag", null)
             this.props.postBgByUpload(this.interId, this.state.imageFile)

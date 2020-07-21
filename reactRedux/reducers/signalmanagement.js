@@ -4,6 +4,7 @@ const objs = {
   devSockets: 'ws://192.168.1.213:20203', // 本地地址
   // 线上地址 'ws://39.100.128.220:20203',
   tokens: token,
+  devImage: 'http://192.168.1.213:20203', // 本地地址
 }
 const signalmanagement = (state = objs, action) => {
   const { type, payload } = action

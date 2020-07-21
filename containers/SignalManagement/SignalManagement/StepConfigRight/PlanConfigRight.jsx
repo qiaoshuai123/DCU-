@@ -16,7 +16,7 @@ class PlanConfigRight extends PureComponent {
       listNames: null,
       userLimit: null,
     }
-    this.imgIconUrl = 'http://192.168.1.213:20203/DCU/dcuImage/phasestage/'
+    this.imgIconUrl = `${this.props.data.devImage}/DCU/dcuImage/phasestage/`
   }
   componentDidUpdate = (prevState) => {
     const { planLists } = this.props.data

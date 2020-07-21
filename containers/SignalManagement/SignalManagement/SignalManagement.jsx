@@ -159,11 +159,11 @@ class SignalManagement extends PureComponent {
     }
     this.map = null
     this.moveFlag = false // 是否是移动状态
-    this.bgIpUrl = 'http://192.168.1.213:20203/DCU/dcuImage/background/'
-    this.laneBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/lane/'
-    this.lightBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/lampgroup2/' // 红色
-    this.detectorBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/detector/'
-    this.phaseBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/phasestage/'
+    this.bgIpUrl = `${this.props.data.devImage}/DCU/dcuImage/background/`
+    this.laneBgUrl = `${this.props.data.devImage}/DCU/dcuImage/lane/`
+    this.lightBgUrl = `${this.props.data.devImage}/DCU/dcuImage/lampgroup2/` // 红色
+    this.detectorBgUrl = `${this.props.data.devImage}/DCU/dcuImage/detector/`
+    this.phaseBgUrl = `${this.props.data.devImage}/DCU/dcuImage/phasestage/`
     this.socketPointStatusUrl = '/DCU/websocket/dcuState/0/0/0' // 实时请求地图点的状态
     this.socketPointPopUrl = '/DCU/websocket/interRunState/' // 点击显示实时弹层
     this.socketLoadDataUrl = '/DCU/websocket/loadData/' // 上传配置

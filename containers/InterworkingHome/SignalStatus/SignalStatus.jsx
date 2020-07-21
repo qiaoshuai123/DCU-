@@ -21,7 +21,7 @@ class SignalStatus extends Component {
       searchInterList: [],
     }
     this.searchInterList = []
-    this.phaseBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/phasestage/'
+    this.phaseBgUrl = `${this.props.data.devImage}/DCU/dcuImage/phasestage/`
     this.token = JSON.parse(localStorage.getItem('userInfo')).token
   }
   componentDidMount = () => {
