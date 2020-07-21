@@ -17,13 +17,14 @@ class InterworkingList extends Component {
       currnum: '',
       stylesList: [],
     }
-    this.statePointPopUrl = 'ws://192.168.1.213:20203/DCU/websocket/signalState/0/0/0' // 切换视图
+    this.statePointPopUrl = '/DCU/websocket/signalState/0/0/0' // 切换视图
     this.objs = {
       keyword: '',
       regions: '',
       names: '',
       pageNo: 1,
     }
+    this.token = JSON.parse(localStorage.getItem('userInfo')).token
   }
   componentDidMount = () => {
     this.props.signalList()
@@ -113,7 +114,7 @@ class InterworkingList extends Component {
     const { Option } = Select
     return (
       <div className={styles.syetem_bg} ref={(input) => { this.userLimitBox = input }}>
-        <Websocket url={this.statePointPopUrl} onMessage={this.handleData.bind(this)} />
+        <Websocket url={`${this.props.data.devSockets}${this.statePointPopUrl}?Authorization=${this.token}`} onMessage={this.handleData.bind(this)} />
         <div className={styles.syetem_title}>
           <div className={styles.syetem_titleLeft}>信号状态监视</div>
           <div title="切换视图" className={styles.turnBtn} onClick={this.backPage} />
@@ -217,7 +218,7 @@ class InterworkingList extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    data: { ...state.equipmentManagement },
+    data: { ...state.equipmentManagement, ...state.SignalManagement },
   }
 }
 const mapDisPatchToProps = (dispatch) => {

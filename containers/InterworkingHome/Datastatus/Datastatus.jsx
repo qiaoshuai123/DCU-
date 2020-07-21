@@ -23,6 +23,7 @@ class Datastatus extends Component {
 
     }
     this.searchInterList = []
+    this.token = JSON.parse(localStorage.getItem('userInfo')).token
   }
   componentDidMount = () => {
     this.loadingMap()
@@ -305,7 +306,7 @@ class Datastatus extends Component {
     return (
       <div className={styles.Datastatus}>
         <Websocket
-          url="ws://192.168.1.213:20203/DCU/websocket/allDetectorRunState/0/0/0"
+          url={`${this.props.data.devSockets}/DCU/websocket/allDetectorRunState/0/0/0?Authorization=${this.token}`}
           onMessage={this.handleData.bind(this)}
         // onClose={() => this.handleClose()}
         />

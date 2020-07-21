@@ -27,6 +27,7 @@ class EquipmentManagement extends Component {
       searchInterList: [],
     }
     this.searchInterList = []
+    this.token = JSON.parse(localStorage.getItem('userInfo')).token
   }
   componentDidMount = () => {
     this.loadingMap()
@@ -389,7 +390,7 @@ class EquipmentManagement extends Component {
     return (
       <div className={styles.EquipmentManagementBox}>
         <Websocket
-          url="ws://192.168.1.213:20203/DCU/websocket/dcuState/0/0/0"
+          url={`${this.props.data.devSockets}/DCU/websocket/dcuState/0/0/0?Authorization=${this.token}`}
           onMessage={this.handleData.bind(this)}
         // onClose={() => this.handleClose()}
         />
@@ -458,7 +459,7 @@ class EquipmentManagement extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    data: { ...state.publicData, ...state.equipmentManagement },
+    data: { ...state.publicData, ...state.equipmentManagement, ...state.SignalManagement },
   }
 }
 const mapDisPatchToProps = (dispatch) => {

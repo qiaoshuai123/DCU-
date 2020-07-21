@@ -22,6 +22,7 @@ class SignalStatus extends Component {
     }
     this.searchInterList = []
     this.phaseBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/phasestage/'
+    this.token = JSON.parse(localStorage.getItem('userInfo')).token
   }
   componentDidMount = () => {
     this.loadingMap()
@@ -334,11 +335,11 @@ class SignalStatus extends Component {
     return (
       <div className={styles.SignalStatus}>
         <Websocket
-          url="ws://192.168.1.213:20203/DCU/websocket/signalState/0/0/0"
+          url={`${this.props.data.devSockets}/DCU/websocket/signalState/0/0/0?Authorization=${this.token}`}
           onMessage={this.handleData.bind(this)}
         // onClose={() => this.handleClose()}
         />
-        {!!roadUnitId && !!roadInterId && !!roadNodeNo && <Websocket url={`ws://192.168.1.213:20203/DCU/websocket/interRunState/${roadUnitId}/${roadInterId}/${roadNodeNo}`} onMessage={this.handlePopData.bind(this)} />}
+        {!!roadUnitId && !!roadInterId && !!roadNodeNo && <Websocket url={`${this.props.data.devSockets}/DCU/websocket/interRunState/${roadUnitId}/${roadInterId}/${roadNodeNo}?Authorization=${this.token}`} onMessage={this.handlePopData.bind(this)} />}
         <Header {...this.props} />
         <div className={styles.Interwork_left}>
           <div className={styles.searchBox}>

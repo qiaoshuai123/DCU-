@@ -23,6 +23,7 @@ class InterworkingHome extends Component {
       searchInterList: [],
     }
     this.searchInterList = []
+    this.token = JSON.parse(localStorage.getItem('userInfo')).token
   }
 
   componentDidMount = () => {
@@ -325,14 +326,15 @@ class InterworkingHome extends Component {
     const { Search } = Input
     const { Option } = Select
     const { isInterworkingList, offlineNum, onlineNum, searchInterList, interListHeight, roadUnitId, roadInterId, roadNodeNo } = this.state
+    console.log(`${this.props.data.devSockets}/DCU/websocket/dcuState/0/0/0?Authorization=${this.token}`)
     return (
       <div className={styles.InterworkingHomeBox}>
         <Websocket
-          url="ws://192.168.1.213:20203/DCU/websocket/dcuState/0/0/0"
+          url={`${this.props.data.devSockets}/DCU/websocket/dcuState/0/0/0?Authorization=${this.token}`}
           onMessage={this.handleData.bind(this)}
         // onClose={() => this.handleClose()}
         />
-        {!!roadUnitId && !!roadInterId && !!roadNodeNo && <Websocket url={`ws://192.168.1.213:20203/DCU/websocket/dcuRunState/${roadUnitId}/${roadInterId}/${roadNodeNo}`} onMessage={this.handlePopData.bind(this)} />}
+        {!!roadUnitId && !!roadInterId && !!roadNodeNo && <Websocket url={`${this.props.data.devSockets}/DCU/websocket/dcuRunState/${roadUnitId}/${roadInterId}/${roadNodeNo}?Authorization=${this.token}`} onMessage={this.handlePopData.bind(this)} />}
         <Header {...this.props} />
         <div className={styles.Interwork_left}>
           <div className={styles.searchBox}>

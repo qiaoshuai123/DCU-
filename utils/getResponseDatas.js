@@ -28,6 +28,15 @@ axios.interceptors.request.use((config) => {
 
 // 返回拦截
 axios.interceptors.response.use((response) => {
+  if (response.data.code === -10) {
+    localStorage.clear()
+    if (process.env.NODE_ENV === 'development') {
+      // axios.defaults.baseURL = 'http://192.168.1.213:20203'
+      window.location.href = 'http://192.168.1.6:20204/#/login'
+    } else if (process.env.NODE_ENV === 'production') {
+      window.location.href = 'http://39.100.128.220:12345/build/index.html#/login'
+    }
+  }
   return response
 }, (error) => {
   return Promise.reject(error)

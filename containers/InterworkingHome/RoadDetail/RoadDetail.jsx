@@ -41,6 +41,7 @@ class RoadDetail extends Component {
     this.lightBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/lampgroup/' // 灯组
     this.detectorBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/detector/' // 检测器
     this.phaseBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/phasestage/' // 相位图标
+    this.token = JSON.parse(localStorage.getItem('userInfo')).token
   }
   componentWillMount = () => {
     this.getInter()
@@ -79,8 +80,8 @@ class RoadDetail extends Component {
     }
   }
   componentWillUnmount = () => {
-    this.handleClose()
-    this.handleCloseSc()
+    // this.handleClose()
+    // this.handleCloseSc()
     // window.open('#777')
   }
   getschemeInfoListinfo = (schemeInfoListinfo) => {
@@ -270,18 +271,18 @@ class RoadDetail extends Component {
           </div>
         </div>
         <Websocket
-          url={`ws://192.168.1.213:20203/DCU/websocket/interMonitorRealTime/${this.unitId}/${this.interId}/${this.nodeId}`}
+          url={`${this.props.data.devSockets}/DCU/websocket/interMonitorRealTime/${this.unitId}/${this.interId}/${this.nodeId}?Authorization=${this.token}`}
           onMessage={this.handleData.bind(this)}
-          onClose={() => this.handleClose()}
+          // onClose={() => this.handleClose()}
         />
         <Websocket
-          url={`ws://192.168.1.213:20203/DCU/websocket/interMonitorScheme/${this.unitId}/${this.interId}/${this.nodeId}`}
+          url={`${this.props.data.devSockets}/DCU/websocket/interMonitorScheme/${this.unitId}/${this.interId}/${this.nodeId}?Authorization=${this.token}`}
           onMessage={this.handleDataSc.bind(this)}
-          onClose={() => this.handleCloseSc()}
+          // onClose={() => this.handleCloseSc()}
         />
         {
           isMeessage && <Websocket
-            url={`ws://192.168.1.213:20203/DCU/websocket/dcuRunState/${this.unitId}/${this.interId}/${this.nodeId}`}
+            url={`${this.props.data.devSockets}/DCU/websocket/dcuRunState/${this.unitId}/${this.interId}/${this.nodeId}?Authorization=${this.token}`}
             onMessage={this.handleDcu.bind(this)}
           />
         }
@@ -426,7 +427,7 @@ class RoadDetail extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    data: { ...state.equipmentManagement, ...state.publicData },
+    data: { ...state.equipmentManagement, ...state.publicData, ...state.SignalManagement },
   }
 }
 const mapDisPatchToProps = (dispatch) => {

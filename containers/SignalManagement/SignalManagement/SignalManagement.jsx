@@ -42,7 +42,7 @@ class SignalManagement extends PureComponent {
     super(props)
     this.state = {
       popAddEditText: '添加', // 添加或编辑状态
-      popAddEditName: '', 
+      popAddEditName: '',
       moveFlag: null,
       stepOneFlag: true,
       stepTwoFlag: null,
@@ -163,19 +163,20 @@ class SignalManagement extends PureComponent {
     this.lightBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/lampgroup2/' // 红色
     this.detectorBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/detector/'
     this.phaseBgUrl = 'http://192.168.1.213:20203/DCU/dcuImage/phasestage/'
-    this.socketPointStatusUrl = 'ws://192.168.1.213:20203/DCU/websocket/dcuState/0/0/0' // 实时请求地图点的状态
-    this.socketPointPopUrl = 'ws://192.168.1.213:20203/DCU/websocket/interRunState/' // 点击显示实时弹层
-    this.socketLoadDataUrl = 'ws://192.168.1.213:20203/DCU/websocket/loadData/' // 上传配置
-    this.socketEditDataUrl = 'ws://192.168.1.213:20203/DCU/websocket/editData/' // 下发配置
+    this.socketPointStatusUrl = '/DCU/websocket/dcuState/0/0/0' // 实时请求地图点的状态
+    this.socketPointPopUrl = '/DCU/websocket/interRunState/' // 点击显示实时弹层
+    this.socketLoadDataUrl = '/DCU/websocket/loadData/' // 上传配置
+    this.socketEditDataUrl = '/DCU/websocket/editData/' // 下发配置
     this.searchInterList = []
     this.itemDetailData = null
     this.selImage = null
+    this.token = JSON.parse(localStorage.getItem('userInfo')).token
   }
   componentDidUpdate = (prevState) => {
     const { mapPointsData, dcuPopData, stepStatusData, basicBgLists, basicUplSuccess, dcuTreeData, codeTypeData, phaseLists,
-    laneShowDetail, laneIconLists, lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists, laneSelectLists, lightSelectLists, detectorSelectLists, phaseIconLists, planChainsLists, dayPlanClickInfo, dispatchClickInfo } = this.props.data
+      laneShowDetail, laneIconLists, lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists, laneSelectLists, lightSelectLists, detectorSelectLists, phaseIconLists, planChainsLists, dayPlanClickInfo, dispatchClickInfo } = this.props.data
     if (prevState.data !== this.props.data) {
-      console.log(this.props,this.props.data, "data中所有的数据")
+      console.log(this.props, this.props.data, "data中所有的数据")
     }
     if (prevState.data.codeTypeData !== codeTypeData) {
       console.log(codeTypeData, 'codeType 数据')
@@ -187,7 +188,7 @@ class SignalManagement extends PureComponent {
     }
     if (prevState.data.mapPointsData !== mapPointsData) {
       console.log(mapPointsData, '点数据')
-      this.setState({ mapPointsData },()=>{
+      this.setState({ mapPointsData }, () => {
         this.loadingMap()
       })
     }
@@ -213,7 +214,7 @@ class SignalManagement extends PureComponent {
     }
     if (prevState.data.lightShowDetail !== lightShowDetail) {
       // console.log(lightShowDetail,  '灯组回显详情')
-      this.setState({ lightShowDetail, showFlag: true, },()=>{
+      this.setState({ lightShowDetail, showFlag: true, }, () => {
         this.cyclicComparison(this.state.controlDir, 'controlDir', lightShowDetail.controlDir, 'lightShowDetail')
         this.cyclicComparison(this.state.controlTurn, 'controlTurn', lightShowDetail.controlTurn, 'lightShowDetail')
       })
@@ -224,7 +225,7 @@ class SignalManagement extends PureComponent {
     }
     if (prevState.data.detectorShowDetail !== detectorShowDetail) {
       // console.log(detectorShowDetail, '检测器回显详情')
-      this.setState({ detectorShowDetail, showFlag: true, },()=>{
+      this.setState({ detectorShowDetail, showFlag: true, }, () => {
         this.cyclicComparison(this.state.detectorType, 'detectorType', detectorShowDetail.detectorType, 'detectorShowDetail')
       })
     }
@@ -251,9 +252,9 @@ class SignalManagement extends PureComponent {
     if (prevState.data.phaseLists !== phaseLists) {
       this.setState({ phaseSelectLists: phaseLists })
     }
-    
+
     if (prevState.data.planChainsLists !== planChainsLists) {
-      this.setState({ planChainsLists: null, cycleLength: planChainsLists.allTime  }, () => {
+      this.setState({ planChainsLists: null, cycleLength: planChainsLists.allTime }, () => {
         this.setState({ planChainsLists: planChainsLists.phasestageList }, () => {
           this.getScrollTime(this.state.planChainsLists)
         })
@@ -270,24 +271,24 @@ class SignalManagement extends PureComponent {
     // 获取用户权限
     const limitArr = JSON.parse(localStorage.getItem('userLimit'))
     limitArr.forEach((item) => {
-      if (item.id === 201){
+      if (item.id === 201) {
         this.setState({ userLimit: true })
       }
     })
     document.addEventListener('click', (e) => {
       if (e.target !== this.searchInputBox) {
-        if ( e.target !== this.searchBtn ) {
+        if (e.target !== this.searchBtn) {
           this.setState({ interListHeight: 0 })
         }
       }
-      if ( this.selImage !== null && e.target !== this.selImage) {
+      if (this.selImage !== null && e.target !== this.selImage) {
         this.setState({ showFlag: true })
       }
       this.visibleShowLeft('', '', false)
     })
     // 加载DCU IO接口号
     const Dcu_Io_Ids = []
-    for( let m = 1; m < 33; m++){
+    for (let m = 1; m < 33; m++) {
       const ioId = {
         dcuIoId: m
       }
@@ -295,10 +296,10 @@ class SignalManagement extends PureComponent {
     }
     // 加载日
     const dayData = [], monthData = [], weekData = []
-    for( let num = 0; num < 31; num++){
+    for (let num = 0; num < 31; num++) {
       if (num < 7) {
         let weekStr = ''
-        switch(num){
+        switch (num) {
           case 0:
             weekStr = '日'
             break;
@@ -322,24 +323,24 @@ class SignalManagement extends PureComponent {
             break;
         }
         const newWeek = {
-          value: num, 
+          value: num,
           label: weekStr,
         }
         weekData.push(newWeek)
       }
       if (num < 12) {
         const newMonth = {
-          value: num+1, 
-          label: num+1,
+          value: num + 1,
+          label: num + 1,
         }
         monthData.push(newMonth)
       }
       const newObj = {
-        value: num+1, 
-        label: num+1,
+        value: num + 1,
+        label: num + 1,
       }
       dayData.push(newObj)
-      
+
     }
     this.setState({ dayData, monthData, weekData, Dcu_Io_Ids })
     // 初始化地图
@@ -361,7 +362,7 @@ class SignalManagement extends PureComponent {
   }
   // 非空验证
   isNotEmpty = (keyVal, msg) => {
-    if ( keyVal === '' ) {
+    if (keyVal === '') {
       message.info(msg);
       return true
     }
@@ -370,12 +371,12 @@ class SignalManagement extends PureComponent {
   verificationID = (resData, id, keyVal, msg) => {
     debugger
     // console.log($("#"+id).text(), Number(keyVal), 'asdfadsasdfa')
-    for (let i = 0; i < resData.length; i++){
+    for (let i = 0; i < resData.length; i++) {
       if (this.state.popAddEditText === '编辑' && Number(resData[i][id]) === Number(keyVal)) {
         continue
-      } else if (Number(resData[i][id]) === Number(keyVal)){
+      } else if (Number(resData[i][id]) === Number(keyVal)) {
         message.error(msg)
-        $("#"+id).focus()
+        $("#" + id).focus()
         return true
       }
     }
@@ -386,48 +387,48 @@ class SignalManagement extends PureComponent {
     dayPlanClickInfo.push(data)
     for (let p in data) {
       let newObj;
-      switch(p){     
+      switch (p) {
         case 'schemeNo':
-          newObj = {key: p, label: '方案序号'}
+          newObj = { key: p, label: '方案序号' }
           break;
         case 'schemeName':
-          newObj = {key: p, label: '方案名称'}
+          newObj = { key: p, label: '方案名称' }
           break;
         case 'schemeCycle':
-          newObj = {key: p, label: '方案周期'}
+          newObj = { key: p, label: '方案周期' }
           break;
         case 'schemeCoordinationNo':
-          newObj = {key: p, label: '方案协调序号'}
+          newObj = { key: p, label: '方案协调序号' }
           break;
         case 'schemePhaseDiferenceTime':
-          newObj = {key: p, label: '方案相位差时间'}
+          newObj = { key: p, label: '方案相位差时间' }
           break;
         case 'phaseStageInfoList':
-          newObj = {key: p, label: '放行阶段列表'}
+          newObj = { key: p, label: '放行阶段列表' }
           break;
         case 'coordinationImagePath':
-          newObj = {key: p, label: '协调阶段'}
-          break; 
+          newObj = { key: p, label: '协调阶段' }
+          break;
       }
-      if (newObj) listNames.push(newObj) 
+      if (newObj) listNames.push(newObj)
     }
     this.setState({ listNames, dayPlanClickInfo, popItemFlag: false })
   }
   // toDayPlan
   getListDayData = (data) => {
-    const listNames = [], dispatchClickInfo= []
+    const listNames = [], dispatchClickInfo = []
     dispatchClickInfo.push(data)
     for (let p in data) {
       let newObj;
-      switch(p){     
+      switch (p) {
         case 'dailyplanNo':
-          newObj = {key: p, label: '计划编号'}
+          newObj = { key: p, label: '计划编号' }
           break;
         case 'timeintervalList':
-          newObj = {key: p, label: '计划列表'}
+          newObj = { key: p, label: '计划列表' }
           break;
       }
-      if (newObj) listNames.push(newObj) 
+      if (newObj) listNames.push(newObj)
     }
     this.setState({ listNames, dispatchClickInfo, popItemFlag: true })
   }
@@ -458,8 +459,8 @@ class SignalManagement extends PureComponent {
             const turnDirNoListData = []
             this.state.turnDirNoListData.map((item) => {
               const newObj = {
-                value: item.dictCode, 
-                label: item.codeName+item.codeDes,
+                value: item.dictCode,
+                label: item.codeName + item.codeDes,
               }
               turnDirNoListData.push(newObj)
             })
@@ -484,7 +485,7 @@ class SignalManagement extends PureComponent {
   // 循环ID转Name
   // flag: 为true 时 Name 转ID
   cyclicComparison = (dataRes, keyName, id, resData, flag) => {
-    dataRes.map((item) =>{
+    dataRes.map((item) => {
       if (flag) {
         if (item.codeName === id) {
           this.state[resData][keyName] = item.dictCode
@@ -512,13 +513,13 @@ class SignalManagement extends PureComponent {
   // 文本输入改变值
   handleChangeInput = (event, type, name, key, index) => {
     if (key) {
-      if (index !== undefined){
+      if (index !== undefined) {
         this[type][name][index][key] = event.target.value
         const newObj = JSON.parse(JSON.stringify(this[type][name]))
         const newArrTime = this.state.planShowDetail.schemePhasestageChainsTime.split(",")
         newArrTime[index] = event.target.value
         this.state.planShowDetail.schemePhasestageChainsTime = newArrTime.join()
-        this.setState({ [name]: newObj })  
+        this.setState({ [name]: newObj })
       } else {
         // key === 'dailyplanNo' ? this[type][name][key] = Number(event.target.value) : this[type][name][key] = event.target.value
         this[type][name][key] = event.target.value
@@ -536,12 +537,12 @@ class SignalManagement extends PureComponent {
   // 点击单选按钮
   handleClickRadio = (item) => {
     item.phaseTimeIndex = 0
-    this.setState({ strStagePlanItem: item})
+    this.setState({ strStagePlanItem: item })
   }
   // 确认单选按钮 弹层
   stageIdRight = (event, type, name, key) => {
     this[type][name].schemePhasestageChainsTime ? this[type][name].schemePhasestageChainsTime = this[type][name].schemePhasestageChainsTime + ',' + '0' : this[type][name].schemePhasestageChainsTime = '0'
-    this[type][name][key] ? this[type][name][key] = this[type][name][key] + ',' + this.state.strStagePlanID :  this[type][name][key] = this.state.strStagePlanID
+    this[type][name][key] ? this[type][name][key] = this[type][name][key] + ',' + this.state.strStagePlanID : this[type][name][key] = this.state.strStagePlanID
     const newArr = this.state.planStageLists ? JSON.parse(JSON.stringify(this.state.planStageLists)) : []
     newArr.push(this.state.strStagePlanItem)
     console.log(newArr, '看下数据对不？')
@@ -552,11 +553,11 @@ class SignalManagement extends PureComponent {
     this.setState({ showFlag: true })
   }
   // 时间
-  handleChangeTime = (v, time, type, name, key, index, keyValue ) => {
+  handleChangeTime = (v, time, type, name, key, index, keyValue) => {
     this[type][name][key][index][keyValue] = time
     const newObj = JSON.parse(JSON.stringify(this[type][name]))
     this.setState({ [name]: newObj })
-  }    
+  }
   // 下拉选择值
   handleChangeSel = (value, type, name, key, index, keyValue) => {
     if (index !== undefined) {
@@ -572,7 +573,7 @@ class SignalManagement extends PureComponent {
         this[type][name] = value
       }
     }
-    
+
   }
   // 复选框
   handleChangeCheck = (checkValues, type, name, key, index, keyValue) => {
@@ -658,7 +659,7 @@ class SignalManagement extends PureComponent {
         !value ? this.props.checkUnitTree(this.state.treeListBackups) : this.props.checkUnitTree(this.state.treeList)
       })
     }, 200)
-    
+
   }
   // 获取子id, 路口id
   getSelectChildId = (childInterId) => {
@@ -673,16 +674,16 @@ class SignalManagement extends PureComponent {
           marker = new AMap.Marker({
             position: new AMap.LngLat(item.lng, item.lat),
             offset: new AMap.Pixel(-16, -16),
-            content: "<div inter-id='"+item.interId+"' id='roadKey"+item.id+"' class='marker-online'></div>",
+            content: "<div inter-id='" + item.interId + "' id='roadKey" + item.id + "' class='marker-online'></div>",
           })
-          marker.on('click',function(){
+          marker.on('click', function () {
             _this.setState({
               roadUnitId: item.id,
               roadInterId: item.interId,
               roadNodeNo: item.nodeId,
             })
             const resultP = Promise.resolve(_this.props.getUnitPop(childInterId))
-            resultP.then(()=>{
+            resultP.then(() => {
               _this.openInfoWin(_this.map, item, marker, item.interName)
             })
           })
@@ -692,10 +693,10 @@ class SignalManagement extends PureComponent {
     if (marker && this.map) {
       this.map.setCenter([lng, lat])
       this.map.emit('click', {
-        lnglat : this.map.getCenter()
+        lnglat: this.map.getCenter()
       })
       marker.emit('click', {
-        lnglat : this.map.getCenter()
+        lnglat: this.map.getCenter()
       })
     } else {
       message.info('该路口尚未接入')
@@ -722,16 +723,16 @@ class SignalManagement extends PureComponent {
   }
   tagToPicMark = (e) => {
     const idStr = e.currentTarget.getAttribute("tag-mark");
-    if ($(e.currentTarget).hasClass(styles.hover)){
+    if ($(e.currentTarget).hasClass(styles.hover)) {
       $(e.currentTarget).removeClass(styles.hover)
-      $('div[pic-mark]').map(( i, item ) => {
+      $('div[pic-mark]').map((i, item) => {
         if (item.getAttribute('pic-mark') === idStr) {
           $(item).removeClass(styles.imgCurrent)
         }
       })
     } else {
       $(e.currentTarget).addClass(styles.hover).siblings().removeClass(styles.hover)
-      $('div[pic-mark]').map(( i, item ) => {
+      $('div[pic-mark]').map((i, item) => {
         if (item.getAttribute('pic-mark') === idStr) {
           $(item).addClass(styles.imgCurrent).siblings().removeClass(styles.imgCurrent)
         }
@@ -775,13 +776,13 @@ class SignalManagement extends PureComponent {
   }
   // 显示隐藏弹层
   popLayerShowHide = (name, flag, eventType, stepType) => {
-    if (name === 'dayPlanClickInfo' && this.state.dispatchClickInfo ) this.getListDayData(this.state.dispatchClickInfo[0])
+    if (name === 'dayPlanClickInfo' && this.state.dispatchClickInfo) this.getListDayData(this.state.dispatchClickInfo[0])
     if (name === 'loadFlag') {
       if (this.state.loadFlag) {
         this.setState({ loadFlag: flag, editFlag: flag }, () => {
           this.showHidePop('stepTwoFlag', true)
           const resultP = Promise.resolve(this.props.getUnitPop(this.state.roadInterId))
-          resultP.then(()=>{
+          resultP.then(() => {
             this.setGetParams(this.props.data.dcuPopData)
           })
           this.props.getStepStatus(this.state.roadId, this.state.roadNodeNo)
@@ -796,11 +797,11 @@ class SignalManagement extends PureComponent {
       popItemFlag: true,
       // dispatchClickInfo: name === 'dayPlanClickInfo' ? this.state.dispatchClickInfoCopy : null
     })
-    if(flag){
-      switch(stepType){
+    if (flag) {
+      switch (stepType) {
         case "LANE":
           // this.itemDetailData
-           const laneShowDetail = {
+          const laneShowDetail = {
             "angle": 0, //角度
             "fDir8No": 0,//方向
             "fRid": '', //道路ID
@@ -887,84 +888,84 @@ class SignalManagement extends PureComponent {
           }
           this.setState({ phaseShowDetail })
           break;
-          case "STAGE":
-            const stageShowDetail = {
-              "interId": this.state.roadInterId,  //路口ID
-              "imagePath": "",  //图片
-              "lateStartTime": 0,  //阶段中相位晚启动的时间
-              "leftingEndTime": 0,  //阶段中相位早结束的时间
-              "phasestageForbiden": 0,  //相位阶段禁止标志
-              "phasestageLampgroup": "",
-              "phasestageLane": "",  //相位阶段包含的车道
-              "phasestageName": "",  //阶段名称
-              "phasestageNo": '',  //阶段编号
-              "phasestagePhase": "", //相位阶段包含的相位
-              "phasestageShield": 0,   //相位阶段屏蔽标志
-              "schemePhaseTime": "",
-              "softwareRequirement": "" //相位阶段软件需求
-            }
+        case "STAGE":
+          const stageShowDetail = {
+            "interId": this.state.roadInterId,  //路口ID
+            "imagePath": "",  //图片
+            "lateStartTime": 0,  //阶段中相位晚启动的时间
+            "leftingEndTime": 0,  //阶段中相位早结束的时间
+            "phasestageForbiden": 0,  //相位阶段禁止标志
+            "phasestageLampgroup": "",
+            "phasestageLane": "",  //相位阶段包含的车道
+            "phasestageName": "",  //阶段名称
+            "phasestageNo": '',  //阶段编号
+            "phasestagePhase": "", //相位阶段包含的相位
+            "phasestageShield": 0,   //相位阶段屏蔽标志
+            "schemePhaseTime": "",
+            "softwareRequirement": "" //相位阶段软件需求
+          }
           this.setState({ stageShowDetail, showFlag: true })
           break;
-          case "PLAN":
-            const planShowDetail = {
-              "interId": this.state.roadInterId,  //
-              "nodeNo": this.state.roadNodeNo, //
-              "schemeCoordinationNo": 0,  //方案协调序号
-              "schemeCycle": 0,   //方案周期
-              "schemeName": "",  //方案名称
-              "schemeNo": '',   //方案号
-              "schemePhaseDiferenceTime": 0,   //方案相位差时间
-              "schemePhasestageChains": "",  //方案相位阶段链
-              "schemePhasestageChainsTime": "",  //方案相位阶段链时间
-              "schemePhasestageType": ""   //方案相位阶段出现类型
-            }
+        case "PLAN":
+          const planShowDetail = {
+            "interId": this.state.roadInterId,  //
+            "nodeNo": this.state.roadNodeNo, //
+            "schemeCoordinationNo": 0,  //方案协调序号
+            "schemeCycle": 0,   //方案周期
+            "schemeName": "",  //方案名称
+            "schemeNo": '',   //方案号
+            "schemePhaseDiferenceTime": 0,   //方案相位差时间
+            "schemePhasestageChains": "",  //方案相位阶段链
+            "schemePhasestageChainsTime": "",  //方案相位阶段链时间
+            "schemePhasestageType": ""   //方案相位阶段出现类型
+          }
           this.setState({ planShowDetail, planStageLists: null, showFlag: true })
           break;
-          case "DAYPLAN":
-            const dayplanShowDetail = {
-              "dailyplanNo": "", //日计划编号
-              "interId": this.state.roadInterId,  //
-              "nodeNo": this.state.roadNodeNo, //
-              "timeintervalList":[],
-              "timeintervalModelChain": "",    //时段运行模式链
-              "timeintervalSchemeChain": "",   //时段执行方案链
-              "timeintervalStarttimeChain": ""  //时段开始时间链
-            }
+        case "DAYPLAN":
+          const dayplanShowDetail = {
+            "dailyplanNo": "", //日计划编号
+            "interId": this.state.roadInterId,  //
+            "nodeNo": this.state.roadNodeNo, //
+            "timeintervalList": [],
+            "timeintervalModelChain": "",    //时段运行模式链
+            "timeintervalSchemeChain": "",   //时段执行方案链
+            "timeintervalStarttimeChain": ""  //时段开始时间链
+          }
           this.setState({ dayplanShowDetail, showFlag: true })
           break;
-          case "DISPATCH":
-            const dispatchShowDetail = {
-              "interId": this.state.roadInterId,  //
-              "nodeNo": this.state.roadNodeNo, //
-              "scheduleNo": '',    //调度号
-              "scheduleDetailList": [
-                {
-                  "interId": this.state.roadInterId,  //
-                  "nodeNo": this.state.roadNodeNo, //
-                  "scheduleNo": '',   //调度号
-                  "dailyPlanId": 0,   //日计划编号
-                  "dataValueCodes": "0",  //日期值code，逗号拼接
-                  "dateType": 0,  //日期类型                    
-                  "monthValueCodes": "", //月份
-                  "priority": 0,  //优先级
-                }
-              ]
-            }
-            this.setState({ dispatchShowDetail, showFlag: true })
+        case "DISPATCH":
+          const dispatchShowDetail = {
+            "interId": this.state.roadInterId,  //
+            "nodeNo": this.state.roadNodeNo, //
+            "scheduleNo": '',    //调度号
+            "scheduleDetailList": [
+              {
+                "interId": this.state.roadInterId,  //
+                "nodeNo": this.state.roadNodeNo, //
+                "scheduleNo": '',   //调度号
+                "dailyPlanId": 0,   //日计划编号
+                "dataValueCodes": "0",  //日期值code，逗号拼接
+                "dateType": 0,  //日期类型                    
+                "monthValueCodes": "", //月份
+                "priority": 0,  //优先级
+              }
+            ]
+          }
+          this.setState({ dispatchShowDetail, showFlag: true })
           break;
       }
     }
   }
   // 点击列表中某一条时
   handleLineClick = (id, stepType) => {
-    console.log(id,stepType)
+    console.log(id, stepType)
     this.props.getInfoListsTypeMore(this.state.roadInterId, this.state.roadNodeNo, stepType, id)
   }
   // 编辑时回显内容 相位、阶段、配时方案、日计划、调度
   updateListItem = (itemDetailData, stepType) => {
-    switch(stepType){
+    switch (stepType) {
       case "PHASE":
-        this.setState({ phaseShowDetail: itemDetailData, stepFiveAddEdit: true, popAddEditText: '编辑' }, ()=>{
+        this.setState({ phaseShowDetail: itemDetailData, stepFiveAddEdit: true, popAddEditText: '编辑' }, () => {
           this.cyclicComparison(this.state.phaseForbidenData, 'phaseForbiden', itemDetailData.phaseForbiden, 'phaseShowDetail')
           this.cyclicComparison(this.state.phaseShieldData, 'phaseShield', itemDetailData.phaseShield, 'phaseShowDetail')
           this.cyclicComparison(this.state.typeData, 'rightofwayAccessLamp1Type', itemDetailData.rightofwayAccessLamp1Type, 'phaseShowDetail')
@@ -982,17 +983,17 @@ class SignalManagement extends PureComponent {
           itemDetailData = JSON.parse(JSON.stringify(this.state.phaseShowDetail))
           this.setState({ phaseShowDetail: itemDetailData })
         })
-      break;
+        break;
       case "STAGE":
-        this.setState({ stageShowDetail: itemDetailData, stepSixAddEdit: true, showFlag: true, popAddEditText: '编辑' }, () =>{
-        // this.cyclicComparison(this.state.phaseShieldData, 'phasestageShield', itemDetailData.phasestageShield, 'stageShowDetail') // 屏蔽
-        // this.cyclicComparison(this.state.phaseForbidenData, 'phasestageForbiden', itemDetailData.phasestageForbiden, 'stageShowDetail') // 禁止
-        itemDetailData = JSON.parse(JSON.stringify(this.state.stageShowDetail))
-        this.setState({ stageShowDetail: itemDetailData })
+        this.setState({ stageShowDetail: itemDetailData, stepSixAddEdit: true, showFlag: true, popAddEditText: '编辑' }, () => {
+          // this.cyclicComparison(this.state.phaseShieldData, 'phasestageShield', itemDetailData.phasestageShield, 'stageShowDetail') // 屏蔽
+          // this.cyclicComparison(this.state.phaseForbidenData, 'phasestageForbiden', itemDetailData.phasestageForbiden, 'stageShowDetail') // 禁止
+          itemDetailData = JSON.parse(JSON.stringify(this.state.stageShowDetail))
+          this.setState({ stageShowDetail: itemDetailData })
         })
-      break;
+        break;
       case "PLAN":
-        this.setState({ planShowDetail: JSON.parse(JSON.stringify(itemDetailData)), stepSevenAddEdit: true, showFlag: true, popAddEditText: '编辑', planStageLists: null },() => {
+        this.setState({ planShowDetail: JSON.parse(JSON.stringify(itemDetailData)), stepSevenAddEdit: true, showFlag: true, popAddEditText: '编辑', planStageLists: null }, () => {
           this.cyclicComparison(this.state.schemePhasestageTypeData, 'schemePhasestageType', itemDetailData.schemePhasestageType, 'planShowDetail')
           itemDetailData = JSON.parse(JSON.stringify(this.state.planShowDetail))
           const idArr = JSON.parse(JSON.stringify(itemDetailData.schemePhasestageChains.split(','))).map(Number) // id转数组
@@ -1004,8 +1005,8 @@ class SignalManagement extends PureComponent {
                 timeArr.map((itemTime, timeIndex) => {
                   if (idIndex === timeIndex) {
                     const itemNew = JSON.parse(JSON.stringify(item))
-                          itemNew.phaseTimeIndex = itemTime
-                          newIdNameArr.push(itemNew)
+                    itemNew.phaseTimeIndex = itemTime
+                    newIdNameArr.push(itemNew)
                   }
                 })
               }
@@ -1014,33 +1015,33 @@ class SignalManagement extends PureComponent {
           })
           this.setState({ planShowDetail: itemDetailData, planStageLists: newIdNameArr })
         })
-      break;
+        break;
       case "DAYPLAN":
-        this.setState({ dayplanShowDetail: JSON.parse(JSON.stringify(itemDetailData)), stepEightAddEdit: true, popAddEditText: '编辑' },()=>{
-          this.state.dayplanShowDetail.timeintervalList.map((item)=>{
+        this.setState({ dayplanShowDetail: JSON.parse(JSON.stringify(itemDetailData)), stepEightAddEdit: true, popAddEditText: '编辑' }, () => {
+          this.state.dayplanShowDetail.timeintervalList.map((item) => {
             this.cyclicComparison(this.state.timeintervalModelChainData, 'timeintervalScheme', Number(item.timeintervalScheme), 'dayplanShowDetail')
           })
         })
-      break;
+        break;
       case "DISPATCH":
         this.setState({ dispatchShowDetail: JSON.parse(JSON.stringify(itemDetailData)), stepNineAddEdit: true, popAddEditText: '编辑' })
-      break;
+        break;
     }
   }
   // 点击组件列表中的一条时反馈的数据
   handleClickFind = (e, itemData, clazz) => {
     this.setState({ nowCycleLength: 0, timePlanFlag: $(e.currentTarget).hasClass(clazz) }, () => {
-      if(this.state.timePlanFlag) {
-        this.props.getInfoListsTypeMore(this.state.roadInterId, this.state.roadNodeNo, 'PLAN', itemData.schemeNo )
+      if (this.state.timePlanFlag) {
+        this.props.getInfoListsTypeMore(this.state.roadInterId, this.state.roadNodeNo, 'PLAN', itemData.schemeNo)
       }
     })
   }
   // 时间轴开始停止 触发
   triggerClick = () => {
-    if($($('#timeBox').find('mark')[0]).attr('class')){
+    if ($($('#timeBox').find('mark')[0]).attr('class')) {
       $($('#timeBox').find('mark')[0]).trigger('click')
       $($('#timeBox').parent().find('em')).attr('style', 'left:15px')
-    }else{
+    } else {
       $($('#timeBox').parent().find('em')).attr('style', 'left:15px')
     }
   }
@@ -1060,12 +1061,12 @@ class SignalManagement extends PureComponent {
         thisDom: _this, // this根指向
       })
     }
-    
+
   }
   // (新增或更新) 插件相位、阶段、配时方案、日计划、调度
   postAddUpdateItem = (itemDetailData, stepType, eventType) => {
-    let typeStr = '', showStr = '', detailStr = '',  _this = this, dayPlanParam1 = '', dayPlanParam2 = '', dayPlanParam3 = ''
-    switch(stepType){
+    let typeStr = '', showStr = '', detailStr = '', _this = this, dayPlanParam1 = '', dayPlanParam2 = '', dayPlanParam3 = ''
+    switch (stepType) {
       case 'PHASE':
         typeStr = '相位'
         showStr = 'stepFiveAddEdit'
@@ -1087,8 +1088,8 @@ class SignalManagement extends PureComponent {
         itemDetailData.phaseLampgroupId === '请点击进行编辑' ? itemDetailData.phaseLampgroupId = null : ''
         itemDetailData.phaseDemand === '请点击进行编辑' ? itemDetailData.phaseDemand = null : ''
         itemDetailData = JSON.parse(JSON.stringify(this.state.phaseShowDetail))
-        if ( this.isNotEmpty(itemDetailData.phaseNo, '相位序号不能为空！') ) return
-        if ( this.verificationID(this.props.data.phaseLists, 'phaseNo', itemDetailData.phaseNo, '相位序号已存在') ) return 
+        if (this.isNotEmpty(itemDetailData.phaseNo, '相位序号不能为空！')) return
+        if (this.verificationID(this.props.data.phaseLists, 'phaseNo', itemDetailData.phaseNo, '相位序号已存在')) return
         break;
       case 'STAGE':
         typeStr = '阶段'
@@ -1097,30 +1098,30 @@ class SignalManagement extends PureComponent {
         itemDetailData.phasestagePhase === '请点击进行编辑' ? itemDetailData.phasestagePhase = null : ''
         itemDetailData.softwareRequirement === '请点击进行编辑' ? itemDetailData.softwareRequirement = null : ''
         itemDetailData.phasestageLane === '请点击进行编辑' ? itemDetailData.phasestageLane = null : ''
-        if ( this.isNotEmpty(itemDetailData.phasestageNo, '阶段编号不能为空！') ) return
-        if ( this.verificationID(this.props.data.stageLists, 'phasestageNo', itemDetailData.phasestageNo, '阶段编号已存在') ) return 
+        if (this.isNotEmpty(itemDetailData.phasestageNo, '阶段编号不能为空！')) return
+        if (this.verificationID(this.props.data.stageLists, 'phasestageNo', itemDetailData.phasestageNo, '阶段编号已存在')) return
         break;
       case 'PLAN':
         typeStr = '配时方案'
         showStr = 'stepSevenAddEdit'
         detailStr = 'planShowDetail'
-        if ( this.isNotEmpty(itemDetailData.schemeNo, '方案编号不能为空！') ) return
-        if ( this.verificationID(this.props.data.planLists, 'schemeNo', itemDetailData.schemeNo, '方案编号已存在') ) return 
+        if (this.isNotEmpty(itemDetailData.schemeNo, '方案编号不能为空！')) return
+        if (this.verificationID(this.props.data.planLists, 'schemeNo', itemDetailData.schemeNo, '方案编号已存在')) return
         break;
       case 'DAYPLAN':
-        itemDetailData.timeintervalList.map((dayPlanitem) =>{
+        itemDetailData.timeintervalList.map((dayPlanitem) => {
           dayPlanParam1 += dayPlanitem.timeintervalScheme + ','
           dayPlanParam2 += dayPlanitem.timeintervalModel + ','
           dayPlanParam3 += dayPlanitem.timeintervalStarttime + ','
         })
-        itemDetailData.timeintervalSchemeChain = dayPlanParam1.slice(0,-1)
-        itemDetailData.timeintervalModelChain = dayPlanParam2.slice(0,-1)
-        itemDetailData.timeintervalStarttimeChain = dayPlanParam3.slice(0,-1)
+        itemDetailData.timeintervalSchemeChain = dayPlanParam1.slice(0, -1)
+        itemDetailData.timeintervalModelChain = dayPlanParam2.slice(0, -1)
+        itemDetailData.timeintervalStarttimeChain = dayPlanParam3.slice(0, -1)
         typeStr = '日计划'
         showStr = 'stepEightAddEdit'
         detailStr = 'dayplanShowDetail'
-        if ( this.isNotEmpty(itemDetailData.dailyplanNo, '日计划编号不能为空！') ) return
-        if ( this.verificationID(this.props.data.dayPlanLists, 'dailyplanNo', itemDetailData.dailyplanNo, '日计划编号已存在') ) return 
+        if (this.isNotEmpty(itemDetailData.dailyplanNo, '日计划编号不能为空！')) return
+        if (this.verificationID(this.props.data.dayPlanLists, 'dailyplanNo', itemDetailData.dailyplanNo, '日计划编号已存在')) return
         break;
       case 'DISPATCH':
         typeStr = '调度'
@@ -1129,19 +1130,19 @@ class SignalManagement extends PureComponent {
         itemDetailData.scheduleDetailList.map((item) => {
           item.scheduleNo = itemDetailData.scheduleNo
         })
-        if ( this.isNotEmpty(itemDetailData.scheduleNo, '调度方案编号不能为空！') ) return
-        if ( this.verificationID(this.props.data.dispatchLists, 'scheduleNo', itemDetailData.scheduleNo, '调度编号已存在') ) return 
+        if (this.isNotEmpty(itemDetailData.scheduleNo, '调度方案编号不能为空！')) return
+        if (this.verificationID(this.props.data.dispatchLists, 'scheduleNo', itemDetailData.scheduleNo, '调度编号已存在')) return
         break;
     }
     if (eventType) {
       this.props.postAddOthersType(itemDetailData, stepType).then(() => {
         this.popLayerShowHide(showStr, null)
-        message.info(typeStr+"操作成功！")
+        message.info(typeStr + "操作成功！")
         _this.setState({ [detailStr]: null })
         // _this.props.getStepStatus(_this.state.roadInterId, _this.state.roadNodeNo)
         if (stepType === 'PLAN' || stepType === 'DAYPLAN' || stepType === 'DISPATCH') {
           _this.props.getInfoListsTypeMore(_this.state.roadInterId, _this.state.roadNodeNo, stepType)
-        }else {
+        } else {
           _this.props.getInfoListsType(_this.state.roadInterId, stepType)
 
         }
@@ -1149,107 +1150,107 @@ class SignalManagement extends PureComponent {
     } else {
       this.props.postUpdateOthersType(itemDetailData, stepType).then(() => {
         this.popLayerShowHide(showStr, null)
-        message.info(typeStr+"操作成功！")
+        message.info(typeStr + "操作成功！")
         _this.setState({ [detailStr]: null })
         // _this.props.getStepStatus(_this.state.roadInterId, _this.state.roadNodeNo)
         if (stepType === 'PLAN' || stepType === 'DAYPLAN' || stepType === 'DISPATCH') {
           _this.props.getInfoListsTypeMore(_this.state.roadInterId, _this.state.roadNodeNo, stepType)
-        }else {
+        } else {
           _this.props.getInfoListsType(_this.state.roadInterId, stepType)
         }
       })
     }
   }
-// 编辑弹层列表用于多选 车道、灯组、检测器
-getSelectLists = (interId, nodeNo, stepType, name, key) => {
-  let typeStr = '', showStr = '', detailStr = '',  _this = this
-  switch(stepType){
-    case 'LANE':
-      this.setState({
-        popAddEditName: '车道',
-        selectFlag: false,
-        laneDefaultSelectLists: this.state[name][key],
-      })
-      break;
-    case 'LIGHT':
-      this.setState({
-        popAddEditName: '灯组',
-        selectFlag: false,
-        lightDefaultSelectLists: this.state[name][key], 
-      })
-      break;
-    case 'DETECTOR':
-      this.setState({
-        popAddEditName: '检测器需求',
-        selectFlag: false,
-        detectorDefaultSelectLists: this.state[name][key],
-      })
-      break;
-    case 'PHASE':
-      this.setState({
-        popAddEditName: '相位',
-        selectFlag: false,
-        phaseDefaultSelectLists: this.state[name][key],
-        phaseFlag: true,
-      },()=>{
-        this.props.getInfoListsType(this.state.roadInterId, 'PHASE') // 加载相位列表
-      })
-      break;
+  // 编辑弹层列表用于多选 车道、灯组、检测器
+  getSelectLists = (interId, nodeNo, stepType, name, key) => {
+    let typeStr = '', showStr = '', detailStr = '', _this = this
+    switch (stepType) {
+      case 'LANE':
+        this.setState({
+          popAddEditName: '车道',
+          selectFlag: false,
+          laneDefaultSelectLists: this.state[name][key],
+        })
+        break;
+      case 'LIGHT':
+        this.setState({
+          popAddEditName: '灯组',
+          selectFlag: false,
+          lightDefaultSelectLists: this.state[name][key],
+        })
+        break;
+      case 'DETECTOR':
+        this.setState({
+          popAddEditName: '检测器需求',
+          selectFlag: false,
+          detectorDefaultSelectLists: this.state[name][key],
+        })
+        break;
+      case 'PHASE':
+        this.setState({
+          popAddEditName: '相位',
+          selectFlag: false,
+          phaseDefaultSelectLists: this.state[name][key],
+          phaseFlag: true,
+        }, () => {
+          this.props.getInfoListsType(this.state.roadInterId, 'PHASE') // 加载相位列表
+        })
+        break;
     }
     this.props.getSelectLists(interId, nodeNo, stepType)
-}
-selectItemList = (defaultSelectLists, stepType) => {
-  console.log(defaultSelectLists, '选中的数据')
-  switch(stepType){
-    case 'PHASE':
-      this.setState({ phaseDefaultSelectLists: defaultSelectLists.join() })
-      break;
-    case 'LANE':
-      this.setState({ laneDefaultSelectLists: defaultSelectLists.join() })
-      break;
-    case 'LIGHT':
-      this.setState({ lightDefaultSelectLists: defaultSelectLists.join() })
-      break;
-    case 'DETECTOR':
-      this.setState({ detectorDefaultSelectLists: defaultSelectLists.join() })
-      break;
   }
-}
-// 确定和取消选中
-btnSelectOver = (flag, defaultSelectLists) => {
-  if (flag) {
-    if (this.state.laneSelectLists) {
-      this.state.stageShowDetail.phasestageLane = defaultSelectLists
-    } else if (this.state.lightSelectLists) {
-      this.state.phaseShowDetail.phaseLampgroupId = defaultSelectLists
-    } else if (this.state.detectorSelectLists) {
-      if (this.state.phaseShowDetail && this.state.phaseShowDetail.phaseDemand !== undefined) {
-        this.state.phaseShowDetail.phaseDemand = defaultSelectLists
-      } else if (this.state.stageShowDetail && this.state.stageShowDetail.softwareRequirement !== undefined) {
-        this.state.stageShowDetail.softwareRequirement = defaultSelectLists
-      }
-    } else if(this.state.phaseSelectLists){
-      this.state.stageShowDetail.phasestagePhase = defaultSelectLists
+  selectItemList = (defaultSelectLists, stepType) => {
+    console.log(defaultSelectLists, '选中的数据')
+    switch (stepType) {
+      case 'PHASE':
+        this.setState({ phaseDefaultSelectLists: defaultSelectLists.join() })
+        break;
+      case 'LANE':
+        this.setState({ laneDefaultSelectLists: defaultSelectLists.join() })
+        break;
+      case 'LIGHT':
+        this.setState({ lightDefaultSelectLists: defaultSelectLists.join() })
+        break;
+      case 'DETECTOR':
+        this.setState({ detectorDefaultSelectLists: defaultSelectLists.join() })
+        break;
     }
-    this.setState({
-      laneSelectLists: null, 
-      lightSelectLists: null,  
-      detectorSelectLists: null,
-      phaseSelectLists: null,
-      phaseFlag: null,
-      selectFlag: true,
-    })
-  } else {
-    this.setState({
-      laneSelectLists: null, 
-      lightSelectLists: null,  
-      detectorSelectLists: null,
-      phaseSelectLists: null,
-      phaseFlag: null,
-      selectFlag: true,
-    })
   }
-}
+  // 确定和取消选中
+  btnSelectOver = (flag, defaultSelectLists) => {
+    if (flag) {
+      if (this.state.laneSelectLists) {
+        this.state.stageShowDetail.phasestageLane = defaultSelectLists
+      } else if (this.state.lightSelectLists) {
+        this.state.phaseShowDetail.phaseLampgroupId = defaultSelectLists
+      } else if (this.state.detectorSelectLists) {
+        if (this.state.phaseShowDetail && this.state.phaseShowDetail.phaseDemand !== undefined) {
+          this.state.phaseShowDetail.phaseDemand = defaultSelectLists
+        } else if (this.state.stageShowDetail && this.state.stageShowDetail.softwareRequirement !== undefined) {
+          this.state.stageShowDetail.softwareRequirement = defaultSelectLists
+        }
+      } else if (this.state.phaseSelectLists) {
+        this.state.stageShowDetail.phasestagePhase = defaultSelectLists
+      }
+      this.setState({
+        laneSelectLists: null,
+        lightSelectLists: null,
+        detectorSelectLists: null,
+        phaseSelectLists: null,
+        phaseFlag: null,
+        selectFlag: true,
+      })
+    } else {
+      this.setState({
+        laneSelectLists: null,
+        lightSelectLists: null,
+        detectorSelectLists: null,
+        phaseSelectLists: null,
+        phaseFlag: null,
+        selectFlag: true,
+      })
+    }
+  }
   showInterworkingList = (isShow) => {
     if (isShow) {
       this.setState({
@@ -1264,7 +1265,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
   getresetPwd = (item) => {
     this.showInterworkingList(null)
     const resultP = Promise.resolve(this.props.getUnitPop(item.interId))
-    resultP.then(()=>{
+    resultP.then(() => {
       this.setGetParams(item)
     })
   }
@@ -1307,22 +1308,22 @@ btnSelectOver = (flag, defaultSelectLists) => {
         const marker = new AMap.Marker({
           position: new AMap.LngLat(positions[i].lng, positions[i].lat),
           offset: new AMap.Pixel(-16, -16),
-          content: "<div inter-id='"+positions[i].interId+"' id='roadKey"+positions[i].id+"' class='marker-online'></div>",
+          content: "<div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
         })
         marker.on('click', (e) => {
           map.emit('click', {
             lnglat: map.getCenter()
           })
-          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='"+positions[i].interId+"' id='roadKey"+positions[i].id+"' class='marker-online'></div></div>");
+          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
           const nowZoom = map.getZoom()
           map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
           this.setState({
             roadUnitId: positions[i].id,
             roadInterId: positions[i].interId,
             roadNodeNo: positions[i].nodeId,
-          }, ()=>{
+          }, () => {
             const resultP = Promise.resolve(this.props.getUnitPop(positions[i].interId))
-            resultP.then(()=>{
+            resultP.then(() => {
               this.openInfoWin(map, positions[i], marker, positions[i].interName)
             })
           })
@@ -1350,7 +1351,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
     info.push(`<p class='input-item'>信号运行方案：<span class='greenFont' id='schemeName'>暂无</span></p>`);
     info.push(`<p class='input-item'>信号控制方式：<span class='greenFont' id='nodeModelName'>暂无</span></p>`);
     info.push(`<p class='input-item' style='height:15px;'></p>`);
-    info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(`+JSON.stringify(dataItem)+`)'>参数配置</span></p>`);
+    info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>参数配置</span></p>`);
     const infoWindow = new AMap.InfoWindow({
       content: info.join("")  //使用默认信息窗体框样式，显示信息内容
     });
@@ -1358,7 +1359,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
     this.infoWindow = infoWindow
     window.infoWindowClose = infoWindow
     map.on('click', (e) => {
-      marker.setContent("<div inter-id='"+dataItem.interId+"' class='marker-online'></div>");
+      marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online'></div>");
       infoWindow.close()
     })
   }
@@ -1369,7 +1370,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
       return;
     }
     if (info.file.status === "done") {
-      getBase64(info.file.originFileObj, imageUrl =>{
+      getBase64(info.file.originFileObj, imageUrl => {
         const formData = new FormData()
         formData.append('file', info.file.originFileObj)
         this.setState({
@@ -1396,29 +1397,29 @@ btnSelectOver = (flag, defaultSelectLists) => {
         this.popLayerShowHide("baseMapFlag", null)
         this.props.postBgByUpload(this.state.roadId, this.state.imageFile)
       })
-    } else if(!!this.state.imageUrl){
+    } else if (!!this.state.imageUrl) {
       message.info("底图设置成功！");
       this.setState({
         interRoadBg: this.state.imageUrl,
       }, () => {
         this.popLayerShowHide("baseMapFlag", null)
-        this.props.postBgBySelect({id: this.state.roadId, background: this.state.imageName})
+        this.props.postBgBySelect({ id: this.state.roadId, background: this.state.imageName })
       })
-    } else if(this.state.imageFile === null || !this.state.imageUrl) {
+    } else if (this.state.imageFile === null || !this.state.imageUrl) {
       message.info("请上传或选择底图!");
     }
   }
   // step 车道列表和图标添加、灯组列表和图标添加、检测器列表和图标添加
   // stepType:类型，itemDetailData:实时调用的数据
   postAddAllType = (itemDetailData, stepType) => {
-    let typeStr = '', showStr = '', detailStr = '',  _this = this
-    switch(stepType){
+    let typeStr = '', showStr = '', detailStr = '', _this = this
+    switch (stepType) {
       case 'LANE':
         typeStr = '车道'
         showStr = 'stepRoadAddEdit'
         detailStr = 'laneShowDetail'
-        if ( this.isNotEmpty(itemDetailData.laneId, '车道ID不能为空！') ) return
-        if ( this.verificationID(this.props.data.laneLists, 'laneId', itemDetailData.laneId, '车道ID已存在') ) return 
+        if (this.isNotEmpty(itemDetailData.laneId, '车道ID不能为空！')) return
+        if (this.verificationID(this.props.data.laneLists, 'laneId', itemDetailData.laneId, '车道ID已存在')) return
         break;
       case 'LIGHT':
         typeStr = '灯组'
@@ -1427,8 +1428,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
         this.cyclicComparison(this.state.controlDir, 'controlDir', itemDetailData.controlDir, 'lightShowDetail', true)
         this.cyclicComparison(this.state.controlTurn, 'controlTurn', itemDetailData.controlTurn, 'lightShowDetail', true)
         itemDetailData = JSON.parse(JSON.stringify(this.state.lightShowDetail))
-        if ( this.isNotEmpty(itemDetailData.lampgroupNo, '灯组序号不能为空！') ) return
-        if ( this.verificationID(this.props.data.lightLists, 'lampgroupNo', itemDetailData.lampgroupNo, '灯组ID已存在') ) return 
+        if (this.isNotEmpty(itemDetailData.lampgroupNo, '灯组序号不能为空！')) return
+        if (this.verificationID(this.props.data.lightLists, 'lampgroupNo', itemDetailData.lampgroupNo, '灯组ID已存在')) return
         break;
       case 'DETECTOR':
         typeStr = '检测器'
@@ -1436,13 +1437,13 @@ btnSelectOver = (flag, defaultSelectLists) => {
         detailStr = 'detectorShowDetail'
         this.cyclicComparison(this.state.detectorType, 'detectorType', itemDetailData.detectorType, 'detectorShowDetail', true)
         itemDetailData = JSON.parse(JSON.stringify(this.state.detectorShowDetail))
-        if ( this.isNotEmpty(itemDetailData.detectorId, '检测器序号不能为空！') ) return
-        if ( this.verificationID(this.props.data.detectorLists, 'detectorId', itemDetailData.detectorId, '检测器ID已存在') ) return 
+        if (this.isNotEmpty(itemDetailData.detectorId, '检测器序号不能为空！')) return
+        if (this.verificationID(this.props.data.detectorLists, 'detectorId', itemDetailData.detectorId, '检测器ID已存在')) return
         break;
     }
     this.props.postAddAllType(itemDetailData, stepType).then(() => {
       this.popLayerShowHide(showStr, null)
-      message.info(typeStr+"添加成功！")
+      message.info(typeStr + "添加成功！")
       _this.setState({ [detailStr]: null })
       _this.props.getPicListsType(_this.state.roadInterId, _this.state.roadNodeNo, stepType)
       _this.props.getInfoListsType(_this.state.roadInterId, stepType)
@@ -1452,17 +1453,17 @@ btnSelectOver = (flag, defaultSelectLists) => {
   // step 车道列表和图标修改、灯组列表和图标修改、检测器列表和图标修改
   // stepType:类型，itemDetailData:实时调用的数据
   postUpdateAllType = (itemDetailData, stepType) => {
-    let typeStr = '', showStr = '', detailStr = '',  _this = this
+    let typeStr = '', showStr = '', detailStr = '', _this = this
     itemDetailData.nodeNo = this.state.roadNodeNo
     itemDetailData.x ? itemDetailData.x : itemDetailData.x = 489
     itemDetailData.y ? itemDetailData.y : itemDetailData.y = 390
-    switch(stepType){
+    switch (stepType) {
       case 'LANE':
         typeStr = '车道'
         showStr = 'stepRoadAddEdit'
         detailStr = 'laneShowDetail'
-        if ( this.isNotEmpty(itemDetailData.laneId, '车道ID不能为空！') ) return
-        if ( this.verificationID(this.props.data.laneLists, 'laneId', itemDetailData.laneId, '车道ID已存在') ) return 
+        if (this.isNotEmpty(itemDetailData.laneId, '车道ID不能为空！')) return
+        if (this.verificationID(this.props.data.laneLists, 'laneId', itemDetailData.laneId, '车道ID已存在')) return
         break;
       case 'LIGHT':
         typeStr = '灯组'
@@ -1471,8 +1472,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
         this.cyclicComparison(this.state.controlDir, 'controlDir', itemDetailData.controlDir, 'lightShowDetail', true)
         this.cyclicComparison(this.state.controlTurn, 'controlTurn', itemDetailData.controlTurn, 'lightShowDetail', true)
         itemDetailData = JSON.parse(JSON.stringify(this.state.lightShowDetail))
-        if ( this.isNotEmpty(itemDetailData.lampgroupNo, '灯组序号不能为空！') ) return
-        if ( this.verificationID(this.props.data.lightLists, 'lampgroupNo', itemDetailData.lampgroupNo, '灯组序号已存在') ) return 
+        if (this.isNotEmpty(itemDetailData.lampgroupNo, '灯组序号不能为空！')) return
+        if (this.verificationID(this.props.data.lightLists, 'lampgroupNo', itemDetailData.lampgroupNo, '灯组序号已存在')) return
         break;
       case 'DETECTOR':
         typeStr = '检测器'
@@ -1480,23 +1481,23 @@ btnSelectOver = (flag, defaultSelectLists) => {
         detailStr = 'detectorShowDetail'
         this.cyclicComparison(this.state.detectorType, 'detectorType', itemDetailData.detectorType, 'detectorShowDetail', true)
         itemDetailData = JSON.parse(JSON.stringify(this.state.detectorShowDetail))
-        if ( this.isNotEmpty(itemDetailData.detectorId, '检测器序号不能为空！') ) return
-        if ( this.verificationID(this.props.data.detectorLists, 'detectorId', itemDetailData.detectorId, '检测器序号已存在') ) return 
+        if (this.isNotEmpty(itemDetailData.detectorId, '检测器序号不能为空！')) return
+        if (this.verificationID(this.props.data.detectorLists, 'detectorId', itemDetailData.detectorId, '检测器序号已存在')) return
         break;
     }
     this.props.postUpdateAllType(itemDetailData, stepType).then(() => {
-    this.popLayerShowHide(showStr, null)
-    message.info(typeStr+"修改成功！")
-    _this.setState({ [detailStr]: null })
-    _this.props.getPicListsType(_this.state.roadInterId, _this.state.roadNodeNo, stepType)
-    _this.props.getInfoListsType(_this.state.roadInterId, stepType)
-  })
+      this.popLayerShowHide(showStr, null)
+      message.info(typeStr + "修改成功！")
+      _this.setState({ [detailStr]: null })
+      _this.props.getPicListsType(_this.state.roadInterId, _this.state.roadNodeNo, stepType)
+      _this.props.getInfoListsType(_this.state.roadInterId, stepType)
+    })
 
   }
   // 修改 > 车道列表、灯组列表、检测器列表
   getUpdateAllTypes = (interId, roadNodeNo, Id, stepType, flag) => {
     let typeName = ''
-    switch(stepType) {
+    switch (stepType) {
       case 'LANE':
         typeName = 'stepRoadAddEdit';
         break;
@@ -1507,12 +1508,12 @@ btnSelectOver = (flag, defaultSelectLists) => {
         typeName = 'stepFourAddEdit';
         break;
     }
-    if(flag){
+    if (flag) {
       this.setState({
         showFlag: true,
         popAddEditText: '编辑',
         [typeName]: flag,
-      },()=>{
+      }, () => {
         this.props.getUpdateAllType(interId, roadNodeNo, Id, stepType)
       })
     }
@@ -1522,13 +1523,13 @@ btnSelectOver = (flag, defaultSelectLists) => {
     // debugger
     this.selImage = e.target
     this.props.getIconImageList(stepType)
-    this.setState({showFlag: null})
+    this.setState({ showFlag: null })
   }
   // 图标点击
   handleSelImage = (imageList, name, imgName) => {
     this.state[name].imagePath !== undefined ? this.state[name].imagePath = imgName : this.state[name].imageUrl = imgName
-    this.setState({showFlag: true, [imageList]: null})
-  } 
+    this.setState({ showFlag: true, [imageList]: null })
+  }
   // 方案阶段链添加
   addStagePlan = () => {
     this.setState({
@@ -1540,7 +1541,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
   reduceStagePlan = () => {
     const planStageLists = JSON.parse(JSON.stringify(this.state.planStageLists))
     if (planStageLists.length > 1) {
-      planStageLists.splice(planStageLists.length-1, 1)
+      planStageLists.splice(planStageLists.length - 1, 1)
       this.setState({ planStageLists })
     } else {
       message.info('请至少保留一条数据！')
@@ -1549,14 +1550,14 @@ btnSelectOver = (flag, defaultSelectLists) => {
   // 日计划开始时间方案模式链添加
   addDayPlan = () => {
     const dayplanShowDetail = JSON.parse(JSON.stringify(this.state.dayplanShowDetail))
-    dayplanShowDetail.timeintervalList.push({timeintervalModel:0, timeintervalStarttime: "00:00", timeintervalScheme: 0})
+    dayplanShowDetail.timeintervalList.push({ timeintervalModel: 0, timeintervalStarttime: "00:00", timeintervalScheme: 0 })
     this.setState({ dayplanShowDetail })
   }
   // 日计划开始时间方案模式链删除
   reduceDayPlan = () => {
     const dayplanShowDetail = JSON.parse(JSON.stringify(this.state.dayplanShowDetail))
     if (dayplanShowDetail.timeintervalList.length > 1) {
-      dayplanShowDetail.timeintervalList.splice(dayplanShowDetail.timeintervalList.length-1, 1)
+      dayplanShowDetail.timeintervalList.splice(dayplanShowDetail.timeintervalList.length - 1, 1)
       this.setState({ dayplanShowDetail })
     } else {
       message.info('请至少保留一条数据！')
@@ -1581,26 +1582,26 @@ btnSelectOver = (flag, defaultSelectLists) => {
   reduceDispatch = () => {
     const dispatchShowDetail = JSON.parse(JSON.stringify(this.state.dispatchShowDetail))
     if (dispatchShowDetail.scheduleDetailList.length > 1) {
-      dispatchShowDetail.scheduleDetailList.splice(dispatchShowDetail.scheduleDetailList.length-1, 1)
+      dispatchShowDetail.scheduleDetailList.splice(dispatchShowDetail.scheduleDetailList.length - 1, 1)
       this.setState({ dispatchShowDetail })
     } else {
       message.info('请至少保留一条数据！')
     }
   }
   updateMapPonitsColor = (data) => {
-    for (let i = 0; i < $('div[inter-id]').length; i++){
+    for (let i = 0; i < $('div[inter-id]').length; i++) {
       const timeDiv = $($('div[inter-id]')[i])
       data.map((item) => {
-        if (item.interId === timeDiv.attr('inter-id') && !!item.state){
+        if (item.interId === timeDiv.attr('inter-id') && !!item.state) {
           timeDiv.removeClass('marker-offline')
-        }else{
+        } else {
           timeDiv.addClass('marker-offline')
         }
       })
     }
   }
   returnStep = (result) => {
-    switch(result.step){
+    switch (result.step) {
       case 1:
         this.setState({
           oneFlag: Boolean(result.code),
@@ -1672,15 +1673,15 @@ btnSelectOver = (flag, defaultSelectLists) => {
           nowText: '全部内容结束！',
         })
         break;
-        case 10:
-          this.setState({
+      case 10:
+        this.setState({
           tenFlag: Boolean(result.code),
         })
         break;
-      }
+    }
   }
   loadDataType = (flag) => {
-    this.setState({ 
+    this.setState({
       loadFlag: flag,
       oneFlag: null,
       oneText: '传输中~~~',
@@ -1702,15 +1703,15 @@ btnSelectOver = (flag, defaultSelectLists) => {
       nineText: '等待中...',
       tenFlag: null,
       nowText: '基础信息配置',
-     })
+    })
   }
   loadData(data) {
     let result = JSON.parse(data);
     this.returnStep(result)
-    console.log(result,'socket 上传数据')
+    console.log(result, 'socket 上传数据')
   }
   editDataType = (flag) => {
-    this.setState({ 
+    this.setState({
       editFlag: flag,
       oneFlag: null,
       oneText: '传输中~~~',
@@ -1732,12 +1733,12 @@ btnSelectOver = (flag, defaultSelectLists) => {
       nineText: '等待中...',
       tenFlag: null,
       nowText: '基础信息配置',
-     })
+    })
   }
   editData(data) {
     let result = JSON.parse(data);
     this.returnStep(result)
-    console.log(result,'socket 下发数据')
+    console.log(result, 'socket 下发数据')
   }
   handleData(data) {
     let result = JSON.parse(data);
@@ -1752,31 +1753,31 @@ btnSelectOver = (flag, defaultSelectLists) => {
     // debugger
     let result = JSON.parse(data);
     // console.log(result,this,'socket POP数据')
-    $('#phasestageName').text(result.phasestageName).attr("tag-src",`${this.phaseBgUrl}${result.phasestageImage}`)
+    $('#phasestageName').text(result.phasestageName).attr("tag-src", `${this.phaseBgUrl}${result.phasestageImage}`)
     $('#schemeName').text(result.schemeName)
     $('#nodeModelName').text(result.nodeModelName)
-    result !== -1 ? $('#phasestageImage').prop('src', `${this.phaseBgUrl}${result.phasestageImage}`).attr('style','width:30px;height:30px;margin-left:8px;') : null
+    result !== -1 ? $('#phasestageImage').prop('src', `${this.phaseBgUrl}${result.phasestageImage}`).attr('style', 'width:30px;height:30px;margin-left:8px;') : null
     this.setState({
       roadUnitId: false,
     })
   }
 
   render() {
-    const { interListHeight, searchInterList, stepStatusData, popAddEditText, popAddEditName, moveFlag, stepOneFlag, stepTwoFlag, 
+    const { interListHeight, searchInterList, stepStatusData, popAddEditText, popAddEditName, moveFlag, stepOneFlag, stepTwoFlag,
       stepRoadFlag, stepRoadAddEdit,
       stepThreeFlag, stepThreeAddEdit,
       stepFourFlag, stepFourAddEdit, lightStatus, lightSelectIds,
-      stepFiveFlag, stepFiveAddEdit, timePlanFlag, 
+      stepFiveFlag, stepFiveAddEdit, timePlanFlag,
       stepSixFlag, stepSixAddEdit,
       stepSevenFlag, stepSevenAddEdit,
       stepEightFlag, stepEightAddEdit,
       stepNineFlag, stepNineAddEdit,
       turnTab, baseMapFlag, stepOneText, imageUrl, interRoadBg, baseLoading, roadId, roadUnitId, roadInterId, roadNodeNo,
-      onlineNum, offlineNum, 
-      laneShowDetail, laneIconLists, fDir8NoData, turnDirNoListData, 
+      onlineNum, offlineNum,
+      laneShowDetail, laneIconLists, fDir8NoData, turnDirNoListData,
       lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists, showFlag, nowCycleLength, cycleLength,
       lampgroupType, controlDir, controlTurn, detectorType, phaseForbidenData, phaseShieldData, typeData, planStageLists, planChainsLists,
-      phaseShowDetail, stageShowDetail, planShowDetail, dayplanShowDetail, dispatchShowDetail, laneSelectLists, lightSelectLists, detectorSelectLists, selectFlag, phaseDefaultSelectLists, laneDefaultSelectLists, lightDefaultSelectLists, detectorDefaultSelectLists,  phaseIconLists, phaseSelectLists, phaseFlag, schemePhasestageTypeData, timeintervalModelChainData,
+      phaseShowDetail, stageShowDetail, planShowDetail, dayplanShowDetail, dispatchShowDetail, laneSelectLists, lightSelectLists, detectorSelectLists, selectFlag, phaseDefaultSelectLists, laneDefaultSelectLists, lightDefaultSelectLists, detectorDefaultSelectLists, phaseIconLists, phaseSelectLists, phaseFlag, schemePhasestageTypeData, timeintervalModelChainData,
       priorityData, monthData, dayData, weekData, Dcu_Io_Ids, dayPlanClickInfo, dispatchClickInfo, popItemFlag, listNames, loadFlag, editFlag, userLimit,
       oneFlag, twoFlag, threeFlag, fourFlag, fiveFlag, sixFlag, sevenFlag, eightFlag, nineFlag, tenFlag,
       oneText, twoText, threeText, fourText, fiveText, sixText, sevenText, eightText, nineText, nowText
@@ -1784,201 +1785,201 @@ btnSelectOver = (flag, defaultSelectLists) => {
     const { Search } = Input
     return (
       <div className={styles.SignalManagement}>
-      { loadFlag || editFlag ?
-        <div className={styles.maskBg}> 
-          <div className={styles.popBox} style={{width: '600px'}}>
-            <div className={styles.popTit}>
-            { loadFlag ? '上传配置' : editFlag ? '下发配置' : null }
-            { tenFlag ? <Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("loadFlag", null)} } /> : null }
-            </div>
-            <div className={styles.popCon} style={{width: '380px', margin: '0 auto'}}>
-              <div className={styles.loadItemBox}><span>基础信息配置：</span>{ oneFlag === null ? <Spin size="small" /> : ( oneFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" /> ) }<em>{oneText}</em></div>
-              <div className={styles.loadItemBox}><span>车道配置：</span>{ twoFlag === null ? <Spin size="small" /> : (  twoFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" /> ) }<em>{twoText}</em></div>
-              <div className={styles.loadItemBox}><span>灯组配置：</span>{ threeFlag === null ? <Spin size="small" /> : (  threeFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" /> ) }<em>{threeText}</em></div>
-              <div className={styles.loadItemBox}><span>检测器配置：</span>{ fourFlag === null ? <Spin size="small" /> : (  fourFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" /> ) }<em>{fourText}</em></div>
-              <div className={styles.loadItemBox}><span>相位配置：</span>{ fiveFlag === null ? <Spin size="small" /> : (  fiveFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" /> ) }<em>{fiveText}</em></div>
-              <div className={styles.loadItemBox}><span>阶段配置：</span>{ sixFlag === null ? <Spin size="small" /> : ( sixFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" /> ) }<em>{sixText}</em></div>
-              <div className={styles.loadItemBox}><span>配时方案配置：</span>{ sevenFlag === null ? <Spin size="small" /> : (  sevenFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" /> ) }<em>{sevenText}</em></div>
-              <div className={styles.loadItemBox}><span>日计划配置：</span>{ eightFlag === null ? <Spin size="small" /> : (  eightFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" /> ) }<em>{eightText}</em></div>
-              <div className={styles.loadItemBox}><span>调度配置：</span>{ nineFlag === null ? <Spin size="small" /> : ( nineFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" /> ) }<em>{nineText}</em></div>
-              <div className={styles.loadItemBox} style={{padding: '35px 0 15px', justifyContent:'center'}}>
-                { tenFlag ? null : <Spin size="large" /> }<div style={{marginLeft: '20px'}}>{nowText}{ tenFlag ? null : ( loadFlag ? '上传中...' : editFlag ? '下发中...' : null ) }</div>
+        {loadFlag || editFlag ?
+          <div className={styles.maskBg}>
+            <div className={styles.popBox} style={{ width: '600px' }}>
+              <div className={styles.popTit}>
+                {loadFlag ? '上传配置' : editFlag ? '下发配置' : null}
+                {tenFlag ? <Icon className={styles.Close} type="close" onClick={() => { this.popLayerShowHide("loadFlag", null) }} /> : null}
+              </div>
+              <div className={styles.popCon} style={{ width: '380px', margin: '0 auto' }}>
+                <div className={styles.loadItemBox}><span>基础信息配置：</span>{oneFlag === null ? <Spin size="small" /> : (oneFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" />)}<em>{oneText}</em></div>
+                <div className={styles.loadItemBox}><span>车道配置：</span>{twoFlag === null ? <Spin size="small" /> : (twoFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" />)}<em>{twoText}</em></div>
+                <div className={styles.loadItemBox}><span>灯组配置：</span>{threeFlag === null ? <Spin size="small" /> : (threeFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" />)}<em>{threeText}</em></div>
+                <div className={styles.loadItemBox}><span>检测器配置：</span>{fourFlag === null ? <Spin size="small" /> : (fourFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" />)}<em>{fourText}</em></div>
+                <div className={styles.loadItemBox}><span>相位配置：</span>{fiveFlag === null ? <Spin size="small" /> : (fiveFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" />)}<em>{fiveText}</em></div>
+                <div className={styles.loadItemBox}><span>阶段配置：</span>{sixFlag === null ? <Spin size="small" /> : (sixFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" />)}<em>{sixText}</em></div>
+                <div className={styles.loadItemBox}><span>配时方案配置：</span>{sevenFlag === null ? <Spin size="small" /> : (sevenFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" />)}<em>{sevenText}</em></div>
+                <div className={styles.loadItemBox}><span>日计划配置：</span>{eightFlag === null ? <Spin size="small" /> : (eightFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" />)}<em>{eightText}</em></div>
+                <div className={styles.loadItemBox}><span>调度配置：</span>{nineFlag === null ? <Spin size="small" /> : (nineFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" />)}<em>{nineText}</em></div>
+                <div className={styles.loadItemBox} style={{ padding: '35px 0 15px', justifyContent: 'center' }}>
+                  {tenFlag ? null : <Spin size="large" />}<div style={{ marginLeft: '20px' }}>{nowText}{tenFlag ? null : (loadFlag ? '上传中...' : editFlag ? '下发中...' : null)}</div>
+                </div>
+              </div>
+              <div className={styles.popBottom} style={{ padding: '15px 0' }}>
+                {tenFlag ? <em onClick={() => { this.popLayerShowHide("loadFlag", null) }}>关 闭</em> : null}
               </div>
             </div>
-            <div className={styles.popBottom} style={{padding: '15px 0'}}>
-              { tenFlag ? <em onClick={ () => {this.popLayerShowHide("loadFlag", null)} }>关 闭</em> : null}
-            </div>
-          </div>
-        </div> : null 
-      }
-      { loadFlag ? <Websocket url={`${this.socketLoadDataUrl}${0}/${roadInterId}/${0}`} onMessage={this.loadData.bind(this)} /> : null }
-      { editFlag ? <Websocket url={`${this.socketEditDataUrl}${0}/${roadInterId}/${0}`} onMessage={this.editData.bind(this)} /> : null }
-      <Websocket url={this.socketPointStatusUrl} onMessage={this.handleData.bind(this)} />
-      { !!roadUnitId && !!roadInterId && !!roadNodeNo ? <Websocket url={`${this.socketPointPopUrl}${roadUnitId}/${roadInterId}/${roadNodeNo}`} onMessage={ this.handlePopData.bind(this)} /> : null }
+          </div> : null
+        }
+        {loadFlag ? <Websocket url={`${this.props.data.devSockets}${this.socketLoadDataUrl}${0}/${roadInterId}/${0}?Authorization=${this.token}`} onMessage={this.loadData.bind(this)} /> : null}
+        {editFlag ? <Websocket url={`${this.props.data.devSockets}${this.socketEditDataUrl}${0}/${roadInterId}/${0}?Authorization=${this.token}`} onMessage={this.editData.bind(this)} /> : null}
+        <Websocket url={`${this.props.data.devSockets}${this.socketPointStatusUrl}?Authorization=${this.token}`} onMessage={this.handleData.bind(this)} />
+        {!!roadUnitId && !!roadInterId && !!roadNodeNo ? <Websocket url={`${this.props.data.devSockets}${this.socketPointPopUrl}${roadUnitId}/${roadInterId}/${roadNodeNo}?Authorization=${this.token}`} onMessage={this.handlePopData.bind(this)} /> : null}
         <Header {...this.props} />
         {/* 调度点击行弹层 */}
-        { dispatchClickInfo || dayPlanClickInfo ?
-          <div className={styles.maskBg}> 
+        {dispatchClickInfo || dayPlanClickInfo ?
+          <div className={styles.maskBg}>
             {/* 日计划点击行弹层 */}
-            { dayPlanClickInfo && !popItemFlag ?
-              <div className={styles.popBox} style={{width: '600px', zIndex: '101'}}>
-                <div className={styles.rTit} style={{lineHeight: '35px'}}>配时方案配置</div>
+            {dayPlanClickInfo && !popItemFlag ?
+              <div className={styles.popBox} style={{ width: '600px', zIndex: '101' }}>
+                <div className={styles.rTit} style={{ lineHeight: '35px' }}>配时方案配置</div>
                 <ListForAntd {...this.props} dataSourse={dayPlanClickInfo} listNames={listNames} listType={'PLAN'} imgIconUrl={this.phaseBgUrl} showIndex={3} nothing={false} />
                 <div className={styles.popBottom}>
-                  <em onClick={ () => {this.popLayerShowHide("dayPlanClickInfo", null)} }>返 回</em>
+                  <em onClick={() => { this.popLayerShowHide("dayPlanClickInfo", null) }}>返 回</em>
                 </div>
               </div> : null
             }
-            { dispatchClickInfo && popItemFlag  ?
-              <div className={styles.popBox} style={{width: '600px'}}>
-                <div className={styles.rTit} style={{lineHeight: '35px'}}>日计划配置</div>
+            {dispatchClickInfo && popItemFlag ?
+              <div className={styles.popBox} style={{ width: '600px' }}>
+                <div className={styles.rTit} style={{ lineHeight: '35px' }}>日计划配置</div>
                 <ListForAntd {...this.props} handleLineClick={this.handleLineClick} dataSourse={dispatchClickInfo} listNames={listNames} listType={'DAYPLAN'} imgIconUrl={this.phaseBgUrl} showIndex={2} nothing={false} />
                 <div className={styles.popBottom}>
-                  <em onClick={ () => {this.popLayerShowHide("dispatchClickInfo", null)} }>返 回</em>
+                  <em onClick={() => { this.popLayerShowHide("dispatchClickInfo", null) }}>返 回</em>
                 </div>
               </div> : null
             }
           </div> : null
         }
         {/* 编辑弹层列表用于多选 车道、灯组、检测器 */}
-        { laneSelectLists && !selectFlag || lightSelectLists && !selectFlag || detectorSelectLists && !selectFlag  || phaseSelectLists && !selectFlag ?
-          <div className={styles.maskBg}> 
-            <div className={styles.popBox} style={{width: '600px'}}>
+        {laneSelectLists && !selectFlag || lightSelectLists && !selectFlag || detectorSelectLists && !selectFlag || phaseSelectLists && !selectFlag ?
+          <div className={styles.maskBg}>
+            <div className={styles.popBox} style={{ width: '600px' }}>
               <div className={styles.popTit}>{popAddEditText}{popAddEditName}</div>
-              <div className={styles.popCon} style={{padding:'0'}}>
-              { phaseFlag && phaseSelectLists &&
-                <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'PHASE')} value={phaseDefaultSelectLists && phaseDefaultSelectLists.split(",").map(Number)}>
-                  <Row>
-                    <Col span={4}>相位序号</Col>
-                    <Col span={10}>相位名称</Col>
-                    <Col span={10}>相位延迟绿时间</Col>
-                  </Row>
-                  { phaseSelectLists.map((item) =>{
-                      return <Row key={'phase'+ item.phaseNo}>
-                            <Col span={4}>
-                              <Checkbox value={item.phaseNo}>{item.phaseNo}</Checkbox>
-                            </Col>
-                            <Col span={10}>{!item.phaseName ? '无' : item.phaseName}</Col>
-                            <Col span={10}>{!item.phaseDelaygreenTime ? '无' : item.phaseDelaygreenTime}</Col>
-                          </Row>
+              <div className={styles.popCon} style={{ padding: '0' }}>
+                {phaseFlag && phaseSelectLists &&
+                  <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'PHASE')} value={phaseDefaultSelectLists && phaseDefaultSelectLists.split(",").map(Number)}>
+                    <Row>
+                      <Col span={4}>相位序号</Col>
+                      <Col span={10}>相位名称</Col>
+                      <Col span={10}>相位延迟绿时间</Col>
+                    </Row>
+                    {phaseSelectLists.map((item) => {
+                      return <Row key={'phase' + item.phaseNo}>
+                        <Col span={4}>
+                          <Checkbox value={item.phaseNo}>{item.phaseNo}</Checkbox>
+                        </Col>
+                        <Col span={10}>{!item.phaseName ? '无' : item.phaseName}</Col>
+                        <Col span={10}>{!item.phaseDelaygreenTime ? '无' : item.phaseDelaygreenTime}</Col>
+                      </Row>
                     })
-                  }
-                </Checkbox.Group>
-              }
-              { laneSelectLists &&
-                <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'LANE')} value={laneDefaultSelectLists && laneDefaultSelectLists.split(",").map(Number)}>
-                  <Row>
-                    <Col span={4}>车道号</Col>
-                    <Col span={5}>道路编号</Col>
-                    <Col span={5}>转向</Col>
-                    <Col span={5}>通行方向描述</Col>
-                    <Col span={5}>外部车道号</Col>
-                  </Row>
-                  { laneSelectLists.map((item) =>{
-                      return <Row key={'lane'+ item.laneId}>
-                            <Col span={4}>
-                              <Checkbox value={item.laneId}>{item.laneId}</Checkbox>
-                            </Col>
-                            <Col span={5}>{!item.fRid ? '无' : item.fRid}</Col>
-                            <Col span={5}>{!item.turnDirNoListName ? '无' : item.turnDirNoListName}</Col>
-                            <Col span={5}>{!item.dirName ? '无' : item.dirName}</Col>
-                            <Col span={5}>{!item.laneIdCust ? '无' : item.laneIdCust}</Col>
-                          </Row>
-                    })
-                  }
-                </Checkbox.Group>
-              }
-              { lightSelectLists &&
-                <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'LIGHT')} value={lightDefaultSelectLists && lightDefaultSelectLists.split(",").map(Number)}>
-                  <Row>
-                    <Col span={6}>灯组序号</Col>
-                    <Col span={6}>灯组类型</Col>
-                    <Col span={6}>控制转向</Col>
-                    <Col span={6}>控制方向</Col>
-                  </Row>
-                  { lightSelectLists.map((item) =>{
-                      return <Row key={'lampgroup'+ item.lampgroupNo}>
-                            <Col span={6}>
-                              <Checkbox value={item.lampgroupNo}>{item.lampgroupNo}</Checkbox>
-                            </Col>
-                            <Col span={6}>{!item.lampgroupTypeName ? '无' : item.lampgroupTypeName}</Col>
-                            <Col span={6}>{!item.controlTurnName ? '无' : item.controlTurnName}</Col>
-                            <Col span={6}>{!item.controlDirName ? '无' : item.controlDirName}</Col>
-                          </Row>
-                    })
-                  }
-                </Checkbox.Group>
-              }
-              { detectorSelectLists &&
-                <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'DETECTOR')} value={detectorDefaultSelectLists && detectorDefaultSelectLists.split(",").map(Number)}>
-                  <Row>
-                    <Col span={6}>检测器编号</Col>
-                    <Col span={6}>检测器类型</Col>
-                    <Col span={6}>流量采集周期</Col>
-                    <Col span={6}>占有率采集周期</Col>
-                  </Row>
-                  { detectorSelectLists.map((item) =>{
-                      return <Row key={'detector'+ item.detectorId}>
-                            <Col span={6}>
-                              <Checkbox value={item.detectorId}>{item.detectorId}</Checkbox>
-                            </Col>
-                            <Col span={6}>{!item.detectorTypeName ? '无' : item.detectorTypeName}</Col>
-                            <Col span={6}>{!item.flowCollectionCycle ? '无' : item.flowCollectionCycle}</Col>
-                            <Col span={6}>{!item.occupancyCollectionCycle ? '无' : item.occupancyCollectionCycle}</Col>
-                          </Row>
-                    })
-                  }
-                </Checkbox.Group>
-              }
-              </div>
-              { !selectFlag  ? 
-                <div className={styles.popBottom}>
-                { laneSelectLists ? 
-                  <em onClick={()=> this.btnSelectOver(true, laneDefaultSelectLists)}>确 定</em> : 
-                  lightSelectLists ? 
-                  <em onClick={()=> this.btnSelectOver(true, lightDefaultSelectLists)}>确 定</em> :
-                  detectorSelectLists ? 
-                  <em onClick={()=> this.btnSelectOver(true, detectorDefaultSelectLists)}>确 定</em> :
-                  phaseSelectLists ?
-                  <em onClick={()=> this.btnSelectOver(true, phaseDefaultSelectLists)}>确 定</em> : null
+                    }
+                  </Checkbox.Group>
                 }
-                <em onClick={()=> this.btnSelectOver(false)}>返 回</em>
-              </div> : null
+                {laneSelectLists &&
+                  <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'LANE')} value={laneDefaultSelectLists && laneDefaultSelectLists.split(",").map(Number)}>
+                    <Row>
+                      <Col span={4}>车道号</Col>
+                      <Col span={5}>道路编号</Col>
+                      <Col span={5}>转向</Col>
+                      <Col span={5}>通行方向描述</Col>
+                      <Col span={5}>外部车道号</Col>
+                    </Row>
+                    {laneSelectLists.map((item) => {
+                      return <Row key={'lane' + item.laneId}>
+                        <Col span={4}>
+                          <Checkbox value={item.laneId}>{item.laneId}</Checkbox>
+                        </Col>
+                        <Col span={5}>{!item.fRid ? '无' : item.fRid}</Col>
+                        <Col span={5}>{!item.turnDirNoListName ? '无' : item.turnDirNoListName}</Col>
+                        <Col span={5}>{!item.dirName ? '无' : item.dirName}</Col>
+                        <Col span={5}>{!item.laneIdCust ? '无' : item.laneIdCust}</Col>
+                      </Row>
+                    })
+                    }
+                  </Checkbox.Group>
+                }
+                {lightSelectLists &&
+                  <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'LIGHT')} value={lightDefaultSelectLists && lightDefaultSelectLists.split(",").map(Number)}>
+                    <Row>
+                      <Col span={6}>灯组序号</Col>
+                      <Col span={6}>灯组类型</Col>
+                      <Col span={6}>控制转向</Col>
+                      <Col span={6}>控制方向</Col>
+                    </Row>
+                    {lightSelectLists.map((item) => {
+                      return <Row key={'lampgroup' + item.lampgroupNo}>
+                        <Col span={6}>
+                          <Checkbox value={item.lampgroupNo}>{item.lampgroupNo}</Checkbox>
+                        </Col>
+                        <Col span={6}>{!item.lampgroupTypeName ? '无' : item.lampgroupTypeName}</Col>
+                        <Col span={6}>{!item.controlTurnName ? '无' : item.controlTurnName}</Col>
+                        <Col span={6}>{!item.controlDirName ? '无' : item.controlDirName}</Col>
+                      </Row>
+                    })
+                    }
+                  </Checkbox.Group>
+                }
+                {detectorSelectLists &&
+                  <Checkbox.Group style={{ width: '100%' }} onChange={v => this.selectItemList(v, 'DETECTOR')} value={detectorDefaultSelectLists && detectorDefaultSelectLists.split(",").map(Number)}>
+                    <Row>
+                      <Col span={6}>检测器编号</Col>
+                      <Col span={6}>检测器类型</Col>
+                      <Col span={6}>流量采集周期</Col>
+                      <Col span={6}>占有率采集周期</Col>
+                    </Row>
+                    {detectorSelectLists.map((item) => {
+                      return <Row key={'detector' + item.detectorId}>
+                        <Col span={6}>
+                          <Checkbox value={item.detectorId}>{item.detectorId}</Checkbox>
+                        </Col>
+                        <Col span={6}>{!item.detectorTypeName ? '无' : item.detectorTypeName}</Col>
+                        <Col span={6}>{!item.flowCollectionCycle ? '无' : item.flowCollectionCycle}</Col>
+                        <Col span={6}>{!item.occupancyCollectionCycle ? '无' : item.occupancyCollectionCycle}</Col>
+                      </Row>
+                    })
+                    }
+                  </Checkbox.Group>
+                }
+              </div>
+              {!selectFlag ?
+                <div className={styles.popBottom}>
+                  {laneSelectLists ?
+                    <em onClick={() => this.btnSelectOver(true, laneDefaultSelectLists)}>确 定</em> :
+                    lightSelectLists ?
+                      <em onClick={() => this.btnSelectOver(true, lightDefaultSelectLists)}>确 定</em> :
+                      detectorSelectLists ?
+                        <em onClick={() => this.btnSelectOver(true, detectorDefaultSelectLists)}>确 定</em> :
+                        phaseSelectLists ?
+                          <em onClick={() => this.btnSelectOver(true, phaseDefaultSelectLists)}>确 定</em> : null
+                  }
+                  <em onClick={() => this.btnSelectOver(false)}>返 回</em>
+                </div> : null
               }
-              
+
             </div>
-        </div> : null
-        }              
+          </div> : null
+        }
         {/* 弹层 > 添加编辑 */}
-        { stepRoadAddEdit ?  // 车道配置添加编辑弹层
-          <div className={styles.maskBg}> 
-            <div className={styles.popBox} style={{width: '660px'}}>
-              <div className={styles.popTit}>{popAddEditText}车道{ !showFlag ? ' > 点击图标选中 (若不想改变图标则占空白处)' : null }{ !showFlag ? null : <Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepRoadAddEdit", null)} } />}</div>
+        {stepRoadAddEdit ?  // 车道配置添加编辑弹层
+          <div className={styles.maskBg}>
+            <div className={styles.popBox} style={{ width: '660px' }}>
+              <div className={styles.popTit}>{popAddEditText}车道{!showFlag ? ' > 点击图标选中 (若不想改变图标则占空白处)' : null}{!showFlag ? null : <Icon className={styles.Close} type="close" onClick={() => { this.popLayerShowHide("stepRoadAddEdit", null) }} />}</div>
               {/* 车道图标层 */}
-              { !showFlag && laneIconLists &&
+              {!showFlag && laneIconLists &&
                 <div className={styles.popCon}>
                   {laneIconLists.length > 0 && laneIconLists.map((item, i) => {
-                    return <img key={'icon'+ i} onClick={ () => this.handleSelImage('laneIconLists', 'laneShowDetail', item) } style={{border: '1px #27343b solid', cursor: 'pointer', display: 'inline-block',margin: '8px'}} src={`${this.laneBgUrl}${item}`} />
+                    return <img key={'icon' + i} onClick={() => this.handleSelImage('laneIconLists', 'laneShowDetail', item)} style={{ border: '1px #27343b solid', cursor: 'pointer', display: 'inline-block', margin: '8px' }} src={`${this.laneBgUrl}${item}`} />
                   })
                   }
                 </div>
               }
-              { showFlag && laneShowDetail && 
+              {showFlag && laneShowDetail &&
                 <div className={classNames(styles.popCon)}>
                   <div className={styles.itemInputBox}>
-                    <span>车道ID：</span><Input type='number' id='laneId' value={laneShowDetail.laneId} onChange={e => this.handleChangeInput(e,'state','laneShowDetail','laneId')} placeholder="请输入车道ID" />
+                    <span>车道ID：</span><Input type='number' id='laneId' value={laneShowDetail.laneId} onChange={e => this.handleChangeInput(e, 'state', 'laneShowDetail', 'laneId')} placeholder="请输入车道ID" />
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>道路ID：</span><Input value={laneShowDetail.fRid} onChange={e => this.handleChangeInput(e,'state','laneShowDetail','fRid')} placeholder="请输入道路ID" />
+                    <span>道路ID：</span><Input value={laneShowDetail.fRid} onChange={e => this.handleChangeInput(e, 'state', 'laneShowDetail', 'fRid')} placeholder="请输入道路ID" />
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>外部车道ID：</span><Input value={laneShowDetail.laneIdCust} onChange={e => this.handleChangeInput(e,'state','laneShowDetail','laneIdCust')} placeholder="请输入外部车道ID" />
+                    <span>外部车道ID：</span><Input value={laneShowDetail.laneIdCust} onChange={e => this.handleChangeInput(e, 'state', 'laneShowDetail', 'laneIdCust')} placeholder="请输入外部车道ID" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>IO接口号：</span>
                     <Select
-                      value={laneShowDetail.dcuIoId ? laneShowDetail.dcuIoId : 0 }
-                      onChange={ v =>  this.handleChangeSel(v, 'state', 'laneShowDetail', 'dcuIoId') }>
+                      value={laneShowDetail.dcuIoId ? laneShowDetail.dcuIoId : 0}
+                      onChange={v => this.handleChangeSel(v, 'state', 'laneShowDetail', 'dcuIoId')}>
                       <Option value={0}>请选择接口号</Option>
                       {
                         Dcu_Io_Ids.map((items, key) => {
@@ -1990,8 +1991,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
                   <div className={styles.itemInputBox}>
                     <span>检测器编号：</span>
                     <Select
-                      value={laneShowDetail.detectorId ? laneShowDetail.detectorId : 0 }
-                      onChange={ v =>  this.handleChangeSel(v, 'state', 'laneShowDetail', 'detectorId') }>
+                      value={laneShowDetail.detectorId ? laneShowDetail.detectorId : 0}
+                      onChange={v => this.handleChangeSel(v, 'state', 'laneShowDetail', 'detectorId')}>
                       <Option value={0}>请选择编号</Option>
                       {
                         this.props.data.detectorLists.map((items, key) => {
@@ -2001,12 +2002,12 @@ btnSelectOver = (flag, defaultSelectLists) => {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>设备编号：</span><Input value={laneShowDetail.detectorDeviceId} onChange={e => this.handleChangeInput(e,'state','laneShowDetail','detectorDeviceId')} placeholder="请输入检测器设备编号" />
+                    <span>设备编号：</span><Input value={laneShowDetail.detectorDeviceId} onChange={e => this.handleChangeInput(e, 'state', 'laneShowDetail', 'detectorDeviceId')} placeholder="请输入检测器设备编号" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>角 度：</span>
                     <Select value={laneShowDetail.angle ? laneShowDetail.angle : 0}
-                    onChange={ v =>  this.handleChangeSel(v, 'state', 'laneShowDetail', 'angle') }>
+                      onChange={v => this.handleChangeSel(v, 'state', 'laneShowDetail', 'angle')}>
                       <Option value={0}>0度</Option>
                       <Option value={45}>45度</Option>
                       <Option value={90}>90度</Option>
@@ -2021,8 +2022,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
                   <div className={styles.itemInputBox}>
                     <span>方 向：</span>
                     <Select
-                      value={laneShowDetail.fDir8No ? laneShowDetail.fDir8No : 0 }
-                      onChange={ v =>  this.handleChangeSel(v, 'state', 'laneShowDetail', 'fDir8No') }>
+                      value={laneShowDetail.fDir8No ? laneShowDetail.fDir8No : 0}
+                      onChange={v => this.handleChangeSel(v, 'state', 'laneShowDetail', 'fDir8No')}>
                       <Option value={0}>请选择方向</Option>
                       {
                         fDir8NoData.map((items, key) => {
@@ -2032,54 +2033,54 @@ btnSelectOver = (flag, defaultSelectLists) => {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span style={{alignSelf: 'flex-start'}}>图 片：</span>
-                    <div style={{flex:4.4}}>
-                      { !!laneShowDetail.imageUrl ? <div className={styles.yesImage} onClick={(e) => this.getIconImageList(e, 'LANE')}><img src={`${this.laneBgUrl}${laneShowDetail.imageUrl}`} /></div> : <div onClick={(e) => this.getIconImageList(e, 'LANE')} className={styles.noImage}>点击选图</div> }
+                    <span style={{ alignSelf: 'flex-start' }}>图 片：</span>
+                    <div style={{ flex: 4.4 }}>
+                      {!!laneShowDetail.imageUrl ? <div className={styles.yesImage} onClick={(e) => this.getIconImageList(e, 'LANE')}><img src={`${this.laneBgUrl}${laneShowDetail.imageUrl}`} /></div> : <div onClick={(e) => this.getIconImageList(e, 'LANE')} className={styles.noImage}>点击选图</div>}
                     </div>
                   </div>
-                  <div className={styles.itemInputBox} style={{alignSelf: 'flex-start'}}>
+                  <div className={styles.itemInputBox} style={{ alignSelf: 'flex-start' }}>
                     <span>转 向：</span>
-                    <Checkbox.Group options={turnDirNoListData} value={laneShowDetail.turnDirNoList.split(",").map(Number)} 
-                    onChange={ v =>  this.handleChangeCheck(v, 'state', 'laneShowDetail', 'turnDirNoList')} />
+                    <Checkbox.Group options={turnDirNoListData} value={laneShowDetail.turnDirNoList.split(",").map(Number)}
+                      onChange={v => this.handleChangeCheck(v, 'state', 'laneShowDetail', 'turnDirNoList')} />
                   </div>
-                  
+
                 </div>
               }
-              { showFlag ?
+              {showFlag ?
                 <div className={styles.popBottom}>
-                {
-                  popAddEditText === '编辑' ? <em onClick={ () => {this.postUpdateAllType(laneShowDetail, 'LANE')}}>编辑确定</em> : <em onClick={ () => {this.postAddAllType(laneShowDetail, 'LANE')}}>新增确定</em>
-                }
-                  <em onClick={ () => {this.popLayerShowHide("stepRoadAddEdit", null)} }>取 消</em>
+                  {
+                    popAddEditText === '编辑' ? <em onClick={() => { this.postUpdateAllType(laneShowDetail, 'LANE') }}>编辑确定</em> : <em onClick={() => { this.postAddAllType(laneShowDetail, 'LANE') }}>新增确定</em>
+                  }
+                  <em onClick={() => { this.popLayerShowHide("stepRoadAddEdit", null) }}>取 消</em>
                 </div> : null
               }
-              
+
             </div>
           </div> : null
         }
-        { stepThreeAddEdit ?  // 灯组配置添加编辑弹层
-          <div className={styles.maskBg}> 
-            <div className={styles.popBox} style={{width: '600px'}}>
-              <div className={styles.popTit}>{popAddEditText}灯组{ !showFlag ? ' > 点击图标选中 (若不想改变图标则占空白处)' : null }{ !showFlag ? null : <Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepThreeAddEdit", null)} } />}</div>
+        {stepThreeAddEdit ?  // 灯组配置添加编辑弹层
+          <div className={styles.maskBg}>
+            <div className={styles.popBox} style={{ width: '600px' }}>
+              <div className={styles.popTit}>{popAddEditText}灯组{!showFlag ? ' > 点击图标选中 (若不想改变图标则占空白处)' : null}{!showFlag ? null : <Icon className={styles.Close} type="close" onClick={() => { this.popLayerShowHide("stepThreeAddEdit", null) }} />}</div>
               {/* 灯组图标层 */}
-              { !showFlag && lightIconLists &&
-                  <div className={styles.popCon}>
-                    {lightIconLists.length > 0 && lightIconLists.map((item, i) => {
-                      return <img key={'icon'+ i} onClick={ () => this.handleSelImage('lightIconLists', 'lightShowDetail', item) } style={{border: '1px #27343b solid', cursor: 'pointer', display: 'inline-block',margin: '8px'}} src={`${this.lightBgUrl}${item}`} />
-                    })
-                    }
-                  </div>
+              {!showFlag && lightIconLists &&
+                <div className={styles.popCon}>
+                  {lightIconLists.length > 0 && lightIconLists.map((item, i) => {
+                    return <img key={'icon' + i} onClick={() => this.handleSelImage('lightIconLists', 'lightShowDetail', item)} style={{ border: '1px #27343b solid', cursor: 'pointer', display: 'inline-block', margin: '8px' }} src={`${this.lightBgUrl}${item}`} />
+                  })
+                  }
+                </div>
               }
-              { showFlag && lightShowDetail && 
+              {showFlag && lightShowDetail &&
                 <div className={styles.popCon}>
                   <div className={styles.itemInputBox}>
-                    <span>灯组序号：</span><Input id='lampgroupNo' type='number' value={lightShowDetail.lampgroupNo} onChange={e => this.handleChangeInput(e,'state','lightShowDetail','lampgroupNo')} placeholder="请输入灯组序号" />
+                    <span>灯组序号：</span><Input id='lampgroupNo' type='number' value={lightShowDetail.lampgroupNo} onChange={e => this.handleChangeInput(e, 'state', 'lightShowDetail', 'lampgroupNo')} placeholder="请输入灯组序号" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>灯组类型：</span>
                     <Select
-                      value={lightShowDetail.lampgroupType ? lightShowDetail.lampgroupType : 0 }
-                      onChange={ v =>  this.handleChangeSel(v, 'state', 'lightShowDetail', 'lampgroupType') }>
+                      value={lightShowDetail.lampgroupType ? lightShowDetail.lampgroupType : 0}
+                      onChange={v => this.handleChangeSel(v, 'state', 'lightShowDetail', 'lampgroupType')}>
                       <Option value={0}>请选择方向</Option>
                       {
                         lampgroupType.map((items, key) => {
@@ -2091,8 +2092,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
                   <div className={styles.itemInputBox}>
                     <span>方 向：</span>
                     <Select
-                      value={lightShowDetail.controlDir ? lightShowDetail.controlDir : '0' }
-                      onChange={ v =>  this.handleChangeSel(v, 'state', 'lightShowDetail', 'controlDir') }>
+                      value={lightShowDetail.controlDir ? lightShowDetail.controlDir : '0'}
+                      onChange={v => this.handleChangeSel(v, 'state', 'lightShowDetail', 'controlDir')}>
                       <Option value={'0'}>请选择方向</Option>
                       {
                         controlDir.map((items, key) => {
@@ -2104,7 +2105,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
                   <div className={styles.itemInputBox}>
                     <span>角 度：</span>
                     <Select value={lightShowDetail.angle ? lightShowDetail.angle : 0}
-                    onChange={ v =>  this.handleChangeSel(v, 'state', 'lightShowDetail', 'angle') }>
+                      onChange={v => this.handleChangeSel(v, 'state', 'lightShowDetail', 'angle')}>
                       <Option value={0}>0度</Option>
                       <Option value={45}>45度</Option>
                       <Option value={90}>90度</Option>
@@ -2116,11 +2117,11 @@ btnSelectOver = (flag, defaultSelectLists) => {
                       <Option value={360}>360度</Option>
                     </Select>
                   </div>
-                  <div className={styles.itemInputBox} style={{alignSelf: 'flex-start'}}>
+                  <div className={styles.itemInputBox} style={{ alignSelf: 'flex-start' }}>
                     <span>转 向：</span>
                     <Select
-                      value={lightShowDetail.controlTurn ? lightShowDetail.controlTurn : '0' }
-                      onChange={ v =>  this.handleChangeSel(v, 'state', 'lightShowDetail', 'controlTurn') }>
+                      value={lightShowDetail.controlTurn ? lightShowDetail.controlTurn : '0'}
+                      onChange={v => this.handleChangeSel(v, 'state', 'lightShowDetail', 'controlTurn')}>
                       <Option value={'0'}>请选择转向</Option>
                       {
                         controlTurn.map((items, key) => {
@@ -2130,54 +2131,54 @@ btnSelectOver = (flag, defaultSelectLists) => {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span style={{alignSelf: 'flex-start'}}>图 片：</span>
-                    <div style={{flex:4.4}}>
-                      { !!lightShowDetail.imageUrl ? <div className={styles.yesImage} onClick={(e) => this.getIconImageList(e, 'LIGHT')}><img src={`${this.lightBgUrl}${lightShowDetail.imageUrl}`} /></div> : <div onClick={(e) => this.getIconImageList(e, 'LIGHT')} className={styles.noImage}>点击选图</div> }
+                    <span style={{ alignSelf: 'flex-start' }}>图 片：</span>
+                    <div style={{ flex: 4.4 }}>
+                      {!!lightShowDetail.imageUrl ? <div className={styles.yesImage} onClick={(e) => this.getIconImageList(e, 'LIGHT')}><img src={`${this.lightBgUrl}${lightShowDetail.imageUrl}`} /></div> : <div onClick={(e) => this.getIconImageList(e, 'LIGHT')} className={styles.noImage}>点击选图</div>}
                     </div>
                   </div>
                 </div>
               }
-              { showFlag ?
+              {showFlag ?
                 <div className={styles.popBottom}>
-                {
-                  popAddEditText === '编辑' ? <em onClick={ () => {this.postUpdateAllType(lightShowDetail, 'LIGHT')}}>编辑确定</em> : <em onClick={ () => {this.postAddAllType(lightShowDetail, 'LIGHT')}}>新增确定</em>
-                }
-                  <em onClick={ () => {this.popLayerShowHide("stepThreeAddEdit", null)} }>取 消</em>
+                  {
+                    popAddEditText === '编辑' ? <em onClick={() => { this.postUpdateAllType(lightShowDetail, 'LIGHT') }}>编辑确定</em> : <em onClick={() => { this.postAddAllType(lightShowDetail, 'LIGHT') }}>新增确定</em>
+                  }
+                  <em onClick={() => { this.popLayerShowHide("stepThreeAddEdit", null) }}>取 消</em>
                 </div> : null
               }
-              
+
             </div>
           </div> : null
         }
-        { stepFourAddEdit ?  // 检测器配置添加编辑弹层
-          <div className={styles.maskBg}> 
-            <div className={styles.popBox} style={{width: '700px'}}>
-              <div className={styles.popTit}>{popAddEditText}检测器{ !showFlag ? ' > 点击图标选中 (若不想改变图标则占空白处)' : null }{ !showFlag ? null : <Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepFourAddEdit", null)} } />}</div>
+        {stepFourAddEdit ?  // 检测器配置添加编辑弹层
+          <div className={styles.maskBg}>
+            <div className={styles.popBox} style={{ width: '700px' }}>
+              <div className={styles.popTit}>{popAddEditText}检测器{!showFlag ? ' > 点击图标选中 (若不想改变图标则占空白处)' : null}{!showFlag ? null : <Icon className={styles.Close} type="close" onClick={() => { this.popLayerShowHide("stepFourAddEdit", null) }} />}</div>
               {/* 检测器图标层 */}
-              { !showFlag && detectorIconLists &&
-                  <div className={styles.popCon}>
-                    {detectorIconLists.length > 0 && detectorIconLists.map((item, i) => {
-                      return <img key={'icon'+ i} onClick={ () => this.handleSelImage('detectorIconLists', 'detectorShowDetail', item) } style={{border: '1px #27343b solid', cursor: 'pointer', display: 'inline-block',margin: '8px'}} src={`${this.detectorBgUrl}${item}`} />
-                    })
-                    }
-                  </div>
+              {!showFlag && detectorIconLists &&
+                <div className={styles.popCon}>
+                  {detectorIconLists.length > 0 && detectorIconLists.map((item, i) => {
+                    return <img key={'icon' + i} onClick={() => this.handleSelImage('detectorIconLists', 'detectorShowDetail', item)} style={{ border: '1px #27343b solid', cursor: 'pointer', display: 'inline-block', margin: '8px' }} src={`${this.detectorBgUrl}${item}`} />
+                  })
+                  }
+                </div>
               }
-              { showFlag && detectorShowDetail && 
+              {showFlag && detectorShowDetail &&
                 <div className={styles.popCon}>
                   <div className={styles.itemInputBox}>
-                    <span>检测器序号：</span><Input id='detectorId' type='number' value={detectorShowDetail.detectorId} onChange={e => this.handleChangeInput(e,'state','detectorShowDetail','detectorId')} placeholder="请输入检测器序号" />
+                    <span>检测器序号：</span><Input id='detectorId' type='number' value={detectorShowDetail.detectorId} onChange={e => this.handleChangeInput(e, 'state', 'detectorShowDetail', 'detectorId')} placeholder="请输入检测器序号" />
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>流量周期：</span><Input type='number' value={detectorShowDetail.flowCollectionCycle} onChange={e => this.handleChangeInput(e,'state','detectorShowDetail','flowCollectionCycle')} placeholder="请输入" />
+                    <span>流量周期：</span><Input type='number' value={detectorShowDetail.flowCollectionCycle} onChange={e => this.handleChangeInput(e, 'state', 'detectorShowDetail', 'flowCollectionCycle')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>占有率周期：</span><Input type='number' value={detectorShowDetail.occupancyCollectionCycle} onChange={e => this.handleChangeInput(e,'state','detectorShowDetail','occupancyCollectionCycle')} placeholder="请输入" />
+                    <span>占有率周期：</span><Input type='number' value={detectorShowDetail.occupancyCollectionCycle} onChange={e => this.handleChangeInput(e, 'state', 'detectorShowDetail', 'occupancyCollectionCycle')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>检测器类型：</span>
                     <Select
-                      value={detectorShowDetail.detectorType ? detectorShowDetail.detectorType : 0 }
-                      onChange={ v =>  this.handleChangeSel(v, 'state', 'detectorShowDetail', 'detectorType') }>
+                      value={detectorShowDetail.detectorType ? detectorShowDetail.detectorType : 0}
+                      onChange={v => this.handleChangeSel(v, 'state', 'detectorShowDetail', 'detectorType')}>
                       <Option value={0}>请选择类型</Option>
                       {
                         detectorType.map((items, key) => {
@@ -2187,41 +2188,41 @@ btnSelectOver = (flag, defaultSelectLists) => {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span style={{alignSelf: 'flex-start'}}>图 片：</span>
-                    <div style={{flex:4.4}}>
-                      { !!detectorShowDetail.imageUrl ? <div className={styles.yesImage} onClick={(e) => this.getIconImageList(e, 'DETECTOR')}><img src={`${this.detectorBgUrl}${detectorShowDetail.imageUrl}`} /></div> : <div onClick={(e) => this.getIconImageList(e, 'DETECTOR')} className={styles.noImage}>点击选图</div> }
+                    <span style={{ alignSelf: 'flex-start' }}>图 片：</span>
+                    <div style={{ flex: 4.4 }}>
+                      {!!detectorShowDetail.imageUrl ? <div className={styles.yesImage} onClick={(e) => this.getIconImageList(e, 'DETECTOR')}><img src={`${this.detectorBgUrl}${detectorShowDetail.imageUrl}`} /></div> : <div onClick={(e) => this.getIconImageList(e, 'DETECTOR')} className={styles.noImage}>点击选图</div>}
                     </div>
                   </div>
                 </div>
               }
-              { showFlag ?
+              {showFlag ?
                 <div className={styles.popBottom}>
-                {
-                  popAddEditText === '编辑' ? <em onClick={ () => {this.postUpdateAllType(detectorShowDetail, 'DETECTOR')}}>编辑确定</em> : <em onClick={ () => {this.postAddAllType(detectorShowDetail, 'DETECTOR')}}>新增确定</em>
-                }
-                  <em onClick={ () => {this.popLayerShowHide("stepFourAddEdit", null)} }>取 消</em>
+                  {
+                    popAddEditText === '编辑' ? <em onClick={() => { this.postUpdateAllType(detectorShowDetail, 'DETECTOR') }}>编辑确定</em> : <em onClick={() => { this.postAddAllType(detectorShowDetail, 'DETECTOR') }}>新增确定</em>
+                  }
+                  <em onClick={() => { this.popLayerShowHide("stepFourAddEdit", null) }}>取 消</em>
                 </div> : null
               }
             </div>
           </div> : null
         }
-        { selectFlag && stepFiveAddEdit ?  // 相位配置添加编辑弹层
-          <div className={styles.maskBg}> 
+        {selectFlag && stepFiveAddEdit ?  // 相位配置添加编辑弹层
+          <div className={styles.maskBg}>
             <div className={styles.popBox}>
-              <div className={styles.popTit}>{popAddEditText}相位<Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepFiveAddEdit", null)} } /></div>
-              { phaseShowDetail && 
+              <div className={styles.popTit}>{popAddEditText}相位<Icon className={styles.Close} type="close" onClick={() => { this.popLayerShowHide("stepFiveAddEdit", null) }} /></div>
+              {phaseShowDetail &&
                 <div className={classNames(styles.popCon, styles.popConTurn)}>
                   <div className={styles.itemInputBox}>
-                    <span>相位序号：</span><Input id='phaseNo' type='number' value={phaseShowDetail.phaseNo} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','phaseNo')} placeholder="请输入" />
+                    <span>相位序号：</span><Input id='phaseNo' type='number' value={phaseShowDetail.phaseNo} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'phaseNo')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>相位名称：</span><Input value={phaseShowDetail.phaseName} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','phaseName')} placeholder="请输入" />
+                    <span>相位名称：</span><Input value={phaseShowDetail.phaseName} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'phaseName')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>相位禁止：</span>
                     <Select
-                      value={phaseShowDetail.phaseForbiden ? phaseShowDetail.phaseForbiden : 0 }
-                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'phaseForbiden') }>
+                      value={phaseShowDetail.phaseForbiden ? phaseShowDetail.phaseForbiden : 0}
+                      onChange={v => this.handleChangeSel(v, 'state', 'phaseShowDetail', 'phaseForbiden')}>
                       <Option value={0}>请选择类型</Option>
                       {
                         phaseForbidenData.map((items, key) => {
@@ -2233,8 +2234,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
                   <div className={styles.itemInputBox}>
                     <span>相位屏蔽：</span>
                     <Select
-                      value={phaseShowDetail.phaseShield ? phaseShowDetail.phaseShield : 0 }
-                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'phaseShield') }>
+                      value={phaseShowDetail.phaseShield ? phaseShowDetail.phaseShield : 0}
+                      onChange={v => this.handleChangeSel(v, 'state', 'phaseShowDetail', 'phaseShield')}>
                       <Option value={0}>请选择类型</Option>
                       {
                         phaseShieldData.map((items, key) => {
@@ -2250,25 +2251,25 @@ btnSelectOver = (flag, defaultSelectLists) => {
                     <span>相位包含灯组：</span><div onClick={() => this.getSelectLists(roadInterId, roadNodeNo, 'LIGHT', 'phaseShowDetail', 'phaseLampgroupId')} className={styles.editItem}><b>{!phaseShowDetail.phaseLampgroupId ? "请点击进行编辑" : phaseShowDetail.phaseLampgroupId}</b><em>编辑</em></div>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>相位延迟绿时间：</span><Input type='number' value={phaseShowDetail.phaseDelaygreenTime} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','phaseDelaygreenTime')} placeholder="请输入" />
+                    <span>相位延迟绿时间：</span><Input type='number' value={phaseShowDetail.phaseDelaygreenTime} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'phaseDelaygreenTime')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>相位最大绿时间1：</span><Input type='number' value={phaseShowDetail.phaseMaxgreen1Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','phaseMaxgreen1Time')} placeholder="请输入" />
+                    <span>相位最大绿时间1：</span><Input type='number' value={phaseShowDetail.phaseMaxgreen1Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'phaseMaxgreen1Time')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>相位最大绿时间2：</span><Input type='number' value={phaseShowDetail.phaseMaxgreen2Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','phaseMaxgreen2Time')} placeholder="请输入" />
+                    <span>相位最大绿时间2：</span><Input type='number' value={phaseShowDetail.phaseMaxgreen2Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'phaseMaxgreen2Time')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>相位最小绿时间：</span><Input type='number' value={phaseShowDetail.phaseMingreenTime} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','phaseMingreenTime')} placeholder="请输入" />
+                    <span>相位最小绿时间：</span><Input type='number' value={phaseShowDetail.phaseMingreenTime} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'phaseMingreenTime')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>获得路权过渡灯色1时间：</span><Input type='number' value={phaseShowDetail.rightofwayAccessLamp1Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','rightofwayAccessLamp1Time')} placeholder="请输入" />
+                    <span>获得路权过渡灯色1时间：</span><Input type='number' value={phaseShowDetail.rightofwayAccessLamp1Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayAccessLamp1Time')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>获得路权过渡灯色1类型：</span>
                     <Select
-                      value={phaseShowDetail.rightofwayAccessLamp1Type ? phaseShowDetail.rightofwayAccessLamp1Type : 0 }
-                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayAccessLamp1Type') }>
+                      value={phaseShowDetail.rightofwayAccessLamp1Type ? phaseShowDetail.rightofwayAccessLamp1Type : 0}
+                      onChange={v => this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayAccessLamp1Type')}>
                       <Option value={0}>请选择类型</Option>
                       {
                         typeData.map((items, key) => {
@@ -2278,13 +2279,13 @@ btnSelectOver = (flag, defaultSelectLists) => {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>获得路权过渡灯色2时间：</span><Input type='number' value={phaseShowDetail.rightofwayAccessLamp2Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','rightofwayAccessLamp2Time')} placeholder="请输入" />
+                    <span>获得路权过渡灯色2时间：</span><Input type='number' value={phaseShowDetail.rightofwayAccessLamp2Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayAccessLamp2Time')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>获得路权过渡灯色2类型：</span>
                     <Select
-                      value={phaseShowDetail.rightofwayAccessLamp2Type ? phaseShowDetail.rightofwayAccessLamp2Type : 0 }
-                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayAccessLamp2Type') }>
+                      value={phaseShowDetail.rightofwayAccessLamp2Type ? phaseShowDetail.rightofwayAccessLamp2Type : 0}
+                      onChange={v => this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayAccessLamp2Type')}>
                       <Option value={0}>请选择类型</Option>
                       {
                         typeData.map((items, key) => {
@@ -2294,13 +2295,13 @@ btnSelectOver = (flag, defaultSelectLists) => {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>获得路权过渡灯色3时间：</span><Input type='number' value={phaseShowDetail.rightofwayAccessLamp3Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','rightofwayAccessLamp3Time')} placeholder="请输入" />
+                    <span>获得路权过渡灯色3时间：</span><Input type='number' value={phaseShowDetail.rightofwayAccessLamp3Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayAccessLamp3Time')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>获得路权过渡灯色3类型：</span>
                     <Select
-                      value={phaseShowDetail.rightofwayAccessLamp3Type ? phaseShowDetail.rightofwayAccessLamp3Type : 0 }
-                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayAccessLamp3Type') }>
+                      value={phaseShowDetail.rightofwayAccessLamp3Type ? phaseShowDetail.rightofwayAccessLamp3Type : 0}
+                      onChange={v => this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayAccessLamp3Type')}>
                       <Option value={0}>请选择类型</Option>
                       {
                         typeData.map((items, key) => {
@@ -2310,13 +2311,13 @@ btnSelectOver = (flag, defaultSelectLists) => {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>失去路权过渡灯色1时间：</span><Input type='number' value={phaseShowDetail.rightofwayLoseLamp1Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','rightofwayLoseLamp1Time')} placeholder="请输入" />
+                    <span>失去路权过渡灯色1时间：</span><Input type='number' value={phaseShowDetail.rightofwayLoseLamp1Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayLoseLamp1Time')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>失去路权过渡灯色1类型：</span>
                     <Select
-                      value={phaseShowDetail.rightofwayLoseLamp1Type ? phaseShowDetail.rightofwayLoseLamp1Type : 0 }
-                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayLoseLamp1Type') }>
+                      value={phaseShowDetail.rightofwayLoseLamp1Type ? phaseShowDetail.rightofwayLoseLamp1Type : 0}
+                      onChange={v => this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayLoseLamp1Type')}>
                       <Option value={0}>请选择类型</Option>
                       {
                         typeData.map((items, key) => {
@@ -2326,13 +2327,13 @@ btnSelectOver = (flag, defaultSelectLists) => {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>失去路权过渡灯色2时间：</span><Input type='number' value={phaseShowDetail.rightofwayLoseLamp2Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','rightofwayLoseLamp2Time')} placeholder="请输入" />
+                    <span>失去路权过渡灯色2时间：</span><Input type='number' value={phaseShowDetail.rightofwayLoseLamp2Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayLoseLamp2Time')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>失去路权过渡灯色2类型：</span>
                     <Select
-                      value={phaseShowDetail.rightofwayLoseLamp2Type ? phaseShowDetail.rightofwayLoseLamp2Type : 0 }
-                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayLoseLamp2Type') }>
+                      value={phaseShowDetail.rightofwayLoseLamp2Type ? phaseShowDetail.rightofwayLoseLamp2Type : 0}
+                      onChange={v => this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayLoseLamp2Type')}>
                       <Option value={0}>请选择类型</Option>
                       {
                         typeData.map((items, key) => {
@@ -2342,13 +2343,13 @@ btnSelectOver = (flag, defaultSelectLists) => {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>失去路权过渡灯色3时间：</span><Input type='number' value={phaseShowDetail.rightofwayLoseLamp3Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','rightofwayLoseLamp3Time')} placeholder="请输入" />
+                    <span>失去路权过渡灯色3时间：</span><Input type='number' value={phaseShowDetail.rightofwayLoseLamp3Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayLoseLamp3Time')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>失去路权过渡灯色3类型：</span>
                     <Select
-                      value={phaseShowDetail.rightofwayLoseLamp3Type ? phaseShowDetail.rightofwayLoseLamp3Type : 0 }
-                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayLoseLamp3Type') }>
+                      value={phaseShowDetail.rightofwayLoseLamp3Type ? phaseShowDetail.rightofwayLoseLamp3Type : 0}
+                      onChange={v => this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayLoseLamp3Type')}>
                       <Option value={0}>请选择类型</Option>
                       {
                         typeData.map((items, key) => {
@@ -2358,13 +2359,13 @@ btnSelectOver = (flag, defaultSelectLists) => {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>开机获得路权灯色1时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupAccessLamp1Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','rightofwayStartingupAccessLamp1Time')} placeholder="请输入" />
+                    <span>开机获得路权灯色1时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupAccessLamp1Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayStartingupAccessLamp1Time')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>开机获得路权灯色1类型：</span>
                     <Select
-                      value={phaseShowDetail.rightofwayStartingupAccessLamp1Type ? phaseShowDetail.rightofwayStartingupAccessLamp1Type : 0 }
-                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayStartingupAccessLamp1Type') }>
+                      value={phaseShowDetail.rightofwayStartingupAccessLamp1Type ? phaseShowDetail.rightofwayStartingupAccessLamp1Type : 0}
+                      onChange={v => this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayStartingupAccessLamp1Type')}>
                       <Option value={0}>请选择类型</Option>
                       {
                         typeData.map((items, key) => {
@@ -2374,13 +2375,13 @@ btnSelectOver = (flag, defaultSelectLists) => {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>开机获得路权灯色2时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupAccessLamp2Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','rightofwayStartingupAccessLamp2Time')} placeholder="请输入" />
+                    <span>开机获得路权灯色2时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupAccessLamp2Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayStartingupAccessLamp2Time')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>开机获得路权灯色2类型：</span>
                     <Select
-                      value={phaseShowDetail.rightofwayStartingupAccessLamp2Type ? phaseShowDetail.rightofwayStartingupAccessLamp2Type : 0 }
-                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayStartingupAccessLamp2Type') }>
+                      value={phaseShowDetail.rightofwayStartingupAccessLamp2Type ? phaseShowDetail.rightofwayStartingupAccessLamp2Type : 0}
+                      onChange={v => this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayStartingupAccessLamp2Type')}>
                       <Option value={0}>请选择类型</Option>
                       {
                         typeData.map((items, key) => {
@@ -2390,13 +2391,13 @@ btnSelectOver = (flag, defaultSelectLists) => {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>开机获得路权灯色3时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupAccessLamp3Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','rightofwayStartingupAccessLamp3Time')} placeholder="请输入" />
+                    <span>开机获得路权灯色3时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupAccessLamp3Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayStartingupAccessLamp3Time')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>开机获得路权灯色3类型：</span>
                     <Select
-                      value={phaseShowDetail.rightofwayStartingupAccessLamp3Type ? phaseShowDetail.rightofwayStartingupAccessLamp3Type : 0 }
-                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayStartingupAccessLamp3Type') }>
+                      value={phaseShowDetail.rightofwayStartingupAccessLamp3Type ? phaseShowDetail.rightofwayStartingupAccessLamp3Type : 0}
+                      onChange={v => this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayStartingupAccessLamp3Type')}>
                       <Option value={0}>请选择类型</Option>
                       {
                         typeData.map((items, key) => {
@@ -2406,13 +2407,13 @@ btnSelectOver = (flag, defaultSelectLists) => {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>开机失去路权灯色1时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupLoseLamp1Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','rightofwayStartingupLoseLamp1Time')} placeholder="请输入" />
+                    <span>开机失去路权灯色1时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupLoseLamp1Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayStartingupLoseLamp1Time')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>开机失去路权灯色1类型：</span>
                     <Select
-                      value={phaseShowDetail.rightofwayStartingupLoseLamp1Type ? phaseShowDetail.rightofwayStartingupLoseLamp1Type : 0 }
-                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayStartingupLoseLamp1Type') }>
+                      value={phaseShowDetail.rightofwayStartingupLoseLamp1Type ? phaseShowDetail.rightofwayStartingupLoseLamp1Type : 0}
+                      onChange={v => this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayStartingupLoseLamp1Type')}>
                       <Option value={0}>请选择类型</Option>
                       {
                         typeData.map((items, key) => {
@@ -2422,13 +2423,13 @@ btnSelectOver = (flag, defaultSelectLists) => {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>开机失去路权灯色2时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupLoseLamp2Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','rightofwayStartingupLoseLamp2Time')} placeholder="请输入" />
+                    <span>开机失去路权灯色2时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupLoseLamp2Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayStartingupLoseLamp2Time')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>开机失去路权灯色2类型：</span>
                     <Select
-                      value={phaseShowDetail.rightofwayStartingupLoseLamp2Type ? phaseShowDetail.rightofwayStartingupLoseLamp2Type : 0 }
-                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayStartingupLoseLamp2Type') }>
+                      value={phaseShowDetail.rightofwayStartingupLoseLamp2Type ? phaseShowDetail.rightofwayStartingupLoseLamp2Type : 0}
+                      onChange={v => this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayStartingupLoseLamp2Type')}>
                       <Option value={0}>请选择类型</Option>
                       {
                         typeData.map((items, key) => {
@@ -2438,13 +2439,13 @@ btnSelectOver = (flag, defaultSelectLists) => {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>开机失去路权灯色3时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupLoseLamp3Time} onChange={e => this.handleChangeInput(e,'state','phaseShowDetail','rightofwayStartingupLoseLamp3Time')} placeholder="请输入" />
+                    <span>开机失去路权灯色3时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupLoseLamp3Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayStartingupLoseLamp3Time')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>开机失去路权灯色3类型：</span>
                     <Select
-                      value={phaseShowDetail.rightofwayStartingupLoseLamp3Type ? phaseShowDetail.rightofwayStartingupLoseLamp3Type : 0 }
-                      onChange={ v =>  this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayStartingupLoseLamp3Type') }>
+                      value={phaseShowDetail.rightofwayStartingupLoseLamp3Type ? phaseShowDetail.rightofwayStartingupLoseLamp3Type : 0}
+                      onChange={v => this.handleChangeSel(v, 'state', 'phaseShowDetail', 'rightofwayStartingupLoseLamp3Type')}>
                       <Option value={0}>请选择类型</Option>
                       {
                         typeData.map((items, key) => {
@@ -2458,51 +2459,51 @@ btnSelectOver = (flag, defaultSelectLists) => {
               }
               <div className={styles.popBottom}>
                 {
-                  popAddEditText === '编辑' ? <em onClick={ () => {this.postAddUpdateItem(phaseShowDetail, 'PHASE')}}>编辑确定</em> : <em onClick={ () => {this.postAddUpdateItem(phaseShowDetail, 'PHASE', true)}}>新增确定</em>
+                  popAddEditText === '编辑' ? <em onClick={() => { this.postAddUpdateItem(phaseShowDetail, 'PHASE') }}>编辑确定</em> : <em onClick={() => { this.postAddUpdateItem(phaseShowDetail, 'PHASE', true) }}>新增确定</em>
                 }
-                  <em onClick={ () => {this.popLayerShowHide("stepFiveAddEdit", null)} }>取 消</em>
+                <em onClick={() => { this.popLayerShowHide("stepFiveAddEdit", null) }}>取 消</em>
               </div>
             </div>
           </div> : null
         }
-        {  selectFlag && stepSixAddEdit ?  // 阶段配置添加编辑弹层
-          <div className={styles.maskBg}> 
+        {selectFlag && stepSixAddEdit ?  // 阶段配置添加编辑弹层
+          <div className={styles.maskBg}>
             <div className={styles.popBox}>
-            <div className={styles.popTit}>{popAddEditText}阶段的相位{ !showFlag ? ' > 点击图标选中 (若不想改变图标则占空白处)' : null }{ !showFlag ? null : <Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepSixAddEdit", null)} } />}</div>
+              <div className={styles.popTit}>{popAddEditText}阶段的相位{!showFlag ? ' > 点击图标选中 (若不想改变图标则占空白处)' : null}{!showFlag ? null : <Icon className={styles.Close} type="close" onClick={() => { this.popLayerShowHide("stepSixAddEdit", null) }} />}</div>
               {/* 阶段相位图标层 */}
-              { !showFlag && phaseIconLists &&
-                  <div className={styles.popCon}>
-                    {phaseIconLists.length > 0 && phaseIconLists.map((item, i) => {
-                      return <img key={'icon'+ i} onClick={ () => this.handleSelImage('phaseIconLists', 'stageShowDetail', item) } style={{border: '1px #27343b solid', cursor: 'pointer', width: '60px', height: '60px', display: 'inline-block',margin: '8px'}} src={`${this.phaseBgUrl}${item}`} />
-                    })
-                    }
-                  </div>
+              {!showFlag && phaseIconLists &&
+                <div className={styles.popCon}>
+                  {phaseIconLists.length > 0 && phaseIconLists.map((item, i) => {
+                    return <img key={'icon' + i} onClick={() => this.handleSelImage('phaseIconLists', 'stageShowDetail', item)} style={{ border: '1px #27343b solid', cursor: 'pointer', width: '60px', height: '60px', display: 'inline-block', margin: '8px' }} src={`${this.phaseBgUrl}${item}`} />
+                  })
+                  }
+                </div>
               }
-              { showFlag && stageShowDetail && 
-              <div className={classNames(styles.popCon, styles.popConTurn)}>
-                <div className={styles.itemInputBox}>
-                  <span>阶段编号：</span><Input id='phasestageNo' type='number' value={stageShowDetail.phasestageNo} onChange={e => this.handleChangeInput(e,'state','stageShowDetail','phasestageNo')} placeholder="请输入" />
-                </div>
-                <div className={styles.itemInputBox}>
-                  <span>阶段名称：</span><Input value={stageShowDetail.phasestageName} onChange={e => this.handleChangeInput(e,'state','stageShowDetail','phasestageName')} placeholder="请输入" />
-                </div>
-                <div className={styles.itemInputBox}>
-                  <span>阶段中相位晚启动的时间：</span><Input type='number' value={stageShowDetail.lateStartTime} onChange={e => this.handleChangeInput(e,'state','stageShowDetail','lateStartTime')} placeholder="请输入" />
-                </div>
-                <div className={styles.itemInputBox}>
-                  <span>阶段中相位早结束的时间：</span><Input type='number' value={stageShowDetail.leftingEndTime} onChange={e => this.handleChangeInput(e,'state','stageShowDetail','leftingEndTime')} placeholder="请输入" />
-                </div>
-                <div className={styles.itemInputBox}>
-                  <span>阶段中包含相位：</span><div onClick={() => this.getSelectLists(roadInterId, roadNodeNo, 'PHASE', 'stageShowDetail','phasestagePhase' )} className={styles.editItem}><b>{!stageShowDetail.phasestagePhase ? "请点击进行编辑" : stageShowDetail.phasestagePhase}</b><em>编辑</em></div>
-                  {/* <Input value={stageShowDetail.phasestagePhase} onChange={e => this.handleChangeInput(e,'state','stageShowDetail','phasestagePhase')} placeholder="请输入" /> */}
-                </div>
-                <div className={styles.itemInputBox}>
-                  <span>相位阶段软件需求：</span><div onClick={() => this.getSelectLists(roadInterId, roadNodeNo, 'DETECTOR', 'stageShowDetail','softwareRequirement' )} className={styles.editItem}><b>{!stageShowDetail.softwareRequirement ? "请点击进行编辑" : stageShowDetail.softwareRequirement}</b><em>编辑</em></div>
-                </div>
-                <div className={styles.itemInputBox} style={{alignSelf: 'flex-start'}}>
-                  <span>阶段中包含车道：</span><div onClick={() => this.getSelectLists(roadInterId, roadNodeNo, 'LANE', 'stageShowDetail','phasestageLane')} className={styles.editItem}><b>{!stageShowDetail.phasestageLane ? "请点击进行编辑" : stageShowDetail.phasestageLane}</b><em>编辑</em></div>
-                </div>
-                {/* <div className={styles.itemInputBox}>
+              {showFlag && stageShowDetail &&
+                <div className={classNames(styles.popCon, styles.popConTurn)}>
+                  <div className={styles.itemInputBox}>
+                    <span>阶段编号：</span><Input id='phasestageNo' type='number' value={stageShowDetail.phasestageNo} onChange={e => this.handleChangeInput(e, 'state', 'stageShowDetail', 'phasestageNo')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>阶段名称：</span><Input value={stageShowDetail.phasestageName} onChange={e => this.handleChangeInput(e, 'state', 'stageShowDetail', 'phasestageName')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>阶段中相位晚启动的时间：</span><Input type='number' value={stageShowDetail.lateStartTime} onChange={e => this.handleChangeInput(e, 'state', 'stageShowDetail', 'lateStartTime')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>阶段中相位早结束的时间：</span><Input type='number' value={stageShowDetail.leftingEndTime} onChange={e => this.handleChangeInput(e, 'state', 'stageShowDetail', 'leftingEndTime')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>阶段中包含相位：</span><div onClick={() => this.getSelectLists(roadInterId, roadNodeNo, 'PHASE', 'stageShowDetail', 'phasestagePhase')} className={styles.editItem}><b>{!stageShowDetail.phasestagePhase ? "请点击进行编辑" : stageShowDetail.phasestagePhase}</b><em>编辑</em></div>
+                    {/* <Input value={stageShowDetail.phasestagePhase} onChange={e => this.handleChangeInput(e,'state','stageShowDetail','phasestagePhase')} placeholder="请输入" /> */}
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>相位阶段软件需求：</span><div onClick={() => this.getSelectLists(roadInterId, roadNodeNo, 'DETECTOR', 'stageShowDetail', 'softwareRequirement')} className={styles.editItem}><b>{!stageShowDetail.softwareRequirement ? "请点击进行编辑" : stageShowDetail.softwareRequirement}</b><em>编辑</em></div>
+                  </div>
+                  <div className={styles.itemInputBox} style={{ alignSelf: 'flex-start' }}>
+                    <span>阶段中包含车道：</span><div onClick={() => this.getSelectLists(roadInterId, roadNodeNo, 'LANE', 'stageShowDetail', 'phasestageLane')} className={styles.editItem}><b>{!stageShowDetail.phasestageLane ? "请点击进行编辑" : stageShowDetail.phasestageLane}</b><em>编辑</em></div>
+                  </div>
+                  {/* <div className={styles.itemInputBox}>
                   <span>相位阶段禁止标志：</span>
                     <Select
                       value={stageShowDetail.phasestageForbiden ? stageShowDetail.phasestageForbiden : 0 }
@@ -2528,53 +2529,53 @@ btnSelectOver = (flag, defaultSelectLists) => {
                       }
                     </Select>
                 </div> */}
-                <div className={styles.itemInputBox}>
-                    <span style={{alignSelf: 'flex-start'}}>图 片：</span>
-                    <div style={{flex:2.25}}>
-                      { !!stageShowDetail.imagePath ? <div className={styles.yesImage} onClick={(e) => this.getIconImageList(e, 'PHASE')}><img src={`${this.phaseBgUrl}${stageShowDetail.imagePath}`} /></div> : <div onClick={(e) => this.getIconImageList(e, 'PHASE')} className={styles.noImage}>点击选图</div> }
+                  <div className={styles.itemInputBox}>
+                    <span style={{ alignSelf: 'flex-start' }}>图 片：</span>
+                    <div style={{ flex: 2.25 }}>
+                      {!!stageShowDetail.imagePath ? <div className={styles.yesImage} onClick={(e) => this.getIconImageList(e, 'PHASE')}><img src={`${this.phaseBgUrl}${stageShowDetail.imagePath}`} /></div> : <div onClick={(e) => this.getIconImageList(e, 'PHASE')} className={styles.noImage}>点击选图</div>}
                     </div>
                   </div>
-              </div>
+                </div>
               }
-              { showFlag ? 
+              {showFlag ?
                 <div className={styles.popBottom}>
                   {
-                    popAddEditText === '编辑' ? <em onClick={ () => {this.postAddUpdateItem(stageShowDetail, 'STAGE')}}>编辑确定</em> : <em onClick={ () => {this.postAddUpdateItem(stageShowDetail, 'STAGE', true)}}>新增确定</em>
+                    popAddEditText === '编辑' ? <em onClick={() => { this.postAddUpdateItem(stageShowDetail, 'STAGE') }}>编辑确定</em> : <em onClick={() => { this.postAddUpdateItem(stageShowDetail, 'STAGE', true) }}>新增确定</em>
                   }
-                    <em onClick={ () => {this.popLayerShowHide("stepSixAddEdit", null)} }>取 消</em>
+                  <em onClick={() => { this.popLayerShowHide("stepSixAddEdit", null) }}>取 消</em>
                 </div> : null
               }
             </div>
           </div> : null
         }
-        { stepSevenAddEdit ?  // 配时方案配置添加编辑弹层
-          <div className={styles.maskBg}> 
+        {stepSevenAddEdit ?  // 配时方案配置添加编辑弹层
+          <div className={styles.maskBg}>
             <div className={styles.popBox} style={{ width: '720px' }}>
-              <div className={styles.popTit}>{popAddEditText}配时方案{ !showFlag ? "- 选择阶段" : null}{ !showFlag ? <Icon className={styles.Close} type="close"  onClick={this.stageIdCancel} /> : <Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepSevenAddEdit", null)} } />}</div>
+              <div className={styles.popTit}>{popAddEditText}配时方案{!showFlag ? "- 选择阶段" : null}{!showFlag ? <Icon className={styles.Close} type="close" onClick={this.stageIdCancel} /> : <Icon className={styles.Close} type="close" onClick={() => { this.popLayerShowHide("stepSevenAddEdit", null) }} />}</div>
               {/* 选择阶段层 */}
-              { !showFlag && this.props.data.stageLists &&
-                  <div className={styles.popCon}>
-                    <Radio.Group  onChange={e => this.handleChangeRadio(e)}>
-                      { this.props.data.stageLists.length > 0 && this.props.data.stageLists.map((item, i) => {
-                        return <Radio key={'radio'+i} value={item.phasestageNo} onClick={e => this.handleClickRadio(item)}>{item.phasestageName} <img style={{width:'30px', height: '30px'}} src={`${this.phaseBgUrl}${item.imagePath}`} /></Radio>
-                        })
-                      }
-                    </Radio.Group>
-                  </div>
+              {!showFlag && this.props.data.stageLists &&
+                <div className={styles.popCon}>
+                  <Radio.Group onChange={e => this.handleChangeRadio(e)}>
+                    {this.props.data.stageLists.length > 0 && this.props.data.stageLists.map((item, i) => {
+                      return <Radio key={'radio' + i} value={item.phasestageNo} onClick={e => this.handleClickRadio(item)}>{item.phasestageName} <img style={{ width: '30px', height: '30px' }} src={`${this.phaseBgUrl}${item.imagePath}`} /></Radio>
+                    })
+                    }
+                  </Radio.Group>
+                </div>
               }
-              { showFlag && planShowDetail && 
-              <div className={classNames(styles.popCon, styles.popConTurn)} style={{padding: '15px 50px 15px 0'}}>
-                <div className={styles.itemInputBox}>
-                  <span>方案编号：</span><Input id='schemeNo' type='number' value={planShowDetail.schemeNo} onChange={e => this.handleChangeInput(e,'state','planShowDetail','schemeNo')} placeholder="请输入" />
-                </div>
-                <div className={styles.itemInputBox}>
-                  <span>方案名称：</span><Input value={planShowDetail.schemeName} onChange={e => this.handleChangeInput(e,'state','planShowDetail','schemeName')} placeholder="请输入" />
-                </div>
-                <div className={styles.itemInputBox}>
-                  <span>方案协调序号：</span>
-                  <Select
-                      value={planShowDetail.schemeCoordinationNo ? planShowDetail.schemeCoordinationNo : 0 }
-                      onChange={ v =>  this.handleChangeSel(v, 'state', 'planShowDetail', 'schemeCoordinationNo') }>
+              {showFlag && planShowDetail &&
+                <div className={classNames(styles.popCon, styles.popConTurn)} style={{ padding: '15px 50px 15px 0' }}>
+                  <div className={styles.itemInputBox}>
+                    <span>方案编号：</span><Input id='schemeNo' type='number' value={planShowDetail.schemeNo} onChange={e => this.handleChangeInput(e, 'state', 'planShowDetail', 'schemeNo')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>方案名称：</span><Input value={planShowDetail.schemeName} onChange={e => this.handleChangeInput(e, 'state', 'planShowDetail', 'schemeName')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>方案协调序号：</span>
+                    <Select
+                      value={planShowDetail.schemeCoordinationNo ? planShowDetail.schemeCoordinationNo : 0}
+                      onChange={v => this.handleChangeSel(v, 'state', 'planShowDetail', 'schemeCoordinationNo')}>
                       <Option value={0}>请选择阶段</Option>
                       {
                         this.props.data.stageLists.map((items, key) => {
@@ -2582,18 +2583,18 @@ btnSelectOver = (flag, defaultSelectLists) => {
                         })
                       }
                     </Select>
-                </div>
-                <div className={styles.itemInputBox}>
-                  <span>方案周期：</span><Input type='number' value={planShowDetail.schemeCycle} onChange={e => this.handleChangeInput(e,'state','planShowDetail','schemeCycle')} placeholder="请输入" />
-                </div>
-                <div className={styles.itemInputBox}>
-                  <span>方案相位差时间：</span><Input type='number' value={planShowDetail.schemePhaseDiferenceTime} onChange={e => this.handleChangeInput(e,'state','planShowDetail','schemePhaseDiferenceTime')} placeholder="请输入" />
-                </div>
-                <div className={styles.itemInputBox}>
-                  <span>方案相位阶段出现类型：</span>
-                  <Select
-                      value={planShowDetail.schemePhasestageType ? planShowDetail.schemePhasestageType : 0 }
-                      onChange={ v =>  this.handleChangeSel(v, 'state', 'planShowDetail', 'schemePhasestageType') }>
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>方案周期：</span><Input type='number' value={planShowDetail.schemeCycle} onChange={e => this.handleChangeInput(e, 'state', 'planShowDetail', 'schemeCycle')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>方案相位差时间：</span><Input type='number' value={planShowDetail.schemePhaseDiferenceTime} onChange={e => this.handleChangeInput(e, 'state', 'planShowDetail', 'schemePhaseDiferenceTime')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>方案相位阶段出现类型：</span>
+                    <Select
+                      value={planShowDetail.schemePhasestageType ? planShowDetail.schemePhasestageType : 0}
+                      onChange={v => this.handleChangeSel(v, 'state', 'planShowDetail', 'schemePhasestageType')}>
                       <Option value={0}>请选择类型</Option>
                       {
                         schemePhasestageTypeData.map((items, key) => {
@@ -2601,208 +2602,208 @@ btnSelectOver = (flag, defaultSelectLists) => {
                         })
                       }
                     </Select>
-                </div>
-                <div className={styles.itemInputBox} style={{width: '100%', alignSelf: 'flex-start'}}>
-                  <span style={{alignSelf: 'flex-start'}}>方案相位阶段链：</span>
-                  <div className={styles.phaseStageBox}>
-                    <div className={styles.phaseStageIdBox}>
-                      { planStageLists && 
-                        planStageLists.map((item, i) =>{
-                          return <div key={'phaseStage'+i}  className={styles.imageName}>
-                          <span title={`${item.phasestageNo} - ${item.phasestageName}`} className={styles.IdName}><em/>{`${item.phasestageNo} - ${item.phasestageName}`}：</span> 
-                          <Input type='number' value={Number(item.phaseTimeIndex)} onChange={e => this.handleChangeInput(e,'state','planStageLists','phaseTimeIndex', i)} placeholder="请输入" />
-                          <img src={`${this.phaseBgUrl}${item.imagePath}`} />
-                          </div>
-                        })
-                      }
-                    </div>
-                    <div className={styles.addReduceBtn}>
-                      <s>
-                        <Icon type="plus" onClick={this.addStagePlan} />
-                        <Icon type="minus" onClick={this.reduceStagePlan} />
-                      </s>
-                    </div>
                   </div>
-                  
+                  <div className={styles.itemInputBox} style={{ width: '100%', alignSelf: 'flex-start' }}>
+                    <span style={{ alignSelf: 'flex-start' }}>方案相位阶段链：</span>
+                    <div className={styles.phaseStageBox}>
+                      <div className={styles.phaseStageIdBox}>
+                        {planStageLists &&
+                          planStageLists.map((item, i) => {
+                            return <div key={'phaseStage' + i} className={styles.imageName}>
+                              <span title={`${item.phasestageNo} - ${item.phasestageName}`} className={styles.IdName}><em />{`${item.phasestageNo} - ${item.phasestageName}`}：</span>
+                              <Input type='number' value={Number(item.phaseTimeIndex)} onChange={e => this.handleChangeInput(e, 'state', 'planStageLists', 'phaseTimeIndex', i)} placeholder="请输入" />
+                              <img src={`${this.phaseBgUrl}${item.imagePath}`} />
+                            </div>
+                          })
+                        }
+                      </div>
+                      <div className={styles.addReduceBtn}>
+                        <s>
+                          <Icon type="plus" onClick={this.addStagePlan} />
+                          <Icon type="minus" onClick={this.reduceStagePlan} />
+                        </s>
+                      </div>
+                    </div>
+
+                  </div>
                 </div>
-              </div>
               }
-              { showFlag ? 
+              {showFlag ?
                 <div className={styles.popBottom}>
                   {
-                    popAddEditText === '编辑' ? <em onClick={ () => {this.postAddUpdateItem(planShowDetail, 'PLAN')}}>编辑确定</em> : <em onClick={ () => {this.postAddUpdateItem(planShowDetail, 'PLAN', true)}}>新增确定</em>
+                    popAddEditText === '编辑' ? <em onClick={() => { this.postAddUpdateItem(planShowDetail, 'PLAN') }}>编辑确定</em> : <em onClick={() => { this.postAddUpdateItem(planShowDetail, 'PLAN', true) }}>新增确定</em>
                   }
-                    <em onClick={ () => {this.popLayerShowHide("stepSevenAddEdit", null)} }>取 消</em>
-                </div> : 
+                  <em onClick={() => { this.popLayerShowHide("stepSevenAddEdit", null) }}>取 消</em>
+                </div> :
                 <div className={styles.popBottom}>
-                  <em onClick={ e => {this.stageIdRight(e,'state','planShowDetail','schemePhasestageChains')} }>确 定</em>
+                  <em onClick={e => { this.stageIdRight(e, 'state', 'planShowDetail', 'schemePhasestageChains') }}>确 定</em>
                   <em onClick={this.stageIdCancel}>取 消</em>
                 </div>
               }
             </div>
           </div> : null
         }
-        { stepEightAddEdit ?  // 日计划配置添加编辑弹层
-          <div className={styles.maskBg}> 
-          <div className={styles.popBox} style={{ width: '910px' }}>
-              <div className={styles.popTit}>{popAddEditText}日计划<Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepEightAddEdit", null)} } /></div>
-              { dayplanShowDetail && 
-              <div className={classNames(styles.popCon, styles.popConTurn)} style={{padding: '15px 50px 15px 0'}}>
-                <div className={styles.itemInputBox}>
-                  <span>日计划编号：</span><Input id='dailyplanNo' type='number' value={dayplanShowDetail.dailyplanNo} onChange={e => this.handleChangeInput(e,'state','dayplanShowDetail','dailyplanNo')} placeholder="请输入" />
-                </div>
-                <div className={styles.itemInputBox} style={{width: '100%', alignSelf: 'flex-start'}}>
-                  <span style={{alignSelf: 'flex-start'}}>开始时间方案模式链：</span>
-                  <div className={styles.phaseStageBox}>
-                    <div className={styles.phaseStageIdBox}>
-                      { dayplanShowDetail.timeintervalList && 
-                        dayplanShowDetail.timeintervalList.map((item, i) =>{
-                          return <div key={'dayPlan'+i}  className={styles.timeThreeBox}>
-      
-                            <span>开始时间：</span>
-                            <TimePicker key={item.timeintervalStarttime} defaultValue={moment(item.timeintervalStarttime, format)} format={format} allowClear={false} onChange={(v,time) => this.handleChangeTime(v,time,'state', 'dayplanShowDetail', 'timeintervalList', i ,'timeintervalStarttime')} />
-                            <span>运行方案：</span><Select
-                              value={Number(item.timeintervalScheme) ? Number(item.timeintervalScheme) : 0}
-                              onChange={v => this.handleChangeSel(v, 'state', 'dayplanShowDetail', 'timeintervalList', i ,'timeintervalScheme')}>
-                              <Option value={0}>请选择方案号</Option>
-                              {
-                                this.props.data.planLists.map((items, key) => {
-                                  return <Option key={"planList" + items.schemeNo} value={items.schemeNo}>{items.schemeName}</Option>
-                                })
-                              }
-                            </Select>
-                            <span>运行模式：</span><Select
-                              value={Number(item.timeintervalModel) ? Number(item.timeintervalModel) : 0}
-                              onChange={v => this.handleChangeSel(v, 'state', 'dayplanShowDetail', 'timeintervalList', i ,'timeintervalModel')}>
-                              <Option value={0}>请选择模式</Option>
-                              {
-                                timeintervalModelChainData.map((items, key) => {
-                                  return <Option key={"optionList" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
-                                })
-                              }
-                            </Select>
-                          </div>
-                        })
-                      }
-                    </div>
-                    <div className={styles.addReduceBtn}>
-                      <s>
-                        <Icon type="plus" onClick={this.addDayPlan} />
-                        <Icon type="minus" onClick={this.reduceDayPlan} />
-                      </s>
+        {stepEightAddEdit ?  // 日计划配置添加编辑弹层
+          <div className={styles.maskBg}>
+            <div className={styles.popBox} style={{ width: '910px' }}>
+              <div className={styles.popTit}>{popAddEditText}日计划<Icon className={styles.Close} type="close" onClick={() => { this.popLayerShowHide("stepEightAddEdit", null) }} /></div>
+              {dayplanShowDetail &&
+                <div className={classNames(styles.popCon, styles.popConTurn)} style={{ padding: '15px 50px 15px 0' }}>
+                  <div className={styles.itemInputBox}>
+                    <span>日计划编号：</span><Input id='dailyplanNo' type='number' value={dayplanShowDetail.dailyplanNo} onChange={e => this.handleChangeInput(e, 'state', 'dayplanShowDetail', 'dailyplanNo')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox} style={{ width: '100%', alignSelf: 'flex-start' }}>
+                    <span style={{ alignSelf: 'flex-start' }}>开始时间方案模式链：</span>
+                    <div className={styles.phaseStageBox}>
+                      <div className={styles.phaseStageIdBox}>
+                        {dayplanShowDetail.timeintervalList &&
+                          dayplanShowDetail.timeintervalList.map((item, i) => {
+                            return <div key={'dayPlan' + i} className={styles.timeThreeBox}>
+
+                              <span>开始时间：</span>
+                              <TimePicker key={item.timeintervalStarttime} defaultValue={moment(item.timeintervalStarttime, format)} format={format} allowClear={false} onChange={(v, time) => this.handleChangeTime(v, time, 'state', 'dayplanShowDetail', 'timeintervalList', i, 'timeintervalStarttime')} />
+                              <span>运行方案：</span><Select
+                                value={Number(item.timeintervalScheme) ? Number(item.timeintervalScheme) : 0}
+                                onChange={v => this.handleChangeSel(v, 'state', 'dayplanShowDetail', 'timeintervalList', i, 'timeintervalScheme')}>
+                                <Option value={0}>请选择方案号</Option>
+                                {
+                                  this.props.data.planLists.map((items, key) => {
+                                    return <Option key={"planList" + items.schemeNo} value={items.schemeNo}>{items.schemeName}</Option>
+                                  })
+                                }
+                              </Select>
+                              <span>运行模式：</span><Select
+                                value={Number(item.timeintervalModel) ? Number(item.timeintervalModel) : 0}
+                                onChange={v => this.handleChangeSel(v, 'state', 'dayplanShowDetail', 'timeintervalList', i, 'timeintervalModel')}>
+                                <Option value={0}>请选择模式</Option>
+                                {
+                                  timeintervalModelChainData.map((items, key) => {
+                                    return <Option key={"optionList" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
+                                  })
+                                }
+                              </Select>
+                            </div>
+                          })
+                        }
+                      </div>
+                      <div className={styles.addReduceBtn}>
+                        <s>
+                          <Icon type="plus" onClick={this.addDayPlan} />
+                          <Icon type="minus" onClick={this.reduceDayPlan} />
+                        </s>
+                      </div>
                     </div>
                   </div>
-                </div>                
-              </div>
+                </div>
               }
               <div className={styles.popBottom}>
                 {
-                  popAddEditText === '编辑' ? <em onClick={ () => {this.postAddUpdateItem(dayplanShowDetail, 'DAYPLAN')}}>编辑确定</em> : <em onClick={ () => {this.postAddUpdateItem(dayplanShowDetail, 'DAYPLAN', true)}}>新增确定</em>
+                  popAddEditText === '编辑' ? <em onClick={() => { this.postAddUpdateItem(dayplanShowDetail, 'DAYPLAN') }}>编辑确定</em> : <em onClick={() => { this.postAddUpdateItem(dayplanShowDetail, 'DAYPLAN', true) }}>新增确定</em>
                 }
-                  <em onClick={ () => {this.popLayerShowHide("stepEightAddEdit", null)} }>取 消</em>
+                <em onClick={() => { this.popLayerShowHide("stepEightAddEdit", null) }}>取 消</em>
               </div>
             </div>
           </div> : null
         }
-        { stepNineAddEdit ?  // 调度配置添加编辑弹层
-          <div className={styles.maskBg}> 
+        {stepNineAddEdit ?  // 调度配置添加编辑弹层
+          <div className={styles.maskBg}>
             <div className={styles.popBox} style={{ width: '810px' }}>
-              <div className={styles.popTit}>{popAddEditText}调度<Icon className={styles.Close} type="close"  onClick={ () => {this.popLayerShowHide("stepNineAddEdit", null)} } /></div>
-              { dispatchShowDetail && 
-              <div className={classNames(styles.popCon, styles.popConTurn)} style={{padding: '15px 50px 15px 0'}}>
-                <div className={styles.itemInputBox}>
-                  <span>调度方案编号：</span><Input id='scheduleNo' type='number' value={dispatchShowDetail.scheduleNo} onChange={e => this.handleChangeInput(e,'state','dispatchShowDetail','scheduleNo')} placeholder="请输入" />
-                </div>
-                <div className={styles.itemInputBox} style={{width: '100%', alignSelf: 'flex-start'}}>
-                  <span style={{alignSelf: 'flex-start'}}>调度方案项：</span>
-                  <div className={styles.phaseStageBox}>
-                    <div className={styles.phaseStageIdBox} style={{maxHeight:'220px'}}>
-                      { dispatchShowDetail.scheduleDetailList && 
-                        dispatchShowDetail.scheduleDetailList.map((item, i) =>{
-                          return <div key={'dispatch'+i}  className={styles.dispatchBox}  style={item.dateType === 0 ? {height:'40px'} : item.dateType === 2 ? {height:'80px'} : null}>
-                            <span>日计划：</span>
-                            <Select
-                              value={Number(item.dailyPlanId) ? Number(item.dailyPlanId) : 0}
-                              onChange={v => this.handleChangeSel(v, 'state', 'dispatchShowDetail', 'scheduleDetailList', i ,'dailyPlanId')}>
-                              <Option value={0}>请选择编号</Option>
-                              {
-                                this.props.data.dayPlanLists.map((items, key) => {
-                                  return <Option key={"dailyplan" + items.dailyplanNo} value={items.dailyplanNo}>{items.dailyplanNo}</Option>
-                                })
+              <div className={styles.popTit}>{popAddEditText}调度<Icon className={styles.Close} type="close" onClick={() => { this.popLayerShowHide("stepNineAddEdit", null) }} /></div>
+              {dispatchShowDetail &&
+                <div className={classNames(styles.popCon, styles.popConTurn)} style={{ padding: '15px 50px 15px 0' }}>
+                  <div className={styles.itemInputBox}>
+                    <span>调度方案编号：</span><Input id='scheduleNo' type='number' value={dispatchShowDetail.scheduleNo} onChange={e => this.handleChangeInput(e, 'state', 'dispatchShowDetail', 'scheduleNo')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox} style={{ width: '100%', alignSelf: 'flex-start' }}>
+                    <span style={{ alignSelf: 'flex-start' }}>调度方案项：</span>
+                    <div className={styles.phaseStageBox}>
+                      <div className={styles.phaseStageIdBox} style={{ maxHeight: '220px' }}>
+                        {dispatchShowDetail.scheduleDetailList &&
+                          dispatchShowDetail.scheduleDetailList.map((item, i) => {
+                            return <div key={'dispatch' + i} className={styles.dispatchBox} style={item.dateType === 0 ? { height: '40px' } : item.dateType === 2 ? { height: '80px' } : null}>
+                              <span>日计划：</span>
+                              <Select
+                                value={Number(item.dailyPlanId) ? Number(item.dailyPlanId) : 0}
+                                onChange={v => this.handleChangeSel(v, 'state', 'dispatchShowDetail', 'scheduleDetailList', i, 'dailyPlanId')}>
+                                <Option value={0}>请选择编号</Option>
+                                {
+                                  this.props.data.dayPlanLists.map((items, key) => {
+                                    return <Option key={"dailyplan" + items.dailyplanNo} value={items.dailyplanNo}>{items.dailyplanNo}</Option>
+                                  })
+                                }
+                              </Select>
+                              <span>优先级：</span>
+                              <Select
+                                value={Number(item.priority) ? Number(item.priority) : 0}
+                                onChange={v => this.handleChangeSel(v, 'state', 'dispatchShowDetail', 'scheduleDetailList', i, 'priority')}>
+                                <Option value={0}>请选择优先级</Option>
+                                {
+                                  priorityData.map((items) => {
+                                    return <Option key={"priority" + items} value={items}>{items}</Option>
+                                  })
+                                }
+                              </Select>
+                              <span>调度类型：</span>
+                              <Select
+                                value={Number(item.dateType) ? Number(item.dateType) : 0}
+                                onChange={v => this.handleChangeSel(v, 'state', 'dispatchShowDetail', 'scheduleDetailList', i, 'dateType')}>
+                                <Option value={0}>请选择类型</Option>
+                                {
+                                  [1, 2].map((items, key) => {
+                                    return <Option key={"dailyType" + items} value={items}>{items === 1 ? "日期" : items === 2 ? "星期" : "请选择类型"}</Option>
+                                  })
+                                }
+                              </Select>
+                              {item.dateType === 1 ?
+                                <div>
+                                  <div className={styles.dateDisBox} style={{ height: '40px' }}>
+                                    <span className={styles.spanWidth} style={{ alignSelf: 'flex-start' }}>月：</span>
+                                    <Checkbox.Group options={monthData} value={item.monthValueCodes.split(",").map(Number)}
+                                      onChange={v => this.handleChangeCheck(v, 'state', 'dispatchShowDetail', 'scheduleDetailList', i, 'monthValueCodes')} />
+                                  </div>
+                                  <div className={styles.dateDisBox}>
+                                    <span className={styles.spanWidth} style={{ alignSelf: 'flex-start' }}>日：</span>
+                                    <Checkbox.Group options={dayData} value={item.dataValueCodes.split(",").map(Number)}
+                                      onChange={v => this.handleChangeCheck(v, 'state', 'dispatchShowDetail', 'scheduleDetailList', i, 'dataValueCodes')} />
+                                  </div>
+                                </div> :
+                                item.dateType === 2 ?
+                                  <div className={styles.dateDisBox}>
+                                    <span className={styles.spanWidth} style={{ alignSelf: 'flex-start' }}>星期：</span>
+                                    <Checkbox.Group options={weekData} value={item.dataValueCodes.split(",").map(Number)}
+                                      onChange={v => this.handleChangeCheck(v, 'state', 'dispatchShowDetail', 'scheduleDetailList', i, 'dataValueCodes')} />
+                                  </div> : null
                               }
-                            </Select>
-                            <span>优先级：</span>
-                            <Select
-                              value={Number(item.priority) ? Number(item.priority) : 0}
-                              onChange={v => this.handleChangeSel(v, 'state', 'dispatchShowDetail', 'scheduleDetailList', i ,'priority')}>
-                              <Option value={0}>请选择优先级</Option>
-                              {
-                                priorityData.map((items) => {
-                                  return <Option key={"priority" + items} value={items}>{items}</Option>
-                                })
-                              }
-                            </Select>
-                            <span>调度类型：</span>
-                            <Select
-                              value={Number(item.dateType) ? Number(item.dateType) : 0}
-                              onChange={v => this.handleChangeSel(v, 'state', 'dispatchShowDetail', 'scheduleDetailList', i ,'dateType')}>
-                              <Option value={0}>请选择类型</Option>
-                              {
-                                [1,2].map((items, key) => {
-                                  return <Option key={"dailyType" + items} value={items}>{items === 1 ? "日期" : items === 2 ? "星期" : "请选择类型" }</Option>
-                                })
-                              }
-                            </Select>
-                            { item.dateType === 1 ?
-                              <div>
-                                <div className={styles.dateDisBox} style={{height:'40px'}}>
-                                  <span className={styles.spanWidth} style={{ alignSelf: 'flex-start' }}>月：</span>
-                                  <Checkbox.Group options={monthData} value={item.monthValueCodes.split(",").map(Number)}
-                                    onChange={v => this.handleChangeCheck(v, 'state', 'dispatchShowDetail', 'scheduleDetailList', i, 'monthValueCodes')} />
-                                </div>
-                                <div className={styles.dateDisBox}>
-                                  <span className={styles.spanWidth} style={{ alignSelf: 'flex-start' }}>日：</span>
-                                  <Checkbox.Group options={dayData} value={item.dataValueCodes.split(",").map(Number)}
-                                    onChange={v => this.handleChangeCheck(v, 'state', 'dispatchShowDetail', 'scheduleDetailList', i, 'dataValueCodes')} />
-                                </div>
-                              </div> :
-                              item.dateType === 2 ?
-                              <div className={styles.dateDisBox}>
-                                <span className={styles.spanWidth} style={{ alignSelf: 'flex-start' }}>星期：</span>
-                                <Checkbox.Group options={weekData} value={item.dataValueCodes.split(",").map(Number)}
-                                  onChange={v => this.handleChangeCheck(v, 'state', 'dispatchShowDetail', 'scheduleDetailList', i, 'dataValueCodes')} />
-                              </div> : null
-                            }
-                            
-                          </div>
-                        })
-                      }
-                    </div>
-                    <div className={styles.addReduceBtn}>
-                      <s>
-                        <Icon type="plus" onClick={this.addDispatch} />
-                        <Icon type="minus" onClick={this.reduceDispatch} />
-                      </s>
+
+                            </div>
+                          })
+                        }
+                      </div>
+                      <div className={styles.addReduceBtn}>
+                        <s>
+                          <Icon type="plus" onClick={this.addDispatch} />
+                          <Icon type="minus" onClick={this.reduceDispatch} />
+                        </s>
+                      </div>
                     </div>
                   </div>
-                </div>                
-              </div>
+                </div>
               }
               <div className={styles.popBottom}>
                 {
-                  popAddEditText === '编辑' ? <em onClick={ () => {this.postAddUpdateItem(dispatchShowDetail, 'DISPATCH')}}>编辑确定</em> : <em onClick={ () => {this.postAddUpdateItem(dispatchShowDetail, 'DISPATCH', true)}}>新增确定</em>
+                  popAddEditText === '编辑' ? <em onClick={() => { this.postAddUpdateItem(dispatchShowDetail, 'DISPATCH') }}>编辑确定</em> : <em onClick={() => { this.postAddUpdateItem(dispatchShowDetail, 'DISPATCH', true) }}>新增确定</em>
                 }
-                  <em onClick={ () => {this.popLayerShowHide("stepNineAddEdit", null)} }>取 消</em>
+                <em onClick={() => { this.popLayerShowHide("stepNineAddEdit", null) }}>取 消</em>
               </div>
             </div>
           </div> : null
         }
         {/* step 步骤 content 显示层 */}
-        { stepTwoFlag || stepRoadFlag || stepThreeFlag || stepFourFlag || stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag ?
+        {stepTwoFlag || stepRoadFlag || stepThreeFlag || stepFourFlag || stepFiveFlag || stepSixFlag || stepSevenFlag || stepEightFlag || stepNineFlag ?
           <div className={styles.stepBoxContent}>
             <div className={styles.stepLeftCon}>
-            {/* 时间轴 */}
-              { stepSevenFlag && timePlanFlag ? 
+              {/* 时间轴 */}
+              {stepSevenFlag && timePlanFlag ?
                 <div className={styles.timeWarpper}>
                   <div id="timeBox" className={styles.timeBox}>
                     <div style={{ color: '#1890ff', fontSize: '18px' }}>暂无信号灯</div>
@@ -2812,11 +2813,11 @@ btnSelectOver = (flag, defaultSelectLists) => {
               }
               <div className={styles.leftItemCon} style={interRoadBg !== '' ? { background: `url(${interRoadBg}) center center / 100% 100% no-repeat` } : {}}>
                 {/* 左侧基础信息回显 */}
-                {stepTwoFlag && userLimit ? <div className={styles.turnBgBtn} onClick={ () => {this.popLayerShowHide("baseMapFlag", true)} }>路口底图</div> : null }
+                {stepTwoFlag && userLimit ? <div className={styles.turnBgBtn} onClick={() => { this.popLayerShowHide("baseMapFlag", true) }}>路口底图</div> : null}
                 {baseMapFlag ?
-                  <BasicInfoLeft {...this.props} 
-                    popLayerShowHide={this.popLayerShowHide} 
-                    handleClickBaseMap={this.handleClickBaseMap} 
+                  <BasicInfoLeft {...this.props}
+                    popLayerShowHide={this.popLayerShowHide}
+                    handleClickBaseMap={this.handleClickBaseMap}
                     handleChangeBaseMap={this.handleChangeBaseMap}
                     handleUpdateImageUrl={this.handleUpdateImageUrl}
                     imageUrl={imageUrl}
@@ -2826,27 +2827,27 @@ btnSelectOver = (flag, defaultSelectLists) => {
                   /> : null
                 }
                 {/* 左侧车道回显 */}
-                {stepRoadFlag ? 
-                  <LaneConfigLeft  {...this.props} 
-                    popLayerShowHide={this.popLayerShowHide} 
+                {stepRoadFlag ?
+                  <LaneConfigLeft  {...this.props}
+                    popLayerShowHide={this.popLayerShowHide}
                     roadInterId={roadInterId}
                     roadNodeNo={roadNodeNo}
                     isClick={stepRoadFlag}
-                    isMoveFlag={stepRoadFlag} 
+                    isMoveFlag={stepRoadFlag}
                   /> : null
                 }
                 {/* 左侧灯组回显 */}
-                { stepThreeFlag ?
+                {stepThreeFlag ?
                   <div>
-                    <LaneConfigLeft  {...this.props} 
-                      popLayerShowHide={this.popLayerShowHide} 
+                    <LaneConfigLeft  {...this.props}
+                      popLayerShowHide={this.popLayerShowHide}
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
                       isClick={stepRoadFlag}
-                      isMoveFlag={stepRoadFlag} 
+                      isMoveFlag={stepRoadFlag}
                     />
-                    <LightConfigLeft {...this.props} 
-                      popLayerShowHide={this.popLayerShowHide} 
+                    <LightConfigLeft {...this.props}
+                      popLayerShowHide={this.popLayerShowHide}
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
                       isClick={stepThreeFlag}
@@ -2857,17 +2858,17 @@ btnSelectOver = (flag, defaultSelectLists) => {
                   </div> : null
                 }
                 {/* 左侧检测器回显 */}
-                { stepFourFlag ?
+                {stepFourFlag ?
                   <div>
-                  <LaneConfigLeft  {...this.props} 
-                      popLayerShowHide={this.popLayerShowHide} 
+                    <LaneConfigLeft  {...this.props}
+                      popLayerShowHide={this.popLayerShowHide}
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
-                      isClick={stepRoadFlag} 
-                      isMoveFlag={stepRoadFlag} 
+                      isClick={stepRoadFlag}
+                      isMoveFlag={stepRoadFlag}
                     />
-                    <LightConfigLeft {...this.props} 
-                      popLayerShowHide={this.popLayerShowHide} 
+                    <LightConfigLeft {...this.props}
+                      popLayerShowHide={this.popLayerShowHide}
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
                       isClick={stepThreeFlag}
@@ -2875,8 +2876,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
                       lightSelectIds={lightSelectIds}
                       typeUrl={lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : "lampgroup2"}
                     />
-                    <DetectorConfigLeft {...this.props} 
-                      popLayerShowHide={this.popLayerShowHide} 
+                    <DetectorConfigLeft {...this.props}
+                      popLayerShowHide={this.popLayerShowHide}
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
                       isClick={stepFourFlag}
@@ -2885,17 +2886,17 @@ btnSelectOver = (flag, defaultSelectLists) => {
                   </div> : null
                 }
                 {/* 左侧相位回显 */}
-                { stepFiveFlag ?
+                {stepFiveFlag ?
                   <div>
-                  <LaneConfigLeft  {...this.props} 
-                      popLayerShowHide={this.popLayerShowHide} 
+                    <LaneConfigLeft  {...this.props}
+                      popLayerShowHide={this.popLayerShowHide}
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
-                      isClick={stepRoadFlag} 
-                      isMoveFlag={stepRoadFlag} 
+                      isClick={stepRoadFlag}
+                      isMoveFlag={stepRoadFlag}
                     />
-                    <LightConfigLeft {...this.props} 
-                      popLayerShowHide={this.popLayerShowHide} 
+                    <LightConfigLeft {...this.props}
+                      popLayerShowHide={this.popLayerShowHide}
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
                       isClick={stepThreeFlag}
@@ -2903,8 +2904,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
                       lightSelectIds={lightSelectIds}
                       typeUrl={lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : "lampgroup2"}
                     />
-                    <DetectorConfigLeft {...this.props} 
-                      popLayerShowHide={this.popLayerShowHide} 
+                    <DetectorConfigLeft {...this.props}
+                      popLayerShowHide={this.popLayerShowHide}
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
                       isClick={stepFourFlag}
@@ -2913,17 +2914,17 @@ btnSelectOver = (flag, defaultSelectLists) => {
                   </div> : null
                 }
                 {/* 左侧阶段回显 */}
-                { stepSixFlag ?
+                {stepSixFlag ?
                   <div>
-                  <LaneConfigLeft  {...this.props} 
-                      popLayerShowHide={this.popLayerShowHide} 
+                    <LaneConfigLeft  {...this.props}
+                      popLayerShowHide={this.popLayerShowHide}
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
-                      isClick={stepRoadFlag} 
-                      isMoveFlag={stepRoadFlag} 
+                      isClick={stepRoadFlag}
+                      isMoveFlag={stepRoadFlag}
                     />
-                    <LightConfigLeft {...this.props} 
-                      popLayerShowHide={this.popLayerShowHide} 
+                    <LightConfigLeft {...this.props}
+                      popLayerShowHide={this.popLayerShowHide}
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
                       isClick={stepThreeFlag}
@@ -2931,8 +2932,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
                       lightSelectIds={lightSelectIds}
                       typeUrl={lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : "lampgroup2"}
                     />
-                    <DetectorConfigLeft {...this.props} 
-                      popLayerShowHide={this.popLayerShowHide} 
+                    <DetectorConfigLeft {...this.props}
+                      popLayerShowHide={this.popLayerShowHide}
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
                       isClick={stepFourFlag}
@@ -2941,17 +2942,17 @@ btnSelectOver = (flag, defaultSelectLists) => {
                   </div> : null
                 }
                 {/* 左侧配时方案回显 */}
-                { stepSevenFlag ?
+                {stepSevenFlag ?
                   <div>
-                  <LaneConfigLeft  {...this.props} 
-                      popLayerShowHide={this.popLayerShowHide} 
+                    <LaneConfigLeft  {...this.props}
+                      popLayerShowHide={this.popLayerShowHide}
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
-                      isClick={stepRoadFlag} 
-                      isMoveFlag={stepRoadFlag} 
+                      isClick={stepRoadFlag}
+                      isMoveFlag={stepRoadFlag}
                     />
-                    <LightConfigLeft {...this.props} 
-                      popLayerShowHide={this.popLayerShowHide} 
+                    <LightConfigLeft {...this.props}
+                      popLayerShowHide={this.popLayerShowHide}
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
                       isClick={stepThreeFlag}
@@ -2959,8 +2960,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
                       lightSelectIds={lightSelectIds}
                       typeUrl={lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : "lampgroup2"}
                     />
-                    <DetectorConfigLeft {...this.props} 
-                      popLayerShowHide={this.popLayerShowHide} 
+                    <DetectorConfigLeft {...this.props}
+                      popLayerShowHide={this.popLayerShowHide}
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
                       isClick={stepFourFlag}
@@ -2969,17 +2970,17 @@ btnSelectOver = (flag, defaultSelectLists) => {
                   </div> : null
                 }
                 {/* 左侧日计划回显 */}
-                { stepEightFlag ?
+                {stepEightFlag ?
                   <div>
-                  <LaneConfigLeft  {...this.props} 
-                      popLayerShowHide={this.popLayerShowHide} 
+                    <LaneConfigLeft  {...this.props}
+                      popLayerShowHide={this.popLayerShowHide}
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
-                      isClick={stepRoadFlag} 
-                      isMoveFlag={stepRoadFlag} 
+                      isClick={stepRoadFlag}
+                      isMoveFlag={stepRoadFlag}
                     />
-                    <LightConfigLeft {...this.props} 
-                      popLayerShowHide={this.popLayerShowHide} 
+                    <LightConfigLeft {...this.props}
+                      popLayerShowHide={this.popLayerShowHide}
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
                       isClick={stepThreeFlag}
@@ -2987,8 +2988,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
                       lightSelectIds={lightSelectIds}
                       typeUrl={lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : "lampgroup2"}
                     />
-                    <DetectorConfigLeft {...this.props} 
-                      popLayerShowHide={this.popLayerShowHide} 
+                    <DetectorConfigLeft {...this.props}
+                      popLayerShowHide={this.popLayerShowHide}
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
                       isClick={stepFourFlag}
@@ -2997,17 +2998,17 @@ btnSelectOver = (flag, defaultSelectLists) => {
                   </div> : null
                 }
                 {/* 左侧调度回显 */}
-                { stepNineFlag ?
+                {stepNineFlag ?
                   <div>
-                  <LaneConfigLeft  {...this.props} 
-                      popLayerShowHide={this.popLayerShowHide} 
+                    <LaneConfigLeft  {...this.props}
+                      popLayerShowHide={this.popLayerShowHide}
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
-                      isClick={stepRoadFlag} 
-                      isMoveFlag={stepRoadFlag} 
+                      isClick={stepRoadFlag}
+                      isMoveFlag={stepRoadFlag}
                     />
-                    <LightConfigLeft {...this.props} 
-                      popLayerShowHide={this.popLayerShowHide} 
+                    <LightConfigLeft {...this.props}
+                      popLayerShowHide={this.popLayerShowHide}
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
                       isClick={stepThreeFlag}
@@ -3015,8 +3016,8 @@ btnSelectOver = (flag, defaultSelectLists) => {
                       lightSelectIds={lightSelectIds}
                       typeUrl={lightStatus === 5 ? "lampgroup5" : lightStatus === 8 ? "lampgroup8" : "lampgroup2"}
                     />
-                    <DetectorConfigLeft {...this.props} 
-                      popLayerShowHide={this.popLayerShowHide} 
+                    <DetectorConfigLeft {...this.props}
+                      popLayerShowHide={this.popLayerShowHide}
                       roadInterId={roadInterId}
                       roadNodeNo={roadNodeNo}
                       isClick={stepFourFlag}
@@ -3027,79 +3028,79 @@ btnSelectOver = (flag, defaultSelectLists) => {
               </div>
             </div>
             <div className={styles.stepRightCon}>
-                {
-                  stepTwoFlag ? 
-                    <BasicInfoRight popLayerShowHide={this.popLayerShowHide} /> : 
-                  stepRoadFlag ? 
-                    <LaneConfigRight 
-                    roadId={roadId}
-                    roadInterId={roadInterId}
-                    roadNodeNo={roadNodeNo}
-                    tagToPicMark={this.tagToPicMark}
-                    popLayerShowHide={this.popLayerShowHide} 
-                    getUpdateAllTypes={this.getUpdateAllTypes}
-                    /> : 
-                  stepThreeFlag ?
-                    <LightConfigRight
-                    roadId={roadId}
-                    roadInterId={roadInterId}
-                    roadNodeNo={roadNodeNo}
-                    tagToPicMark={this.tagToPicMark}
-                    popLayerShowHide={this.popLayerShowHide}
-                    getUpdateAllTypes={this.getUpdateAllTypes}
-                     /> : 
-                  stepFourFlag ? 
-                    <DetectorConfigRight
-                    roadId={roadId}
-                    roadInterId={roadInterId}
-                    roadNodeNo={roadNodeNo}
-                    tagToPicMark={this.tagToPicMark}
-                    popLayerShowHide={this.popLayerShowHide} 
-                    getUpdateAllTypes={this.getUpdateAllTypes}                      
-                    /> : 
-                  stepFiveFlag ?  
-                    <PhaseConfigRight 
-                    roadId={roadId}
-                    roadInterId={roadInterId}
-                    roadNodeNo={roadNodeNo}
-                    popLayerShowHide={this.popLayerShowHide}
-                    updateListItem={this.updateListItem}
-                     /> :
-                  stepSixFlag ?
-                    <StageConfigRight 
-                    roadId={roadId}
-                    roadInterId={roadInterId}
-                    roadNodeNo={roadNodeNo}
-                    popLayerShowHide={this.popLayerShowHide} 
-                    updateListItem={this.updateListItem}                      
-                    /> : 
-                  stepSevenFlag ?
-                    <PlanConfigRight 
-                    roadId={roadId}
-                    roadInterId={roadInterId}
-                    roadNodeNo={roadNodeNo}
-                    popLayerShowHide={this.popLayerShowHide}
-                    updateListItem={this.updateListItem}
-                    handleClickFind={this.handleClickFind}
-                     /> : 
-                  stepEightFlag ?
-                    <DayPlanConfigRight 
-                    roadId={roadId}
-                    roadInterId={roadInterId}
-                    roadNodeNo={roadNodeNo}
-                    popLayerShowHide={this.popLayerShowHide}
-                    updateListItem={this.updateListItem}
-                    handleLineClick={this.handleLineClick}
-                     /> : 
-                  stepNineFlag ?
-                    <DispatchConfigRight 
-                    roadId={roadId}
-                    roadInterId={roadInterId}
-                    roadNodeNo={roadNodeNo}
-                    popLayerShowHide={this.popLayerShowHide}
-                    updateListItem={this.updateListItem}
-                    handleLineClick={this.handleLineClick}
-                     /> : null}
+              {
+                stepTwoFlag ?
+                  <BasicInfoRight popLayerShowHide={this.popLayerShowHide} /> :
+                  stepRoadFlag ?
+                    <LaneConfigRight
+                      roadId={roadId}
+                      roadInterId={roadInterId}
+                      roadNodeNo={roadNodeNo}
+                      tagToPicMark={this.tagToPicMark}
+                      popLayerShowHide={this.popLayerShowHide}
+                      getUpdateAllTypes={this.getUpdateAllTypes}
+                    /> :
+                    stepThreeFlag ?
+                      <LightConfigRight
+                        roadId={roadId}
+                        roadInterId={roadInterId}
+                        roadNodeNo={roadNodeNo}
+                        tagToPicMark={this.tagToPicMark}
+                        popLayerShowHide={this.popLayerShowHide}
+                        getUpdateAllTypes={this.getUpdateAllTypes}
+                      /> :
+                      stepFourFlag ?
+                        <DetectorConfigRight
+                          roadId={roadId}
+                          roadInterId={roadInterId}
+                          roadNodeNo={roadNodeNo}
+                          tagToPicMark={this.tagToPicMark}
+                          popLayerShowHide={this.popLayerShowHide}
+                          getUpdateAllTypes={this.getUpdateAllTypes}
+                        /> :
+                        stepFiveFlag ?
+                          <PhaseConfigRight
+                            roadId={roadId}
+                            roadInterId={roadInterId}
+                            roadNodeNo={roadNodeNo}
+                            popLayerShowHide={this.popLayerShowHide}
+                            updateListItem={this.updateListItem}
+                          /> :
+                          stepSixFlag ?
+                            <StageConfigRight
+                              roadId={roadId}
+                              roadInterId={roadInterId}
+                              roadNodeNo={roadNodeNo}
+                              popLayerShowHide={this.popLayerShowHide}
+                              updateListItem={this.updateListItem}
+                            /> :
+                            stepSevenFlag ?
+                              <PlanConfigRight
+                                roadId={roadId}
+                                roadInterId={roadInterId}
+                                roadNodeNo={roadNodeNo}
+                                popLayerShowHide={this.popLayerShowHide}
+                                updateListItem={this.updateListItem}
+                                handleClickFind={this.handleClickFind}
+                              /> :
+                              stepEightFlag ?
+                                <DayPlanConfigRight
+                                  roadId={roadId}
+                                  roadInterId={roadInterId}
+                                  roadNodeNo={roadNodeNo}
+                                  popLayerShowHide={this.popLayerShowHide}
+                                  updateListItem={this.updateListItem}
+                                  handleLineClick={this.handleLineClick}
+                                /> :
+                                stepNineFlag ?
+                                  <DispatchConfigRight
+                                    roadId={roadId}
+                                    roadInterId={roadInterId}
+                                    roadNodeNo={roadNodeNo}
+                                    popLayerShowHide={this.popLayerShowHide}
+                                    updateListItem={this.updateListItem}
+                                    handleLineClick={this.handleLineClick}
+                                  /> : null}
             </div>
           </div> : null
         }
@@ -3107,7 +3108,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
           <InterworkingList showInterworkingList={this.showInterworkingList} getresetPwd={this.getresetPwd} /> : null
         }
         {/* step 导示 */}
-        <StepNavMenu {...this.props }
+        <StepNavMenu {...this.props}
           stepOneText={stepOneText}
           stepOneFlag={stepOneFlag}
           stepRoadFlag={stepRoadFlag}
@@ -3121,32 +3122,32 @@ btnSelectOver = (flag, defaultSelectLists) => {
           stepNineFlag={stepNineFlag}
           loadDataType={this.loadDataType}
           editDataType={this.editDataType}
-        showHidePop={this.showHidePop} stepStatusData={stepStatusData} />
+          showHidePop={this.showHidePop} stepStatusData={stepStatusData} />
         <div className={styles.Interwork_left}>
           <div className={styles.searchBox}>
-          <input
-                className={styles.searchInput}
-                onClick={this.handleSearchInterFocus}
-                onChange={this.handleSearchInputChange}
-                type="text"
-                placeholder="关键词搜索"
-                ref={(input) => { this.searchInputBox = input }}
-                style={{ width: '100%' }}
-                id='searchBox'
-              />
-          <Icon className={styles.searchIcon} type="search" onClick={this.searchBtnSelect} />
+            <input
+              className={styles.searchInput}
+              onClick={this.handleSearchInterFocus}
+              onChange={this.handleSearchInputChange}
+              type="text"
+              placeholder="关键词搜索"
+              ref={(input) => { this.searchInputBox = input }}
+              style={{ width: '100%' }}
+              id='searchBox'
+            />
+            <Icon className={styles.searchIcon} type="search" onClick={this.searchBtnSelect} />
           </div>
           <div className={styles.interList} style={{ maxHeight: `${interListHeight}px`, overflowY: 'auto' }}>
             <div>
               {
-                searchInterList && 
+                searchInterList &&
                 searchInterList.map(item => (
                   <div className={styles.interItem}
                     key={item.id}
                     onClick={e => this.hanleSelectInter(e, item)}
                   >{item.interName}
                   </div>
-                  ))
+                ))
               }
             </div>
           </div>
@@ -3168,7 +3169,7 @@ btnSelectOver = (flag, defaultSelectLists) => {
             </div>
             <div title="切换视图" className={styles.turnBtn} onClick={() => this.showInterworkingList(true)} />
           </div>
-          <div style={{position:'absolute', top:'0', right:'0', bottom:'0', left: '0'}} id='mapContent' />
+          <div style={{ position: 'absolute', top: '0', right: '0', bottom: '0', left: '0' }} id='mapContent' />
         </div>
       </div>
     )

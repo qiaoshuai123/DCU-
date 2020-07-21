@@ -1,6 +1,11 @@
 import * as types from '../actionTypes/actionTypes'
-
-const signalmanagement = (state = {}, action) => {
+const { token } = JSON.parse(localStorage.getItem('userInfo'))
+const objs = {
+  devSockets: 'ws://192.168.1.213:20203', // 本地地址
+  // 线上地址 'ws://39.100.128.220:20203',
+  tokens: token,
+}
+const signalmanagement = (state = objs, action) => {
   const { type, payload } = action
   switch (type) {
     case types.GET_UNIT_STATUS:
@@ -63,9 +68,9 @@ const signalmanagement = (state = {}, action) => {
     case types.POST_ADD_LIGHT_INFO_AND_DETAIL:
       return Object.assign({}, state, { lightAddMore: payload })
     case types.POST_UPDATE_LIGHT_INFO_AND_DETAIL:
-      return Object.assign({}, state, { lightUpdateMore: payload })     
+      return Object.assign({}, state, { lightUpdateMore: payload })
     case types.GET_LIGHT_IMAGE_LIST:
-      return Object.assign({}, state, { lightIconLists: payload }) 
+      return Object.assign({}, state, { lightIconLists: payload })
     case types.GET_LIGHT_SELECT_LIST:
       return Object.assign({}, state, { lightSelectLists: payload })
     // 检测器配置
@@ -90,11 +95,11 @@ const signalmanagement = (state = {}, action) => {
     case types.POST_ADD_DETECTOR_INFO_AND_DETAIL:
       return Object.assign({}, state, { detectorAddMore: payload })
     case types.POST_UPDATE_DETECTOR_INFO_AND_DETAIL:
-      return Object.assign({}, state, { detectorUpdateMore: payload })   
+      return Object.assign({}, state, { detectorUpdateMore: payload })
     case types.GET_DETECTOR_IMAGE_LIST:
-      return Object.assign({}, state, { detectorIconLists: payload })   
+      return Object.assign({}, state, { detectorIconLists: payload })
     case types.GET_DETECTOR_SELECT_LIST:
-      return Object.assign({}, state, { detectorSelectLists: payload })            
+      return Object.assign({}, state, { detectorSelectLists: payload })
     // 相位配置
     case types.GET_PHASE_INFO_LISTS:
       return Object.assign({}, state, { phaseLists: payload })

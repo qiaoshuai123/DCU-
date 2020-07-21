@@ -23,6 +23,7 @@ class InterworkingList extends Component {
       names: '',
       pageNo: 1,
     }
+    this.token = JSON.parse(localStorage.getItem('userInfo')).token
   }
   componentDidMount = () => {
     this.props.signalListByPage(`pageNo=1`)
@@ -103,7 +104,7 @@ class InterworkingList extends Component {
     return (
       <div className={styles.syetem_bg} ref={(input) => { this.userLimitBox = input }}>
         <Websocket
-          url="ws://192.168.1.213:20203/DCU/websocket/signalState/0/0/0"
+          url={`${this.props.data.devSockets}/DCU/websocket/signalState/0/0/0?Authorization=${this.token}`}
           onMessage={this.handleData.bind(this)}
         // onClose={() => this.handleClose()}
         />
@@ -215,7 +216,7 @@ class InterworkingList extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    data: { ...state.equipmentManagement },
+    data: { ...state.equipmentManagement, ...state.SignalManagement },
   }
 }
 const mapDisPatchToProps = (dispatch) => {
