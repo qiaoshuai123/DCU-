@@ -51,7 +51,7 @@ export const API_DEL_DETECTOR_PIC = '/DCU/detectorInfo/deleteDetectorDetail' // 
 export const API_DETECTOR_INFO_AND_DETAIL = '/DCU/detectorInfo/detectorInfoAndDetail' // 回显内容
 export const API_ADD_DETECTOR_INFO_AND_DETAIL = '/DCU/detectorInfo/addDetectorInfoAndDetail' // 新增内容图标和列表
 export const API_UPDATE_DETECTOR_INFO_AND_DETAIL = '/DCU/detectorInfo/updateDetectorInfoAndDetail' // 修改内容图标和列表
-export const API_DETECTOR_IMAGE_LIST = '/DCU/laneInfo/laneImageList' // 回显全部图标
+export const API_DETECTOR_IMAGE_LIST = '/DCU/detectorInfo/detectorImageList' // 回显全部图标
 export const API_DETECTOR_SELECT_LIST = '/DCU/detectorInfo/detectorInfoAndDetailList' // 选中后列表
 // 相位配置
 export const API_PHASE_INFO_LISTS = '/DCU/phaseInfo/phaseInfoList' // 相位查询列表
