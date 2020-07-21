@@ -19,7 +19,7 @@ class ImgEvent extends React.Component {
     // 获取用户权限
     const limitArr = JSON.parse(localStorage.getItem('userLimit'))
     limitArr.forEach((item) => {
-      if (item.id === 201){
+      if (item.id === 201) {
         this.setState({ userLimit: true })
       }
     })
@@ -70,10 +70,10 @@ class ImgEvent extends React.Component {
   }
   checkReturnType = (typeUrl) => {
     let typeName = ''
-    switch(typeUrl) {
+    switch (typeUrl) {
       case 'lane':
         return typeName = 'LANE';
-      case 'lampgroup2':case 'lampgroup5':case 'lampgroup8':
+      case 'lampgroup2': case 'lampgroup5': case 'lampgroup8':
         return typeName = 'LIGHT';
       case 'detector':
         return typeName = 'DETECTOR';
@@ -91,7 +91,7 @@ class ImgEvent extends React.Component {
       y
     } = this.props.imgMsg
     if (nowTime - this.timeStep > 200) {
-      this.props.postUpdatePicType({'id': id, 'x': this.ImgLeft, 'y': this.ImgTop}, this.checkReturnType(this.props.typeUrl))
+      this.props.postUpdatePicType({ 'id': id, 'x': this.ImgLeft, 'y': this.ImgTop }, this.checkReturnType(this.props.typeUrl))
     }
   }
   handleHover = () => {
@@ -102,7 +102,7 @@ class ImgEvent extends React.Component {
   }
   handleLink = () => {
     const showTime = setTimeout(() => {
-      this.setState({ showCloseTag: false })     
+      this.setState({ showCloseTag: false })
       clearTimeout(showTime)
     }, 6000)
   }
@@ -114,20 +114,20 @@ class ImgEvent extends React.Component {
       let flagH;
       if ($(e.currentTarget).hasClass(styles.imgCurrent)) {
         $(e.currentTarget).removeClass(styles.imgCurrent)
-        $('div[tag-mark]').map(( i, item ) => {
+        $('div[tag-mark]').map((i, item) => {
           if (item.getAttribute('tag-mark') === idStr) {
             $(item).removeClass(styles.hover)
           } else if (item.getAttribute('tag-mark') === idStr.replace('lampgroup', '')) {
             $(item).removeClass(Liststyles.hover)
           } else if (item.getAttribute('tag-mark') && item.getAttribute('tag-mark').indexOf(',') > -1) {
             const picLeftArr = item.getAttribute('tag-mark').split(',')
-            for (let s = 0; s < picLeftArr.length; s++){
-              if ($(`div[pic-mark='lampgroup`+picLeftArr[s]+`']`).hasClass(styles.imgCurrent)){
+            for (let s = 0; s < picLeftArr.length; s++) {
+              if ($(`div[pic-mark='lampgroup` + picLeftArr[s] + `']`).hasClass(styles.imgCurrent)) {
                 flagH = true
                 break
               } else {
                 if (picLeftArr.length - 1 === s) {
-                  flagH = $(`div[pic-mark='lampgroup`+picLeftArr[s]+`']`).hasClass(styles.imgCurrent)
+                  flagH = $(`div[pic-mark='lampgroup` + picLeftArr[s] + `']`).hasClass(styles.imgCurrent)
                 }
               }
             }
@@ -137,7 +137,7 @@ class ImgEvent extends React.Component {
         })
       } else {
         $(e.currentTarget).addClass(styles.imgCurrent).siblings().removeClass(styles.imgCurrent)
-        $('div[tag-mark]').map(( i, item ) => {
+        $('div[tag-mark]').map((i, item) => {
           $(item).removeClass(styles.hover)
           $(item).removeClass(Liststyles.hover)
           if (item.getAttribute('tag-mark') === idStr) {
@@ -146,7 +146,7 @@ class ImgEvent extends React.Component {
             $(item).addClass(Liststyles.hover)
           } else if (item.getAttribute('tag-mark') && item.getAttribute('tag-mark').indexOf(',') > -1) {
             const newImgNo = idStr.replace('lampgroup', '')
-            if (item.getAttribute('tag-mark').indexOf(newImgNo) > -1 ) {
+            if (item.getAttribute('tag-mark').indexOf(newImgNo) > -1) {
               $(item).addClass(Liststyles.hover)
             }
           }
@@ -157,20 +157,20 @@ class ImgEvent extends React.Component {
       let flagH;
       if ($(e.currentTarget).hasClass(styles.imgCurrent)) {
         $(e.currentTarget).removeClass(styles.imgCurrent)
-        $('div[tag-mark]').map(( i, item ) => {
+        $('div[tag-mark]').map((i, item) => {
           if (item.getAttribute('tag-mark') === idStr) {
             $(item).removeClass(styles.hover)
           } else if (item.getAttribute('tag-mark') === idStr.replace('lampgroup', '')) {
             $(item).removeClass(Liststyles.hover)
           } else if (item.getAttribute('tag-mark') && item.getAttribute('tag-mark').indexOf(',') > -1) {
             const picLeftArr = item.getAttribute('tag-mark').split(',')
-            for (let s = 0; s < picLeftArr.length; s++){
-              if ($(`div[pic-mark='lampgroup`+picLeftArr[s]+`']`).hasClass(styles.imgCurrent)){
+            for (let s = 0; s < picLeftArr.length; s++) {
+              if ($(`div[pic-mark='lampgroup` + picLeftArr[s] + `']`).hasClass(styles.imgCurrent)) {
                 flagH = true
                 break
               } else {
                 if (picLeftArr.length - 1 === s) {
-                  flagH = $(`div[pic-mark='lampgroup`+picLeftArr[s]+`']`).hasClass(styles.imgCurrent)
+                  flagH = $(`div[pic-mark='lampgroup` + picLeftArr[s] + `']`).hasClass(styles.imgCurrent)
                 }
               }
             }
@@ -180,7 +180,7 @@ class ImgEvent extends React.Component {
         })
       } else {
         $(e.currentTarget).addClass(styles.imgCurrent).siblings().removeClass(styles.imgCurrent)
-        $('div[tag-mark]').map(( i, item ) => {
+        $('div[tag-mark]').map((i, item) => {
           $(item).removeClass(styles.hover)
           $(item).removeClass(Liststyles.hover)
           if (item.getAttribute('tag-mark') === idStr) {
@@ -189,7 +189,7 @@ class ImgEvent extends React.Component {
             $(item).addClass(Liststyles.hover)
           } else if (item.getAttribute('tag-mark') && item.getAttribute('tag-mark').indexOf(',') > -1) {
             const newImgNo = idStr.replace('lampgroup', '')
-            if (item.getAttribute('tag-mark').indexOf(newImgNo) > -1 ) {
+            if (item.getAttribute('tag-mark').indexOf(newImgNo) > -1) {
               $(item).addClass(Liststyles.hover)
             }
           }
@@ -201,7 +201,7 @@ class ImgEvent extends React.Component {
     debugger
     this.popLayerShowHide(thisName, true, true)
     let selId = null
-    switch(thisName){
+    switch (thisName) {
       case 'stepRoadAddEdit':
         selId = this.props.imgMsg.laneId
         break;
@@ -225,7 +225,7 @@ class ImgEvent extends React.Component {
       okText: '确认',
       onOk() {
         const resultP = Promise.resolve(_this.props.getDelPicType(id, _this.checkReturnType(_this.props.typeUrl)))
-        resultP.then((res)=>{
+        resultP.then((res) => {
           _this.props.getPicListsType(_this.props.roadInterId, _this.props.roadNodeNo, _this.checkReturnType(_this.props.typeUrl))
           message.info('操作成功！')
         })
@@ -250,24 +250,24 @@ class ImgEvent extends React.Component {
       paddingTop: '14px', transform: `translate(-50%,-50%) rotate(${angle}deg)`,
     }
     const imgStyleL = {
-      position: 'absolute', display: 'inline-block', top: `${y}px`, left: `${x}px`, userSelect: 'none', paddingTop: '14px',  transform: `translate(-50%,-50%) rotate(${angle}deg)`,
+      position: 'absolute', display: 'inline-block', top: `${y}px`, left: `${x}px`, userSelect: 'none', paddingTop: '14px', transform: `translate(-50%,-50%) rotate(${angle}deg)`,
     }
     let thisName = '';
-    let thisUrl= '';
+    let thisUrl = '';
     let tagMark = '';
     if (this.props.typeUrl === 'lane') {
       thisName = "stepRoadAddEdit";
       thisUrl = "lane";
       tagMark = "lane" + laneId
-    } else if(this.props.typeUrl.indexOf('lampgroup') !== -1){
-      if (this.props.lightSelectIds && this.props.lightSelectIds.indexOf(lampgroupNo) > -1 ){
+    } else if (this.props.typeUrl.indexOf('lampgroup') !== -1) {
+      if (this.props.lightSelectIds && this.props.lightSelectIds.indexOf(lampgroupNo) > -1) {
         thisUrl = this.props.typeUrl;
       } else {
         thisUrl = 'lampgroup2'
       }
       thisName = "stepThreeAddEdit";
       tagMark = "lampgroup" + lampgroupNo
-    } else if(this.props.typeUrl === 'detector') {
+    } else if (this.props.typeUrl === 'detector') {
       thisName = "stepFourAddEdit";
       thisUrl = "detector";
       tagMark = "detector" + detectorId
@@ -281,18 +281,18 @@ class ImgEvent extends React.Component {
               onMouseOver={(!this.props.isMoveFlag || !userLimit ? null : this.handleHover)}
               onMouseOut={userLimit ? this.handleLink : null}
               onMouseUp={userLimit ? this.handleDeviceUp : null}
-              onDoubleClick={()=>{ (!this.props.isMoveFlag || !userLimit) ? null : this.handleUpdate(thisName) }}
+              onDoubleClick={() => { (!this.props.isMoveFlag || !userLimit) ? null : this.handleUpdate(thisName) }}
               style={(!this.props.isMoveFlag ? imgStyleL : imgStyle)}
               pic-mark={tagMark}
               ref={(input) => { this.imgBox = input }}
               draggable="false">
-              { showCloseTag && userLimit ? <Icon style={{position:'absolute', right:'-6px', top: '0', cursor: 'pointer'}} title='删除' type="close"  onClick={ (e) => this.handleDel(e, id) } /> : null }
-              <img style={{pointerEvents:'none'}} src={`${this.props.data.devImage}/DCU/dcuImage/${thisUrl}/${imageUrl}`}
+              {showCloseTag && userLimit ? <Icon style={{ position: 'absolute', right: '-6px', top: '0', cursor: 'pointer' }} title='删除' type="close" onClick={(e) => this.handleDel(e, id)} /> : null}
+              <img style={{ pointerEvents: 'none' }} src={`${this.props.data.devImage}/DCU/dcuImage/${thisUrl}/${imageUrl}`}
                 alt="" />
             </div> : null
         }
-        
-        
+
+
       </React.Fragment>
     )
   }
@@ -300,7 +300,7 @@ class ImgEvent extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    data: state.data,
+    data: { ...state.SignalManagement },
   }
 }
 const mapDisPatchToProps = (dispatch) => {
