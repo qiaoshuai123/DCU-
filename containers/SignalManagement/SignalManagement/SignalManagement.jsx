@@ -155,6 +155,7 @@ class SignalManagement extends PureComponent {
       nineText: '等待中...',
       tenFlag: null,
       nowText: '基础信息配置',
+      editData: null,
     }
     this.map = null
     this.moveFlag = false // 是否是移动状态
@@ -367,14 +368,20 @@ class SignalManagement extends PureComponent {
       return true
     }
   }
+  // 编辑时返回数据验证
+  editReturnData = (resDatas, id, keyVal) => {
+    const resData = JSON.parse(JSON.stringify(resDatas))
+    for (let i = 0; i < resData.length; i++) {
+      if (Number(resData[i][id]) === Number(keyVal)) {
+        resData.splice(i, 1);
+        this.setState({ editData: resData })
+      }
+    }
+  }
   // 各种ID重复验证
   verificationID = (resData, id, keyVal, msg) => {
-    debugger
-    // console.log($("#"+id).text(), Number(keyVal), 'asdfadsasdfa')
     for (let i = 0; i < resData.length; i++) {
-      if (this.state.popAddEditText === '编辑' && Number(resData[i][id]) === Number(keyVal)) {
-        continue
-      } else if (Number(resData[i][id]) === Number(keyVal)) {
+      if (Number(resData[i][id]) === Number(keyVal)) {
         message.error(msg)
         $("#" + id).focus()
         return true
@@ -965,6 +972,7 @@ class SignalManagement extends PureComponent {
   updateListItem = (itemDetailData, stepType) => {
     switch (stepType) {
       case "PHASE":
+        this.editReturnData(this.props.data.phaseLists, 'phaseNo', itemDetailData.phaseNo)
         this.setState({ phaseShowDetail: itemDetailData, stepFiveAddEdit: true, popAddEditText: '编辑' }, () => {
           this.cyclicComparison(this.state.phaseForbidenData, 'phaseForbiden', itemDetailData.phaseForbiden, 'phaseShowDetail')
           this.cyclicComparison(this.state.phaseShieldData, 'phaseShield', itemDetailData.phaseShield, 'phaseShowDetail')
@@ -985,6 +993,7 @@ class SignalManagement extends PureComponent {
         })
         break;
       case "STAGE":
+        this.editReturnData(this.props.data.stageLists, 'phasestageNo', itemDetailData.phasestageNo)
         this.setState({ stageShowDetail: itemDetailData, stepSixAddEdit: true, showFlag: true, popAddEditText: '编辑' }, () => {
           // this.cyclicComparison(this.state.phaseShieldData, 'phasestageShield', itemDetailData.phasestageShield, 'stageShowDetail') // 屏蔽
           // this.cyclicComparison(this.state.phaseForbidenData, 'phasestageForbiden', itemDetailData.phasestageForbiden, 'stageShowDetail') // 禁止
@@ -993,6 +1002,7 @@ class SignalManagement extends PureComponent {
         })
         break;
       case "PLAN":
+        this.editReturnData(this.props.data.planLists, 'schemeNo', itemDetailData.schemeNo)
         this.setState({ planShowDetail: JSON.parse(JSON.stringify(itemDetailData)), stepSevenAddEdit: true, showFlag: true, popAddEditText: '编辑', planStageLists: null }, () => {
           this.cyclicComparison(this.state.schemePhasestageTypeData, 'schemePhasestageType', itemDetailData.schemePhasestageType, 'planShowDetail')
           itemDetailData = JSON.parse(JSON.stringify(this.state.planShowDetail))
@@ -1017,6 +1027,7 @@ class SignalManagement extends PureComponent {
         })
         break;
       case "DAYPLAN":
+        this.editReturnData(this.props.data.dayPlanLists, 'dailyplanNo', itemDetailData.dailyplanNo)
         this.setState({ dayplanShowDetail: JSON.parse(JSON.stringify(itemDetailData)), stepEightAddEdit: true, popAddEditText: '编辑' }, () => {
           this.state.dayplanShowDetail.timeintervalList.map((item) => {
             this.cyclicComparison(this.state.timeintervalModelChainData, 'timeintervalScheme', Number(item.timeintervalScheme), 'dayplanShowDetail')
@@ -1024,6 +1035,7 @@ class SignalManagement extends PureComponent {
         })
         break;
       case "DISPATCH":
+        this.editReturnData(this.props.data.dispatchLists, 'scheduleNo', itemDetailData.scheduleNo)
         this.setState({ dispatchShowDetail: JSON.parse(JSON.stringify(itemDetailData)), stepNineAddEdit: true, popAddEditText: '编辑' })
         break;
     }
@@ -1065,7 +1077,7 @@ class SignalManagement extends PureComponent {
   }
   // (新增或更新) 插件相位、阶段、配时方案、日计划、调度
   postAddUpdateItem = (itemDetailData, stepType, eventType) => {
-    let typeStr = '', showStr = '', detailStr = '', _this = this, dayPlanParam1 = '', dayPlanParam2 = '', dayPlanParam3 = ''
+    let typeStr = '', showStr = '', detailStr = '', _this = this, dayPlanParam1 = '', dayPlanParam2 = '', dayPlanParam3 = '', resData = []
     switch (stepType) {
       case 'PHASE':
         typeStr = '相位'
@@ -1088,8 +1100,9 @@ class SignalManagement extends PureComponent {
         itemDetailData.phaseLampgroupId === '请点击进行编辑' ? itemDetailData.phaseLampgroupId = null : ''
         itemDetailData.phaseDemand === '请点击进行编辑' ? itemDetailData.phaseDemand = null : ''
         itemDetailData = JSON.parse(JSON.stringify(this.state.phaseShowDetail))
+        this.state.popAddEditText === '编辑' ? resData = this.state.editData : resData = this.props.data.phaseLists
         if (this.isNotEmpty(itemDetailData.phaseNo, '相位序号不能为空！')) return
-        if (this.verificationID(this.props.data.phaseLists, 'phaseNo', itemDetailData.phaseNo, '相位序号已存在')) return
+        if (this.verificationID(resData, 'phaseNo', itemDetailData.phaseNo, '相位序号已存在')) return
         break;
       case 'STAGE':
         typeStr = '阶段'
@@ -1098,15 +1111,17 @@ class SignalManagement extends PureComponent {
         itemDetailData.phasestagePhase === '请点击进行编辑' ? itemDetailData.phasestagePhase = null : ''
         itemDetailData.softwareRequirement === '请点击进行编辑' ? itemDetailData.softwareRequirement = null : ''
         itemDetailData.phasestageLane === '请点击进行编辑' ? itemDetailData.phasestageLane = null : ''
+        this.state.popAddEditText === '编辑' ? resData = this.state.editData : resData = this.props.data.stageLists
         if (this.isNotEmpty(itemDetailData.phasestageNo, '阶段编号不能为空！')) return
-        if (this.verificationID(this.props.data.stageLists, 'phasestageNo', itemDetailData.phasestageNo, '阶段编号已存在')) return
+        if (this.verificationID(resData, 'phasestageNo', itemDetailData.phasestageNo, '阶段编号已存在')) return
         break;
       case 'PLAN':
         typeStr = '配时方案'
         showStr = 'stepSevenAddEdit'
         detailStr = 'planShowDetail'
+        this.state.popAddEditText === '编辑' ? resData = this.state.editData : resData = this.props.data.planLists
         if (this.isNotEmpty(itemDetailData.schemeNo, '方案编号不能为空！')) return
-        if (this.verificationID(this.props.data.planLists, 'schemeNo', itemDetailData.schemeNo, '方案编号已存在')) return
+        if (this.verificationID(resData, 'schemeNo', itemDetailData.schemeNo, '方案编号已存在')) return
         break;
       case 'DAYPLAN':
         itemDetailData.timeintervalList.map((dayPlanitem) => {
@@ -1120,8 +1135,9 @@ class SignalManagement extends PureComponent {
         typeStr = '日计划'
         showStr = 'stepEightAddEdit'
         detailStr = 'dayplanShowDetail'
+        this.state.popAddEditText === '编辑' ? resData = this.state.editData : resData = this.props.data.dayPlanLists
         if (this.isNotEmpty(itemDetailData.dailyplanNo, '日计划编号不能为空！')) return
-        if (this.verificationID(this.props.data.dayPlanLists, 'dailyplanNo', itemDetailData.dailyplanNo, '日计划编号已存在')) return
+        if (this.verificationID(resData, 'dailyplanNo', itemDetailData.dailyplanNo, '日计划编号已存在')) return
         break;
       case 'DISPATCH':
         typeStr = '调度'
@@ -1130,8 +1146,9 @@ class SignalManagement extends PureComponent {
         itemDetailData.scheduleDetailList.map((item) => {
           item.scheduleNo = itemDetailData.scheduleNo
         })
+        this.state.popAddEditText === '编辑' ? resData = this.state.editData : resData = this.props.data.dispatchLists
         if (this.isNotEmpty(itemDetailData.scheduleNo, '调度方案编号不能为空！')) return
-        if (this.verificationID(this.props.data.dispatchLists, 'scheduleNo', itemDetailData.scheduleNo, '调度编号已存在')) return
+        if (this.verificationID(resData, 'scheduleNo', itemDetailData.scheduleNo, '调度编号已存在')) return
         break;
     }
     if (eventType) {
@@ -1453,17 +1470,20 @@ class SignalManagement extends PureComponent {
   // step 车道列表和图标修改、灯组列表和图标修改、检测器列表和图标修改
   // stepType:类型，itemDetailData:实时调用的数据
   postUpdateAllType = (itemDetailData, stepType) => {
-    let typeStr = '', showStr = '', detailStr = '', _this = this
+    let typeStr = '', showStr = '', detailStr = '', resData = [], _this = this
     itemDetailData.nodeNo = this.state.roadNodeNo
     itemDetailData.x ? itemDetailData.x : itemDetailData.x = 489
     itemDetailData.y ? itemDetailData.y : itemDetailData.y = 390
+
     switch (stepType) {
       case 'LANE':
         typeStr = '车道'
         showStr = 'stepRoadAddEdit'
         detailStr = 'laneShowDetail'
+        debugger
+        this.state.popAddEditText === '编辑' ? resData = this.state.editData : resData = this.props.data.laneLists
         if (this.isNotEmpty(itemDetailData.laneId, '车道ID不能为空！')) return
-        if (this.verificationID(this.props.data.laneLists, 'laneId', itemDetailData.laneId, '车道ID已存在')) return
+        if (this.verificationID(resData, 'laneId', itemDetailData.laneId, '车道ID已存在')) return
         break;
       case 'LIGHT':
         typeStr = '灯组'
@@ -1472,8 +1492,9 @@ class SignalManagement extends PureComponent {
         this.cyclicComparison(this.state.controlDir, 'controlDir', itemDetailData.controlDir, 'lightShowDetail', true)
         this.cyclicComparison(this.state.controlTurn, 'controlTurn', itemDetailData.controlTurn, 'lightShowDetail', true)
         itemDetailData = JSON.parse(JSON.stringify(this.state.lightShowDetail))
+        this.state.popAddEditText === '编辑' ? resData = this.state.editData : resData = this.props.data.lightLists
         if (this.isNotEmpty(itemDetailData.lampgroupNo, '灯组序号不能为空！')) return
-        if (this.verificationID(this.props.data.lightLists, 'lampgroupNo', itemDetailData.lampgroupNo, '灯组序号已存在')) return
+        if (this.verificationID(resData, 'lampgroupNo', itemDetailData.lampgroupNo, '灯组序号已存在')) return
         break;
       case 'DETECTOR':
         typeStr = '检测器'
@@ -1481,8 +1502,9 @@ class SignalManagement extends PureComponent {
         detailStr = 'detectorShowDetail'
         this.cyclicComparison(this.state.detectorType, 'detectorType', itemDetailData.detectorType, 'detectorShowDetail', true)
         itemDetailData = JSON.parse(JSON.stringify(this.state.detectorShowDetail))
+        this.state.popAddEditText === '编辑' ? resData = this.state.editData : resData = this.props.data.detectorLists
         if (this.isNotEmpty(itemDetailData.detectorId, '检测器序号不能为空！')) return
-        if (this.verificationID(this.props.data.detectorLists, 'detectorId', itemDetailData.detectorId, '检测器序号已存在')) return
+        if (this.verificationID(resData, 'detectorId', itemDetailData.detectorId, '检测器序号已存在')) return
         break;
     }
     this.props.postUpdateAllType(itemDetailData, stepType).then(() => {
@@ -1500,12 +1522,15 @@ class SignalManagement extends PureComponent {
     switch (stepType) {
       case 'LANE':
         typeName = 'stepRoadAddEdit';
+        this.editReturnData(this.props.data.laneLists, 'laneId', Id)
         break;
       case 'LIGHT':
         typeName = 'stepThreeAddEdit';
+        this.editReturnData(this.props.data.lightLists, 'lampgroupNo', Id)
         break;
       case 'DETECTOR':
         typeName = 'stepFourAddEdit';
+        this.editReturnData(this.props.data.detectorLists, 'detectorId', Id)
         break;
     }
     if (flag) {
