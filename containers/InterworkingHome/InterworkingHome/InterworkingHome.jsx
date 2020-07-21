@@ -185,7 +185,7 @@ class InterworkingHome extends Component {
         const marker = new AMap.Marker({
           position: new AMap.LngLat(positions[i].lng, positions[i].lat),
           offset: new AMap.Pixel(-16, -16),
-          content: "<div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
+          content: "<div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-offline'></div>",
         })
         marker.on('click', () => {
           map.emit('click', {
@@ -242,7 +242,7 @@ class InterworkingHome extends Component {
   }
   handleData = (e) => {
     const { offlineNum, onlineNum, dcuStateList } = JSON.parse(e)
-    // this.drawMarkers(this.state.mapPointsData, 'pointLayers', dcuStateList)
+    console.log(JSON.parse(e), 'qiaoss')
     this.setState({
       offlineNum,
       onlineNum,
@@ -286,6 +286,7 @@ class InterworkingHome extends Component {
       data.map((item) => {
         if (item.interId === timeDiv.attr('inter-id') && !!item.state) {
           timeDiv.removeClass('marker-offline')
+          timeDiv.addClass('marker-online')
         } else {
           timeDiv.addClass('marker-offline')
         }

@@ -333,22 +333,34 @@ $bor_color: #27343b;
     border-top-color: rgba(9, 9, 9, 0.8) !important;
     bottom: unset !important;
   }
-  :global(.marker-online) {
+  :global(.marker-offline) {
     width: 32px;
     height: 32px;
     display: block;
     background: url(../../../images/markerGreen.png) no-repeat;
   }
   :global(.marker-offline) {
+    width: 32px;
+    height: 32px;
+    display: block;
     background: url(../../../images/markerRed.png) no-repeat;
   }
   :global(.marker-yellow) {
+    width: 32px;
+    height: 32px;
+    display: block;
     background: url(../../../images/markerYellow.png) no-repeat;
   }
   :global(.marker-blackishGreen) {
+    width: 32px;
+    height: 32px;
+    display: block;
     background: url(../../../images/markerblackishGreen.png) no-repeat;
   }
   :global(.marker-blue) {
+    width: 32px;
+    height: 32px;
+    display: block;
     background: url(../../../images/markerBlue.png) no-repeat;
   }
   :global(.marker-hoverline) {

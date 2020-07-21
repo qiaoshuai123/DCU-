@@ -248,6 +248,9 @@ $bor_color: #27343b;
     background: url(../../../images/markerGreen.png) no-repeat;
   }
   :global(.marker-offline) {
+    width: 32px;
+    height: 32px;
+    display: block;
     background: url(../../../images/markerRed.png) no-repeat;
   }
   :global(.marker-hoverline) {
