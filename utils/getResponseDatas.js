@@ -1,11 +1,16 @@
 import axios from 'axios'
 // import requestUrl from './getRequestBaseUrl'
 
-const instance = axios.create({
-  // baseURL: requestUrl,
-})
+// const instance = axios.create({
+//   // baseURL: requestUrl(),
+// })
 // 请求拦截
-instance.interceptors.request.use((config) => {
+if (process.env.NODE_ENV === 'development') {
+  // axios.defaults.baseURL = 'http://192.168.1.213:20203'
+} else if (process.env.NODE_ENV === 'production') {
+  axios.defaults.baseURL = 'http://39.100.128.220:20203' // http://192.168.1.213:20203
+}
+axios.interceptors.request.use((config) => {
   const pathName = (config.url.split('/')).pop()
   if (pathName !== 'login') {
     const userInfo = JSON.parse(localStorage.getItem('userInfo'))
@@ -22,7 +27,7 @@ instance.interceptors.request.use((config) => {
 }, error => (Promise.reject(error)))
 
 // 返回拦截
-instance.interceptors.response.use((response) => {
+axios.interceptors.response.use((response) => {
   return response
 }, (error) => {
   return Promise.reject(error)
@@ -32,16 +37,16 @@ const getResponseDatas = async (type, url, requestParams) => {
     let reponse = ''
     switch (type) {
       case 'get':
-        reponse = await instance.get(url, { params: requestParams })
+        reponse = await axios.get(url, { params: requestParams })
         break
       case 'post':
-        reponse = await instance.post(url, requestParams)
+        reponse = await axios.post(url, requestParams)
         break
       case 'put':
-        reponse = await instance.put(url, requestParams)
+        reponse = await axios.put(url, requestParams)
         break
       case 'delete':
-        reponse = await instance.delete(url, requestParams)
+        reponse = await axios.delete(url, requestParams)
         break
       default:
         break
