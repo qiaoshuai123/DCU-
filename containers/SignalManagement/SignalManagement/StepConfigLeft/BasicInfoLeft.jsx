@@ -78,7 +78,7 @@ class BasicInfoLeft extends PureComponent {
       <div className={styles.maskBg}>
         { bgListFlag ? <div className={styles.popBox}>
           <div className={styles.popTit}>请点击图片 > 已选中当前图片为底图</div>
-          <div className={styles.popCon} style={{width: '464px', maxHeight: '464px', justifyContent: 'flex-start', overflowY: 'auto', flexWrap: 'wrap'}}>
+          <div className={styles.popCon} style={{width: '470px', maxHeight: '464px', justifyContent: 'flex-start', overflowY: 'auto', flexWrap: 'wrap'}}>
             {
               !!basicBgLists && basicBgLists.map((item, i)=>{
                 return <div key={"bg"+i} className={styles.bgImgBox} onClick={()=>{ this.handleUpdateImageUrl(item) }} style={{background:`url(${this.props.bgIpUrl}${item})`, backgroundSize: 'contain'}}></div>
