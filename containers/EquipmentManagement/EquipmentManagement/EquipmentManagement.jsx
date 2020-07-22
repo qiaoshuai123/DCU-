@@ -246,9 +246,9 @@ class EquipmentManagement extends Component {
     info.push(`<div class='content_box_title'><h4>点位详情</h4>`);
     info.push(`<p class='input-item' style='border-top: 1px #838a9a solid;margin-top:-10px;padding-top:15px;'>点位名称：<span>` + name + `</span></p>`);
     info.push(`<p class='input-item'>设备编号：<span>` + itemData.deviceId + `</span></p>`);
-    info.push(`<p class='input-item'>设备型号：<span>` + itemData.brand + `</span></p>`);
+    info.push(`<p class='input-item'>设备型号：<span>` + itemData.deviceVersion + `</span></p>`);
     info.push(`<p class='input-item'>设备IP：<span>` + itemData.ip + `</span></p>`);
-    info.push(`<p class='input-item'>生产厂商：<span>` + itemData.deviceVersion + `</span></p>`);
+    info.push(`<p class='input-item'>生产厂商：<span>` + itemData.brand+ `</span></p>`);
     info.push(`<p class='input-item'>维护电话：<span>` + itemData.maintainPhone + `</span></p>`);
     this.userLimit.indexOf(301) !== -1 ? info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `) '>设备配置</span></p>`) : '';
     const infoWindow = new AMap.InfoWindow({

@@ -28,6 +28,7 @@ axios.interceptors.request.use((config) => {
 
 // 返回拦截
 axios.interceptors.response.use((response) => {
+  console.log(response.data.code, process.env.NODE_ENV, 'qiao')
   if (response.data.code === -10) {
     localStorage.clear()
     if (process.env.NODE_ENV === 'development') {

@@ -177,14 +177,14 @@ class Datastatus extends Component {
         const marker = new AMap.Marker({
           position: new AMap.LngLat(positions[i].lng, positions[i].lat),
           offset: new AMap.Pixel(-16, -16),
-          content: "<div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
+          content: "<div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-offline'></div>",
         })
         // marker.id =
         marker.on('click', () => {
           map.emit('click', {
             lnglat: map.getCenter()
           })
-          marker.setContent("<div class='drawCircle'><div class='inner'></div><div id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
+          // marker.setContent("<div class='drawCircle'><div class='inner'></div><div id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
           const nowZoom = map.getZoom()
           map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
           this.setState({
@@ -212,7 +212,7 @@ class Datastatus extends Component {
     info.push(`<div class='content_box'>`);
     info.push(`<div class='content_box_title'><h4>点位详情</h4>`);
     info.push(`<p class='input-item' style='border-top: 1px #838a9a solid;margin-top:-10px;padding-top:15px;'>点位名称：<span>` + name + `</span></p>`);
-    info.push(`<p class='input-item'>数据来源：<span>` + itemData + `</span></p>`);
+    info.push(`<p class='input-item'>数据来源：<span>${itemData||'暂无'}</span></p>`);
     info.push(`<p class='input-item'>数据接入状态：<span>` + '暂无' + `</span></p>`);
     info.push(`<p class='input-item'>数据输出状态：<span>` + '暂无' + `</span></p>`);
     this.userLimit.indexOf(301) !== -1 ? info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>路口监视</span></p>`) : '';
@@ -223,7 +223,7 @@ class Datastatus extends Component {
     this.infoWindow = infoWindow
     window.infoWindowClose = infoWindow
     map.on('click', (e) => {
-      marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online'></div>");
+      // marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online'></div>");
       infoWindow.close()
     })
   }
@@ -289,7 +289,7 @@ class Datastatus extends Component {
       const timeDiv = $($('div[inter-id]')[i])
       data.map((item) => {
         if (item.interId === timeDiv.attr('inter-id') && !!item.state) {
-          console.log(item.isNormal, 'vvcc')
+          // console.log(item.isNormal, 'vvcc')
           if (item.isNormal === '1') {
             timeDiv.removeClass('marker-offline')
           } else {

@@ -1325,13 +1325,14 @@ class SignalManagement extends PureComponent {
         const marker = new AMap.Marker({
           position: new AMap.LngLat(positions[i].lng, positions[i].lat),
           offset: new AMap.Pixel(-16, -16),
-          content: "<div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
+          // content: "<div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
+          content: "<div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
         })
         marker.on('click', (e) => {
           map.emit('click', {
             lnglat: map.getCenter()
           })
-          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
+          // marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
           const nowZoom = map.getZoom()
           map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
           this.setState({
@@ -1360,10 +1361,10 @@ class SignalManagement extends PureComponent {
     info.push(`<div class='content_box'>`);
     info.push(`<div class='content_box_title'><h4>点位详情</h4>`);
     info.push(`<p class='input-item' style='border-top: 1px #838a9a solid;margin-top:-10px;padding-top:15px;'>点位名称：<span>` + name + `</span></p>`);
-    info.push(`<p class='input-item'>信号机编号：<span>` + itemData.deviceId + `</span></p>`);
-    info.push(`<p class='input-item'>信号机品牌：<span>` + itemData.brand + `</span></p>`);
-    info.push(`<p class='input-item'>设备IP：<span>` + itemData.ip + `</span></p>`);
-    info.push(`<p class='input-item'>维护电话：<span>` + itemData.maintainPhone + `</span></p>`);
+    info.push(`<p class='input-item'>信号机编号：<span>${itemData.deviceId || '暂无'}</span></p>`);
+    info.push(`<p class='input-item'>信号机品牌：<span>${itemData.brand || '暂无'}</span></p>`);
+    info.push(`<p class='input-item'>设备IP：<span>${itemData.ip || '暂无'}</span></p>`);
+    info.push(`<p class='input-item'>维护电话：<span>${itemData.maintainPhone || '暂无'}</span></p>`);
     info.push(`<p class='input-item'>信号运行阶段：<span class='greenFont'><span id='phasestageName'>暂无</span><img id='phasestageImage' style='display:none' src='' /></span></p>`);
     info.push(`<p class='input-item'>信号运行方案：<span class='greenFont' id='schemeName'>暂无</span></p>`);
     info.push(`<p class='input-item'>信号控制方式：<span class='greenFont' id='nodeModelName'>暂无</span></p>`);
@@ -1376,7 +1377,7 @@ class SignalManagement extends PureComponent {
     this.infoWindow = infoWindow
     window.infoWindowClose = infoWindow
     map.on('click', (e) => {
-      marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online'></div>");
+      // marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online'></div>");
       infoWindow.close()
     })
   }

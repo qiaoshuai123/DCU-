@@ -156,7 +156,7 @@ class InterworkingHome extends Component {
     })
     this.map = map
     map.on("click", function (e) {
-      console.log(e.lnglat.getLng() + ',' + e.lnglat.getLat())
+      // console.log(e.lnglat.getLng() + ',' + e.lnglat.getLat())
     })
     this.createLayerGroup('pointLayers') // map中显示点的图层
     if (this.state.mapPointsData !== null) {
@@ -185,13 +185,13 @@ class InterworkingHome extends Component {
         const marker = new AMap.Marker({
           position: new AMap.LngLat(positions[i].lng, positions[i].lat),
           offset: new AMap.Pixel(-16, -16),
-          content: "<div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-offline'></div>",
+          content: "<div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-offline'></div>",
         })
         marker.on('click', () => {
           map.emit('click', {
             lnglat: map.getCenter()
           })
-          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
+          // marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "'></div></div>");
           const nowZoom = map.getZoom()
           map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
           this.setState({
@@ -213,21 +213,20 @@ class InterworkingHome extends Component {
   }
   //在指定位置打开信息窗体
   openInfoWin = (map, dataItem, marker, name) => {
-    console.log(dataItem, 'qiaoshuaisss')
     var info = [];
     let itemData = JSON.parse(JSON.stringify(this.props.data.dcuPopData))
     // this.dataItem = JSON.parse(JSON.stringify(dataItem))
     info.push(`<div class='content_box'>`);
     info.push(`<div class='content_box_title'><h4>点位详情</h4>`);
-    info.push(`<p class='input-item' style='border-top: 1px #838a9a solid;margin-top:-10px;padding-top:15px;'>点位名称：<span>` + name + `</span></p>`);
-    info.push(`<p class='input-item'>设备编号：<span>` + itemData.deviceId + `</span></p>`);
-    info.push(`<p class='input-item'>设备型号：<span>` + itemData.brand + `</span></p>`);
-    info.push(`<p class='input-item'>设备IP：<span>` + itemData.ip + `</span></p>`);
-    info.push(`<p class='input-item'>生产厂商：<span>` + itemData.deviceVersion + `</span></p>`);
-    info.push(`<p class='input-item'>维护电话：<span>` + itemData.maintainPhone + `</span></p>`);
+    info.push(`<p class='input-item' style='border-top: 1px #838a9a solid;margin-top:-10px;padding-top:15px;'>点位名称：<span>${name}</span></p>`);
+    info.push(`<p class='input-item'>设备编号：<span>${itemData.deviceId || '暂无'}</span></p>`);
+    info.push(`<p class='input-item'>设备型号：<span>${itemData.brand || '暂无'}</span></p>`);
+    info.push(`<p class='input-item'>设备IP：<span>${itemData.ip || '暂无'}</span></p>`);
+    info.push(`<p class='input-item'>生产厂商：<span>${itemData.deviceVersion || '暂无'}</span></p>`);
+    info.push(`<p class='input-item'>维护电话：<span>${itemData.maintainPhone || '暂无'}</span></p>`);
     info.push(`<p class='input-item'>设备状态：<span id='phasestageName'></span></p>`);
-    info.push(`<p class='input-item'>信号接入状态：<span>` + '暂不设置' + `</span></p>`);
-    info.push(`<p class='input-item'>发布服务状态：<span>` + '暂不设置' + `</span></p>`);
+    info.push(`<p class='input-item'>信号接入状态：<span>${'暂无'}</span></p>`);
+    info.push(`<p class='input-item'>发布服务状态：<span>${'暂无'}</span></p>`);
     this.userLimit.indexOf(301) !== -1 ? info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>路口监视</span></p>`) : '';
     const infoWindow = new AMap.InfoWindow({
       content: info.join("")  //使用默认信息窗体框样式，显示信息内容
@@ -236,13 +235,12 @@ class InterworkingHome extends Component {
     this.infoWindow = infoWindow
     window.infoWindowClose = infoWindow
     map.on('click', (e) => {
-      marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online'></div>");
+      // marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-offline'></div>");
       infoWindow.close()
     })
   }
   handleData = (e) => {
     const { offlineNum, onlineNum, dcuStateList } = JSON.parse(e)
-    console.log(JSON.parse(e), 'qiaoss')
     this.setState({
       offlineNum,
       onlineNum,
@@ -327,7 +325,7 @@ class InterworkingHome extends Component {
     const { Search } = Input
     const { Option } = Select
     const { isInterworkingList, offlineNum, onlineNum, searchInterList, interListHeight, roadUnitId, roadInterId, roadNodeNo } = this.state
-    console.log(`${this.props.data.devSockets}/DCU/websocket/dcuState/0/0/0?Authorization=${this.token}`)
+    // console.log(`${this.props.data.devSockets}/DCU/websocket/dcuState/0/0/0?Authorization=${this.token}`)
     return (
       <div className={styles.InterworkingHomeBox}>
         <Websocket
