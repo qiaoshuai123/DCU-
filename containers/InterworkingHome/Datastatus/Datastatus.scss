@@ -281,10 +281,13 @@ $bor_color: #27343b;
     width: 32px;
     height: 32px;
     display: block;
-    background: url(../../../images/markerGreen.png) no-repeat;
+    background: url(../../../images/markerRed.png) no-repeat;
   }
   :global(.marker-offline) {
-    background: url(../../../images/markerRed.png) no-repeat;
+    width: 32px;
+    height: 32px;
+    display: block;
+    background: url(../../../images/markerGreen.png) no-repeat
   }
   :global(.marker-hoverline) {
     background-color: green;

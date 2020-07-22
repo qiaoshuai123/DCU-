@@ -185,12 +185,13 @@ class InterworkingHome extends Component {
         const marker = new AMap.Marker({
           position: new AMap.LngLat(positions[i].lng, positions[i].lat),
           offset: new AMap.Pixel(-16, -16),
-          content: "<div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-offline'></div>",
+          content: "<div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
         })
         marker.on('click', () => {
           map.emit('click', {
             lnglat: map.getCenter()
           })
+          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
           // marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "'></div></div>");
           const nowZoom = map.getZoom()
           map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
@@ -235,7 +236,13 @@ class InterworkingHome extends Component {
     this.infoWindow = infoWindow
     window.infoWindowClose = infoWindow
     map.on('click', (e) => {
-      // marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-offline'></div>");
+      if ($("#roadKey"+dataItem.id).parent().hasClass('drawCircle')) {
+        if ($("#roadKey"+dataItem.id).hasClass('marker-offline')) {
+          marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online marker-offline'></div>");
+        }else{
+          marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online'></div>");
+        }
+      }
       infoWindow.close()
     })
   }
@@ -283,10 +290,10 @@ class InterworkingHome extends Component {
       const timeDiv = $($('div[inter-id]')[i])
       data.map((item) => {
         if (item.interId === timeDiv.attr('inter-id') && !!item.state) {
-          timeDiv.removeClass('marker-offline')
-          timeDiv.addClass('marker-online')
-        } else {
+          timeDiv.removeClass('marker-online')
           timeDiv.addClass('marker-offline')
+        } else {
+          timeDiv.addClass('marker-online')
         }
       })
     }
