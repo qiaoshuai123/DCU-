@@ -61,12 +61,14 @@ class SignalManagement extends PureComponent {
       stepNineFlag: null,
       stepNineAddEdit: null,
       stepOneText: '请选择路口',
+      interName: null,
       baseMapFlag: null, //是否显示
       baseLoading: false,
       imageUrl: '',
       imageFile: null,
       imageName: '',
       interRoadBg: '',
+      interRoadPic: '',
       mapPointsData: null, // 地图中所有的点
       dcuPopData: null, // 弹层数据
       stepStatusData: null, // step数据
@@ -745,10 +747,12 @@ class SignalManagement extends PureComponent {
     // console.log(params, '更新名称')
     this.setState({
       stepOneText: params.interName,
+      interName: params.interName,
       roadId: params.id,
       roadInterId: params.interId,
       roadNodeNo: params.nodeId,
       interRoadBg: !params.background ? null : this.bgIpUrl + params.background,
+      interRoadPic: params.background,
     }, () => {
       this.props.getStepStatus(params.interId, params.nodeId)
       this.showHidePop("stepTwoFlag", true);
@@ -784,7 +788,11 @@ class SignalManagement extends PureComponent {
           this.showHidePop('stepTwoFlag', true)
           const resultP = Promise.resolve(this.props.getUnitPop(this.state.roadInterId))
           resultP.then(() => {
-            this.setGetParams(this.props.data.dcuPopData)
+            debugger
+            const itemData = JSON.parse(JSON.stringify(this.props.data.dcuPopData))
+            itemData.interName = this.state.interName
+            itemData.background = this.state.interRoadPic
+            this.setGetParams(itemData)
           })
           this.props.getStepStatus(this.state.roadInterId, this.state.roadNodeNo)
         })
@@ -1422,7 +1430,7 @@ class SignalManagement extends PureComponent {
         interRoadBg: this.state.imageUrl,
       }, () => {
         this.popLayerShowHide("baseMapFlag", null)
-        this.props.postBgBySelect({ id: this.state.roadId, background: this.state.imageName })
+        this.props.postBgBySelect({ id: this.state.roadId, interId: this.state.roadInterId, nodeId: this.state.roadNodeNo, background: this.state.imageName })
       })
     } else if (this.state.imageFile === null || !this.state.imageUrl) {
       message.info("请上传或选择底图!");
