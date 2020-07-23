@@ -675,15 +675,18 @@ class SignalManagement extends PureComponent {
     const childrenArr = this.state.treeListBackups
     childrenArr.map((data) => {
       data.units && data.units.map((item) => {
-        if (childInterId === item.id) {
-          lng = item.lng
-          lat = item.lat
-          marker = new AMap.Marker({
-            position: new AMap.LngLat(item.lng, item.lat),
-            offset: new AMap.Pixel(-16, -16),
-            content: "<div inter-id='" + item.interId + "' id='roadKey" + item.id + "' class='marker-online'></div>",
-          })
-          marker.on('click', function () {
+        this.pointLayers.map((point) => {
+          if ($("#roadKey"+item.id).parent().hasClass('drawCircle')) {
+            if ($("#roadKey"+item.id).hasClass('marker-offline')) {
+              point.setContent("<div inter-id='" + item.interId + "' class='marker-online marker-offline'></div>");
+            }else{
+              point.setContent("<div inter-id='" + item.interId + "' class='marker-online'></div>");
+            }
+          }
+          if (childInterId === point.w.extData.id && childInterId === item.id) {
+            lng = item.lng
+            lat = item.lat
+            point.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + item.interId + "' id='roadKey" + item.id + "' class='marker-online'></div></div>");
             _this.setState({
               roadUnitId: item.id,
               roadInterId: item.interId,
@@ -691,10 +694,11 @@ class SignalManagement extends PureComponent {
             })
             const resultP = Promise.resolve(_this.props.getUnitPop(childInterId))
             resultP.then(() => {
-              _this.openInfoWin(_this.map, item, marker, item.interName)
+              _this.openInfoWin(_this.map, item, point, item.interName)
             })
-          })
-        }
+            marker = point
+          }
+        })
       })
     })
     if (marker && this.map) {
@@ -1326,6 +1330,7 @@ class SignalManagement extends PureComponent {
           position: new AMap.LngLat(positions[i].lng, positions[i].lat),
           offset: new AMap.Pixel(-16, -16),
           content: "<div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
+          extData: { id: positions[i].id},
           // content: "<div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
         })
         marker.on('click', (e) => {
