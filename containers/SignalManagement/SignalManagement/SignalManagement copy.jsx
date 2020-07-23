@@ -175,10 +175,10 @@ class SignalManagement extends PureComponent {
     const { mapPointsData, dcuPopData, stepStatusData, basicBgLists, basicUplSuccess, dcuTreeData, codeTypeData, phaseLists,
       laneShowDetail, laneIconLists, lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists, laneSelectLists, lightSelectLists, detectorSelectLists, phaseIconLists, planChainsLists, dayPlanClickInfo, dispatchClickInfo } = this.props.data
     if (prevState.data !== this.props.data) {
-      // console.log(this.props, this.props.data, "data中所有的数据")
+      console.log(this.props, this.props.data, "data中所有的数据")
     }
     if (prevState.data.codeTypeData !== codeTypeData) {
-      // console.log(codeTypeData, 'codeType 数据')
+      console.log(codeTypeData, 'codeType 数据')
     }
     if (prevState.data.dcuTreeData !== dcuTreeData) {
       if (this.state.treeFlag) {
@@ -186,7 +186,7 @@ class SignalManagement extends PureComponent {
       }
     }
     if (prevState.data.mapPointsData !== mapPointsData) {
-      // console.log(mapPointsData, '点数据')
+      console.log(mapPointsData, '点数据')
       this.setState({ mapPointsData }, () => {
         this.loadingMap()
       })
@@ -237,15 +237,15 @@ class SignalManagement extends PureComponent {
       this.setState({ phaseIconLists })
     }
     if (prevState.data.laneSelectLists !== laneSelectLists) {
-      // console.log(laneSelectLists, '车')
+      console.log(laneSelectLists, '车')
       this.setState({ laneSelectLists })
     }
     if (prevState.data.lightSelectLists !== lightSelectLists) {
-      // console.log(lightSelectLists, '灯组')
+      console.log(lightSelectLists, '灯组')
       this.setState({ lightSelectLists })
     }
     if (prevState.data.detectorSelectLists !== detectorSelectLists) {
-      // console.log(detectorSelectLists, '检测器')
+      console.log(detectorSelectLists, '检测器')
       this.setState({ detectorSelectLists })
     }
     if (prevState.data.phaseLists !== phaseLists) {
@@ -267,6 +267,7 @@ class SignalManagement extends PureComponent {
     }
   }
   componentDidMount = () => {
+    console.log(this.props, '看下结构...')
     // 获取用户权限
     const limitArr = JSON.parse(localStorage.getItem('userLimit'))
     limitArr.forEach((item) => {
@@ -346,7 +347,7 @@ class SignalManagement extends PureComponent {
     this.loadingMap()
     window.showHidePop = this.showHidePop
     window.setGetParams = this.setGetParams
-    this.props.getMapUnitInfoList() // 地图中的点
+    this.props.actions.getMapUnitInfoList() // 地图中的点
     this.getSystemCodeType(2) // 转向
     this.getSystemCodeType(8) // 灯组类型 
     this.getSystemCodeType(9) // 灯组方向
@@ -439,7 +440,7 @@ class SignalManagement extends PureComponent {
   }
   // 字典code
   getSystemCodeType = (num) => {
-    this.props.getSystemCodeType(num).then(() => {
+    this.props.actions.getSystemCodeType(num).then(() => {
       switch (num) {
         case 2:
           this.setState({ fDir8NoData: this.props.data.codeTypeData }) // 方向
@@ -550,7 +551,7 @@ class SignalManagement extends PureComponent {
     this[type][name][key] ? this[type][name][key] = this[type][name][key] + ',' + this.state.strStagePlanID : this[type][name][key] = this.state.strStagePlanID
     const newArr = this.state.planStageLists ? JSON.parse(JSON.stringify(this.state.planStageLists)) : []
     newArr.push(this.state.strStagePlanItem)
-    // console.log(newArr, '看下数据对不？')
+    console.log(newArr, '看下数据对不？')
     this.setState({ showFlag: true, planStageLists: newArr })
   }
   // 取消单选按钮 弹层
@@ -742,7 +743,7 @@ class SignalManagement extends PureComponent {
   }
   // 更新参数
   setGetParams = params => {
-    // console.log(params, '更新名称')
+    console.log(params, '更新名称')
     this.setState({
       stepOneText: params.interName,
       roadId: params.id,
@@ -750,7 +751,7 @@ class SignalManagement extends PureComponent {
       roadNodeNo: params.nodeId,
       interRoadBg: !params.background ? null : this.bgIpUrl + params.background,
     }, () => {
-      this.props.getStepStatus(params.interId, params.nodeId)
+      this.props.getStepStatus(params.id, params.nodeId)
       this.showHidePop("stepTwoFlag", true);
     })
 
@@ -959,7 +960,7 @@ class SignalManagement extends PureComponent {
   }
   // 点击列表中某一条时
   handleLineClick = (id, stepType) => {
-    // console.log(id, stepType)
+    console.log(id, stepType)
     this.props.getInfoListsTypeMore(this.state.roadInterId, this.state.roadNodeNo, stepType, id)
   }
   // 编辑时回显内容 相位、阶段、配时方案、日计划、调度
@@ -1211,7 +1212,7 @@ class SignalManagement extends PureComponent {
     this.props.getSelectLists(interId, nodeNo, stepType)
   }
   selectItemList = (defaultSelectLists, stepType) => {
-    // console.log(defaultSelectLists, '选中的数据')
+    console.log(defaultSelectLists, '选中的数据')
     switch (stepType) {
       case 'PHASE':
         this.setState({ phaseDefaultSelectLists: defaultSelectLists.join() })
@@ -1350,7 +1351,7 @@ class SignalManagement extends PureComponent {
   //在指定位置打开信息窗体
   openInfoWin = (map, dataItem, marker, name) => {
     // debugger
-    // console.log(this.props.data.dcuPopData, '弹层所需数据')
+    console.log(this.props.data.dcuPopData, '弹层所需数据')
     var info = [];
     let itemData = JSON.parse(JSON.stringify(this.props.data.dcuPopData))
     info.push(`<div class='content_box'>`);
@@ -1734,7 +1735,7 @@ class SignalManagement extends PureComponent {
   loadData(data) {
     let result = JSON.parse(data);
     this.returnStep(result)
-    // console.log(result, 'socket 上传数据')
+    console.log(result, 'socket 上传数据')
   }
   editDataType = (flag) => {
     this.setState({
@@ -1764,7 +1765,7 @@ class SignalManagement extends PureComponent {
   editData(data) {
     let result = JSON.parse(data);
     this.returnStep(result)
-    // console.log(result, 'socket 下发数据')
+    console.log(result, 'socket 下发数据')
   }
   handleData(data) {
     let result = JSON.parse(data);
@@ -3206,25 +3207,46 @@ const mapStateToProps = (state) => {
     data: { ...state.publicData, ...state.SignalManagement },
   }
 }
-const mapDisPatchToProps = (dispatch) => {
-  return {
-    getSystemCodeType: bindActionCreators(getSystemCodeType, dispatch),
-    getStepStatus: bindActionCreators(getStepStatus, dispatch),
-    getPicListsType: bindActionCreators(getPicListsType, dispatch),
-    getInfoListsType: bindActionCreators(getInfoListsType, dispatch),
-    getInfoListsTypeMore: bindActionCreators(getInfoListsTypeMore, dispatch),
-    getMapUnitInfoList: bindActionCreators(getMapUnitInfoList, dispatch),
-    getUnitPop: bindActionCreators(getUnitPop, dispatch),
-    checkUnitTree: bindActionCreators(checkUnitTree, dispatch),
-    postBgBySelect: bindActionCreators(postBgBySelect, dispatch),
-    postBgByUpload: bindActionCreators(postBgByUpload, dispatch),
-    postAddAllType: bindActionCreators(postAddAllType, dispatch), // 添加图标和列表
-    postUpdateAllType: bindActionCreators(postUpdateAllType, dispatch),// 双击图标  修改图标和列表一条
-    postAddOthersType: bindActionCreators(postAddOthersType, dispatch), // 添加
-    postUpdateOthersType: bindActionCreators(postUpdateOthersType, dispatch), // 修改列表中的某一条用于list插件
-    getIconImageList: bindActionCreators(getIconImageList, dispatch), // 回显图标
-    getUpdateAllType: bindActionCreators(getUpdateAllType, dispatch), // 修改列表中的某一条 
-    getSelectLists: bindActionCreators(getSelectLists, dispatch), // 编辑车道、灯组、检测器的列表
-  }
-}
+const mapDisPatchToProps = (dispatch) => ({
+  actions : bindActionCreators({
+    getSystemCodeType: getSystemCodeType,
+    getStepStatus: getStepStatus,
+    getPicListsType: getPicListsType,
+    getInfoListsType: getInfoListsType,
+    getInfoListsTypeMore: getInfoListsTypeMore,
+    getMapUnitInfoList: getMapUnitInfoList,
+    getUnitPop: getUnitPop,
+    checkUnitTree: checkUnitTree,
+    postBgBySelect: postBgBySelect,
+    postBgByUpload: postBgByUpload,
+    postAddAllType: postAddAllType, // 添加图标和列表
+    postUpdateAllType: postUpdateAllType,// 双击图标  修改图标和列表一条
+    postAddOthersType: postAddOthersType, // 添加
+    postUpdateOthersType: postUpdateOthersType, // 修改列表中的某一条用于list插件
+    getIconImageList: getIconImageList, // 回显图标
+    getUpdateAllType: getUpdateAllType, // 修改列表中的某一条 
+    getSelectLists: getSelectLists, // 编辑车道、灯组、检测器的列表
+  },dispatch)
+})
+// const mapDisPatchToProps = (dispatch) => {
+//   return {
+//     getSystemCodeType: bindActionCreators(getSystemCodeType, dispatch),
+//     getStepStatus: bindActionCreators(getStepStatus, dispatch),
+//     getPicListsType: bindActionCreators(getPicListsType, dispatch),
+//     getInfoListsType: bindActionCreators(getInfoListsType, dispatch),
+//     getInfoListsTypeMore: bindActionCreators(getInfoListsTypeMore, dispatch),
+//     getMapUnitInfoList: bindActionCreators(getMapUnitInfoList, dispatch),
+//     getUnitPop: bindActionCreators(getUnitPop, dispatch),
+//     checkUnitTree: bindActionCreators(checkUnitTree, dispatch),
+//     postBgBySelect: bindActionCreators(postBgBySelect, dispatch),
+//     postBgByUpload: bindActionCreators(postBgByUpload, dispatch),
+//     postAddAllType: bindActionCreators(postAddAllType, dispatch), // 添加图标和列表
+//     postUpdateAllType: bindActionCreators(postUpdateAllType, dispatch),// 双击图标  修改图标和列表一条
+//     postAddOthersType: bindActionCreators(postAddOthersType, dispatch), // 添加
+//     postUpdateOthersType: bindActionCreators(postUpdateOthersType, dispatch), // 修改列表中的某一条用于list插件
+//     getIconImageList: bindActionCreators(getIconImageList, dispatch), // 回显图标
+//     getUpdateAllType: bindActionCreators(getUpdateAllType, dispatch), // 修改列表中的某一条 
+//     getSelectLists: bindActionCreators(getSelectLists, dispatch), // 编辑车道、灯组、检测器的列表
+//   }
+// }
 export default connect(mapStateToProps, mapDisPatchToProps)(SignalManagement)
