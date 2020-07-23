@@ -600,21 +600,20 @@ class SignalManagement extends PureComponent {
   hanleSelectInter = (e, item) => {
     let marker
     const _this = this;
-    marker = new AMap.Marker({
-      position: new AMap.LngLat(item.lng, item.lat),
-      offset: new AMap.Pixel(-16, -16),
-      content: "<div id='roadKey" + item.interId + "'></div>",
-    })
-    marker.on('click', function () {
-      _this.setState({
-        roadUnitId: item.id,
-        roadInterId: item.interId,
-        roadNodeNo: item.nodeId,
-      })
-      const resultP = Promise.resolve(_this.props.getUnitPop(item.id))
-      resultP.then(() => {
-        _this.openInfoWin(_this.map, item, marker, item.interName)
-      })
+    this.pointLayers.map((point) => {
+      if (point.w.extData.id === item.id) {
+        point.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + item.id + "' id='roadKey" + item.id + "' class='marker-online'></div></div>");
+        _this.setState({
+          roadUnitId: item.id,
+          roadInterId: item.interId,
+          roadNodeNo: item.nodeId,
+        })
+        const resultP = Promise.resolve(_this.props.getUnitPop(item.id))
+        resultP.then(() => {
+          _this.openInfoWin(_this.map, item, point, item.interName)
+        })
+        marker = point
+      }
     })
 
     if (marker && this.map) {
