@@ -3,8 +3,6 @@ import { Input, Icon, Radio, Upload, Modal, message, Select, Checkbox, Row, Col,
 import moment from 'moment';
 import classNames from 'classnames'
 import Header from '../../../components/Header/Header'
-import markerIcon from '../../../images/markerGreen.png'
-import markerRedIcon from '../../../images/markerRed.png'
 import CustomTree from '../../../components/CustomTree/CustomTree'
 import ListForAntd from '../ListForAntd/ListForAntd'
 import InterworkingList from './InterworkingList/InterworkingList'
@@ -669,30 +667,23 @@ class SignalManagement extends PureComponent {
 
   }
   // 获取子id, 路口id
-  getSelectChildId = (childInterId) => {
+  getSelectChildId = (childId) => {
     const _this = this;
     var marker, lng, lat;
     const childrenArr = this.state.treeListBackups
     childrenArr.map((data) => {
       data.units && data.units.map((item) => {
         this.pointLayers.map((point) => {
-          if ($("#roadKey"+item.id).parent().hasClass('drawCircle')) {
-            if ($("#roadKey"+item.id).hasClass('marker-offline')) {
-              point.setContent("<div inter-id='" + item.interId + "' class='marker-online marker-offline'></div>");
-            }else{
-              point.setContent("<div inter-id='" + item.interId + "' class='marker-online'></div>");
-            }
-          }
-          if (childInterId === point.w.extData.id && childInterId === item.id) {
+          if (childId === point.w.extData.id && childId === item.id) {
             lng = item.lng
             lat = item.lat
-            point.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + item.interId + "' id='roadKey" + item.id + "' class='marker-online'></div></div>");
+            point.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + item.id + "' id='roadKey" + item.id + "' class='marker-online'></div></div>");
             _this.setState({
               roadUnitId: item.id,
               roadInterId: item.interId,
               roadNodeNo: item.nodeId,
             })
-            const resultP = Promise.resolve(_this.props.getUnitPop(childInterId))
+            const resultP = Promise.resolve(_this.props.getUnitPop(childId))
             resultP.then(() => {
               _this.openInfoWin(_this.map, item, point, item.interName)
             })
@@ -1329,7 +1320,7 @@ class SignalManagement extends PureComponent {
         const marker = new AMap.Marker({
           position: new AMap.LngLat(positions[i].lng, positions[i].lat),
           offset: new AMap.Pixel(-16, -16),
-          content: "<div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
+          content: "<div inter-id='" + positions[i].id + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
           extData: { id: positions[i].id},
           // content: "<div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
         })
@@ -1337,7 +1328,7 @@ class SignalManagement extends PureComponent {
           map.emit('click', {
             lnglat: map.getCenter()
           })
-          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
+          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].id + "' id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
           const nowZoom = map.getZoom()
           map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
           this.setState({
@@ -1384,9 +1375,9 @@ class SignalManagement extends PureComponent {
     map.on('click', (e) => {
       if ($("#roadKey"+dataItem.id).parent().hasClass('drawCircle')) {
         if ($("#roadKey"+dataItem.id).hasClass('marker-offline')) {
-          marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online marker-offline'></div>");
+          marker.setContent("<div inter-id='" + dataItem.id + "' class='marker-online marker-offline'></div>");
         }else{
-          marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online'></div>");
+          marker.setContent("<div inter-id='" + dataItem.id + "' class='marker-online'></div>");
         }
       }
       infoWindow.close()
