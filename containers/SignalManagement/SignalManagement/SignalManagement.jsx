@@ -600,7 +600,6 @@ class SignalManagement extends PureComponent {
   hanleSelectInter = (e, item) => {
     let marker
     const _this = this;
-    console.log(this.pointLayers, item.id, 's')
     this.pointLayers.map((point) => {
       if (point.w.extData.id === item.id) {
         point.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + item.id + "' id='roadKey" + item.id + "' class='marker-online'></div></div>");
@@ -613,7 +612,6 @@ class SignalManagement extends PureComponent {
         resultP.then(() => {
           _this.openInfoWin(_this.map, item, point, item.interName)
         })
-        console.log(point, 'sv')
         marker = point
       }
     })
@@ -636,7 +634,6 @@ class SignalManagement extends PureComponent {
   handleSearchInterFocus = () => {
     this.setState({ interListHeight: 300 })
     const searchInters = []
-    console.log(this.searchInterList, 'sdsdds')
     this.searchInterList.forEach((item) => {
       item.units.forEach((items) => {
         searchInters.push(items)
@@ -689,13 +686,11 @@ class SignalManagement extends PureComponent {
             resultP.then(() => {
               _this.openInfoWin(_this.map, item, point, item.interName)
             })
-            console.log(point, 'sv')
             marker = point
           }
         })
       })
     })
-    console.log(marker, this.map, '123')
     if (marker && this.map) {
       this.map.setCenter([lng, lat])
       this.map.emit('click', {
@@ -791,7 +786,7 @@ class SignalManagement extends PureComponent {
           resultP.then(() => {
             this.setGetParams(this.props.data.dcuPopData)
           })
-          this.props.getStepStatus(this.state.roadId, this.state.roadNodeNo)
+          this.props.getStepStatus(this.state.roadInterId, this.state.roadNodeNo)
         })
       } else {
         this.setState({ loadFlag: flag, editFlag: flag })
@@ -951,7 +946,7 @@ class SignalManagement extends PureComponent {
                 "scheduleNo": '',   //调度号
                 "dailyPlanId": 0,   //日计划编号
                 "dataValueCodes": "0",  //日期值code，逗号拼接
-                "dateType": 0,  //日期类型                    
+                "dateType": 1,  //日期类型                    
                 "monthValueCodes": "", //月份
                 "priority": 0,  //优先级
               }
@@ -1325,7 +1320,7 @@ class SignalManagement extends PureComponent {
           position: new AMap.LngLat(positions[i].lng, positions[i].lat),
           offset: new AMap.Pixel(-16, -16),
           content: "<div inter-id='" + positions[i].id + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
-          extData: { id: positions[i].id },
+          extData: { id: positions[i].id},
           // content: "<div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
         })
         marker.on('click', (e) => {
@@ -1377,10 +1372,10 @@ class SignalManagement extends PureComponent {
     this.infoWindow = infoWindow
     window.infoWindowClose = infoWindow
     map.on('click', (e) => {
-      if ($("#roadKey" + dataItem.id).parent().hasClass('drawCircle')) {
-        if ($("#roadKey" + dataItem.id).hasClass('marker-offline')) {
+      if ($("#roadKey"+dataItem.id).parent().hasClass('drawCircle')) {
+        if ($("#roadKey"+dataItem.id).hasClass('marker-offline')) {
           marker.setContent("<div inter-id='" + dataItem.id + "' class='marker-online marker-offline'></div>");
-        } else {
+        }else{
           marker.setContent("<div inter-id='" + dataItem.id + "' class='marker-online'></div>");
         }
       }
@@ -1626,7 +1621,7 @@ class SignalManagement extends PureComponent {
       timeDiv.addClass('marker-offline')
       data && data.map((item) => {
         if (item.interId === timeDiv.attr('inter-id') && !!item.state) {
-          timeDiv.removeClass('marker-offline')
+          timeDiv.removeClass('marker-offline') 
         }
       })
     }
@@ -1739,7 +1734,7 @@ class SignalManagement extends PureComponent {
   loadData(data) {
     let result = JSON.parse(data);
     this.returnStep(result)
-    // console.log(result, 'socket 上传数据')
+    console.log(result, 'socket 上传数据')
   }
   editDataType = (flag) => {
     this.setState({
@@ -1769,7 +1764,7 @@ class SignalManagement extends PureComponent {
   editData(data) {
     let result = JSON.parse(data);
     this.returnStep(result)
-    // console.log(result, 'socket 下发数据')
+    console.log(result, 'socket 下发数据')
   }
   handleData(data) {
     let result = JSON.parse(data);
@@ -1841,7 +1836,7 @@ class SignalManagement extends PureComponent {
                 {tenFlag ? <em onClick={() => { this.popLayerShowHide("loadFlag", null) }}>关 闭</em> : null}
               </div>
             </div>
-          </div> : null
+          </div> : null 
         }
         {loadFlag ? <Websocket url={`${this.props.data.devSockets}${this.socketLoadDataUrl}${0}/${roadInterId}/${0}?Authorization=${this.token}`} onMessage={this.loadData.bind(this)} /> : null}
         {editFlag ? <Websocket url={`${this.props.data.devSockets}${this.socketEditDataUrl}${0}/${roadInterId}/${0}?Authorization=${this.token}`} onMessage={this.editData.bind(this)} /> : null}

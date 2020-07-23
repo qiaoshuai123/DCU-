@@ -96,7 +96,7 @@ class PlanConfigRight extends PureComponent {
       onOk() {
         const resultP = Promise.resolve(_this.props.getDelInfoType(id, 'PLAN'))
         resultP.then((res)=>{
-          _this.props.getStepStatus(_this.props.roadId, _this.props.roadNodeNo)
+          _this.props.getStepStatus(_this.props.roadInterId, _this.props.roadNodeNo)
           _this.props.getInfoListsTypeMore(_this.props.roadInterId, _this.props.roadNodeNo, 'PLAN')
           message.info('操作成功！')
         })

@@ -110,7 +110,7 @@ class DetectorConfigRight extends PureComponent {
       onOk() {
         const resultP = Promise.resolve(_this.props.getDelInfoType(id, 'DISPATCH'))
         resultP.then((res)=>{
-          _this.props.getStepStatus(_this.props.roadId, _this.props.roadNodeNo)
+          _this.props.getStepStatus(_this.props.roadInterId, _this.props.roadNodeNo)
           _this.props.getInfoListsTypeMore(_this.props.roadInterId, _this.props.roadNodeNo, 'DISPATCH')
           message.info('操作成功！')
         })

@@ -230,7 +230,7 @@ class PhaseConfigRight extends PureComponent {
       onOk() {
         const resultP = Promise.resolve(_this.props.getDelInfoType(id, 'PHASE'))
         resultP.then((res)=>{
-          _this.props.getStepStatus(_this.props.roadId, _this.props.roadNodeNo)
+          _this.props.getStepStatus(_this.props.roadInterId, _this.props.roadNodeNo)
           _this.props.getInfoListsType(_this.props.roadInterId, 'PHASE')
           message.info('操作成功！')
         })
