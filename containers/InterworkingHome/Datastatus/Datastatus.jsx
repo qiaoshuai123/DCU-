@@ -3,7 +3,7 @@ import { Input, message, Icon } from 'antd'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import Websocket from 'react-websocket'
-import { getMapUnitInfoList } from '../../../reactRedux/actions/publicActions'
+import { getMapUnitInfoList, getUnitPop, checkUnitTree } from '../../../reactRedux/actions/publicActions'
 import { unitInfoList, detectorTypeNameByInterId } from '../../../reactRedux/actions/equipmentManagement'
 import Header from '../../..//components/Header/Header'
 import CustomTree from '../../../components/CustomTree/CustomTree'
@@ -20,7 +20,8 @@ class Datastatus extends Component {
       searchInterList: [],
       normal: 0,
       notNormal: 0,
-
+      treeFlag: true,
+      treeListBackups: null,
     }
     this.searchInterList = []
     this.token = JSON.parse(localStorage.getItem('userInfo')).token
@@ -36,7 +37,6 @@ class Datastatus extends Component {
     })
     window.showHidePop = this.showHidePop
     window.setGetParams = this.setGetParams
-    this.props.unitInfoList()
     this.userLimit = (JSON.parse(localStorage.getItem('userLimit'))).map(item => item.id)
     this.props.getMapUnitInfoList()
     document.addEventListener('click', (e) => {
@@ -44,17 +44,16 @@ class Datastatus extends Component {
     })
   }
   componentDidUpdate = (prevState) => {
-    const { mapPointsData, unitInfoLists } = this.props.data
+    const { mapPointsData, dcuTreeData } = this.props.data
     if (prevState.data.mapPointsData !== mapPointsData) {
       console.log(mapPointsData, '点数据')
       this.getmapPointsData(mapPointsData)
     }
-    if (prevState.data.unitInfoLists !== unitInfoLists) {
-      this.getunitInfoLists(unitInfoLists)
+    if (prevState.data.dcuTreeData !== dcuTreeData) {
+      if (this.state.treeFlag) {
+        this.checkUnitTree()
+      }
     }
-  }
-  getunitInfoLists = (unitInfoLists) => {
-    this.searchInterList = unitInfoLists
   }
   // 从子集获取区域id和index 请求路口
   getSelectTreeId = (id) => {
@@ -153,6 +152,15 @@ class Datastatus extends Component {
       this.drawMarkers(this.state.mapPointsData, 'pointLayers') // 初始化点
     }
   }
+  // 筛选左侧树型结构
+  checkUnitTree = () => {
+    this.searchInterList = this.props.data.dcuTreeData
+    this.setState({
+      treeList: this.props.data.dcuTreeData,
+      treeListBackups: this.props.data.dcuTreeData,
+      treeFlag: false,
+    })
+  }
   // 创建地图层 > 对应元素层
   createLayerGroup = (name) => {
     window[name] = new AMap.LayerGroup({
@@ -172,19 +180,18 @@ class Datastatus extends Component {
     }
     if (map) {
       for (let i = 0; i < positions.length; i++) {
-        // const latlng = positions[i]
-        // const latlng = positions[i].latlng
         const marker = new AMap.Marker({
           position: new AMap.LngLat(positions[i].lng, positions[i].lat),
           offset: new AMap.Pixel(-16, -16),
-          content: "<div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
+          content: "<div inter-id='" + positions[i].id + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
+          extData: { id: positions[i].id },
+          // content: "<div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
         })
-        // marker.id =
-        marker.on('click', () => {
+        marker.on('click', (e) => {
           map.emit('click', {
             lnglat: map.getCenter()
           })
-          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
+          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].id + "' id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
           const nowZoom = map.getZoom()
           map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
           this.setState({
@@ -212,7 +219,7 @@ class Datastatus extends Component {
     info.push(`<div class='content_box'>`);
     info.push(`<div class='content_box_title'><h4>点位详情</h4>`);
     info.push(`<p class='input-item' style='border-top: 1px #838a9a solid;margin-top:-10px;padding-top:15px;'>点位名称：<span>` + name + `</span></p>`);
-    info.push(`<p class='input-item'>数据来源：<span>${itemData||'暂无'}</span></p>`);
+    info.push(`<p class='input-item'>数据来源：<span>${itemData || '暂无'}</span></p>`);
     info.push(`<p class='input-item'>数据接入状态：<span>` + '暂无' + `</span></p>`);
     info.push(`<p class='input-item'>数据输出状态：<span>` + '暂无' + `</span></p>`);
     this.userLimit.indexOf(301) !== -1 ? info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>路口监视</span></p>`) : '';
@@ -223,11 +230,11 @@ class Datastatus extends Component {
     this.infoWindow = infoWindow
     window.infoWindowClose = infoWindow
     map.on('click', (e) => {
-      if ($("#roadKey"+dataItem.id).parent().hasClass('drawCircle')) {
-        if ($("#roadKey"+dataItem.id).hasClass('marker-offline')) {
-          marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online marker-offline'></div>");
-        }else{
-          marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online'></div>");
+      if ($("#roadKey" + dataItem.id).parent().hasClass('drawCircle')) {
+        if ($("#roadKey" + dataItem.id).hasClass('marker-offline')) {
+          marker.setContent("<div inter-id='" + dataItem.id + "' class='marker-online marker-offline'></div>");
+        } else {
+          marker.setContent("<div inter-id='" + dataItem.id + "' class='marker-online'></div>");
         }
       }
       infoWindow.close()
@@ -236,23 +243,22 @@ class Datastatus extends Component {
   hanleSelectInter = (e, item) => {
     let marker
     const _this = this;
-    marker = new AMap.Marker({
-      position: new AMap.LngLat(item.lng, item.lat),
-      offset: new AMap.Pixel(-16, -16),
-      content: "<div id='roadKey" + item.interId + "'></div>",
+    console.log(this.pointLayers, item.id, 's')
+    this.pointLayers.map((point) => {
+      if (point.w.extData.id === item.id) {
+        point.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + item.id + "' id='roadKey" + item.id + "' class='marker-online'></div></div>");
+        _this.setState({
+          roadUnitId: item.id,
+          roadInterId: item.interId,
+          roadNodeNo: item.nodeId,
+        })
+        const resultP = Promise.resolve(_this.props.getUnitPop(item.id))
+        resultP.then(() => {
+          _this.openInfoWin(_this.map, item, point, item.interName)
+        })
+        marker = point
+      }
     })
-    marker.on('click', function () {
-      _this.setState({
-        roadUnitId: item.id,
-        roadInterId: item.interId,
-        roadNodeNo: item.nodeId,
-      })
-      const resultP = Promise.resolve(_this.props.detectorTypeNameByInterId(item.id))
-      resultP.then(() => {
-        _this.openInfoWin(_this.map, item, marker, item.interName)
-      })
-    })
-
     if (marker && this.map) {
       this.map.setCenter([item.lng, item.lat])
       this.searchInputBox.value = item.interName
@@ -270,17 +276,38 @@ class Datastatus extends Component {
   }
 
   handleSearchInterFocus = (e) => {
-    const values = e.target.value
-    const searchInterList = this.searchInterList.filter(item => item.interName.includes(values))
-    this.setState({
-      searchInterList,
+    this.setState({ interListHeight: 300 })
+    const searchInters = []
+    this.searchInterList.forEach((item) => {
+      item.units.forEach((items) => {
+        searchInters.push(items)
+      })
     })
+    this.setState({ searchInterList: searchInters })
   }
-  btnClicks = () => {
-    this.setState({
-      interListHeight: 300,
-      searchInterList: this.searchInterList,
-    })
+  handleSearchInputChange = (e) => {
+    const { value } = e.target
+    const searchInters = []
+    const searchLists = []
+    if (this.searchTimer) {
+      clearTimeout(this.searchTimer)
+      this.searchTimer = null
+    }
+    this.searchTimer = setTimeout(() => {
+      this.searchInterList.forEach((item) => {
+        item.units.forEach((items) => {
+          if (items.interName.indexOf(value) >= 0) {
+            searchInters.push(item)
+            searchLists.push(items)
+          }
+        })
+      })
+      this.setState({ treeList: searchInters, searchInterList: searchLists }, () => {
+        // console.log(searchInters, value, '结构')
+        !value ? this.props.checkUnitTree(this.state.treeListBackups) : this.props.checkUnitTree(this.state.treeList)
+      })
+    }, 200)
+
   }
   handleData = (e) => {
     const { normal, notNormal, stateList } = JSON.parse(e)
@@ -321,8 +348,8 @@ class Datastatus extends Component {
           <div className={styles.searchBox}>
             <input
               className={styles.searchInput}
-              onChange={this.handleSearchInterFocus}
-              onClick={this.btnClicks}
+              onChange={this.handleSearchInputChange}
+              onClick={this.handleSearchInterFocus}
               type="text"
               placeholder="关键词搜索"
               autoComplete="off"
@@ -386,6 +413,8 @@ const mapDisPatchToProps = (dispatch) => {
     getMapUnitInfoList: bindActionCreators(getMapUnitInfoList, dispatch),
     detectorTypeNameByInterId: bindActionCreators(detectorTypeNameByInterId, dispatch),
     unitInfoList: bindActionCreators(unitInfoList, dispatch),
+    getUnitPop: bindActionCreators(getUnitPop, dispatch),
+    checkUnitTree: bindActionCreators(checkUnitTree, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(Datastatus)

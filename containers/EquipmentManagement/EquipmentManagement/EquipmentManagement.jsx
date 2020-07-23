@@ -3,7 +3,7 @@ import { Input, message, Modal, Icon } from 'antd'
 import Websocket from 'react-websocket'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { getMapUnitInfoList, getUnitTree, getUnitPop } from '../../../reactRedux/actions/publicActions'
+import { getMapUnitInfoList, getUnitTree, getUnitPop, checkUnitTree } from '../../../reactRedux/actions/publicActions'
 import { postdeleteUnit, unitInfoList } from '../../../reactRedux/actions/equipmentManagement'
 import Header from '../../../components/Header/Header'
 import CustomTree from '../../../components/CustomTree/CustomTree'
@@ -25,17 +25,25 @@ class EquipmentManagement extends Component {
       lat: '',
       interListHeight: 0,
       searchInterList: [],
+      treeFlag: true,
+      treeListBackups: null,
     }
     this.searchInterList = []
     this.token = JSON.parse(localStorage.getItem('userInfo')).token
   }
   componentDidMount = () => {
     this.loadingMap()
+    document.addEventListener('click', (e) => {
+      if (e.target !== this.searchInputBox) {
+        if (e.target !== this.searchBtn) {
+          this.setState({ interListHeight: 0 })
+        }
+      }
+    })
     window.showHidePop = this.showHidePop
     window.setGetParams = this.setGetParams
     this.props.getMapUnitInfoList()
     this.userLimit = (JSON.parse(localStorage.getItem('userLimit'))).map(item => item.id)
-    this.props.unitInfoList()
     document.addEventListener('click', (e) => {
       this.visibleShowLeft('', '', false)
     })
@@ -44,7 +52,7 @@ class EquipmentManagement extends Component {
     // })
   }
   componentDidUpdate = (prevState) => {
-    const { mapPointsData, getObjNum, dcuPopData, unitInfoLists } = this.props.data
+    const { mapPointsData, getObjNum, dcuPopData, dcuTreeData } = this.props.data
     if (prevState.data !== this.props.data) {
       // console.log(this.props.data, "data中所有的数据")
     }
@@ -58,12 +66,11 @@ class EquipmentManagement extends Component {
       // console.log(dcuPopData, '弹层数据')
       this.getdcuPopData(dcuPopData)
     }
-    if (prevState.data.unitInfoLists !== unitInfoLists) {
-      this.getunitInfoLists(unitInfoLists)
+    if (prevState.data.dcuTreeData !== dcuTreeData) {
+      if (this.state.treeFlag) {
+        this.checkUnitTree()
+      }
     }
-  }
-  getunitInfoLists = (unitInfoLists) => {
-    this.searchInterList = unitInfoLists
   }
   getdcuPopData = (dcuPopData) => {
     this.setState({ dcuPopData })
@@ -186,6 +193,15 @@ class EquipmentManagement extends Component {
       this.drawMarkers(this.state.mapPointsData, 'pointLayers') // 初始化点
     }
   }
+  // 筛选左侧树型结构
+  checkUnitTree = () => {
+    this.searchInterList = this.props.data.dcuTreeData
+    this.setState({
+      treeList: this.props.data.dcuTreeData,
+      treeListBackups: this.props.data.dcuTreeData,
+      treeFlag: false,
+    })
+  }
   // 创建地图层 > 对应元素层
   createLayerGroup = (name) => {
     window[name] = new AMap.LayerGroup({
@@ -193,7 +209,7 @@ class EquipmentManagement extends Component {
       'interval': 180,// 刷新间隔，默认180s
     });
   }
-  // 批量添加点
+  //批量添加点
   drawMarkers = (positions, layer) => {
     const map = this.map
     if (window[layer]) {
@@ -205,19 +221,18 @@ class EquipmentManagement extends Component {
     }
     if (map) {
       for (let i = 0; i < positions.length; i++) {
-        // const latlng = positions[i]
-        // const latlng = positions[i].latlng
         const marker = new AMap.Marker({
           position: new AMap.LngLat(positions[i].lng, positions[i].lat),
           offset: new AMap.Pixel(-16, -16),
-          content: "<div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
+          content: "<div inter-id='" + positions[i].id + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
+          extData: { id: positions[i].id },
+          // content: "<div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
         })
-        // marker.id =
-        marker.on('click', () => {
+        marker.on('click', (e) => {
           map.emit('click', {
             lnglat: map.getCenter()
           })
-          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
+          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].id + "' id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
           const nowZoom = map.getZoom()
           map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
           this.setState({
@@ -248,7 +263,7 @@ class EquipmentManagement extends Component {
     info.push(`<p class='input-item'>设备编号：<span>` + itemData.deviceId + `</span></p>`);
     info.push(`<p class='input-item'>设备型号：<span>` + itemData.deviceVersion + `</span></p>`);
     info.push(`<p class='input-item'>设备IP：<span>` + itemData.ip + `</span></p>`);
-    info.push(`<p class='input-item'>生产厂商：<span>` + itemData.brand+ `</span></p>`);
+    info.push(`<p class='input-item'>生产厂商：<span>` + itemData.brand + `</span></p>`);
     info.push(`<p class='input-item'>维护电话：<span>` + itemData.maintainPhone + `</span></p>`);
     this.userLimit.indexOf(301) !== -1 ? info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `) '>设备配置</span></p>`) : '';
     const infoWindow = new AMap.InfoWindow({
@@ -258,11 +273,11 @@ class EquipmentManagement extends Component {
     this.infoWindow = infoWindow
     window.infoWindowClose = infoWindow
     map.on('click', (e) => {
-      if ($("#roadKey"+dataItem.id).parent().hasClass('drawCircle')) {
-        if ($("#roadKey"+dataItem.id).hasClass('marker-offline')) {
-          marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online marker-offline'></div>");
-        }else{
-          marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online'></div>");
+      if ($("#roadKey" + dataItem.id).parent().hasClass('drawCircle')) {
+        if ($("#roadKey" + dataItem.id).hasClass('marker-offline')) {
+          marker.setContent("<div inter-id='" + dataItem.id + "' class='marker-online marker-offline'></div>");
+        } else {
+          marker.setContent("<div inter-id='" + dataItem.id + "' class='marker-online'></div>");
         }
       }
       infoWindow.close()
@@ -348,38 +363,60 @@ class EquipmentManagement extends Component {
   }
 
   handleSearchInterFocus = (e) => {
-    const values = e.target.value
-    const searchInterList = this.searchInterList.filter(item => item.interName.includes(values))
-    this.setState({
-      searchInterList,
+    this.setState({ interListHeight: 300 })
+    const searchInters = []
+    this.searchInterList.forEach((item) => {
+      item.units.forEach((items) => {
+        searchInters.push(items)
+      })
     })
+    this.setState({ searchInterList: searchInters })
   }
-  btnClicks = () => {
-    this.setState({
-      interListHeight: 300,
-      searchInterList: this.searchInterList,
-    })
+  handleSearchInputChange = (e) => {
+    const { value } = e.target
+    const searchInters = []
+    const searchLists = []
+    if (this.searchTimer) {
+      clearTimeout(this.searchTimer)
+      this.searchTimer = null
+    }
+    this.searchTimer = setTimeout(() => {
+      this.searchInterList.forEach((item) => {
+        item.units.forEach((items) => {
+          if (items.interName.indexOf(value) >= 0) {
+            searchInters.push(item)
+            searchLists.push(items)
+          }
+        })
+      })
+      this.setState({ treeList: searchInters, searchInterList: searchLists }, () => {
+        // console.log(searchInters, value, '结构')
+        !value ? this.props.checkUnitTree(this.state.treeListBackups) : this.props.checkUnitTree(this.state.treeList)
+      })
+    }, 200)
+
   }
   hanleSelectInter = (e, item) => {
     let marker
     const _this = this;
-    marker = new AMap.Marker({
-      position: new AMap.LngLat(item.lng, item.lat),
-      offset: new AMap.Pixel(-16, -16),
-      content: "<div id='roadKey" + item.interId + "'></div>",
+    console.log(this.pointLayers, item.id, 's')
+    this.pointLayers.map((point) => {
+      if (point.w.extData.id === item.id) {
+        point.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + item.id + "' id='roadKey" + item.id + "' class='marker-online'></div></div>");
+        _this.setState({
+          roadUnitId: item.id,
+          roadInterId: item.interId,
+          roadNodeNo: item.nodeId,
+        })
+        const resultP = Promise.resolve(_this.props.getUnitPop(item.id))
+        resultP.then(() => {
+          _this.openInfoWin(_this.map, item, point, item.interName)
+        })
+        console.log(point, 'sv')
+        marker = point
+      }
     })
-    marker.on('click', function () {
-      _this.setState({
-        roadUnitId: item.id,
-        roadInterId: item.interId,
-        roadNodeNo: item.nodeId,
-      })
-      const resultP = Promise.resolve(_this.props.getUnitPop(item.id))
-      resultP.then(() => {
-        _this.openInfoWin(_this.map, item, marker, item.interName)
-      })
-    })
-
+    console.log(marker, this.map)
     if (marker && this.map) {
       this.map.setCenter([item.lng, item.lat])
       this.searchInputBox.value = item.interName
@@ -406,8 +443,8 @@ class EquipmentManagement extends Component {
           <div className={styles.searchBox}>
             <input
               className={styles.searchInput}
-              onChange={this.handleSearchInterFocus}
-              onClick={this.btnClicks}
+              onChange={this.handleSearchInputChange}
+              onClick={this.handleSearchInterFocus}
               type="text"
               placeholder="关键词搜索"
               autoComplete="off"
@@ -476,6 +513,7 @@ const mapDisPatchToProps = (dispatch) => {
     postdeleteUnit: bindActionCreators(postdeleteUnit, dispatch),
     getUnitPop: bindActionCreators(getUnitPop, dispatch),
     unitInfoList: bindActionCreators(unitInfoList, dispatch),
+    checkUnitTree: bindActionCreators(checkUnitTree, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(EquipmentManagement)

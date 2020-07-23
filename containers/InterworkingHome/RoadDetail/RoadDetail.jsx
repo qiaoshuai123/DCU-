@@ -35,6 +35,7 @@ class RoadDetail extends Component {
       imgPaths: '',
       phasestageNames: '',
       isOnline: '',
+      detectorState: [], // 动态更改检测器汽车显示
     }
     this.imgshref = '/DCU/dcuImage/background/'
     this.laneBgUrl = '/DCU/dcuImage/lane/' // 车道
@@ -186,7 +187,7 @@ class RoadDetail extends Component {
   }
   handleData = (e) => {
     // console.log(JSON.parse(e), 'ssa')
-    const { lampgroupState, phasestageState, running, isOnline } = JSON.parse(e)
+    const { lampgroupState, phasestageState, running, isOnline, detectorState } = JSON.parse(e)
     const { remainingTime, phasestageNo, runningTime } = phasestageState
     const { localTime } = running
     this.setState({
@@ -194,12 +195,14 @@ class RoadDetail extends Component {
       remainingTime,
       phasestageNo,
       isOnline,
+      detectorState,
     })
     this.startWidth(runningTime, phasestageNo)
     this.phasestageNos(phasestageNo)
   }
 
   handleDataSc = (e) => {
+    // console.log(JSON.parse(e), 'new')
     const { phasestageList, allTime, schemeName } = JSON.parse(e)
     this.insWidth = 960 / allTime
     this.setState({
@@ -209,7 +212,6 @@ class RoadDetail extends Component {
     // const { lampgroupState, phasestageState } = JSON.parse(e)
   }
   handleDcu = (e) => {
-    console.log(JSON.parse(e), 'namesss')
     const schemeDcu = JSON.parse(e)
     this.setState({
       schemeDcu,
@@ -245,7 +247,7 @@ class RoadDetail extends Component {
       IsspanMessage, RoadImg, laneInfoAndDetailinfo, lampgroupDetailListinfo, detectorDetailListinfo,
       isMeessage, dcuPopData, schemeInfoListinfo, lockStateListinfo, nowPhasestageInfos, planRunStage,
       arrs, remainingTime, schemeName, imgPaths, phasestageNames, widths, isOnline, phasestageNo,
-      schemeDcu,
+      schemeDcu, detectorState,
     } = this.state
     return (
       <div className={styles.RoadDetail}>
@@ -333,8 +335,24 @@ class RoadDetail extends Component {
               const imgStyleL = {
                 position: 'absolute', display: 'inline-block', top: `${item.y}px`, left: `${item.x}px`, userSelect: 'none', paddingTop: '14px', transform: `translate(-50%,-50%) rotate(${item.angle}deg)`,
               }
+              let as = ''
+              let str = `${this.props.data.devImage}/DCU/dcuImage/detector`
+              detectorState.map((items) => {
+                if (item.detectorId === items.detectorId) {
+                  if (items.isOnline === '1') {
+                    if (items.detectorVehicleIsexist === '1') {
+                      as = 2
+                    } else {
+                      as = 1
+                    }
+                  }
+                }
+              })
+              str = `${str + as}/`
               return (
-                <div key={`${item}${ind}`} style={imgStyleL} className={styles.laneInfoAndDetailinfo}><img style={{ userSelect: 'none' }} src={`${this.props.data.devImage}${this.detectorBgUrl}${item.imageUrl}`} alt="" /></div>)
+                <div key={`${item}${ind}`} style={imgStyleL} className={styles.laneInfoAndDetailinfo}>
+                  <img style={{ userSelect: 'none' }} src={`${str}${item.imageUrl}`} alt="" />
+                </div>)
             })
           }
           {

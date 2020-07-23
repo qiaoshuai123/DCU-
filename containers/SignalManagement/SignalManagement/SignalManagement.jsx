@@ -600,6 +600,7 @@ class SignalManagement extends PureComponent {
   hanleSelectInter = (e, item) => {
     let marker
     const _this = this;
+    console.log(this.pointLayers, item.id, 's')
     this.pointLayers.map((point) => {
       if (point.w.extData.id === item.id) {
         point.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + item.id + "' id='roadKey" + item.id + "' class='marker-online'></div></div>");
@@ -612,6 +613,7 @@ class SignalManagement extends PureComponent {
         resultP.then(() => {
           _this.openInfoWin(_this.map, item, point, item.interName)
         })
+        console.log(point, 'sv')
         marker = point
       }
     })
@@ -634,6 +636,7 @@ class SignalManagement extends PureComponent {
   handleSearchInterFocus = () => {
     this.setState({ interListHeight: 300 })
     const searchInters = []
+    console.log(this.searchInterList, 'sdsdds')
     this.searchInterList.forEach((item) => {
       item.units.forEach((items) => {
         searchInters.push(items)
@@ -686,11 +689,13 @@ class SignalManagement extends PureComponent {
             resultP.then(() => {
               _this.openInfoWin(_this.map, item, point, item.interName)
             })
+            console.log(point, 'sv')
             marker = point
           }
         })
       })
     })
+    console.log(marker, this.map, '123')
     if (marker && this.map) {
       this.map.setCenter([lng, lat])
       this.map.emit('click', {
@@ -1320,7 +1325,7 @@ class SignalManagement extends PureComponent {
           position: new AMap.LngLat(positions[i].lng, positions[i].lat),
           offset: new AMap.Pixel(-16, -16),
           content: "<div inter-id='" + positions[i].id + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
-          extData: { id: positions[i].id},
+          extData: { id: positions[i].id },
           // content: "<div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
         })
         marker.on('click', (e) => {
@@ -1372,10 +1377,10 @@ class SignalManagement extends PureComponent {
     this.infoWindow = infoWindow
     window.infoWindowClose = infoWindow
     map.on('click', (e) => {
-      if ($("#roadKey"+dataItem.id).parent().hasClass('drawCircle')) {
-        if ($("#roadKey"+dataItem.id).hasClass('marker-offline')) {
+      if ($("#roadKey" + dataItem.id).parent().hasClass('drawCircle')) {
+        if ($("#roadKey" + dataItem.id).hasClass('marker-offline')) {
           marker.setContent("<div inter-id='" + dataItem.id + "' class='marker-online marker-offline'></div>");
-        }else{
+        } else {
           marker.setContent("<div inter-id='" + dataItem.id + "' class='marker-online'></div>");
         }
       }
@@ -1621,7 +1626,7 @@ class SignalManagement extends PureComponent {
       timeDiv.addClass('marker-offline')
       data && data.map((item) => {
         if (item.interId === timeDiv.attr('inter-id') && !!item.state) {
-          timeDiv.removeClass('marker-offline') 
+          timeDiv.removeClass('marker-offline')
         }
       })
     }
