@@ -24,6 +24,9 @@ class SignalStatus extends Component {
     this.searchInterList = []
     this.phaseBgUrl = `${this.props.data.devImage}/DCU/dcuImage/phasestage/`
     this.token = JSON.parse(localStorage.getItem('userInfo')).token
+    window.myFunc = () => {
+      this.props.getMapUnitInfoList()
+    }
   }
   componentDidMount = () => {
     this.loadingMap()
@@ -45,7 +48,6 @@ class SignalStatus extends Component {
   componentDidUpdate = (prevState) => {
     const { mapPointsData, dcuTreeData } = this.props.data
     if (prevState.data.mapPointsData !== mapPointsData) {
-      console.log(mapPointsData, '点数据')
       this.getmapPointsData(mapPointsData)
     }
     if (prevState.data.dcuTreeData !== dcuTreeData) {
@@ -120,7 +122,7 @@ class SignalStatus extends Component {
         visibleTop: top,
         vipId: id,
       }, () => {
-        console.log(id, '显示右键信息')
+        // console.log(id, '显示右键信息')
       })
     } else {
       this.setState({
@@ -158,7 +160,7 @@ class SignalStatus extends Component {
     })
     this.map = map
     map.on("click", function (e) {
-      console.log(e.lnglat.getLng() + ',' + e.lnglat.getLat())
+      // console.log(e.lnglat.getLng() + ',' + e.lnglat.getLat())
     })
     this.createLayerGroup('pointLayers') // map中显示点的图层
     if (this.state.mapPointsData !== null) {
@@ -294,7 +296,6 @@ class SignalStatus extends Component {
   hanleSelectInter = (e, item) => {
     let marker
     const _this = this;
-    console.log(this.pointLayers, item.id, 's')
     this.pointLayers.map((point) => {
       if (point.w.extData.id === item.id) {
         point.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + item.id + "' id='roadKey" + item.id + "' class='marker-online'></div></div>");

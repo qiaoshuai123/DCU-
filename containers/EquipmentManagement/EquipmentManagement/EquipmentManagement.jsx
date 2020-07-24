@@ -30,6 +30,9 @@ class EquipmentManagement extends Component {
     }
     this.searchInterList = []
     this.token = JSON.parse(localStorage.getItem('userInfo')).token
+    window.myFunc = () => {
+      this.props.getMapUnitInfoList()
+    }
   }
   componentDidMount = () => {
     this.loadingMap()
@@ -119,7 +122,6 @@ class EquipmentManagement extends Component {
         }
       })
     })
-    console.log(marker, this.map, 'sdfdfdfd')
     if (marker && this.map) {
       this.map.setCenter([lng, lat])
       marker.emit('click', {
@@ -137,9 +139,10 @@ class EquipmentManagement extends Component {
     })
   }
   setGetParams = (dataItem) => {
-    console.log(dataItem, 'sdsdsd')
     localStorage.setItem('bac', JSON.stringify(dataItem.background))
-    window.open(`#/information?id=${dataItem.interId}&ids=${dataItem.id}`)
+    console.log(JSON.stringify(dataItem.background), '123132132132')
+    // window.open(`#/information?id=${dataItem.interId}&ids=${dataItem.id}`)
+    window.open(`#/information?id=${dataItem.interId}&ids=${dataItem.id}&ider=${dataItem.nodeId}`)
   }
   btnClick = (e) => {
     this.visibleShowLeft('', '', false)
@@ -254,7 +257,6 @@ class EquipmentManagement extends Component {
   }
   //在指定位置打开信息窗体
   openInfoWin = (map, dataItem, marker, name) => {
-    console.log(dataItem, 'ssss')
     var info = [];
     let itemData = JSON.parse(JSON.stringify(this.props.data.dcuPopData))
     info.push(`<div class='content_box'>`);
@@ -399,7 +401,6 @@ class EquipmentManagement extends Component {
   hanleSelectInter = (e, item) => {
     let marker
     const _this = this;
-    console.log(this.pointLayers, item.id, 's')
     this.pointLayers.map((point) => {
       if (point.w.extData.id === item.id) {
         point.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + item.id + "' id='roadKey" + item.id + "' class='marker-online'></div></div>");
@@ -412,11 +413,9 @@ class EquipmentManagement extends Component {
         resultP.then(() => {
           _this.openInfoWin(_this.map, item, point, item.interName)
         })
-        console.log(point, 'sv')
         marker = point
       }
     })
-    console.log(marker, this.map)
     if (marker && this.map) {
       this.map.setCenter([item.lng, item.lat])
       this.searchInputBox.value = item.interName

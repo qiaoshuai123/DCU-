@@ -1,7 +1,6 @@
 
 import React, { Component } from 'react'
 import { Input, Icon, Radio, message, Upload, DatePicker } from 'antd'
-import axios from 'axios'
 import moment from 'moment'
 // import Websocket from 'react-websocket';
 import { connect } from 'react-redux'
@@ -123,7 +122,6 @@ class Information extends Component {
     // 接收传递来的路口interId
     this.props.getdcuByInterId(this.interId)
     this.props.getsignalByInterId(this.interId)
-    console.log(this.bac, 'sdfdsfsdfdsfds')
     this.setState({
       interRoadBg: this.bac,
     })
@@ -178,7 +176,6 @@ class Information extends Component {
     })
   }
   getbasicUplSuccess = (basicUplSuccess) => {
-    console.log(basicUplSuccess, 'sccsss')
     this.setState({
       interRoadBg: basicUplSuccess,
     }, () => {
@@ -187,6 +184,7 @@ class Information extends Component {
   }
   getbasicSelSuccess = (basicSelSuccess) => {
     if (basicSelSuccess) {
+      this.btnsMap()
       const { imageUrl } = this.state
       this.setState({
         interRoadBg: imageUrl,
@@ -274,7 +272,11 @@ class Information extends Component {
     const nums = search.indexOf('&')
     const lastNums = search.lastIndexOf('&')
     this.interId = search.substring(4, nums)
-    this.id = search.substring(lastNums + 5)
+    this.id = search.substring(nums + 5, lastNums)
+    this.nodeId = search.substring(lastNums + 6)
+
+    // this.interId = search.substring(4, nums)
+    // this.id = search.substring(lastNums + 5)
     this.bac = JSON.parse(localStorage.getItem('bac'))
   }
   // 添加信号机基础信息
@@ -326,7 +328,7 @@ class Information extends Component {
         timeZone,
       }
       this.props.postupdateSignal(objs).then((res) => {
-        console.log(res, '1111267')
+        // console.log(res, '1111267')
         if (res.data.code === 0) {
           message.success('添加成功')
         }
@@ -460,7 +462,9 @@ class Information extends Component {
     if (this.state.baseMapValue === 1) {
       const { imageUrl } = this.state
       const objs = {
+        interId: this.interId,
         background: imageUrl,
+        nodeId: this.nodeId,
         id: this.id,
         baseMapValue: 1,
         bacimghref: `${this.props.data.devImage}/DCU/dcuImage/background/`,
@@ -470,6 +474,7 @@ class Information extends Component {
       if (this.state.baseMapValue === 2) {
         if (this.state.imageFile !== null) {
           message.info("底图设置成功！")
+          this.btnsMap()
           this.setState({
             baseMapValue: 1,
             bacimghref: `${this.props.data.devImage}/DCU/dcuImage/background/`,
@@ -570,6 +575,11 @@ class Information extends Component {
       baseMapFlag: true,
       bgListFlag: false,
     })
+  }
+  btnsMap = () => {
+    if (window.opener && typeof window.opener.myFunc === 'function') {
+      window.opener.myFunc()
+    }
   }
   render() {
     const {

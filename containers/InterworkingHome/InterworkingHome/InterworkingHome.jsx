@@ -25,6 +25,9 @@ class InterworkingHome extends Component {
     }
     this.searchInterList = []
     this.token = JSON.parse(localStorage.getItem('userInfo')).token
+    window.myFunc = () => {
+      this.props.getMapUnitInfoList()
+    }
   }
 
   componentDidMount = () => {
@@ -48,7 +51,6 @@ class InterworkingHome extends Component {
   componentDidUpdate = (prevState) => {
     const { mapPointsData, dcuPopData, dcuTreeData } = this.props.data
     if (prevState.data.mapPointsData !== mapPointsData) {
-      console.log(mapPointsData, '点数据')
       this.getmapPointsData(mapPointsData)
     }
     if (prevState.data.dcuTreeData !== dcuTreeData) {
@@ -79,7 +81,6 @@ class InterworkingHome extends Component {
     const _this = this;
     var marker, lng, lat;
     const childrenArr = this.state.treeListBackups
-    console.log(childrenArr, this.pointLayers, 'scscsc')
     childrenArr.map((data) => {
       data.units && data.units.map((item) => {
         this.pointLayers.map((point) => {
@@ -96,13 +97,11 @@ class InterworkingHome extends Component {
             resultP.then(() => {
               _this.openInfoWin(_this.map, item, point, item.interName)
             })
-            console.log(point, 'sv')
             marker = point
           }
         })
       })
     })
-    console.log(marker, this.map, '123')
     if (marker && this.map) {
       this.map.setCenter([lng, lat])
       this.map.emit('click', {
@@ -136,7 +135,7 @@ class InterworkingHome extends Component {
         visibleTop: top,
         vipId: id,
       }, () => {
-        console.log(id, '显示右键信息')
+        // console.log(id, '显示右键信息')
       })
     } else {
       this.setState({
@@ -276,7 +275,6 @@ class InterworkingHome extends Component {
   hanleSelectInter = (e, item) => {
     let marker
     const _this = this;
-    console.log(this.pointLayers, item.id, 's')
     this.pointLayers.map((point) => {
       if (point.w.extData.id === item.id) {
         point.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + item.id + "' id='roadKey" + item.id + "' class='marker-online'></div></div>");
@@ -289,11 +287,9 @@ class InterworkingHome extends Component {
         resultP.then(() => {
           _this.openInfoWin(_this.map, item, point, item.interName)
         })
-        console.log(point, 'sv')
         marker = point
       }
     })
-    console.log(marker, this.map)
     if (marker && this.map) {
       this.map.setCenter([item.lng, item.lat])
       this.searchInputBox.value = item.interName
