@@ -24,9 +24,6 @@ class SignalStatus extends Component {
     this.searchInterList = []
     this.phaseBgUrl = `${this.props.data.devImage}/DCU/dcuImage/phasestage/`
     this.token = JSON.parse(localStorage.getItem('userInfo')).token
-    window.myFunc = () => {
-      this.props.getMapUnitInfoList()
-    }
   }
   componentDidMount = () => {
     this.loadingMap()

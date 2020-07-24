@@ -25,9 +25,6 @@ class Datastatus extends Component {
     }
     this.searchInterList = []
     this.token = JSON.parse(localStorage.getItem('userInfo')).token
-    window.myFunc = () => {
-      this.props.getMapUnitInfoList()
-    }
   }
   componentDidMount = () => {
     this.loadingMap()
