@@ -77,12 +77,20 @@ class InterworkingList extends Component {
     this.logListParams.faultType = types
   }
   handleStartTimeChange = (moments) => {
-    const timeStep = moments._d.getTime()
-    this.logListParams.startTime = timeStep
+    if (moments) {
+      const timeStep = moments._d.getTime()
+      this.logListParams.startTime = timeStep
+    } else {
+      this.logListParams.startTime = ''
+    }
   }
   handleEndTimeChange = (moments) => {
-    const timeStep = moments._d.getTime()
-    this.logListParams.endTime = timeStep
+    if (moments) {
+      const timeStep = moments._d.getTime()
+      this.logListParams.endTime = timeStep
+    } else {
+      this.logListParams.endTime = ''
+    }
   }
   handleSearchLogList = () => {
     this.getLogList()
