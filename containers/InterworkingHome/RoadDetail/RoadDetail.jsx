@@ -86,41 +86,41 @@ class RoadDetail extends Component {
     // window.open('#777')
   }
   getschemeInfoListinfo = (schemeInfoListinfo) => {
-    console.log(schemeInfoListinfo, '当前方案全部阶段')
+    // console.log(schemeInfoListinfo, '当前方案全部阶段')
     this.setState({
       schemeInfoListinfo,
     })
   }
   getlockStateListinfo = (lockStateListinfo) => {
-    console.log(lockStateListinfo, '控制模式')
+    // console.log(lockStateListinfo, '控制模式')
     this.setState({
       lockStateListinfo,
     })
   }
   getnowPhasestageInfos = (nowPhasestageInfos) => {
-    console.log(nowPhasestageInfos, '当前路口全部方案')
+    // console.log(nowPhasestageInfos, '当前路口全部方案')
     this.setState({
       nowPhasestageInfos,
     })
   }
   getdcuPopData = (dcuPopData) => {
-    console.log(dcuPopData, '详情')
+    // console.log(dcuPopData, '详情')
     this.setState({ dcuPopData })
   }
   getlaneInfoAndDetailinfo = (laneInfoAndDetailinfo) => {
-    console.log(laneInfoAndDetailinfo, '车道图片接口')
+    // console.log(laneInfoAndDetailinfo, '车道图片接口')
     this.setState({
       laneInfoAndDetailinfo,
     })
   }
   getlampgroupDetailListinfo = (lampgroupDetailListinfo) => {
-    console.log(lampgroupDetailListinfo, '灯组图片接口')
+    // console.log(lampgroupDetailListinfo, '灯组图片接口')
     this.setState({
       lampgroupDetailListinfo,
     })
   }
   getdetectorDetailListinfo = (detectorDetailListinfo) => {
-    console.log(detectorDetailListinfo, '检测器接口')
+    // console.log(detectorDetailListinfo, '检测器接口')
     this.setState({
       detectorDetailListinfo,
     })

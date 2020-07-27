@@ -140,7 +140,7 @@ class EquipmentManagement extends Component {
   }
   setGetParams = (dataItem) => {
     localStorage.setItem('bac', JSON.stringify(dataItem.background))
-    console.log(JSON.stringify(dataItem.background), '123132132132')
+    // console.log(JSON.stringify(dataItem.background), '123132132132')
     // window.open(`#/information?id=${dataItem.interId}&ids=${dataItem.id}`)
     window.open(`#/information?id=${dataItem.interId}&ids=${dataItem.id}&ider=${dataItem.nodeId}`)
   }

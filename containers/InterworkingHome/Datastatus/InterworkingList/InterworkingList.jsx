@@ -49,7 +49,7 @@ class InterworkingList extends Component {
     })
   }
   getdetectorRealTimeListByPages = (detectorRealTimeListByPages) => {
-    console.log(detectorRealTimeListByPages, 'scsc')
+    // console.log(detectorRealTimeListByPages, 'scsc')
     const { total, data, pageNum } = detectorRealTimeListByPages
     this.setState({
       currnum: total,
