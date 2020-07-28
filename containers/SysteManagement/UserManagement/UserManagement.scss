@@ -354,10 +354,10 @@ $ft_color: #62bbff;
   :global(.ant-select-tree li .ant-select-tree-node-content-wrapper) {
     color: #019bac !important;
   }
-  :global(.ant-pagination-item-active a) {
-    color: #62bbff !important;
-  }
-  :global(.ant-pagination-item-active) {
-    border-color: #62bbff !important;
-  }
+}
+:global(.ant-pagination-item-active) {
+  border-color: #ff7e00 !important;
+}
+:global(.ant-pagination-item-active a) {
+  color: #ff7e00 !important;
 }
