@@ -1,6 +1,6 @@
 import React from 'react'
 import classNames from 'classnames'
-import { Icon, Select, Input, message, Pagination, TreeSelect, Radio, Modal } from 'antd'
+import { Icon, Select, InputNumber, Input, message, Pagination, TreeSelect, Radio, Modal } from 'antd'
 import Header from '../../../components/Header/Header'
 import roadStyles from './Roadtraffic.scss'
 import styles from './UserManagement.scss'
@@ -51,18 +51,18 @@ class TrafficMenu extends React.Component {
     this.setState({ userLimit })
   }
   getTreeChange = (value, name, e) => {
-    console.log(value, e.triggerNode.props.eventKey, e)
+    // console.log(value, e.triggerNode.props.eventKey, e)
     this.dataList.perms = e.triggerNode.props.eventKey
     this.dataList.parentId = value
     if (this.dataList.id == value) {
-      this.dataList.parentId = 0
+      this.dataList.parentId = '0'
     }
   }
   getlistTrue = () => {
     getResponseDatas('post', this.listTrueUrl).then((res) => {
       const { code, data } = res.data
       if (code === 0) {
-        console.log(data)
+        // console.log(data)
         const das = [{
           children: data,
           id: 0,
@@ -150,7 +150,13 @@ class TrafficMenu extends React.Component {
       message.error('请填写菜单地址!')
       return
     }
-    if (!this.dataList['sort']) {
+    if (this.dataList['sort']) {
+      const reg = /^[0-9]\d*$/
+      if (!reg.test(this.dataList['sort'])) {
+        message.error('请输入正确的菜单序号!')
+        return
+      }
+    } else {
       message.error('请填写菜单序号!')
       return
     }
@@ -158,7 +164,7 @@ class TrafficMenu extends React.Component {
       message.error('请填写菜单类型!')
       return
     } */
-    if (!this.dataList.parentId) {
+    if (this.dataList.parentId === '') {
       message.error('请选择父级菜单!')
       return
     }
@@ -179,14 +185,14 @@ class TrafficMenu extends React.Component {
     Object.keys(obj).forEach((item) => {
       formData.append(item, obj[item])
     })
-    console.log(formData)
+    // console.log(formData)
     return formData
   }
   getSystemList = () => {
     getResponseDatas('post', this.listUrl, this.getFormData(this.sysUser)).then((res) => {
       const result = res.data
       if (result.code === 0) {
-        console.log(result.data, 'isDelete')
+        // console.log(result.data, 'isDelete')
         const listdata = result.data.list.filter((item) => {
           return item.isDelete == 0
         })
@@ -222,24 +228,18 @@ class TrafficMenu extends React.Component {
   }
 
   handlePagination = (pageNumber) => {
-    console.log('Page: ', pageNumber)
+    // console.log('Page: ', pageNumber)
     this.sysUser.pageNo = pageNumber
     this.getSystemList()
   }
   handleInputChange = (e, name) => {
-    console.log(e.target.value)
+    // console.log(e.target.value)
+    let value = typeof (e) === 'object' ? e.target.value : e
     if (name) {
-      this.dataList[name] = e.target.value
+      this.dataList[name] = value
     } else {
-      this.sysUser.keyword = e.target.value
+      this.sysUser.keyword = value
     }
-    /* if (this.inputTimer) {
-      clearTimeout(this.inputTimer)
-      this.inputTimer = null
-    }
-    this.inputTimer = setTimeout(() => {
-      this.getSystemList()
-    }, 1000) */
   }
   render() {
     const { systemList, totalCount, treeData, treeValue, current, dataList, userLimit } = this.state
@@ -247,14 +247,17 @@ class TrafficMenu extends React.Component {
       <div className={(roadStyles.Roadtcontent)}>
         <Header {...this.props} />
         {/* 地图 */}
-        <div id="mapContainer" className={classNames(roadStyles.mapContainer, styles.mapContainer)}>
+        <div id="mapContainer" className={classNames(roadStyles.mapContainer, styles.mapContainer)} >
           <div className={styles.syetem_bg}>
             <div className={styles.syetem_title}>
               <div className={styles.syetem_titleLeft}>菜单管理</div>
             </div>
             <div className={styles.syetem_top}>
               <div className={styles.syetem_item}><span className={styles.item}>关键词</span><div className={styles.inSle}><Input onChange={(e) => { this.handleInputChange(e) }} placeholder="查询条件" /></div></div>
-              <span className={styles.searchBtn} onClick={() => { this.handlePagination('1') }} limitid="24">查询</span>
+              {
+                userLimit && userLimit.indexOf(54) !== -1 ?
+                  <span className={styles.searchBtn} onClick={() => { this.handlePagination('1') }} limitid="54">查询</span> : null
+              }
               <i className={styles.line} />
             </div>
             <div className={styles.syetem_buttom}>
@@ -316,7 +319,7 @@ class TrafficMenu extends React.Component {
                 <div className={styles.syetemItem}>
                   <span className={styles.item}>菜单名称</span>
                   <div className={styles.inSle}>
-                    <Input placeholder="请输入菜单名称" defaultValue={dataList.name} onChange={(e) => { this.handleInputChange(e, 'name') }} />
+                    <Input maxLength={18} placeholder="请输入菜单名称" defaultValue={dataList.name} onChange={(e) => { this.handleInputChange(e, 'name') }} />
                   </div>
                 </div>
                 {/* <div className={styles.syetemItem}>
@@ -328,14 +331,14 @@ class TrafficMenu extends React.Component {
                 <div className={styles.syetemItem}>
                   <span className={styles.item}>菜单地址</span>
                   <div className={styles.inSle}>
-                    <Input placeholder="请输入菜单地址" defaultValue={dataList.path} onChange={(e) => { this.handleInputChange(e, 'path') }} />
+                    <Input maxLength={18} placeholder="请输入菜单地址" defaultValue={dataList.path} onChange={(e) => { this.handleInputChange(e, 'path') }} />
                   </div>
                 </div>
 
                 <div className={styles.syetemItem}>
                   <span className={styles.item}>菜单序号</span>
                   <div className={styles.inSle}>
-                    <Input placeholder="请输入菜单序号" defaultValue={dataList['sort']} onChange={(e) => { this.handleInputChange(e, 'sort') }} />
+                    <Input maxLength={18} placeholder="请输入菜单序号" defaultValue={dataList['sort']} onChange={(e) => { this.handleInputChange(e, 'sort') }} />
                   </div>
                 </div>
                 <div className={styles.syetemItem}>

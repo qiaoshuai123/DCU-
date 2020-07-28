@@ -1,14 +1,15 @@
-import React, { Component } from 'react'
-
+import React from 'react'
 import classNames from 'classnames'
 import { Icon, Select, Input, message, Pagination, Modal } from 'antd'
-import roadStyles from './Roadtraffic.scss'
 import Header from '../../../components/Header/Header'
+import roadStyles from './Roadtraffic.scss'
 import styles from './UserManagement.scss'
 import getResponseDatas from '../../../utils/getResponseDatas'
 
+const { Option } = Select
 const { confirm } = Modal
-class UserManagement extends Component {
+// 系统管理
+class TrafficSystem extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -55,7 +56,7 @@ class UserManagement extends Component {
     limitArr.forEach((item) => {
       userLimit.push(item.id)
     })
-    console.log(userLimit)
+    // console.log(userLimit)
     this.setState({ userLimit })
   }
   getSystemdep = () => {
@@ -93,11 +94,23 @@ class UserManagement extends Component {
       message.error('请填写登陆密码!')
       return
     } */
-    if (!this.dataList.phone) {
+    if (this.dataList.phone) {
+      const reg = /^[0-9]\d*$/
+      if (!reg.test(this.dataList.phone)) {
+        message.error('请输入正确的厂家电话')
+        return
+      }
+    } else {
       message.error('请填写联系电话!')
       return
     }
-    if (!this.dataList.email) {
+    if (this.dataList.email) {
+      const reg = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/
+      if (!reg.test(this.dataList.email)) {
+        message.error('请填写正确的电子邮箱!')
+        return
+      }
+    } else {
       message.error('请填写电子邮箱!')
       return
     }
@@ -171,24 +184,15 @@ class UserManagement extends Component {
     Object.keys(obj).forEach((item) => {
       formData.append(item, obj[item])
     })
-    console.log(formData)
+    // console.log(formData)
     return formData
-  }
-  getResetParams = (params) => {
-    if (Object.prototype.toString.call(params) !== '[object Object]') return false
-    let newParams = '?'
-    Object.keys(params).forEach((item) => {
-      const itemMsg = item + '=' + params[item] + '&'
-      newParams += itemMsg
-    })
-    return newParams
   }
 
   getSystemList = () => {
-    getResponseDatas('post', `${this.listUrl}${this.getResetParams(this.sysUser)}`).then((res) => {
+    getResponseDatas('post', this.listUrl, this.getFormData(this.sysUser)).then((res) => {
       const result = res.data
       if (result.code === 0) {
-        console.log(result.data)
+        // console.log(result.data)
         this.setState({ systemList: result.data.list, totalCount: result.data.totalCount, current: Number(this.sysUser.pageNo) })
       } else {
         message.error('网络异常，请稍后再试!')
@@ -196,7 +200,6 @@ class UserManagement extends Component {
     })
   }
   getAddUser = () => {
-    /*  const dataList = { id: '', deptId: '', userName: '', roleId: '' } */
     const dataList = {
       id: '',
       address: '',
@@ -218,7 +221,7 @@ class UserManagement extends Component {
         const result = res.data
         if (result.code === 0) {
           if (Object.keys(result.data).length) {
-            console.log(this.dataList);
+            // console.log(this.dataList);
             this.dataList = result.data
             /* this.dataList.id = result.data.id */
             this.dataList.deptIds = [result.data.deptId]
@@ -249,7 +252,7 @@ class UserManagement extends Component {
     }
   }
   handlePagination = (pageNumber) => {
-    console.log('Page: ', pageNumber)
+    // console.log('Page: ', pageNumber)
     this.sysUser.pageNo = pageNumber
     this.getSystemList()
   }
@@ -262,11 +265,10 @@ class UserManagement extends Component {
   }
   handleSetChange = (name, value) => {
     this.dataList[name] = [value]
-    console.log(name, value, this.dataList)
+    // console.log(name, value, this.dataList)
   }
   render() {
     const { systemList, totalCount, depList, roleList, dataList, userLimit, current } = this.state
-    const { Option } = Select
     return (
       <div className={(roadStyles.Roadtcontent)}>
         <Header {...this.props} />
@@ -288,7 +290,11 @@ class UserManagement extends Component {
                   </Select>
                 </div>
               </div> */}
-              <span className={styles.searchBtn} onClick={() => { this.handlePagination('1') }} limitid="13">查询</span>
+              {
+                userLimit && userLimit.indexOf(51) !== -1 ?
+                  <span className={styles.searchBtn} onClick={() => { this.handlePagination('1') }} limitid="13">查询</span> : null
+              }
+              <i className={styles.line} />
             </div>
             <div className={styles.syetem_buttom}>
               {
@@ -299,10 +305,11 @@ class UserManagement extends Component {
                 <div className={styles.listItems}>
                   <div className={styles.listTd} >用户编号</div>
                   <div className={styles.listTd} >用户名称</div>
-                  <div className={styles.listTd} >登录名称</div>
+                  <div className={styles.listTd} >登陆名称</div>
                   <div className={styles.listTd} >所属用户组</div>
                   <div className={styles.listTd} >权限角色</div>
                   <div className={styles.listTd} >用户创建时间</div>
+                  <div className={styles.listTd} >最后一次登陆客户机时间</div>
                   <div className={styles.listTd} >用户状态</div>
                   <div className={styles.listTd} >操作</div>
                 </div>
@@ -315,14 +322,12 @@ class UserManagement extends Component {
                       <div className={styles.listTd} ><span className={styles.roadName}>{item.deptName}</span></div>
                       <div className={styles.listTd} ><span className={styles.roadName}>{item.roleName}</span></div>
                       <div className={styles.listTd} ><span className={styles.roadName}>{item.createTime}</span></div>
+                      <div className={styles.listTd} ><span className={styles.roadName}>{item.lastTime}</span></div>
                       <div className={styles.listTd} ><span className={styles.roadName}>{item.status ? '已禁用' : '已启用'}</span></div>
                       <div className={styles.listTd} >
-                        {
-                          userLimit && userLimit.indexOf(514) !== -1 ?
-                            <span className={styles.delectName} onClick={() => { this.getresetPwd(item.id) }}>
-                              <Icon type="reload" className={styles.icon} />重置密码
-                            </span> : null
-                        }
+                        <span className={styles.delectName} onClick={() => { this.getresetPwd(item.id) }}>
+                          <Icon type="reload" className={styles.icon} />重置密码
+                        </span>
                         {
                           userLimit && userLimit.indexOf(512) !== -1 ?
                             <span className={styles.updateName} onClick={() => { this.handleDataLists(item.id) }} limitid="512">
@@ -365,13 +370,13 @@ class UserManagement extends Component {
                 <div className={styles.syetemItem}>
                   <span className={styles.item}>用户名称</span>
                   <div className={styles.inSle}>
-                    <Input placeholder="请输入用户名称" defaultValue={dataList.userName} onChange={(e) => { this.handleInputChange(e, 'userName') }} />
+                    <Input maxLength={18} placeholder="请输入用户名称" defaultValue={dataList.userName} onChange={(e) => { this.handleInputChange(e, 'userName') }} />
                   </div>
                 </div>
                 <div className={styles.syetemItem}>
                   <span className={styles.item}>登陆名称</span>
                   <div className={styles.inSle}>
-                    <Input placeholder="请输入登陆名称" disabled={dataList.id ? true : false} defaultValue={dataList.loginName} onChange={(e) => { this.handleInputChange(e, 'loginName') }} />
+                    <Input maxLength={18} placeholder="请输入登陆名称" disabled={dataList.id } defaultValue={dataList.loginName} onChange={(e) => { this.handleInputChange(e, 'loginName') }} />
                   </div>
                 </div>
                 {/* <div className={styles.syetemItem}>
@@ -383,22 +388,21 @@ class UserManagement extends Component {
                 <div className={styles.syetemItem}>
                   <span className={styles.item}>电子邮箱</span>
                   <div className={styles.inSle}>
-                    <Input placeholder="请输入电子邮箱" defaultValue={dataList.email} onChange={(e) => { this.handleInputChange(e, 'email') }} />
+                    <Input maxLength={18} placeholder="请输入电子邮箱" defaultValue={dataList.email} onChange={(e) => { this.handleInputChange(e, 'email') }} />
                   </div>
                 </div>
                 <div className={styles.syetemItem}>
                   <span className={styles.item}>联系电话</span>
                   <div className={styles.inSle}>
-                    <Input placeholder="请输入联系电话" defaultValue={dataList.phone} onChange={(e) => { this.handleInputChange(e, 'phone') }} />
+                    <Input maxLength={18} placeholder="请输入联系电话" defaultValue={dataList.phone} onChange={(e) => { this.handleInputChange(e, 'phone') }} />
                   </div>
                 </div>
                 <div className={styles.syetemItem}><span className={styles.item}>所属用户组</span>
                   <div className={styles.inSle}>
                     <Select defaultValue={Number(dataList.deptId)} placeholder="请输入所属用户组" style={{ width: 300 }} onChange={(e) => { this.handleSetChange('deptIds', e) }}>
-                      <Option value="">请选择所属用户组</Option>
+                      <Option value={0}>请选择所属用户组</Option>
                       {
                         !!depList && depList.map((item, index) => {
-                          console.log(item, dataList.deptId)
                           return (<Option value={item.id} key={item.deptCode + index}>{item.deptName}</Option>)
                         })
                       }
@@ -408,7 +412,7 @@ class UserManagement extends Component {
                 <div className={styles.syetemItem}><span className={styles.item}>用户角色</span>
                   <div className={styles.inSle}>
                     <Select defaultValue={Number(dataList.roleId)} placeholder="用户角色" style={{ width: 300 }} onChange={(e) => { this.handleSetChange('roleIds', e) }}>
-                      <Option value="">请选择用户角色</Option>
+                      <Option value={0}>请选择用户角色</Option>
                       {
                         !!roleList && roleList.map((item, index) => {
                           return (<Option value={item.id} key={item.id + index}>{item.name}</Option>)
@@ -429,4 +433,4 @@ class UserManagement extends Component {
   }
 }
 
-export default UserManagement
+export default TrafficSystem
