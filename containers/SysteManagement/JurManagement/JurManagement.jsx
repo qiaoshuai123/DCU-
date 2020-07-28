@@ -1,8 +1,8 @@
-import React, { Component } from 'react'
+import React from 'react'
 import classNames from 'classnames'
 import { Icon, Select, Input, message, Pagination, Tree, Modal } from 'antd'
 import Header from '../../../components/Header/Header'
-import roadStyles from '../UserManagement/RoadTraffic.scss'
+import roadStyles from '../UserManagement/Roadtraffic.scss'
 import styles from '../UserManagement/UserManagement.scss'
 import getResponseDatas from '../../../utils/getResponseDatas'
 
@@ -10,7 +10,9 @@ const { confirm } = Modal
 const { Option } = Select
 const { TreeNode } = Tree
 
-class JurManagement extends Component {
+
+// 系统管理
+class Jurisdiction extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -24,7 +26,6 @@ class JurManagement extends Component {
       treeData: null,
       userLimit: null,
       current: 1,
-      isCheckStrictly: true,
     }
     this.deptListUrl = '/DCU/sys/role/listPage'
     this.addListUrl = '/DCU/sys/role/save'
@@ -45,6 +46,7 @@ class JurManagement extends Component {
       name: '',
       remark: '',
     }
+    this.TreeData = []
   }
   componentDidMount = () => {
     this.getSystemMenu()
@@ -62,76 +64,88 @@ class JurManagement extends Component {
     getResponseDatas('post', this.listTrueUrl).then((res) => {
       const { code, data } = res.data
       if (code === 0) {
+        this.handleTreeData(data)
         this.setState({ treeData: data })
       }
     })
   }
-  handlePagination = (pageNumber) => {
-    console.log('Page: ', pageNumber)
-    this.listParams.pageNo = pageNumber
-    this.getDeptList()
-  }
   onExpand = (expandedKeys) => {
-    console.log('onExpand', expandedKeys)
+    // console.log('onExpand', expandedKeys)
     this.setState({
       expandedKeys,
       autoExpandParent: false,
     })
   }
-  // 添加子菜单的选中
-  getChildKeys = (children) => {
-    children.forEach((item) => {
-      this.defaultparams.menuIds += ',' + item.key
-      if (item.props.children.length > 0) {
-        this.getChildKeys(item.props.children)
-      }
-    })
-  }
-  // 取消子菜单的选中
-  removeChildKeys = (children) => {
-    children.forEach((item) => {
-      const idIndex = this.currentMenuIds.indexOf(item.key)
-      this.currentMenuIds.splice(idIndex, 1)
-      if (item.props.children.length > 0) {
-        this.getChildKeys(item.props.children)
-      }
-    })
-  }
-  onCheck = (checkedKeys, e) => {
-    console.log('onCheck', checkedKeys, e)
-    const { children, eventKey, dataRef } = e.node.props
-    if (children.length > 0) {
-      if (e.checked) {
-        const lengths = this.defaultparams.menuIds.length
-        this.defaultparams.menuIds += lengths > 0 ? ',' + eventKey: eventKey
-        this.getChildKeys(children)
-        const allCheckedKeys = Array.from(new Set(this.defaultparams.menuIds.split(',')))
-        this.defaultparams.menuIds = allCheckedKeys.join(',')
-        this.setState({ checkedKeys: allCheckedKeys })
-      } else {
-        this.currentMenuIds = this.defaultparams.menuIds.split(',')
-        const idIndex = this.currentMenuIds.indexOf(eventKey)
-        this.currentMenuIds.splice(idIndex, 1)
-        this.removeChildKeys(children)
-        this.setState({ checkedKeys: this.currentMenuIds })
-        this.defaultparams.menuIds = this.currentMenuIds.join(',')
-      }
-    } else {
-      if (e.checked) {
-        this.checkedMenuIds = checkedKeys.checked
-        if (dataRef.parentId > 0 && this.checkedMenuIds.indexOf(dataRef.parentId) < 0) {
-          this.checkedMenuIds.push(dataRef.parentId)
-        }
-      } else {
-        this.checkedMenuIds = checkedKeys.checked
-      }
-      this.defaultparams.menuIds = this.checkedMenuIds.join(',')
-      this.setState({ checkedKeys: this.checkedMenuIds })
-    }
-  }
 
+  // onCheck = (checkedKeys, e) => {
+  //   // console.log('onCheck', checkedKeys, e)
+  //   this.defaultparams.menuIds = checkedKeys.checked
+  //   /*  this.defaultparams.menuIds = [...e.halfCheckedKeys, ...checkedKeys] */
+  //   this.setState({ checkedKeys: checkedKeys.checked })
+  // }
+  onCheck = (check, e) => {
+    // console.log('onCheck', checkedKeys, e, this.state.treeData)
+    const { checkedKeys } = this.state
+    // console.log(checked);
+    const Item = e.checkedNodes[e.checkedNodes.length - 1]
+    const dataRefs = Item.props.dataRef
+    this.Ids = []
+    this.parentIds = []
+    this.childrenItem = null
+    this.Ids.push(Item.key)
+    if (e.checked) {
+      if (dataRefs.parentId) {
+        this.Ids.push((dataRefs.parentId).toString())
+        // console.log(dataRefs.parentId, '1111111111111');
+        this.handleCheckparentId(dataRefs.parentId)
+        this.Ids.push(...this.parentIds)
+      }
+      this.handleCheckedKeys(Item.props.children)
+      // console.log(this.Ids);
+      this.defaultparams.menuIds = [...new Set([...check.checked, ...this.Ids])]
+    } else {
+      checkedKeys.forEach((item) => { // 取出取消的项id
+        if (!check.checked.includes(item)) {
+          this.handleCheckparentId(item, true) // 拿到this.childrenItem 当前取消项数据
+          // this.handleCheckparentId(item) // 拿到 this.parentIds 当前取消项所有的父亲id
+          this.TreeData.forEach((it) => {
+            if (it.id === Number(item)) { // 找到当前级别是否取消父节
+              this.TreeData.forEach((ite) => {
+                if (ite.id === Number(it.parentId)) { // 找到当前的父亲项
+                  const childrenId = []
+                  ite.children.forEach((t) => {
+                    childrenId.push(check.checked.includes((t.id).toString())) // 判断是受当前父亲项下有勾选
+                  })
+                  const bl = childrenId.some((x) => { return x === true }) // 有一项为true时候就是true
+                  if (!bl) { // 无勾选则取消父亲项的勾选
+                    if (it.type === 1) { // 判断是否是按钮，1的时候为菜单 2的时候为按钮
+                      if (check.checked.includes((it.parentId).toString())) {
+                        check.checked.splice(check.checked.indexOf((it.parentId).toString()), 1)
+                      }
+                    }
+                  }
+                }
+              })
+
+              if (it.children) { // 取消掉当前项下所有子项的勾选
+                it.children.forEach((i) => {
+                  // console.log(check.checked, i.id);
+                  if (check.checked.includes((i.id).toString())) {
+                    check.checked.splice(check.checked.indexOf((i.id).toString()), 1)
+                  }
+                })
+              }
+            }
+          })
+        }
+      })
+      console.log(checkedKeys, check.checked, this.childrenItem)
+      this.defaultparams.menuIds = [...new Set(check.checked)]
+    }
+    this.setState({ checkedKeys: this.defaultparams.menuIds })
+  }
   onSelect = (selectedKeys, info) => {
-    console.log('onSelect', selectedKeys, info)
+    // console.log('onSelect', info)
     this.setState({ selectedKeys })
   }
   getSystemMenu = () => {
@@ -146,17 +160,6 @@ class JurManagement extends Component {
       }
     })
   }
-  renderTreeNodes = (data) =>
-    data.map((item) => {
-      if (item.children) {
-        return (
-          <TreeNode title={item.name} key={item.id} dataRef={item}>
-            {this.renderTreeNodes(item.children)}
-          </TreeNode>
-        )
-      }
-      return <TreeNode key={item.id} {...item} />
-    })
   getDeptList = () => {
     getResponseDatas('post', this.deptListUrl, this.getFormData(this.listParams)).then((res) => {
       const { code, data } = res.data
@@ -178,12 +181,49 @@ class JurManagement extends Component {
     Object.keys(obj).forEach((item) => {
       formData.append(item, obj[item])
     })
-    console.log(formData)
+    // console.log(formData)
     return formData
+  }
+  handlePagination = (pageNumber) => {
+    // console.log('Page: ', pageNumber)
+    this.listParams.pageNo = pageNumber
+    this.getDeptList()
+  }
+  handleCheckedKeys = (data) => {
+    data.map((item) => {
+      this.Ids.push(item.key || item.id)
+      console.log(item);
+      if (item.props.children) {
+        this.handleCheckedKeys(item.props.children)
+      }
+    })
+  }
+  handleTreeData = (data) => {
+    this.TreeData.push(...data)
+    data.forEach((item) => {
+      if (item.children) {
+        this.handleTreeData(item.children)
+      }
+    })
+  }
+  handleCheckparentId = (id, bool) => {
+    for (let i = 0; i < this.TreeData.length; i++) {
+      const item = this.TreeData[i]
+      // console.log(item, item.id === id);
+      if (item.id === Number(id)) {
+        if (bool) {
+          this.childrenItem = item
+          return
+        } else if (item.parentId) {
+          this.parentIds.push((item.parentId).toString())
+          this.handleCheckparentId(item.parentId)
+          return
+        }
+      }
+    }
   }
   handleAddGroup = () => {
     this.isAdd = true
-    this.defaultparams.menuIds = []
     this.setState({
       listItems: null,
       showGroupMsg: true,
@@ -203,7 +243,7 @@ class JurManagement extends Component {
     this.isAdd = false
     let menuId = []
     const listItem = (this.state.listDatas.filter(item => item.id === id))[0]
-    console.log(listItem)
+    // console.log(listItem)
     if (listItem.menuId) {
       menuId = listItem.menuId.split(',')
     }
@@ -225,6 +265,15 @@ class JurManagement extends Component {
     this.defaultparams[itemname] = value
   }
   handleAddEdit = () => {
+    const { menuIds, name } = this.defaultparams
+    if (!name) {
+      message.error('请填写角色名称!')
+      return
+    }
+    if (menuIds == '') {
+      message.error('请选择角色权限!')
+      return
+    }
     if (this.isAdd) {
       getResponseDatas('post', this.addListUrl, this.getFormData(this.defaultparams)).then((res) => {
         const { code, msg } = res.data
@@ -307,8 +356,22 @@ class JurManagement extends Component {
     const { value } = e.target
     this.listParams.keyword = value
   }
+  renderTreeNodes = (data) => {
+    return (
+      data.map((item) => {
+        if (item.children) {
+          return (
+            <TreeNode title={item.name} key={item.id} dataRef={item}>
+              {this.renderTreeNodes(item.children)}
+            </TreeNode>
+          )
+        }
+        return <TreeNode key={item.id} {...item} />
+      })
+    )
+  }
   render() {
-    const { listDatas, showGroupMsg, treeData, listItems, totalCount, userLimit, current, isCheckStrictly } = this.state
+    const { listDatas, showGroupMsg, treeData, listItems, totalCount, userLimit, current } = this.state
     return (
       <div className={(roadStyles.Roadtcontent)}>
         <Header {...this.props} />
@@ -328,7 +391,10 @@ class JurManagement extends Component {
                   </Select>
                 </div>
               </div> */}
-              <span className={styles.searchBtn} onClick={() => { this.handlePagination('1') }}>查询</span>
+              {
+                userLimit && userLimit.indexOf(52) !== -1 ?
+                  <span className={styles.searchBtn} onClick={() => { this.handlePagination('1') }}>查询</span> : null
+              }
               <i className={styles.line} />
             </div>
             <div className={styles.syetem_buttom}>
@@ -390,30 +456,20 @@ class JurManagement extends Component {
                 <div className={styles.syetemItem}>
                   <span className={styles.item}>角色名称</span>
                   <div className={styles.inSle}>
-                    <Input placeholder="请输入角色名称" defaultValue={listItems && listItems.name} onChange={(e) => { this.handleGroupMsgChange(e, 'name') }} />
+                    <Input maxLength={18} placeholder="请输入角色名称" defaultValue={listItems && listItems.name} onChange={(e) => { this.handleGroupMsgChange(e, 'name') }} />
                   </div>
                 </div>
                 <div className={styles.syetemItem}><span className={styles.item}>角色描述</span>
                   <div className={styles.inSle}>
-                    <Input placeholder="请输入角色描述" defaultValue={listItems && listItems.remark} onChange={(e) => { this.handleGroupMsgChange(e, 'remark') }} />
+                    <Input maxLength={50} placeholder="请输入角色描述" defaultValue={listItems && listItems.remark} onChange={(e) => { this.handleGroupMsgChange(e, 'remark') }} />
                   </div>
                 </div>
                 <div className={styles.syetemItem}><span className={styles.item}>角色权限</span>
                   <div className={styles.inSle} style={{ maxHeight: '201px', overflowY: 'auto' }}>
                     {treeData ?
                       <Tree
-                        // checkable
-                        // checkStrictly
-                        // onExpand={this.onExpand}
-                        // expandedKeys={this.state.expandedKeys}
-                        // autoExpandParent={this.state.autoExpandParent}
-                        // onCheck={this.onCheck}
-                        // checkedKeys={this.state.checkedKeys}
-                        // onSelect={this.onSelect}
-                        // selectedKeys={this.state.selectedKeys}
-                        // defaultExpandAll="true"
                         checkable
-                        checkStrictly={isCheckStrictly}
+                        checkStrictly
                         onExpand={this.onExpand}
                         expandedKeys={this.state.expandedKeys}
                         autoExpandParent={this.state.autoExpandParent}
@@ -421,6 +477,7 @@ class JurManagement extends Component {
                         checkedKeys={this.state.checkedKeys}
                         onSelect={this.onSelect}
                         selectedKeys={this.state.selectedKeys}
+                        defaultExpandAll={true}
                       >
                         {this.renderTreeNodes(treeData)}
                       </Tree> : null}
@@ -438,4 +495,4 @@ class JurManagement extends Component {
   }
 }
 
-export default JurManagement
+export default Jurisdiction

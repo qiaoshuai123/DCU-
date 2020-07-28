@@ -99,7 +99,7 @@ class InterworkingList extends Component {
     this.getLogList()
   }
   handleKeyWordChange = (e) => {
-    this.logListParams.keyword = e.target.vlaue
+    this.logListParams.keyword = e.target.value
   }
   render() {
     const { systemList, logTypes, totalPage, currentPage } = this.state
