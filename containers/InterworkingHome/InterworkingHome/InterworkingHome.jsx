@@ -120,7 +120,6 @@ class InterworkingHome extends Component {
   }
 
   setGetParams = (dataItem) => {
-    // console.log(dataItem, 'sdsdsd')
     localStorage.setItem('bac', JSON.stringify(dataItem.background))
     window.open(`#/roaddetail?id=${dataItem.interId}&ids=${dataItem.nodeId}&ider=${dataItem.id}`)
     // window.open(`#roaddetail/1`)
@@ -360,7 +359,6 @@ class InterworkingHome extends Component {
         !value ? this.props.checkUnitTree(this.state.treeListBackups) : this.props.checkUnitTree(this.state.treeList)
       })
     }, 200)
-
   }
   render() {
     const { Search } = Input

@@ -147,7 +147,7 @@ class Information extends Component {
 
   // step2 底图选择
   onChangeBaseMap = (e) => {
-    console.log('radio checked', e.target.value)
+    // console.log('radio checked', e.target.value)
     if (e.target.value === 1) {
       this.setState({
         baseMapValue: e.target.value,
@@ -164,13 +164,13 @@ class Information extends Component {
 
   }
   onChangDateStart = (date, dateString) => { // 出厂日期
-    console.log(this.formatDate(new Date(dateString) * 1), '出厂日期')
+    // console.log(this.formatDate(new Date(dateString) * 1), '出厂日期')
     this.setState({
       productionDate: this.formatDate(new Date(dateString) * 1),
     })
   }
   onChangDateEnd = (date, dateString) => {
-    console.log(this.formatDate(new Date(dateString) * 1), '配置日期')
+    // console.log(this.formatDate(new Date(dateString) * 1), '配置日期')
     this.setState({
       configurationDate: this.formatDate(new Date(dateString) * 1),
     })
@@ -237,7 +237,7 @@ class Information extends Component {
     }
   }
   getsignalByInterId = (signalByInterId) => {
-    console.log(signalByInterId, 'qiao')
+    // console.log(signalByInterId, 'qiao')
     if (signalByInterId) {
       this.signalIds = true
       const {
