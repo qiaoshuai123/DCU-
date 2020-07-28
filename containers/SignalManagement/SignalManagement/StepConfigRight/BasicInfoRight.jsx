@@ -1,11 +1,52 @@
 import React, { PureComponent } from 'react'
-import { Input, DatePicker, message } from 'antd'
+import { Input, DatePicker, message, Radio } from 'antd'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { postSignalSave } from '../../../../reactRedux/actions/publicActions'
 import moment from 'moment'
 import styles from '../SignalManagement.scss'
-
+// 正则校验
+const regUtil = {
+  isEmpty: function (e, idType) {
+    if (e === "") {
+      message.info('设备ID不能为空！')
+      $('#'+idType).focus()
+      return false;
+    } else if( e < 0) {
+      message.info('设备ID不能为负数')
+      $('#'+idType).focus()
+      return false;
+    }
+  },
+  isValidIp: function (e, idType) { // IP
+    if ( !/^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$/.test(e) ){
+      message.info('ip不符合规则')
+      $('#'+idType).focus()
+      return false
+    }
+  },
+  isValidSubnetMask: function (e, idType) { //subnetMask
+    if ( !/^((128|192)|2(24|4[08]|5[245]))(\.(0|(128|192)|2((24)|(4[08])|(5[245])))){3}$/.test(e) ){
+      message.info('子网不符合规则')
+      $('#'+idType).focus()
+      return false
+    }
+  },
+  isValidGateway: function (e, idType) { //网关
+    if ( !/^192\.168(\.(\d|([1-9]\d)|(1\d{2})|(2[0-4]\d)|(25[0-5]))){2}$/.test(e) ){
+      message.info('网关不符合规则')
+      $('#'+idType).focus()
+      return false
+    }
+  },
+  isValidPort: function (e, idType) { //端口
+    if (!(/^[1-9]\d*$/.test(e) && 1 <= 1 * e && 1 * e <= 65535)){
+      message.info('端口不符合规则')
+      $('#'+idType).focus()
+      return false
+    }
+  }
+}
 class BasicInfoRight extends PureComponent {
   constructor(props) {
     super(props)
@@ -36,12 +77,14 @@ class BasicInfoRight extends PureComponent {
   }
   // step 2 基础信息配置保存
   stepTwoAddForList = () => {
-    if ( this.showPopData.deviceId !== '') {
-      this.props.postSignalSave(this.showPopData)
-    } else {
-      message.info('设备ID不能为空！')
-      $('#deviceId').focus()
-    }
+    if (!regUtil.isEmpty(this.showPopData.deviceId, 'deviceId') ) return false
+    if (!regUtil.isValidIp(this.showPopData.ip, 'ip') ) return false
+    if (!regUtil.isValidIp(this.showPopData.serverIp, 'serverIp') ) return false
+    if (!regUtil.isValidSubnetMask(this.showPopData.subnetMask, 'subnetMask')) return false
+    if (!regUtil.isValidGateway(this.showPopData.gateway, 'gateway')) return false
+    if (!regUtil.isValidPort(this.showPopData.serverPort, 'serverPort')) return false
+    if (!regUtil.isValidPort(this.showPopData.port, 'port')) return false
+    this.props.postSignalSave(this.showPopData)
   }
   popLayerShowHide = (name, flag) => {
     this.props.popLayerShowHide(name, flag)
@@ -93,25 +136,25 @@ class BasicInfoRight extends PureComponent {
       {/* 表单 */}
       <div className={styles.rCon}>
           <div className={styles.itemInputBox}>
-            <span>设备ID：</span><Input disabled={!userLimit} id="deviceId" onChange={e => this.handleChangeInput(e, 'showPopData', 'deviceId')} placeholder="请输入设备ID" value={!!showPopData && !!showPopData.deviceId ? showPopData.deviceId : ''} />
+            <span>设备ID：</span><Input type="number" disabled={!userLimit} id="deviceId" onChange={e => this.handleChangeInput(e, 'showPopData', 'deviceId')} placeholder="请输入设备ID" value={!!showPopData && !!showPopData.deviceId ? showPopData.deviceId : ''} />
           </div>
           <div className={styles.itemInputBox}>
-            <span>信号机IP：</span><Input disabled={!userLimit} onChange={e => this.handleChangeInput(e, 'showPopData', 'ip')} placeholder="请输入信号机IP" value={!!showPopData && !!showPopData.ip ? showPopData.ip : ''} />
+            <span>信号机IP：</span><Input disabled={!userLimit} id="ip" onChange={e => this.handleChangeInput(e, 'showPopData', 'ip')} placeholder="请输入信号机IP" value={!!showPopData && !!showPopData.ip ? showPopData.ip : ''} />
           </div>
           <div className={styles.itemInputBox}>
-            <span>上位机IP：</span><Input disabled={!userLimit} onChange={e => this.handleChangeInput(e, 'showPopData', 'serverIp')} placeholder="请输入上位机IP" value={!!showPopData && !!showPopData.serverIp ? showPopData.serverIp : ''} />
+            <span>上位机IP：</span><Input disabled={!userLimit} id="serverIp" onChange={e => this.handleChangeInput(e, 'showPopData', 'serverIp')} placeholder="请输入上位机IP" value={!!showPopData && !!showPopData.serverIp ? showPopData.serverIp : ''} />
           </div>
           <div className={styles.itemInputBox}>
-            <span>子网掩码：</span><Input disabled={!userLimit} onChange={e => this.handleChangeInput(e, 'showPopData', 'subnetMask')} placeholder="请输入子网掩码" value={!!showPopData && !!showPopData.subnetMask ? showPopData.subnetMask : ''} />
+            <span>子网掩码：</span><Input disabled={!userLimit} id="subnetMask" onChange={e => this.handleChangeInput(e, 'showPopData', 'subnetMask')} placeholder="请输入子网掩码" value={!!showPopData && !!showPopData.subnetMask ? showPopData.subnetMask : ''} />
           </div>
           <div className={styles.itemInputBox}>
-            <span>网 关：</span><Input disabled={!userLimit} onChange={e => this.handleChangeInput(e, 'showPopData', 'gateway')} placeholder="请输入网关" value={!!showPopData && !!showPopData.gateway ? showPopData.gateway : ''} />
+            <span>网 关：</span><Input disabled={!userLimit} id="gateway" onChange={e => this.handleChangeInput(e, 'showPopData', 'gateway')} placeholder="请输入网关" value={!!showPopData && !!showPopData.gateway ? showPopData.gateway : ''} />
           </div>
           <div className={styles.itemInputBox}>
-            <span>通讯端口：</span><Input disabled={!userLimit} onChange={e => this.handleChangeInput(e, 'showPopData', 'serverPort')} placeholder="请输入通讯端口" value={!!showPopData && !!showPopData.serverPort ? showPopData.serverPort : ''} />
+            <span>通讯端口：</span><Input disabled={!userLimit} id="serverPort" onChange={e => this.handleChangeInput(e, 'showPopData', 'serverPort')} placeholder="请输入通讯端口" value={!!showPopData && !!showPopData.serverPort ? showPopData.serverPort : ''} />
           </div>
           <div className={styles.itemInputBox}>
-            <span>端口号：</span><Input disabled={!userLimit} onChange={e => this.handleChangeInput(e, 'showPopData', 'port')} placeholder="请输入端口号" value={!!showPopData && !!showPopData.port ? showPopData.port : ''} />
+            <span>端口号：</span><Input disabled={!userLimit} id="port" onChange={e => this.handleChangeInput(e, 'showPopData', 'port')} placeholder="请输入端口号" value={!!showPopData && !!showPopData.port ? showPopData.port : ''} />
           </div>
           <div className={styles.itemInputBox}>
             <span>信号机时区：</span><Input disabled={!userLimit} onChange={e => this.handleChangeInput(e, 'showPopData', 'timeZone')} placeholder="请输入信号机时区" value={!!showPopData && !!showPopData.timeZone ? showPopData.timeZone : ''} />
@@ -146,14 +189,20 @@ class BasicInfoRight extends PureComponent {
               onChange={configurationDateTime => this.onEndChangeTime(configurationDateTime, 'configurationDate') }
             />
           </div>
-          <div className={styles.itemInputBox}>
+          {/* <div className={styles.itemInputBox}>
             <span>运行阶段：</span><Input disabled={!userLimit} onChange={e => this.handleChangeInput(e, 'showPopData', 'runPhase')} placeholder="请输入运行阶段" value={!!showPopData && !!showPopData.runPhase ? showPopData.runPhase : ''} />
-          </div>
+          </div> */}
           <div className={styles.itemInputBox}>
             <span>维护电话：</span><Input disabled={!userLimit} onChange={e => this.handleChangeInput(e, 'showPopData', 'maintainPhone')} placeholder="请输入维护电话" value={!!showPopData && !!showPopData.maintainPhone ? showPopData.maintainPhone : ''} />
           </div>
           <div className={styles.itemInputBox}>
-            <span>GPS时钟标志：</span><Input disabled={!userLimit} onChange={e => this.handleChangeInput(e, 'showPopData', 'gpsClockSign')} placeholder="请输入标志" value={!!showPopData && !!showPopData.gpsClockSign ? showPopData.gpsClockSign : ''} />
+            <span>GPS时钟标志：</span>
+            <div style={{flex: '4.2'}}>
+              <Radio.Group disabled={!userLimit} onChange={e => this.handleChangeInput(e, 'showPopData', 'gpsClockSign')} value={!!showPopData && !!showPopData.gpsClockSign ? showPopData.gpsClockSign : "0"}>
+                <Radio value="0">无</Radio>
+                <Radio value="1">有</Radio>
+              </Radio.Group>
+            </div>
           </div>
       </div>
       

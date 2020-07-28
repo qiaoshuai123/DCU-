@@ -362,10 +362,17 @@ class SignalManagement extends PureComponent {
     this.getSystemCodeType(33) // 方案相位阶段出现类型
   }
   // 非空验证
-  isNotEmpty = (keyVal, msg) => {
-    if (keyVal === '') {
-      message.info(msg);
-      return true
+  isNotEmpty = (keyVal, msg, flag) => {
+    if (flag) {
+      if (keyVal === '' || keyVal === null || keyVal < 0) {
+        message.info(msg);
+        return true
+      }
+    } else {
+      if (keyVal === '' || keyVal === 0 || keyVal === "0" || keyVal === null || keyVal < 0) {
+        message.info(msg);
+        return true
+      }
     }
   }
   // 编辑时返回数据验证
@@ -935,7 +942,7 @@ class SignalManagement extends PureComponent {
             "dailyplanNo": "", //日计划编号
             "interId": this.state.roadInterId,  //
             "nodeNo": this.state.roadNodeNo, //
-            "timeintervalList": [],
+            "timeintervalList": [{ timeintervalModel: 0, timeintervalStarttime: "00:00", timeintervalScheme: 0 }],
             "timeintervalModelChain": "",    //时段运行模式链
             "timeintervalSchemeChain": "",   //时段执行方案链
             "timeintervalStarttimeChain": ""  //时段开始时间链
@@ -954,7 +961,7 @@ class SignalManagement extends PureComponent {
                 "scheduleNo": '',   //调度号
                 "dailyPlanId": 0,   //日计划编号
                 "dataValueCodes": "0",  //日期值code，逗号拼接
-                "dateType": 1,  //日期类型                    
+                "dateType": 0,  //日期类型                    
                 "monthValueCodes": "", //月份
                 "priority": 0,  //优先级
               }
@@ -1105,6 +1112,45 @@ class SignalManagement extends PureComponent {
         this.state.popAddEditText === '编辑' ? resData = this.state.editData : resData = this.props.data.phaseLists
         if (this.isNotEmpty(itemDetailData.phaseNo, '相位序号不能为空！')) return
         if (this.verificationID(resData, 'phaseNo', itemDetailData.phaseNo, '相位序号已存在')) return
+        if (this.isNotEmpty(itemDetailData.phaseName, '相位名称不能为空！')) return
+        if (this.isNotEmpty(itemDetailData.phaseDelaygreenTime, '相位延迟绿时间不能为空！', true)) return
+        
+        if (this.isNotEmpty(itemDetailData.phaseMingreenTime, '相位最小绿时间不能为空！', true)) return
+        if (this.isNotEmpty(itemDetailData.phaseMaxgreen1Time, '相位最大绿时间1不能为空且大于0！')) return
+        if (this.isNotEmpty(itemDetailData.phaseMaxgreen2Time, '相位最大绿时间2不能为空且大于0！')) return
+        if (itemDetailData.phaseMingreenTime > itemDetailData.phaseMaxgreen1Time || itemDetailData.phaseMingreenTime > itemDetailData.phaseMaxgreen2Time) {
+          message.info('相位最小绿时间不能大于相位最大绿时间！')
+          $("#phaseMingreenTime").focus();
+          return false;
+        }
+        if (this.isNotEmpty(itemDetailData.rightofwayAccessLamp1Type, '请选择获得路权过渡灯色1类型！')) return
+        if (this.isNotEmpty(itemDetailData.rightofwayAccessLamp1Time, '获得路权过渡灯色1时间不能为空！', true)) return
+        if (this.isNotEmpty(itemDetailData.rightofwayAccessLamp2Type, '请选择获得路权过渡灯色2类型！')) return
+        if (this.isNotEmpty(itemDetailData.rightofwayAccessLamp2Time, '获得路权过渡灯色2时间不能为空！', true)) return
+        if (this.isNotEmpty(itemDetailData.rightofwayAccessLamp3Type, '请选择获得路权过渡灯色3类型！')) return
+        if (this.isNotEmpty(itemDetailData.rightofwayAccessLamp3Time, '获得路权过渡灯色3时间不能为空！', true)) return
+        
+        if (this.isNotEmpty(itemDetailData.rightofwayLoseLamp1Type, '请选择失去路权过渡灯色1类型！')) return
+        if (this.isNotEmpty(itemDetailData.rightofwayLoseLamp1Time, '失去路权过渡灯色1时间不能为空！', true)) return
+        if (this.isNotEmpty(itemDetailData.rightofwayLoseLamp2Type, '请选择失去路权过渡灯色2类型！')) return
+        if (this.isNotEmpty(itemDetailData.rightofwayLoseLamp2Time, '失去路权过渡灯色2时间不能为空！', true)) return
+        if (this.isNotEmpty(itemDetailData.rightofwayLoseLamp3Type, '请选择失去路权过渡灯色3类型！')) return
+        if (this.isNotEmpty(itemDetailData.rightofwayLoseLamp3Time, '失去路权过渡灯色3时间不能为空！', true)) return
+        
+        if (this.isNotEmpty(itemDetailData.rightofwayStartingupAccessLamp1Type, '请选择开机获得路权灯色1类型！')) return
+        if (this.isNotEmpty(itemDetailData.rightofwayStartingupAccessLamp1Time, '开机获得路权灯色1时间不能为空！', true)) return
+        if (this.isNotEmpty(itemDetailData.rightofwayStartingupAccessLamp2Type, '请选择开机获得路权灯色2类型！')) return
+        if (this.isNotEmpty(itemDetailData.rightofwayStartingupAccessLamp2Time, '开机获得路权灯色2时间不能为空！', true)) return
+        if (this.isNotEmpty(itemDetailData.rightofwayStartingupAccessLamp3Type, '请选择开机获得路权灯色3类型！')) return
+        if (this.isNotEmpty(itemDetailData.rightofwayStartingupAccessLamp3Time, '开机获得路权灯色3时间不能为空！', true)) return
+        
+        if (this.isNotEmpty(itemDetailData.rightofwayStartingupLoseLamp1Type, '请选择开机失去路权灯色1类型！')) return
+        if (this.isNotEmpty(itemDetailData.rightofwayStartingupLoseLamp1Time, '开机失去路权灯色1时间不能为空！', true)) return
+        if (this.isNotEmpty(itemDetailData.rightofwayStartingupLoseLamp2Type, '请选择开机失去路权灯色2类型！')) return
+        if (this.isNotEmpty(itemDetailData.rightofwayStartingupLoseLamp2Time, '开机失去路权灯色2时间不能为空！', true)) return
+        if (this.isNotEmpty(itemDetailData.rightofwayStartingupLoseLamp3Type, '请选择开机失去路权灯色3类型！')) return
+        if (this.isNotEmpty(itemDetailData.rightofwayStartingupLoseLamp3Time, '开机失去路权灯色3时间不能为空！', true)) return
+        
         break;
       case 'STAGE':
         typeStr = '阶段'
@@ -1116,6 +1162,10 @@ class SignalManagement extends PureComponent {
         this.state.popAddEditText === '编辑' ? resData = this.state.editData : resData = this.props.data.stageLists
         if (this.isNotEmpty(itemDetailData.phasestageNo, '阶段编号不能为空！')) return
         if (this.verificationID(resData, 'phasestageNo', itemDetailData.phasestageNo, '阶段编号已存在')) return
+        if (this.isNotEmpty(itemDetailData.phasestageName, '阶段名称不能为空！')) return
+        if (this.isNotEmpty(itemDetailData.lateStartTime, '阶段中相位晚启动的时间不能为空！', true)) return
+        if (this.isNotEmpty(itemDetailData.leftingEndTime, '阶段中相位早结束的时间不能为空！', true)) return
+        if (this.isNotEmpty(itemDetailData.phasestagePhase, '阶段中包含相位不能为空！')) return
         break;
       case 'PLAN':
         typeStr = '配时方案'
@@ -1124,6 +1174,9 @@ class SignalManagement extends PureComponent {
         this.state.popAddEditText === '编辑' ? resData = this.state.editData : resData = this.props.data.planLists
         if (this.isNotEmpty(itemDetailData.schemeNo, '方案编号不能为空！')) return
         if (this.verificationID(resData, 'schemeNo', itemDetailData.schemeNo, '方案编号已存在')) return
+        if (this.isNotEmpty(itemDetailData.schemeName, '方案名称不能为空！')) return
+        if (this.isNotEmpty(itemDetailData.schemePhaseDiferenceTime, '方案相位差时间不能为空！', true)) return
+        if (this.isNotEmpty(itemDetailData.schemePhasestageType, '请选择方案相位阶段出现类型！')) return
         break;
       case 'DAYPLAN':
         itemDetailData.timeintervalList.map((dayPlanitem) => {
@@ -1140,6 +1193,17 @@ class SignalManagement extends PureComponent {
         this.state.popAddEditText === '编辑' ? resData = this.state.editData : resData = this.props.data.dayPlanLists
         if (this.isNotEmpty(itemDetailData.dailyplanNo, '日计划编号不能为空！')) return
         if (this.verificationID(resData, 'dailyplanNo', itemDetailData.dailyplanNo, '日计划编号已存在')) return
+
+        const itemDayData = itemDetailData.timeintervalList
+        for( let d = 0; d < itemDayData.length; d++) {
+          // if (itemDayData[d+1]) {
+          //   console.log(("2020-01-01"+itemDayData[d+1]).timeintervalStarttime.getTime(),("2020-01-01"+itemDayData[d]).timeintervalStarttime.getTime(),'有东东不？')
+          //   // console.log(Math.abs(new Date(itemDayData[d+1].timeintervalStarttime).getTime() - new Date(itemDayData[d].timeintervalStarttime).getTime()) / 1000, '是啥？')
+          // }
+          if (this.isNotEmpty(itemDayData[d].timeintervalScheme, '请选择运行方案！')) return false
+          if (this.isNotEmpty(itemDayData[d].timeintervalModel, '请选择运行模式！')) return false
+        }
+        // timeintervalModel: 0, timeintervalStarttime: "00:00", timeintervalScheme
         break;
       case 'DISPATCH':
         typeStr = '调度'
@@ -1151,6 +1215,18 @@ class SignalManagement extends PureComponent {
         this.state.popAddEditText === '编辑' ? resData = this.state.editData : resData = this.props.data.dispatchLists
         if (this.isNotEmpty(itemDetailData.scheduleNo, '调度方案编号不能为空！')) return
         if (this.verificationID(resData, 'scheduleNo', itemDetailData.scheduleNo, '调度编号已存在')) return
+        const itemData = itemDetailData.scheduleDetailList
+        for( let d = 0; d < itemData.length; d++) {
+          if (this.isNotEmpty(itemData[d].dailyPlanId, '请选择日计划！')) return false
+          if (this.isNotEmpty(itemData[d].priority, '请选择优选级！')) return false
+          if (this.isNotEmpty(itemData[d].dateType, '请选择调度类型！')) return false
+          if (itemData[d].dateType === 1) {
+            if (this.isNotEmpty(itemData[d].monthValueCodes, '请选择月份！')) return false
+            if (this.isNotEmpty(itemData[d].dataValueCodes, '请选择日期！')) return false
+          }else{
+            if (this.isNotEmpty(itemData[d].dataValueCodes, '请选择星期！')) return false
+          }
+        }
         break;
     }
     if (eventType) {
@@ -1446,6 +1522,8 @@ class SignalManagement extends PureComponent {
         showStr = 'stepRoadAddEdit'
         detailStr = 'laneShowDetail'
         if (this.isNotEmpty(itemDetailData.laneId, '车道ID不能为空！')) return
+        if (this.isNotEmpty(itemDetailData.fDir8No, '请选择方向！')) return
+        if (this.isNotEmpty(itemDetailData.turnDirNoList, '请选择转向！')) return
         if (this.verificationID(this.props.data.laneLists, 'laneId', itemDetailData.laneId, '车道ID已存在')) return
         break;
       case 'LIGHT':
@@ -1465,6 +1543,9 @@ class SignalManagement extends PureComponent {
         this.cyclicComparison(this.state.detectorType, 'detectorType', itemDetailData.detectorType, 'detectorShowDetail', true)
         itemDetailData = JSON.parse(JSON.stringify(this.state.detectorShowDetail))
         if (this.isNotEmpty(itemDetailData.detectorId, '检测器序号不能为空！')) return
+        if (this.isNotEmpty(itemDetailData.flowCollectionCycle, '流量周期不符合规则！')) return
+        if (this.isNotEmpty(itemDetailData.occupancyCollectionCycle, '占有率周期不符合规则！')) return
+        if (this.isNotEmpty(itemDetailData.detectorType, '请选择检测器类型！')) return
         if (this.verificationID(this.props.data.detectorLists, 'detectorId', itemDetailData.detectorId, '检测器ID已存在')) return
         break;
     }
@@ -1493,6 +1574,8 @@ class SignalManagement extends PureComponent {
         debugger
         this.state.popAddEditText === '编辑' ? resData = this.state.editData : resData = this.props.data.laneLists
         if (this.isNotEmpty(itemDetailData.laneId, '车道ID不能为空！')) return
+        if (this.isNotEmpty(itemDetailData.fDir8No, '请选择方向！')) return
+        if (this.isNotEmpty(itemDetailData.turnDirNoList, '请选择转向！')) return
         if (this.verificationID(resData, 'laneId', itemDetailData.laneId, '车道ID已存在')) return
         break;
       case 'LIGHT':
@@ -1514,6 +1597,9 @@ class SignalManagement extends PureComponent {
         itemDetailData = JSON.parse(JSON.stringify(this.state.detectorShowDetail))
         this.state.popAddEditText === '编辑' ? resData = this.state.editData : resData = this.props.data.detectorLists
         if (this.isNotEmpty(itemDetailData.detectorId, '检测器序号不能为空！')) return
+        if (this.isNotEmpty(itemDetailData.flowCollectionCycle, '流量周期不符合规则！')) return
+        if (this.isNotEmpty(itemDetailData.occupancyCollectionCycle, '占有率周期不符合规则！')) return
+        if (this.isNotEmpty(itemDetailData.detectorType, '请选择检测器类型！')) return
         if (this.verificationID(resData, 'detectorId', itemDetailData.detectorId, '检测器序号已存在')) return
         break;
     }
@@ -2257,7 +2343,6 @@ class SignalManagement extends PureComponent {
                     <Select
                       value={phaseShowDetail.phaseForbiden ? phaseShowDetail.phaseForbiden : 0}
                       onChange={v => this.handleChangeSel(v, 'state', 'phaseShowDetail', 'phaseForbiden')}>
-                      <Option value={0}>请选择类型</Option>
                       {
                         phaseForbidenData.map((items, key) => {
                           return <Option key={"optionList" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
@@ -2270,7 +2355,6 @@ class SignalManagement extends PureComponent {
                     <Select
                       value={phaseShowDetail.phaseShield ? phaseShowDetail.phaseShield : 0}
                       onChange={v => this.handleChangeSel(v, 'state', 'phaseShowDetail', 'phaseShield')}>
-                      <Option value={0}>请选择类型</Option>
                       {
                         phaseShieldData.map((items, key) => {
                           return <Option key={"optionList" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
@@ -2288,16 +2372,13 @@ class SignalManagement extends PureComponent {
                     <span>相位延迟绿时间：</span><Input type='number' value={phaseShowDetail.phaseDelaygreenTime} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'phaseDelaygreenTime')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
+                    <span>相位最小绿时间：</span><Input type='number' id="phaseMingreenTime" value={phaseShowDetail.phaseMingreenTime} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'phaseMingreenTime')} placeholder="请输入" />
+                  </div>
+                  <div className={styles.itemInputBox}>
                     <span>相位最大绿时间1：</span><Input type='number' value={phaseShowDetail.phaseMaxgreen1Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'phaseMaxgreen1Time')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>相位最大绿时间2：</span><Input type='number' value={phaseShowDetail.phaseMaxgreen2Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'phaseMaxgreen2Time')} placeholder="请输入" />
-                  </div>
-                  <div className={styles.itemInputBox}>
-                    <span>相位最小绿时间：</span><Input type='number' value={phaseShowDetail.phaseMingreenTime} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'phaseMingreenTime')} placeholder="请输入" />
-                  </div>
-                  <div className={styles.itemInputBox}>
-                    <span>获得路权过渡灯色1时间：</span><Input type='number' value={phaseShowDetail.rightofwayAccessLamp1Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayAccessLamp1Time')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>获得路权过渡灯色1类型：</span>
@@ -2313,7 +2394,7 @@ class SignalManagement extends PureComponent {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>获得路权过渡灯色2时间：</span><Input type='number' value={phaseShowDetail.rightofwayAccessLamp2Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayAccessLamp2Time')} placeholder="请输入" />
+                    <span>获得路权过渡灯色1时间：</span><Input type='number' value={phaseShowDetail.rightofwayAccessLamp1Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayAccessLamp1Time')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>获得路权过渡灯色2类型：</span>
@@ -2329,8 +2410,8 @@ class SignalManagement extends PureComponent {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>获得路权过渡灯色3时间：</span><Input type='number' value={phaseShowDetail.rightofwayAccessLamp3Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayAccessLamp3Time')} placeholder="请输入" />
-                  </div>
+                    <span>获得路权过渡灯色2时间：</span><Input type='number' value={phaseShowDetail.rightofwayAccessLamp2Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayAccessLamp2Time')} placeholder="请输入" />
+                  </div>                  
                   <div className={styles.itemInputBox}>
                     <span>获得路权过渡灯色3类型：</span>
                     <Select
@@ -2345,8 +2426,8 @@ class SignalManagement extends PureComponent {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>失去路权过渡灯色1时间：</span><Input type='number' value={phaseShowDetail.rightofwayLoseLamp1Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayLoseLamp1Time')} placeholder="请输入" />
-                  </div>
+                    <span>获得路权过渡灯色3时间：</span><Input type='number' value={phaseShowDetail.rightofwayAccessLamp3Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayAccessLamp3Time')} placeholder="请输入" />
+                  </div>                  
                   <div className={styles.itemInputBox}>
                     <span>失去路权过渡灯色1类型：</span>
                     <Select
@@ -2361,8 +2442,8 @@ class SignalManagement extends PureComponent {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>失去路权过渡灯色2时间：</span><Input type='number' value={phaseShowDetail.rightofwayLoseLamp2Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayLoseLamp2Time')} placeholder="请输入" />
-                  </div>
+                    <span>失去路权过渡灯色1时间：</span><Input type='number' value={phaseShowDetail.rightofwayLoseLamp1Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayLoseLamp1Time')} placeholder="请输入" />
+                  </div>                  
                   <div className={styles.itemInputBox}>
                     <span>失去路权过渡灯色2类型：</span>
                     <Select
@@ -2377,8 +2458,8 @@ class SignalManagement extends PureComponent {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>失去路权过渡灯色3时间：</span><Input type='number' value={phaseShowDetail.rightofwayLoseLamp3Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayLoseLamp3Time')} placeholder="请输入" />
-                  </div>
+                    <span>失去路权过渡灯色2时间：</span><Input type='number' value={phaseShowDetail.rightofwayLoseLamp2Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayLoseLamp2Time')} placeholder="请输入" />
+                  </div>                  
                   <div className={styles.itemInputBox}>
                     <span>失去路权过渡灯色3类型：</span>
                     <Select
@@ -2393,8 +2474,8 @@ class SignalManagement extends PureComponent {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>开机获得路权灯色1时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupAccessLamp1Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayStartingupAccessLamp1Time')} placeholder="请输入" />
-                  </div>
+                    <span>失去路权过渡灯色3时间：</span><Input type='number' value={phaseShowDetail.rightofwayLoseLamp3Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayLoseLamp3Time')} placeholder="请输入" />
+                  </div>                  
                   <div className={styles.itemInputBox}>
                     <span>开机获得路权灯色1类型：</span>
                     <Select
@@ -2409,8 +2490,8 @@ class SignalManagement extends PureComponent {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>开机获得路权灯色2时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupAccessLamp2Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayStartingupAccessLamp2Time')} placeholder="请输入" />
-                  </div>
+                    <span>开机获得路权灯色1时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupAccessLamp1Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayStartingupAccessLamp1Time')} placeholder="请输入" />
+                  </div>                  
                   <div className={styles.itemInputBox}>
                     <span>开机获得路权灯色2类型：</span>
                     <Select
@@ -2425,8 +2506,8 @@ class SignalManagement extends PureComponent {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>开机获得路权灯色3时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupAccessLamp3Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayStartingupAccessLamp3Time')} placeholder="请输入" />
-                  </div>
+                    <span>开机获得路权灯色2时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupAccessLamp2Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayStartingupAccessLamp2Time')} placeholder="请输入" />
+                  </div>                  
                   <div className={styles.itemInputBox}>
                     <span>开机获得路权灯色3类型：</span>
                     <Select
@@ -2441,8 +2522,8 @@ class SignalManagement extends PureComponent {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>开机失去路权灯色1时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupLoseLamp1Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayStartingupLoseLamp1Time')} placeholder="请输入" />
-                  </div>
+                    <span>开机获得路权灯色3时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupAccessLamp3Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayStartingupAccessLamp3Time')} placeholder="请输入" />
+                  </div>                  
                   <div className={styles.itemInputBox}>
                     <span>开机失去路权灯色1类型：</span>
                     <Select
@@ -2457,8 +2538,8 @@ class SignalManagement extends PureComponent {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>开机失去路权灯色2时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupLoseLamp2Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayStartingupLoseLamp2Time')} placeholder="请输入" />
-                  </div>
+                    <span>开机失去路权灯色1时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupLoseLamp1Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayStartingupLoseLamp1Time')} placeholder="请输入" />
+                  </div>                  
                   <div className={styles.itemInputBox}>
                     <span>开机失去路权灯色2类型：</span>
                     <Select
@@ -2473,8 +2554,8 @@ class SignalManagement extends PureComponent {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>开机失去路权灯色3时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupLoseLamp3Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayStartingupLoseLamp3Time')} placeholder="请输入" />
-                  </div>
+                    <span>开机失去路权灯色2时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupLoseLamp2Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayStartingupLoseLamp2Time')} placeholder="请输入" />
+                  </div>                  
                   <div className={styles.itemInputBox}>
                     <span>开机失去路权灯色3类型：</span>
                     <Select
@@ -2488,7 +2569,9 @@ class SignalManagement extends PureComponent {
                       }
                     </Select>
                   </div>
-
+                  <div className={styles.itemInputBox}>
+                    <span>开机失去路权灯色3时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupLoseLamp3Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayStartingupLoseLamp3Time')} placeholder="请输入" />
+                  </div>
                 </div>
               }
               <div className={styles.popBottom}>
@@ -2619,7 +2702,7 @@ class SignalManagement extends PureComponent {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>方案周期：</span><Input type='number' value={planShowDetail.schemeCycle} onChange={e => this.handleChangeInput(e, 'state', 'planShowDetail', 'schemeCycle')} placeholder="请输入" />
+                    <span>方案周期：</span><Input readOnly='readOnly' style={{cursor: 'no-drop'}} type='number' value={planShowDetail.schemeCycle} onChange={e => this.handleChangeInput(e, 'state', 'planShowDetail', 'schemeCycle')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>方案相位差时间：</span><Input type='number' value={planShowDetail.schemePhaseDiferenceTime} onChange={e => this.handleChangeInput(e, 'state', 'planShowDetail', 'schemePhaseDiferenceTime')} placeholder="请输入" />
@@ -2695,7 +2778,7 @@ class SignalManagement extends PureComponent {
                             return <div key={'dayPlan' + i} className={styles.timeThreeBox}>
 
                               <span>开始时间：</span>
-                              <TimePicker key={item.timeintervalStarttime} defaultValue={moment(item.timeintervalStarttime, format)} format={format} allowClear={false} onChange={(v, time) => this.handleChangeTime(v, time, 'state', 'dayplanShowDetail', 'timeintervalList', i, 'timeintervalStarttime')} />
+                              <TimePicker disabled={ i===0 ? 'disabled' : ''} key={item.timeintervalStarttime} defaultValue={moment(item.timeintervalStarttime, format)} format={format} allowClear={false} onChange={(v, time) => this.handleChangeTime(v, time, 'state', 'dayplanShowDetail', 'timeintervalList', i, 'timeintervalStarttime')} />
                               <span>运行方案：</span><Select
                                 value={Number(item.timeintervalScheme) ? Number(item.timeintervalScheme) : 0}
                                 onChange={v => this.handleChangeSel(v, 'state', 'dayplanShowDetail', 'timeintervalList', i, 'timeintervalScheme')}>
@@ -2813,12 +2896,12 @@ class SignalManagement extends PureComponent {
                           })
                         }
                       </div>
-                      <div className={styles.addReduceBtn}>
+                      {/* <div className={styles.addReduceBtn}>
                         <s>
                           <Icon type="plus" onClick={this.addDispatch} />
                           <Icon type="minus" onClick={this.reduceDispatch} />
                         </s>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>

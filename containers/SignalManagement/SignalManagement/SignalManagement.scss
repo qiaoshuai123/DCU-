@@ -241,6 +241,7 @@ $stepBor_col: #393f4f;
                 :global(.ant-calendar-picker-icon) {
                     color:white;
                 }
+                
             }
             // 路口底图
             .typePic {
@@ -857,6 +858,14 @@ $stepBor_col: #393f4f;
                         }
                         :global(.ant-calendar-picker-icon) {
                             color:white;
+                        }
+                        :global(.ant-radio-wrapper){
+                            color:#fff;
+                            font-size: 12px;
+                            margin-right:10px;
+                        }
+                        :global(.ant-radio-disabled + span){
+                            color:#fff;
                         }
                     }
                 }
