@@ -178,6 +178,9 @@ $bor-color: #2e3440;
       position: absolute;
       right: 20px;
       bottom: 30px;
+      :global(.ant-pagination-item-container span) {
+        color: #dcdde2;
+      }
       :global(.ant-pagination) {
         color: $ft_color;
       }

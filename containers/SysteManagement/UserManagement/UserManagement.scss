@@ -238,6 +238,12 @@ $ft_color: #62bbff;
   :global(.ant-pagination) {
     display: inline-block;
   }
+  :global(.ant-pagination-item-active) {
+    border-color: #ff7e00 !important;
+  }
+  :global(.ant-pagination-item-active a) {
+    color: #ff7e00 !important;
+  }
   .count {
     height: 32px;
     line-height: 32px;
@@ -355,9 +361,7 @@ $ft_color: #62bbff;
     color: #019bac !important;
   }
 }
-:global(.ant-pagination-item-active) {
-  border-color: #ff7e00 !important;
+:global(li.ant-tree-treenode-disabled > .ant-tree-node-content-wrapper span) {
+  color: #ccc;
 }
-:global(.ant-pagination-item-active a) {
-  color: #ff7e00 !important;
-}
+

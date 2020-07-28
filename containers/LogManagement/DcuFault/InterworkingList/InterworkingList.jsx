@@ -132,7 +132,7 @@ class InterworkingList extends Component {
             <span style={{ margin: '0 10px' }}>至</span>
             <div className={styles.inSle}><DatePicker showTime onChange={this.handleEndTimeChange} /></div>
           </div>
-          <span className={styles.searchBtn} onClick={this.handleSearchLogList} limitid="13">查询</span>
+          <span className={styles.searchBtn} onClick={this.handleSearchLogList}>查询</span>
         </div>
         <div className={styles.equipmentList}>
           <span onClick={this.exportTable}>导出设备表</span>

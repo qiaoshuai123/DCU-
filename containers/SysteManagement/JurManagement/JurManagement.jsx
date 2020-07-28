@@ -46,6 +46,7 @@ class Jurisdiction extends React.Component {
       name: '',
       remark: '',
     }
+    this.TreeData = []
   }
   componentDidMount = () => {
     this.getSystemMenu()
@@ -63,14 +64,10 @@ class Jurisdiction extends React.Component {
     getResponseDatas('post', this.listTrueUrl).then((res) => {
       const { code, data } = res.data
       if (code === 0) {
+        this.handleTreeData(data)
         this.setState({ treeData: data })
       }
     })
-  }
-  handlePagination = (pageNumber) => {
-    // console.log('Page: ', pageNumber)
-    this.listParams.pageNo = pageNumber
-    this.getDeptList()
   }
   onExpand = (expandedKeys) => {
     // console.log('onExpand', expandedKeys)
@@ -80,13 +77,73 @@ class Jurisdiction extends React.Component {
     })
   }
 
-  onCheck = (checkedKeys, e) => {
-    // console.log('onCheck', checkedKeys, e)
-    this.defaultparams.menuIds = checkedKeys.checked
-    /*  this.defaultparams.menuIds = [...e.halfCheckedKeys, ...checkedKeys] */
-    this.setState({ checkedKeys: checkedKeys.checked })
-  }
+  // onCheck = (checkedKeys, e) => {
+  //   // console.log('onCheck', checkedKeys, e)
+  //   this.defaultparams.menuIds = checkedKeys.checked
+  //   /*  this.defaultparams.menuIds = [...e.halfCheckedKeys, ...checkedKeys] */
+  //   this.setState({ checkedKeys: checkedKeys.checked })
+  // }
+  onCheck = (check, e) => {
+    // console.log('onCheck', checkedKeys, e, this.state.treeData)
+    const { checkedKeys } = this.state
+    // console.log(checked);
+    const Item = e.checkedNodes[e.checkedNodes.length - 1]
+    const dataRefs = Item.props.dataRef
+    this.Ids = []
+    this.parentIds = []
+    this.childrenItem = null
+    this.Ids.push(Item.key)
+    if (e.checked) {
+      if (dataRefs.parentId) {
+        this.Ids.push((dataRefs.parentId).toString())
+        // console.log(dataRefs.parentId, '1111111111111');
+        this.handleCheckparentId(dataRefs.parentId)
+        this.Ids.push(...this.parentIds)
+      }
+      this.handleCheckedKeys(Item.props.children)
+      // console.log(this.Ids);
+      this.defaultparams.menuIds = [...new Set([...check.checked, ...this.Ids])]
+    } else {
+      checkedKeys.forEach((item) => { // 取出取消的项id
+        if (!check.checked.includes(item)) {
+          this.handleCheckparentId(item, true) // 拿到this.childrenItem 当前取消项数据
+          // this.handleCheckparentId(item) // 拿到 this.parentIds 当前取消项所有的父亲id
+          this.TreeData.forEach((it) => {
+            if (it.id === Number(item)) { // 找到当前级别是否取消父节
+              this.TreeData.forEach((ite) => {
+                if (ite.id === Number(it.parentId)) { // 找到当前的父亲项
+                  const childrenId = []
+                  ite.children.forEach((t) => {
+                    childrenId.push(check.checked.includes((t.id).toString())) // 判断是受当前父亲项下有勾选
+                  })
+                  const bl = childrenId.some((x) => { return x === true }) // 有一项为true时候就是true
+                  if (!bl) { // 无勾选则取消父亲项的勾选
+                    if (it.type === 1) { // 判断是否是按钮，1的时候为菜单 2的时候为按钮
+                      if (check.checked.includes((it.parentId).toString())) {
+                        check.checked.splice(check.checked.indexOf((it.parentId).toString()), 1)
+                      }
+                    }
+                  }
+                }
+              })
 
+              if (it.children) { // 取消掉当前项下所有子项的勾选
+                it.children.forEach((i) => {
+                  // console.log(check.checked, i.id);
+                  if (check.checked.includes((i.id).toString())) {
+                    check.checked.splice(check.checked.indexOf((i.id).toString()), 1)
+                  }
+                })
+              }
+            }
+          })
+        }
+      })
+      console.log(checkedKeys, check.checked, this.childrenItem)
+      this.defaultparams.menuIds = [...new Set(check.checked)]
+    }
+    this.setState({ checkedKeys: this.defaultparams.menuIds })
+  }
   onSelect = (selectedKeys, info) => {
     // console.log('onSelect', info)
     this.setState({ selectedKeys })
@@ -103,17 +160,6 @@ class Jurisdiction extends React.Component {
       }
     })
   }
-  renderTreeNodes = (data) =>
-    data.map((item) => {
-      if (item.children) {
-        return (
-          <TreeNode title={item.name} key={item.id} dataRef={item}>
-            {this.renderTreeNodes(item.children)}
-          </TreeNode>
-        )
-      }
-      return <TreeNode key={item.id} {...item} />
-    })
   getDeptList = () => {
     getResponseDatas('post', this.deptListUrl, this.getFormData(this.listParams)).then((res) => {
       const { code, data } = res.data
@@ -137,6 +183,44 @@ class Jurisdiction extends React.Component {
     })
     // console.log(formData)
     return formData
+  }
+  handlePagination = (pageNumber) => {
+    // console.log('Page: ', pageNumber)
+    this.listParams.pageNo = pageNumber
+    this.getDeptList()
+  }
+  handleCheckedKeys = (data) => {
+    data.map((item) => {
+      this.Ids.push(item.key || item.id)
+      console.log(item);
+      if (item.props.children) {
+        this.handleCheckedKeys(item.props.children)
+      }
+    })
+  }
+  handleTreeData = (data) => {
+    this.TreeData.push(...data)
+    data.forEach((item) => {
+      if (item.children) {
+        this.handleTreeData(item.children)
+      }
+    })
+  }
+  handleCheckparentId = (id, bool) => {
+    for (let i = 0; i < this.TreeData.length; i++) {
+      const item = this.TreeData[i]
+      // console.log(item, item.id === id);
+      if (item.id === Number(id)) {
+        if (bool) {
+          this.childrenItem = item
+          return
+        } else if (item.parentId) {
+          this.parentIds.push((item.parentId).toString())
+          this.handleCheckparentId(item.parentId)
+          return
+        }
+      }
+    }
   }
   handleAddGroup = () => {
     this.isAdd = true
@@ -271,6 +355,20 @@ class Jurisdiction extends React.Component {
   handleKeywordChange = (e) => {
     const { value } = e.target
     this.listParams.keyword = value
+  }
+  renderTreeNodes = (data) => {
+    return (
+      data.map((item) => {
+        if (item.children) {
+          return (
+            <TreeNode title={item.name} key={item.id} dataRef={item}>
+              {this.renderTreeNodes(item.children)}
+            </TreeNode>
+          )
+        }
+        return <TreeNode key={item.id} {...item} />
+      })
+    )
   }
   render() {
     const { listDatas, showGroupMsg, treeData, listItems, totalCount, userLimit, current } = this.state
