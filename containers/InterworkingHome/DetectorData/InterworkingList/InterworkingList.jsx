@@ -50,7 +50,6 @@ class InterworkingList extends Component {
     })
   }
   getdetectorDataListByPages = (detectorDataListByPages) => {
-    // console.log(detectorDataListByPages, 'sfsfs')
     const { pageNum, data, total } = detectorDataListByPages
     this.setState({
       currnum: total,

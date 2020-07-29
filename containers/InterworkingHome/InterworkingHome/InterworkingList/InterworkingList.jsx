@@ -57,7 +57,6 @@ class InterworkingList extends Component {
     })
   }
   getdcuListByPage = (dcuListByPage) => {
-    // console.log(dcuListByPage, 'fenye')
     this.setState({
       currnum: dcuListByPage.total,
       current: dcuListByPage.pageNum,

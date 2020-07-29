@@ -301,7 +301,6 @@ class Datastatus extends Component {
         })
       })
       this.setState({ treeList: searchInters, searchInterList: searchLists }, () => {
-        // console.log(searchInters, value, '结构')
         !value ? this.props.checkUnitTree(this.state.treeListBackups) : this.props.checkUnitTree(this.state.treeList)
       })
     }, 200)
@@ -320,7 +319,6 @@ class Datastatus extends Component {
       const timeDiv = $($('div[inter-id]')[i])
       data.map((item) => {
         if (item.interId === timeDiv.attr('inter-id') && !!item.state) {
-          // console.log(item.isNormal, 'vvcc')
           if (item.isNormal === '1') {
             timeDiv.removeClass('marker-online')
           } else {
