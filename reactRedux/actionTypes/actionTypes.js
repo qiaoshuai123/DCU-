@@ -3,6 +3,7 @@
  */
 
 export const GET_UNIT_STATUS = 'GET_UNIT_STATUS' //  信号参数据管理 step
+export const GET_EDIT_DATA_CHECK = 'GET_EDIT_DATA_CHECK' // 下发验证
 // 切换视图
 export const GET_SIGNAL_lIST_BY_PAGE = 'GET_SIGNAL_lIST_BY_PAGE' //
 // 基础信息配置
@@ -75,6 +76,7 @@ export const POST_ADD_DAYPLAN_OTHERS = 'POST_ADD_DAYPLAN_OTHERS' // 日计划新
 export const POST_UPDATE_DAYPLAN_OTHERS = 'POST_UPDATE_DAYPLAN_OTHERS' // 日计划修改
 export const GET_DEL_DAYPLAN_INFO = 'GET_DEL_DAYPLAN_INFO' // 日计划删除
 export const GET_LINE_DAYPLAN_CLICK = 'GET_LINE_DAYPLAN_CLICK' // 日计划点击 根据方案号查询配时方案
+export const GET_CHECK_PHASE_STAGE_TIME = 'GET_CHECK_PHASE_STAGE_TIME' //方案相位阶段链时间的合法不
 // 调度配置
 export const GET_DISPATCH_INFO_LISTS = 'GET_DISPATCH_INFO_LISTS' // 调度配置查询列表
 export const POST_ADD_DISPATCH_OTHERS = 'POST_ADD_DISPATCH_OTHERS' // 调度配置新增

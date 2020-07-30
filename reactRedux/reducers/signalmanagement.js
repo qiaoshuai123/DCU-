@@ -12,6 +12,8 @@ const signalmanagement = (state = objs, action) => {
   switch (type) {
     case types.GET_UNIT_STATUS:
       return Object.assign({}, state, { stepStatusData: payload })
+    case types.GET_EDIT_DATA_CHECK:
+      return Object.assign({}, state, { editCheckData: payload })
     case types.GET_BG_LIST:
       return Object.assign({}, state, { basicBgLists: payload })
     case types.POST_DCU_BY_INTERID:
@@ -133,6 +135,8 @@ const signalmanagement = (state = objs, action) => {
       return Object.assign({}, state, { planDelInfo: payload })
     case types.GET_S_PHASE_STAGE_CHAINS:
       return Object.assign({}, state, { planChainsLists: payload })
+    case types.GET_CHECK_PHASE_STAGE_TIME:
+      return Object.assign({}, state, { planCheckTimeRes: payload })
     // 日计划配置
     case types.GET_DAYPLAN_INFO_LISTS:
       return Object.assign({}, state, { dayPlanLists: payload })
