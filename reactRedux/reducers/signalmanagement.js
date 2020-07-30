@@ -12,6 +12,8 @@ const signalmanagement = (state = objs, action) => {
   switch (type) {
     case types.GET_UNIT_STATUS:
       return Object.assign({}, state, { stepStatusData: payload })
+    case types.GET_EDIT_DATA_CHECK:
+      return Object.assign({}, state, { editCheckData: payload })
     case types.GET_BG_LIST:
       return Object.assign({}, state, { basicBgLists: payload })
     case types.POST_DCU_BY_INTERID:

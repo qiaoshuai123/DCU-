@@ -3,7 +3,7 @@
  */
 
 export const API_UNIT_STATUS = '/DCU/unitInfo/unitStatus' // 信号参数据管理 step
-
+export const API_EDIT_DATA_CHECK = '/DCU/unitInfo/editDataCheck' // 下发验证
 /** *********** 信号参数管理模块 ************* */
 // 切换视图
 export const API_SIGNAL_lIST_BY_PAGE = '/DCU/signalInfo/signalListByPage' // 切换视图

@@ -612,3 +612,18 @@ export const getCheckPhaseTime = (interId, phaseStageNo, time ) => {
     }
   }
 }
+// 下发配置验证
+export const getEditCheckData = (interId) => {
+  return async (dispatch) => {
+    try {
+      const result = await RestUtil.get(`${APIs.API_EDIT_DATA_CHECK}?interId=${interId}`)
+      if (result.data.code === 0) {
+        dispatch({ type: types.GET_EDIT_DATA_CHECK, payload: result.data.data })
+      } else {
+        console.error(result.data.msg)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+}

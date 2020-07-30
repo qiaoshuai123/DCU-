@@ -3,6 +3,7 @@
  */
 
 export const GET_UNIT_STATUS = 'GET_UNIT_STATUS' //  信号参数据管理 step
+export const GET_EDIT_DATA_CHECK = 'GET_EDIT_DATA_CHECK' // 下发验证
 // 切换视图
 export const GET_SIGNAL_lIST_BY_PAGE = 'GET_SIGNAL_lIST_BY_PAGE' //
 // 基础信息配置
