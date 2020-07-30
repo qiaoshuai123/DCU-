@@ -56,7 +56,6 @@ class InterworkingHome extends Component {
       }
     }
     if (prevState.data.dcuPopData !== dcuPopData) {
-      // console.log(dcuPopData, '弹层数据')
       this.getdcuPopData(dcuPopData)
     }
     // if (prevState.data.unitInfoLists !== unitInfoLists) {
@@ -131,7 +130,6 @@ class InterworkingHome extends Component {
         visibleTop: top,
         vipId: id,
       }, () => {
-        // console.log(id, '显示右键信息')
       })
     } else {
       this.setState({
@@ -313,7 +311,6 @@ class InterworkingHome extends Component {
   handlePopData(data) {
     // debugger
     const { isOnline } = JSON.parse(data);
-    // console.log(result,this,'socket POP数据')
     isOnline === '1' ? $('#phasestageName').text('正常在线') : $('#phasestageName').text('离线状态')
     // $('#schemeName').text(result.schemeName)
     // $('#nodeModelName').text(result.nodeModelName)
@@ -355,7 +352,6 @@ class InterworkingHome extends Component {
         })
       })
       this.setState({ treeList: searchInters, searchInterList: searchLists }, () => {
-        // console.log(searchInters, value, '结构')
         !value ? this.props.checkUnitTree(this.state.treeListBackups) : this.props.checkUnitTree(this.state.treeList)
       })
     }, 200)
@@ -364,7 +360,6 @@ class InterworkingHome extends Component {
     const { Search } = Input
     const { Option } = Select
     const { isInterworkingList, offlineNum, onlineNum, searchInterList, interListHeight, roadUnitId, roadInterId, roadNodeNo } = this.state
-    // console.log(`${this.props.data.devSockets}/DCU/websocket/dcuState/0/0/0?Authorization=${this.token}`)
     return (
       <div className={styles.InterworkingHomeBox}>
         <Websocket

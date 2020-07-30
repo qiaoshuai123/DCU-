@@ -107,7 +107,6 @@ class SignalStatus extends Component {
     })
   }
   setGetParams = (dataItem) => {
-    // console.log(dataItem, 'sdsdsd')
     localStorage.setItem('bac', JSON.stringify(dataItem.background))
     window.open(`#/roaddetail?id=${dataItem.interId}&ids=${dataItem.nodeId}&ider=${dataItem.id}`)
     // window.open(`#roaddetail/1`)
@@ -352,7 +351,6 @@ class SignalStatus extends Component {
         })
       })
       this.setState({ treeList: searchInters, searchInterList: searchLists }, () => {
-        // console.log(searchInters, value, '结构')
         !value ? this.props.checkUnitTree(this.state.treeListBackups) : this.props.checkUnitTree(this.state.treeList)
       })
     }, 200)

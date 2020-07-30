@@ -49,7 +49,6 @@ class InterworkingList extends Component {
     })
   }
   getdetectorRealTimeListByPages = (detectorRealTimeListByPages) => {
-    // console.log(detectorRealTimeListByPages, 'scsc')
     const { total, data, pageNum } = detectorRealTimeListByPages
     this.setState({
       currnum: total,
@@ -94,7 +93,6 @@ class InterworkingList extends Component {
     this.props.detectorRealTimeListByPage(objs)
   }
   handleData = (e) => {
-    // console.log(JSON.parse(e), 'ss')
     const { stateList } = JSON.parse(e)
     this.setState({
       stylesList: stateList,

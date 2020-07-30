@@ -186,7 +186,6 @@ class RoadDetail extends Component {
     })
   }
   handleData = (e) => {
-    // console.log(JSON.parse(e), 'ssa')
     const { lampgroupState, phasestageState, running, isOnline, detectorState } = JSON.parse(e)
     const { remainingTime, phasestageNo, runningTime } = phasestageState
     const { localTime } = running
@@ -202,14 +201,12 @@ class RoadDetail extends Component {
   }
 
   handleDataSc = (e) => {
-    // console.log(JSON.parse(e), 'new')
     const { phasestageList, allTime, schemeName } = JSON.parse(e)
     this.insWidth = 960 / allTime
     this.setState({
       planRunStage: phasestageList,
       schemeName,
     })
-    // const { lampgroupState, phasestageState } = JSON.parse(e)
   }
   handleDcu = (e) => {
     const schemeDcu = JSON.parse(e)
@@ -233,7 +230,6 @@ class RoadDetail extends Component {
   }
   phasestageNos = (phasestageNo) => {
     const { planRunStage } = this.state
-    // console.log(planRunStage, phasestageNo, 'cccssss')
     if (planRunStage) {
       const { phasestageName, imagePath } = planRunStage.find(item => item.phasestageNo == phasestageNo)
       this.setState({
