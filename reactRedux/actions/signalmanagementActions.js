@@ -597,3 +597,18 @@ export const getSelectLists = (interId, nodeNo, stepType) => {
     }
   }
 }
+// 方案相位阶段链时间的合法不
+export const getCheckPhaseTime = (interId, phaseStageNo, time ) => {
+  return async (dispatch) => {
+    try {
+      const result = await RestUtil.get(`${APIs.API_CHECK_PHASE_STAGE_TIME}?interId=${interId}&phaseStageNo=${phaseStageNo}&time=${time}`)
+      if (result.data.code === 0) {
+        dispatch({ type: types.GET_CHECK_PHASE_STAGE_TIME, payload: result.data.data })
+      } else {
+        console.error(result.data.msg)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+}

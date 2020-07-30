@@ -70,6 +70,7 @@ export const API_ADD_PLAN_OTHERS = '/DCU/schemeInfo/addSchemeInfo' // 配时方�
 export const API_UPDATE_PLAN_OTHERS = '/DCU/schemeInfo/updateSchemeInfo' // 配时方案修改
 export const API_DEL_PLAN_INFO = '/DCU/schemeInfo/deleteSchemeInfo' // 配时方案删除
 export const API_S_PHASE_STAGE_CHAINS = '/DCU/schemeInfo/schemePhaseStageChains' //方案阶段链
+export const API_CHECK_PHASE_STAGE_TIME = '/DCU/phaseStageInfo/checkPhaseStageTime' //方案相位阶段链时间的合法不
 // 日计划配置
 export const API_DAYPLAN_INFO_LISTS = '/DCU/dailyPlan/dailyPlanList' // 日计划查询列表
 export const API_ADD_DAYPLAN_OTHERS = '/DCU/dailyPlan/addDailyPlan' // 日计划新增

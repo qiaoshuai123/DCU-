@@ -10,7 +10,7 @@ import styles from './SignalManagement.scss'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { getSystemCodeType, getMapUnitInfoList, getUnitPop, checkUnitTree } from '../../../reactRedux/actions/publicActions'
-import { getStepStatus, getPicListsType, getInfoListsType, getInfoListsTypeMore, postBgBySelect, postBgByUpload, postAddOthersType, postUpdateOthersType, postAddAllType, postUpdateAllType, getIconImageList, getUpdateAllType, getSelectLists } from '../../../reactRedux/actions/signalmanagementActions'
+import { getStepStatus, getPicListsType, getInfoListsType, getInfoListsTypeMore, postBgBySelect, postBgByUpload, postAddOthersType, postUpdateOthersType, postAddAllType, postUpdateAllType, getIconImageList, getUpdateAllType, getSelectLists, getCheckPhaseTime } from '../../../reactRedux/actions/signalmanagementActions'
 import StepNavMenu from './StepNavMenu/StepNavMenu'
 import BasicInfoLeft from './StepConfigLeft/BasicInfoLeft'
 import LaneConfigLeft from './StepConfigLeft/LaneConfigLeft'
@@ -131,6 +131,7 @@ class SignalManagement extends PureComponent {
       dispatchClickInfo: null, // 调度点击后的数据
       dispatchClickInfoCopy: null, // 调度点击后的数据备份
       popItemFlag: true,
+      phaseIndex: null,
       listNames: null,
       loadFlag: null,
       editFlag: null,
@@ -175,7 +176,7 @@ class SignalManagement extends PureComponent {
   }
   componentDidUpdate = (prevState) => {
     const { mapPointsData, dcuPopData, stepStatusData, basicBgLists, basicUplSuccess, dcuTreeData, codeTypeData, phaseLists,
-      laneShowDetail, laneIconLists, lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists, laneSelectLists, lightSelectLists, detectorSelectLists, phaseIconLists, planChainsLists, dayPlanClickInfo, dispatchClickInfo } = this.props.data
+      laneShowDetail, laneIconLists, lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists, laneSelectLists, lightSelectLists, detectorSelectLists, phaseIconLists, planChainsLists, dayPlanClickInfo, dispatchClickInfo, planCheckTimeRes } = this.props.data
     if (prevState.data !== this.props.data) {
       // console.log(this.props, this.props.data, "data中所有的数据")
     }
@@ -266,6 +267,15 @@ class SignalManagement extends PureComponent {
     }
     if (prevState.data.dispatchClickInfo !== dispatchClickInfo) {
       this.getListDayData(dispatchClickInfo)
+    }
+    if (prevState.data.planCheckTimeRes !== planCheckTimeRes) {
+      if (planCheckTimeRes === 0){
+        message.info('时间不合法,请重新输入！')
+        const planStageLists = JSON.parse(JSON.stringify(this.state.planStageLists))
+        planStageLists[this.state.phaseIndex].phaseTimeIndex = 0
+        this.setState({ planStageLists })
+      }
+      // console.log(planCheckTimeRes, '校验时间的结果是啥子？')
     }
   }
   componentDidMount = () => {
@@ -543,6 +553,14 @@ class SignalManagement extends PureComponent {
     } else {
       this[type][name] = event.target.value
     }
+  }
+  getCheckPhaseTime = (e, interId, phasestageNo, i) => {
+    // console.log(interId, phasestageNo, e.target.value)
+    // console.log(this.state.planStageLists[i].phaseTimeIndex, '哈哈~')
+    this.setState({
+      phaseIndex: i,
+    })
+    this.props.getCheckPhaseTime(interId, phasestageNo, e.target.value)
   }
   // 单选按钮选择
   handleChangeRadio = (event) => {
@@ -1193,17 +1211,23 @@ class SignalManagement extends PureComponent {
         this.state.popAddEditText === '编辑' ? resData = this.state.editData : resData = this.props.data.dayPlanLists
         if (this.isNotEmpty(itemDetailData.dailyplanNo, '日计划编号不能为空！')) return
         if (this.verificationID(resData, 'dailyplanNo', itemDetailData.dailyplanNo, '日计划编号已存在')) return
-
         const itemDayData = itemDetailData.timeintervalList
         for( let d = 0; d < itemDayData.length; d++) {
-          // if (itemDayData[d+1]) {
-          //   console.log(("2020-01-01"+itemDayData[d+1]).timeintervalStarttime.getTime(),("2020-01-01"+itemDayData[d]).timeintervalStarttime.getTime(),'有东东不？')
-          //   // console.log(Math.abs(new Date(itemDayData[d+1].timeintervalStarttime).getTime() - new Date(itemDayData[d].timeintervalStarttime).getTime()) / 1000, '是啥？')
-          // }
+          if (itemDayData[d+1]) {
+            let dTime = new Date("2020-01-01 "+itemDayData[d].timeintervalStarttime+":00").getTime() / 1000
+            let dTime1 = new Date("2020-01-01 "+itemDayData[d+1].timeintervalStarttime+":00").getTime() / 1000
+            if (dTime === dTime1){
+              message.info('开始时间不能相同！');
+              return false
+            }
+            if (dTime > dTime1){
+              message.info('开始时间必须递增,不能少于以前的时间！');
+              return false
+            }
+          }
           if (this.isNotEmpty(itemDayData[d].timeintervalScheme, '请选择运行方案！')) return false
           if (this.isNotEmpty(itemDayData[d].timeintervalModel, '请选择运行模式！')) return false
         }
-        // timeintervalModel: 0, timeintervalStarttime: "00:00", timeintervalScheme
         break;
       case 'DISPATCH':
         typeStr = '调度'
@@ -2728,7 +2752,7 @@ class SignalManagement extends PureComponent {
                           planStageLists.map((item, i) => {
                             return <div key={'phaseStage' + i} className={styles.imageName}>
                               <span title={`${item.phasestageNo} - ${item.phasestageName}`} className={styles.IdName}><em />{`${item.phasestageNo} - ${item.phasestageName}`}：</span>
-                              <Input type='number' value={Number(item.phaseTimeIndex)} onChange={e => this.handleChangeInput(e, 'state', 'planStageLists', 'phaseTimeIndex', i)} placeholder="请输入" />
+                              <Input type='number' value={Number(item.phaseTimeIndex)} onChange={e => this.handleChangeInput(e, 'state', 'planStageLists', 'phaseTimeIndex', i)} onBlur={ e => this.getCheckPhaseTime(e, roadInterId, item.phasestageNo, i) } placeholder="请输入" />
                               <img src={`${this.phaseBgUrl}${item.imagePath}`} />
                             </div>
                           })
@@ -3316,6 +3340,7 @@ const mapDisPatchToProps = (dispatch) => {
     getIconImageList: bindActionCreators(getIconImageList, dispatch), // 回显图标
     getUpdateAllType: bindActionCreators(getUpdateAllType, dispatch), // 修改列表中的某一条 
     getSelectLists: bindActionCreators(getSelectLists, dispatch), // 编辑车道、灯组、检测器的列表
+    getCheckPhaseTime: bindActionCreators(getCheckPhaseTime, dispatch), // 方案相位阶段链时间的合法不
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(SignalManagement)
