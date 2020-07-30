@@ -269,13 +269,17 @@ class SignalManagement extends PureComponent {
       this.getListDayData(dispatchClickInfo)
     }
     if (prevState.data.planCheckTimeRes !== planCheckTimeRes) {
+      debugger
       if (planCheckTimeRes === 0){
         message.info('时间不合法,请重新输入！')
         const planStageLists = JSON.parse(JSON.stringify(this.state.planStageLists))
         planStageLists[this.state.phaseIndex].phaseTimeIndex = 0
         this.setState({ planStageLists })
+        this.props.data.planCheckTimeRes = null
+      } else {
+        this.calcNum()
+        this.props.data.planCheckTimeRes = null
       }
-      // console.log(planCheckTimeRes, '校验时间的结果是啥子？')
     }
   }
   componentDidMount = () => {
@@ -554,6 +558,17 @@ class SignalManagement extends PureComponent {
       this[type][name] = event.target.value
     }
   }
+  calcNum = () => {
+    const newObj = JSON.parse(JSON.stringify(this.state.planStageLists))
+    const planShowDetail = JSON.parse(JSON.stringify(this.state.planShowDetail))
+    let times = 0
+    newObj && newObj.map((item) => {
+      console.log(item)
+      times += Number(item.phaseTimeIndex)
+    })
+    planShowDetail.schemeCycle = times
+    this.setState({ planShowDetail })
+  }
   getCheckPhaseTime = (e, interId, phasestageNo, i) => {
     // console.log(interId, phasestageNo, e.target.value)
     // console.log(this.state.planStageLists[i].phaseTimeIndex, '哈哈~')
@@ -579,6 +594,7 @@ class SignalManagement extends PureComponent {
     newArr.push(this.state.strStagePlanItem)
     // console.log(newArr, '看下数据对不？')
     this.setState({ showFlag: true, planStageLists: newArr })
+    this.calcNum()
   }
   // 取消单选按钮 弹层
   stageIdCancel = () => {
@@ -1687,7 +1703,9 @@ class SignalManagement extends PureComponent {
     const planStageLists = JSON.parse(JSON.stringify(this.state.planStageLists))
     if (planStageLists.length > 1) {
       planStageLists.splice(planStageLists.length - 1, 1)
-      this.setState({ planStageLists })
+      this.setState({ planStageLists }, () => {
+        this.calcNum()
+      })
     } else {
       message.info('请至少保留一条数据！')
     }
