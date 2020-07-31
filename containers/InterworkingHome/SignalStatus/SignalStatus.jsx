@@ -364,7 +364,6 @@ class SignalStatus extends Component {
         <Websocket
           url={`${this.props.data.devSockets}/DCU/websocket/signalState/0/0/0?Authorization=${this.token}`}
           onMessage={this.handleData.bind(this)}
-        // onClose={() => this.handleClose()}
         />
         {!!roadUnitId && !!roadInterId && !!roadNodeNo && <Websocket url={`${this.props.data.devSockets}/DCU/websocket/interRunState/${roadUnitId}/${roadInterId}/${roadNodeNo}?Authorization=${this.token}`} onMessage={this.handlePopData.bind(this)} />}
         <Header {...this.props} />

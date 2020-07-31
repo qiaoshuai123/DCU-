@@ -106,7 +106,6 @@ class InterworkingList extends Component {
         <Websocket
           url={`${this.props.data.devSockets}/DCU/websocket/signalState/0/0/0?Authorization=${this.token}`}
           onMessage={this.handleData.bind(this)}
-        // onClose={() => this.handleClose()}
         />
         <div className={styles.syetem_title}>
           <div className={styles.syetem_titleLeft}>信号状态监视</div>
