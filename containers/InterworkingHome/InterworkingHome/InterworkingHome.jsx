@@ -43,7 +43,6 @@ class InterworkingHome extends Component {
     document.addEventListener('click', (e) => {
       this.visibleShowLeft('', '', false)
     })
-    // this.props.unitInfoList()
   }
   componentDidUpdate = (prevState) => {
     const { mapPointsData, dcuPopData, dcuTreeData } = this.props.data
@@ -58,13 +57,7 @@ class InterworkingHome extends Component {
     if (prevState.data.dcuPopData !== dcuPopData) {
       this.getdcuPopData(dcuPopData)
     }
-    // if (prevState.data.unitInfoLists !== unitInfoLists) {
-    //   this.getunitInfoLists(unitInfoLists)
-    // }
   }
-  // getunitInfoLists = (unitInfoLists) => {
-  //   this.searchInterList = unitInfoLists
-  // }
   getdcuPopData = (dcuPopData) => {
     this.setState({ dcuPopData })
   }
@@ -121,7 +114,6 @@ class InterworkingHome extends Component {
   setGetParams = (dataItem) => {
     localStorage.setItem('bac', JSON.stringify(dataItem.background))
     window.open(`#/roaddetail?id=${dataItem.interId}&ids=${dataItem.nodeId}&ider=${dataItem.id}`)
-    // window.open(`#roaddetail/1`)
   }
   visibleShowLeft = (top, id, show) => { // 框的跳转与位置
     if (top || id) {
@@ -198,7 +190,6 @@ class InterworkingHome extends Component {
           offset: new AMap.Pixel(-16, -16),
           content: "<div inter-id='" + positions[i].id + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
           extData: { id: positions[i].id },
-          // content: "<div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
         })
         marker.on('click', (e) => {
           map.emit('click', {
@@ -309,7 +300,6 @@ class InterworkingHome extends Component {
     }
   }
   handlePopData(data) {
-    // debugger
     const { isOnline } = JSON.parse(data);
     isOnline === '1' ? $('#phasestageName').text('正常在线') : $('#phasestageName').text('离线状态')
     // $('#schemeName').text(result.schemeName)
@@ -365,7 +355,6 @@ class InterworkingHome extends Component {
         <Websocket
           url={`${this.props.data.devSockets}/DCU/websocket/dcuState/0/0/0?Authorization=${this.token}`}
           onMessage={this.handleData.bind(this)}
-        // onClose={() => this.handleClose()}
         />
         {!!roadUnitId && !!roadInterId && !!roadNodeNo && <Websocket url={`${this.props.data.devSockets}/DCU/websocket/dcuRunState/${roadUnitId}/${roadInterId}/${roadNodeNo}?Authorization=${this.token}`} onMessage={this.handlePopData.bind(this)} />}
         <Header {...this.props} />
@@ -438,7 +427,6 @@ const mapDisPatchToProps = (dispatch) => {
     checkUnitTree: bindActionCreators(checkUnitTree, dispatch),
     getMapUnitInfoList: bindActionCreators(getMapUnitInfoList, dispatch),
     getUnitPop: bindActionCreators(getUnitPop, dispatch),
-    // unitInfoList: bindActionCreators(unitInfoList, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(InterworkingHome)

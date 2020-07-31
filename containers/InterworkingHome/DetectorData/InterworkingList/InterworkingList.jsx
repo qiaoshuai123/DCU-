@@ -37,11 +37,9 @@ class InterworkingList extends Component {
     }
   }
   onChangDateStart = (date, dateString) => { // 上报时间
-    // console.log(new Date(dateString) * 1, '出厂日期')
     this.objs.startDate = new Date(dateString) * 1
   }
   onChangDateEnd = (date, dateString) => { // 结束上报时间
-    // console.log(new Date(dateString) * 1, '配置日期')
     this.objs.endDate = new Date(dateString) * 1
   }
   getunitInfoLists = (unitInfoLists) => {
