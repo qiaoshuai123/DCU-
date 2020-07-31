@@ -572,8 +572,10 @@ class SignalManagement extends PureComponent {
     newObj && newObj.map((item) => {
       times += Number(item.phaseTimeIndex)
     })
-    planShowDetail.schemeCycle = times
-    this.setState({ planShowDetail })
+    if (planShowDetail) {
+      planShowDetail.schemeCycle = times
+      this.setState({ planShowDetail })
+    }
   }
   getCheckPhaseTime = (e, interId, phasestageNo, i) => {
     this.setState({
