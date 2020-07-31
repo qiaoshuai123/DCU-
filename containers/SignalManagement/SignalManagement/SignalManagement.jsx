@@ -547,7 +547,6 @@ class SignalManagement extends PureComponent {
   // 文本输入改变值
   handleChangeInput = (event, type, name, key, index) => {
     if (key) {
-      debugger
       key === 'phaseTimeIndex' ? this.setState({ blurFlag: true }) : this.setState({ blurFlag: null })
       if (index !== undefined) {
         this[type][name][index][key] = event.target.value
@@ -580,7 +579,6 @@ class SignalManagement extends PureComponent {
     this.setState({
       phaseIndex: i,
     })
-    debugger
     if (this.state.blurFlag){
       this.props.getCheckPhaseTime(interId, phasestageNo, e.target.value)
     }
