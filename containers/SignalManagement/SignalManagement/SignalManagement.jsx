@@ -158,6 +158,7 @@ class SignalManagement extends PureComponent {
       nowText: '基础信息配置',
       editData: null,
       editCheckData: null,
+      blurFlag: null,
     }
     this.map = null
     this.moveFlag = false // 是否是移动状态
@@ -275,10 +276,11 @@ class SignalManagement extends PureComponent {
         message.info('时间不合法,请重新输入！')
         const planStageLists = JSON.parse(JSON.stringify(this.state.planStageLists))
         planStageLists[this.state.phaseIndex].phaseTimeIndex = 0
-        this.setState({ planStageLists })
+        this.setState({ planStageLists, blurFlag: null })
         this.props.data.planCheckTimeRes = null
       } else {
         this.calcNum()
+        this.setState({ blurFlag: null })
         this.props.data.planCheckTimeRes = null
       }
     }
@@ -545,6 +547,8 @@ class SignalManagement extends PureComponent {
   // 文本输入改变值
   handleChangeInput = (event, type, name, key, index) => {
     if (key) {
+      debugger
+      key === 'phaseTimeIndex' ? this.setState({ blurFlag: true }) : this.setState({ blurFlag: null })
       if (index !== undefined) {
         this[type][name][index][key] = event.target.value
         const newObj = JSON.parse(JSON.stringify(this[type][name]))
@@ -576,7 +580,10 @@ class SignalManagement extends PureComponent {
     this.setState({
       phaseIndex: i,
     })
-    this.props.getCheckPhaseTime(interId, phasestageNo, e.target.value)
+    debugger
+    if (this.state.blurFlag){
+      this.props.getCheckPhaseTime(interId, phasestageNo, e.target.value)
+    }
   }
   // 单选按钮选择
   handleChangeRadio = (event) => {
