@@ -175,7 +175,6 @@
     }
     .spanMessage {
         width: 500px;
-        height: 295px;
         background: rgba(31, 37, 49, 0.7);
         border-radius: 3px;
         position: absolute;
@@ -230,6 +229,17 @@
                     color: black;
                     background-color: #ccc;
                 }
+            }
+        }
+        .times {
+            height: 40px;
+            display: flex;
+            span {
+                font-size: 16px;
+                flex: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
         }
         .Timing {
@@ -329,7 +339,7 @@
                         position: relative;
                         width: 45px;
                         height: 45px;
-                        img{
+                        img {
                             width: 100%;
                             height: 100%;
                         }

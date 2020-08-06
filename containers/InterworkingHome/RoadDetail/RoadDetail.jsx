@@ -36,6 +36,8 @@ class RoadDetail extends Component {
       phasestageNames: '',
       isOnline: '',
       detectorState: [], // 动态更改检测器汽车显示
+      signalTime: '', // 信号机时间
+      dcuTime: '', // dcu时间
     }
     this.imgshref = '/DCU/dcuImage/background/'
     this.laneBgUrl = '/DCU/dcuImage/lane/' // 车道
@@ -214,6 +216,13 @@ class RoadDetail extends Component {
       schemeDcu,
     })
   }
+  handleTime = (e) => {
+    const { signalTime, dcuTime } = JSON.parse(e)
+    this.setState({
+      signalTime,
+      dcuTime,
+    })
+  }
   startWidth = (time, no) => {
     const { planRunStage } = this.state
     if (planRunStage) {
@@ -243,7 +252,7 @@ class RoadDetail extends Component {
       IsspanMessage, RoadImg, laneInfoAndDetailinfo, lampgroupDetailListinfo, detectorDetailListinfo,
       isMeessage, dcuPopData, schemeInfoListinfo, lockStateListinfo, nowPhasestageInfos, planRunStage,
       arrs, remainingTime, schemeName, imgPaths, phasestageNames, widths, isOnline, phasestageNo,
-      schemeDcu, detectorState,
+      schemeDcu, detectorState, signalTime, dcuTime,
     } = this.state
     return (
       <div className={styles.RoadDetail}>
@@ -282,6 +291,12 @@ class RoadDetail extends Component {
           isMeessage && <Websocket
             url={`${this.props.data.devSockets}/DCU/websocket/dcuRunState/${this.unitId}/${this.interId}/${this.nodeId}?Authorization=${this.token}`}
             onMessage={this.handleDcu.bind(this)}
+          />
+        }
+        {
+          IsspanMessage && <Websocket
+            url={`${this.props.data.devSockets}/DCU/websocket/deviceTime/0/${this.interId}/0?Authorization=${this.token}`}
+            onMessage={this.handleTime.bind(this)}
           />
         }
         <div className={styles.dcuStyles} onClick={this.showImgMessage}>
@@ -422,6 +437,18 @@ class RoadDetail extends Component {
                   schemeInfoListinfo && schemeInfoListinfo.map(item => <li key={item.id} onDoubleClick={() => this.centerControls(item.schemeNodeNo, '锁定方案', 3)}>{item.schemeName}</li>)
                 }
               </ul>
+            </div>
+            <div className={styles.times}>
+              <span>
+                {
+                  dcuTime
+                }
+              </span>
+              <span>
+                {
+                  signalTime
+                }
+              </span>
             </div>
             <div className={styles.Timing}>
               <div className={styles.timingLeft}>
