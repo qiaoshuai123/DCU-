@@ -155,7 +155,7 @@ class InterworkingList extends Component {
             </div>
             {systemList && systemList.map((item, index) => {
               return (
-                <div className={styles.listItems} key={item.id + index}>
+                <div className={styles.listItems} key={item.id + index + item.interName}>
                   <div className={styles.listTd} >{item.interId}</div>
                   <div className={styles.listTd} >{item.interName}</div>
                   <div className={styles.listTd} >{item.ip}</div>
