@@ -197,7 +197,7 @@ class InterworkingList extends Component {
                       this.userLimit.indexOf(301) !== -1 ?
                         <span className={styles.delectName} onClick={() => { this.getresetPwd(item) }}>
                           路口监视
-                        </span> : '暂无权限'
+                        </span> : ''
                     }
                   </div>
                 </div>)

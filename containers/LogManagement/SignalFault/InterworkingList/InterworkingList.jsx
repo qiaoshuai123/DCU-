@@ -25,10 +25,12 @@ class InterworkingList extends Component {
       pageNo: 1,
       startTime: '',
     }
+    this.token = JSON.parse(localStorage.getItem('userInfo')).token
   }
   componentDidMount = () => {
     this.getLogTypes()
     this.getLogList()
+    this.userLimit = (JSON.parse(localStorage.getItem('userLimit'))).map(item => item.id)
   }
   getResetParams = (params) => {
     if (JSON.stringify(params) !== '{}') {
@@ -68,7 +70,7 @@ class InterworkingList extends Component {
   }
   // 导出excel表格
   exportTable = () => {
-    window.location.href = `${this.exportUrl}${this.getResetParams(this.logListParams)}`
+    window.location.href = `${this.exportUrl}${this.getResetParams(this.logListParams)}&Authorization=${this.token}`
   }
   handleChangeType = (value, options) => {
     const types = options.key === 'null' ? null : options.key
@@ -134,7 +136,10 @@ class InterworkingList extends Component {
           <span className={styles.searchBtn} onClick={this.handleSearchLogList} limitid="13">查询</span>
         </div>
         <div className={styles.equipmentList}>
-          <span onClick={this.exportTable}>导出设备表</span>
+          {
+            this.userLimit && this.userLimit.indexOf(421 ) !== -1 ?
+              <span onClick={this.exportTable}>导出设备表</span> : ''
+          }
         </div>
         <div className={styles.syetem_buttom}>
           <div className={styles.listBox}>

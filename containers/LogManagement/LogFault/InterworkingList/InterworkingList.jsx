@@ -18,9 +18,12 @@ class InterworkingList extends Component {
       pageNo: 1,
       keyword: '',
     }
+    this.exportUrl = '/DCU/log/exportDcuFaultList'
+    this.token = JSON.parse(localStorage.getItem('userInfo')).token
   }
   componentDidMount = () => {
     this.getLogFaultLists()
+    this.userLimit = (JSON.parse(localStorage.getItem('userLimit'))).map(item => item.id)
   }
   // 转格式
   getFormData = (obj) => {
@@ -41,6 +44,18 @@ class InterworkingList extends Component {
       }
     })
   }
+  getResetParams = (params) => {
+    if (JSON.stringify(params) !== '{}') {
+      let newParams = '?'
+      const resetParams = Object.keys(params)
+      const lengths = resetParams.length
+      Object.keys(params).forEach((item, index) => {
+        newParams += `${item}=${params[item]}${index !== lengths - 1 ? '&' : ''}`
+      })
+      return newParams
+    }
+    return params
+  }
   getresetPwd = (id) => {
     window.open(`#roaddetail/${id}`)
   }
@@ -55,6 +70,10 @@ class InterworkingList extends Component {
   handleKeyWordChange = (e) => {
     this.listParams.keyword = e.target.value
   }
+  // 导出excel表格
+  exportTable = () => {
+    window.location.href = `${this.exportUrl}${this.getResetParams(this.listParams)}&Authorization=${this.token}`
+  }
   render() {
     const { systemList, totalPage, currentPage } = this.state
     return (
@@ -68,6 +87,12 @@ class InterworkingList extends Component {
             <div className={styles.inSle}><Input onChange={this.handleKeyWordChange} /></div>
           </div>
           <span className={styles.searchBtn} onClick={this.handleSearchList} limitid="13">查询</span>
+        </div>
+        <div className={styles.equipmentList}>
+          {
+            this.userLimit && this.userLimit.indexOf(441) !== -1 ?
+              <span onClick={this.exportTable}>导出设备表</span> : ''
+          }
         </div>
         <div className={styles.syetem_buttom}>
           <div className={styles.listBox}>

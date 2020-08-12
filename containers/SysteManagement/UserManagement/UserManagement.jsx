@@ -309,7 +309,6 @@ class TrafficSystem extends React.Component {
                   <div className={styles.listTd} >所属用户组</div>
                   <div className={styles.listTd} >权限角色</div>
                   <div className={styles.listTd} >用户创建时间</div>
-                  <div className={styles.listTd} >最后一次登陆客户机时间</div>
                   <div className={styles.listTd} >用户状态</div>
                   <div className={styles.listTd} >操作</div>
                 </div>
@@ -322,7 +321,6 @@ class TrafficSystem extends React.Component {
                       <div className={styles.listTd} ><span className={styles.roadName}>{item.deptName}</span></div>
                       <div className={styles.listTd} ><span className={styles.roadName}>{item.roleName}</span></div>
                       <div className={styles.listTd} ><span className={styles.roadName}>{item.createTime}</span></div>
-                      <div className={styles.listTd} ><span className={styles.roadName}>{item.lastTime}</span></div>
                       <div className={styles.listTd} ><span className={styles.roadName}>{item.status ? '已禁用' : '已启用'}</span></div>
                       <div className={styles.listTd} >
                         <span className={styles.delectName} onClick={() => { this.getresetPwd(item.id) }}>

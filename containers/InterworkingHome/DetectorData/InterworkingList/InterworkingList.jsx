@@ -21,7 +21,9 @@ class InterworkingList extends Component {
       endDate: '',
       pageNo: 1,
     }
+    this.exportUrl = '/DCU/detectorData/exportDetectorDataList'
     this.userLimit = (JSON.parse(localStorage.getItem('userLimit'))).map(item => item.id)
+    this.token = JSON.parse(localStorage.getItem('userInfo')).token
   }
   componentDidMount = () => {
     this.props.detectorDataListByPage('pageNo=1')
@@ -69,12 +71,23 @@ class InterworkingList extends Component {
     document.body.removeChild(a)
     window.URL.revokeObjectURL(href)
   }
+  // key value 参数拼接
+  getResetParams = (params) => {
+    if (JSON.stringify(params) !== '{}') {
+      let newParams = '?'
+      const resetParams = Object.keys(params)
+      const lengths = resetParams.length
+      Object.keys(params).forEach((item, index) => {
+        if (params[item] !== null && params[item] !== 'null') {
+          newParams += `${item}=${params[item]}${index !== lengths - 1 ? '&' : ''}`
+        }
+      })
+      return newParams
+    }
+    return params
+  }
   exportTable = () => {
-    const { keyword, startDate, endDate, pageNo, names } = this.objs
-    const objs = `endTime=${endDate}&keyword=${keyword}&startTime=${startDate}&unitId=${names}`
-    this.props.exportDetectorDataList(objs).then(res => {
-      this.getTimingInfoByExcels(res.data)
-    })
+    window.location.href = `${this.exportUrl}${this.getResetParams(this.objs)}&Authorization=${this.token}`
   }
   handleChange = (e, optios) => {
     if (optios) {
@@ -158,7 +171,7 @@ class InterworkingList extends Component {
         <div className={styles.equipmentList}>
           设备列表
           {
-            this.userLimit.indexOf(301) !== -1 ?
+            this.userLimit && this.userLimit.indexOf(141) !== -1 ?
               <span onClick={this.exportTable}>
                 导出数据表
               </span> : ''
