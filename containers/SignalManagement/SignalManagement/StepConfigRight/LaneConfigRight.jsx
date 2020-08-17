@@ -69,22 +69,26 @@ class LaneConfigRight extends PureComponent {
         <div className={styles.rTit}>车道配置列表{ userLimit ? <em onClick={() => { this.popLayerShowHide("stepRoadAddEdit", true, null, 'LANE') }}>添加</em> : null }</div>
         <div className={styles.rList}>
           { laneLists === null || laneLists.length === 0 ? <div className={styles.noData}>暂无数据</div> : <div className={styles.listItem}>
+            <em>车道ID</em>
             <em>车道号</em>
             <em>道路编号</em>
+            <em>进出口方向</em>
             <em>转向</em>
-            <em>通行方向描述</em>
+            <em>方向描述</em>
             <em>外部车道号</em>
-            { userLimit ? <em>操作</em> : null }
+            { userLimit ? <em style={{ flex: 1.3 }}>操作</em> : null }
           </div> }
           {
             laneLists && laneLists.map((item) => {
               return <div onClick={this.handleClickFind} key={'lane'+item.laneId} tag-mark={'lane'+item.laneId} className={classNames(styles.listItem, clickFlag ? styles.current : null)}>
                         <span>{!item.laneId ? '无' : item.laneId}</span>
+                        <span>{!item.laneNo ? '无' : item.laneNo}</span>
                         <span>{!item.fRid ? '无' : item.fRid}</span>
+                        <span>{!item.laneSdtypeNo ? '无' : item.laneSdtypeNo}</span>
                         <span>{!item.turnDirNoName ? '无' : item.turnDirNoName}</span>
                         <span>{!item.dirName ? '无' : item.dirName}</span>
                         <span>{!item.laneIdCust ? '无' : item.laneIdCust}</span>
-                        { userLimit ? <span className={styles.del}><b onClick={(e) => this.updateListItem(item, 'LANE', e)}>修改</b> <b onClick={(e) => this.delListItem(e, item.id)}>删除</b></span> : null }
+                        { userLimit ? <span style={{ flex: 1.3 }} className={styles.del}><b onClick={(e) => this.updateListItem(item, 'LANE', e)}>修改</b> <b onClick={(e) => this.delListItem(e, item.id)}>删除</b></span> : null }
                       </div>
             })
           }

@@ -99,6 +99,7 @@ class SignalManagement extends PureComponent {
       phaseShieldData: null,
       schemePhasestageTypeData: null,
       timeintervalModelChainData: null,
+      laneSdtypeNoData: null,
       typeData: null,
       phaseShowDetail: null,
       stageShowDetail: null,
@@ -380,6 +381,7 @@ class SignalManagement extends PureComponent {
     this.getSystemCodeType(29) // 相位禁止
     this.getSystemCodeType(32) // 方案相位阶段出现类型
     this.getSystemCodeType(33) // 方案相位阶段出现类型
+    this.getSystemCodeType(35) // 进出口方向
   }
   // 非空验证
   isNotEmpty = (keyVal, msg, flag) => {
@@ -513,6 +515,9 @@ class SignalManagement extends PureComponent {
         case 33:
           this.setState({ timeintervalModelChainData: this.props.data.codeTypeData }) // 时段运行模式链
           break;
+        case 35:
+          this.setState({ laneSdtypeNoData: this.props.data.codeTypeData }) // 进出口方向
+          break;
       }
     })
   }
@@ -557,7 +562,8 @@ class SignalManagement extends PureComponent {
         this.setState({ [name]: newObj })
       } else {
         // key === 'dailyplanNo' ? this[type][name][key] = Number(event.target.value) : this[type][name][key] = event.target.value
-        this[type][name][key] = event.target.value
+        debugger
+        this[type][name][key] = (key === "laneNo" ? Number(event.target.value) : event.target.value)
         const newObj = JSON.parse(JSON.stringify(this[type][name]))
         this.setState({ [name]: newObj })
       }
@@ -868,6 +874,8 @@ class SignalManagement extends PureComponent {
             "imageUrl": "", // 图片
             "interId": this.state.roadInterId, //当前路口interId  隐藏项
             "laneId": '',//车道ID
+            "laneNo": 0,//车道号
+            "laneSdtypeNo": 0,//进出口方向
             "laneIdCust": '', //外部车道ID
             "nodeNo": this.state.roadNodeNo,//当前路口nodeNo  隐藏项
             "turnDirNoList": '', //转向 复选框
@@ -1568,7 +1576,11 @@ class SignalManagement extends PureComponent {
         typeStr = '车道'
         showStr = 'stepRoadAddEdit'
         detailStr = 'laneShowDetail'
+        this.cyclicComparison(this.state.laneSdtypeNoData, 'laneSdtypeNo', itemDetailData.laneSdtypeNo, 'laneShowDetail', true)
+        itemDetailData = JSON.parse(JSON.stringify(this.state.laneShowDetail))
         if (this.isNotEmpty(itemDetailData.laneId, '车道ID不能为空！')) return
+        if (this.isNotEmpty(itemDetailData.laneNo, '车道号不能为空！')) return
+        if (this.isNotEmpty(itemDetailData.laneSdtypeNo, '请选择进出口方向！')) return
         if (this.isNotEmpty(itemDetailData.fDir8No, '请选择方向！')) return
         if (this.isNotEmpty(itemDetailData.turnDirNoList, '请选择转向！')) return
         if (this.verificationID(this.props.data.laneLists, 'laneId', itemDetailData.laneId, '车道ID已存在')) return
@@ -1618,9 +1630,12 @@ class SignalManagement extends PureComponent {
         typeStr = '车道'
         showStr = 'stepRoadAddEdit'
         detailStr = 'laneShowDetail'
-        debugger
+        this.cyclicComparison(this.state.laneSdtypeNoData, 'laneSdtypeNo', itemDetailData.laneSdtypeNo, 'laneShowDetail', true)
+        itemDetailData = JSON.parse(JSON.stringify(this.state.laneShowDetail))
         this.state.popAddEditText === '编辑' ? resData = this.state.editData : resData = this.props.data.laneLists
         if (this.isNotEmpty(itemDetailData.laneId, '车道ID不能为空！')) return
+        if (this.isNotEmpty(itemDetailData.laneNo, '车道号不能为空！')) return
+        if (this.isNotEmpty(itemDetailData.laneSdtypeNo, '请选择进出口方向！')) return
         if (this.isNotEmpty(itemDetailData.fDir8No, '请选择方向！')) return
         if (this.isNotEmpty(itemDetailData.turnDirNoList, '请选择转向！')) return
         if (this.verificationID(resData, 'laneId', itemDetailData.laneId, '车道ID已存在')) return
@@ -1954,7 +1969,7 @@ class SignalManagement extends PureComponent {
       laneShowDetail, laneIconLists, fDir8NoData, turnDirNoListData,
       lightShowDetail, lightIconLists, detectorShowDetail, detectorIconLists, showFlag, nowCycleLength, cycleLength,
       lampgroupType, controlDir, controlTurn, detectorType, phaseForbidenData, phaseShieldData, typeData, planStageLists, planChainsLists,
-      phaseShowDetail, stageShowDetail, planShowDetail, dayplanShowDetail, dispatchShowDetail, laneSelectLists, lightSelectLists, detectorSelectLists, selectFlag, phaseDefaultSelectLists, laneDefaultSelectLists, lightDefaultSelectLists, detectorDefaultSelectLists, phaseIconLists, phaseSelectLists, phaseFlag, schemePhasestageTypeData, timeintervalModelChainData,
+      phaseShowDetail, stageShowDetail, planShowDetail, dayplanShowDetail, dispatchShowDetail, laneSelectLists, lightSelectLists, detectorSelectLists, selectFlag, phaseDefaultSelectLists, laneDefaultSelectLists, lightDefaultSelectLists, detectorDefaultSelectLists, phaseIconLists, phaseSelectLists, phaseFlag, schemePhasestageTypeData, timeintervalModelChainData, laneSdtypeNoData,
       priorityData, monthData, dayData, weekData, Dcu_Io_Ids, dayPlanClickInfo, dispatchClickInfo, popItemFlag, listNames, loadFlag, editFlag, userLimit,
       oneFlag, twoFlag, threeFlag, fourFlag, fiveFlag, sixFlag, sevenFlag, eightFlag, nineFlag, tenFlag,
       oneText, twoText, threeText, fourText, fiveText, sixText, sevenText, eightText, nineText, nowText, editCheckDataFlag, editCheckData
@@ -2164,6 +2179,22 @@ class SignalManagement extends PureComponent {
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>道路ID：</span><Input value={laneShowDetail.fRid} onChange={e => this.handleChangeInput(e, 'state', 'laneShowDetail', 'fRid')} placeholder="请输入道路ID" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>车道号：</span><Input type='number' value={laneShowDetail.laneNo} onChange={e => this.handleChangeInput(e, 'state', 'laneShowDetail', 'laneNo')} placeholder="请输入车道号" />
+                  </div>
+                  <div className={styles.itemInputBox}>
+                    <span>进出口方向：</span>
+                    <Select
+                      value={laneShowDetail.laneSdtypeNo ? laneShowDetail.laneSdtypeNo : 0}
+                      onChange={v => this.handleChangeSel(v, 'state', 'laneShowDetail', 'laneSdtypeNo')}>
+                      <Option value={0}>请选择进出口方向</Option>
+                      {
+                        laneSdtypeNoData.map((items, key) => {
+                          return <Option key={"laneTypeNo" + items.dictCode} value={items.dictCode}>{items.codeName}</Option>
+                        })
+                      }
+                    </Select>
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>外部车道ID：</span><Input value={laneShowDetail.laneIdCust} onChange={e => this.handleChangeInput(e, 'state', 'laneShowDetail', 'laneIdCust')} placeholder="请输入外部车道ID" />
