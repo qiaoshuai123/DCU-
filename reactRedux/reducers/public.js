@@ -13,6 +13,12 @@ const publics = (state = {}, action) => {
       return Object.assign({}, state, { dcuPopData: payload })
     case types.POST_UPDATE_SIGNAL:
       return Object.assign({}, state, { savePopData: payload })
+    case types.GET_REBOOT:
+      return Object.assign({}, state, { rebootData: payload })
+    case types.GET_SET_OFF_LINE:
+      return Object.assign({}, state, { offLineData: payload })
+    case types.GET_PROOFREAD_TIME:
+      return Object.assign({}, state, { proofreadTimeData: payload })
     default:
       return state
   }

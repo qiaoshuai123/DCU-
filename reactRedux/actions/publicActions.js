@@ -7,7 +7,8 @@ import * as types from '../actionTypes/publicTypes'
 import RestUtil from '../RestUtil'
 
 import {
-  API_UNIT_INFO_LIST, API_UNIT_TREE, API_SIGNAL_BY_INTERID, API_UPDATE_SIGNAL, API_SYSTEM_CODE_TYPE
+  API_UNIT_INFO_LIST, API_UNIT_TREE, API_SIGNAL_BY_INTERID, API_UPDATE_SIGNAL, API_SYSTEM_CODE_TYPE,
+  API_REBOOT, API_SET_OFF_LINE, API_PROOFREAD_TIME
 } from '../actionTypes/publicAPIs'
 
 // 系统字典方法
@@ -98,3 +99,48 @@ export const postSignalSave = (params) => {
   }
 }
 
+// DCU点位弹层信息 || 设备重启
+export const getReboot = (interId, rebootDeviceType) => {
+  return async (dispatch) => {
+    try {
+      const result = await RestUtil.get(`${API_REBOOT}?interId=${interId}&rebootDeviceType=${rebootDeviceType}`)
+      if (result.data.code === 0 || result.data.code === -1) {
+        dispatch({ type: types.GET_REBOOT, payload: result.data.msg })
+      } else {
+        console.error(result.data.msg)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+}
+// DCU点位弹层信息 || 手动离线
+export const getSetOffLine = (interId) => {
+  return async (dispatch) => {
+    try {
+      const result = await RestUtil.get(`${API_SET_OFF_LINE}?interId=${interId}`)
+      if (result.data.code === 0 || result.data.code === -1) {
+        dispatch({ type: types.GET_SET_OFF_LINE, payload: result.data.msg })
+      } else {
+        console.error(result.data.msg)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+}
+// DCU点位弹层信息 ||  校时
+export const getProofreadTime = (interId, proofreadType) => {
+  return async (dispatch) => {
+    try {
+      const result = await RestUtil.get(`${API_PROOFREAD_TIME}?interId=${interId}&proofreadType=${proofreadType}`)
+      if (result.data.code === 0 || result.data.code === -1) {
+        dispatch({ type: types.GET_PROOFREAD_TIME, payload: result.data.msg })
+      } else {
+        console.error(result.data.msg)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+}

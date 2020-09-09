@@ -11,3 +11,7 @@ export const POST_UPDATE_SIGNAL = 'POST_UPDATE_SIGNAL'  //  //信号机基础信
 
 // 系统字典
 export const GET_SYSTEM_CODE_TYPE = 'GET_SYSTEM_CODE_TYPE'
+
+export const GET_REBOOT = 'GET_REBOOT' // 设备重启
+export const GET_SET_OFF_LINE = 'GET_SET_OFF_LINE' // 手动离线
+export const GET_PROOFREAD_TIME = 'GET_PROOFREAD_TIME' //校时

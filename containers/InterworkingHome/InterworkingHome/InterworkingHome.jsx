@@ -3,7 +3,7 @@ import { Input, message, Select, Icon } from 'antd'
 import Websocket from 'react-websocket'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { getMapUnitInfoList, getUnitPop, checkUnitTree } from '../../../reactRedux/actions/publicActions'
+import { getMapUnitInfoList, getUnitPop, checkUnitTree, getReboot, getSetOffLine, getProofreadTime } from '../../../reactRedux/actions/publicActions'
 import Header from '../../../components/Header/Header'
 import CustomTree from '../../../components/CustomTree/CustomTree'
 import InterworkingList from './InterworkingList/InterworkingList'
@@ -38,6 +38,9 @@ class InterworkingHome extends Component {
     })
     window.showHidePop = this.showHidePop
     window.setGetParams = this.setGetParams
+    window.getReboot = this.getReboot
+    window.getSetOffLine = this.getSetOffLine
+    window.getProofreadTime = this.getProofreadTime
     this.props.getMapUnitInfoList()
     this.userLimit = (JSON.parse(localStorage.getItem('userLimit'))).map(item => item.id)
     document.addEventListener('click', (e) => {
@@ -45,7 +48,7 @@ class InterworkingHome extends Component {
     })
   }
   componentDidUpdate = (prevState) => {
-    const { mapPointsData, dcuPopData, dcuTreeData } = this.props.data
+    const { mapPointsData, dcuPopData, dcuTreeData, rebootData, offLineData, proofreadTimeData } = this.props.data
     if (prevState.data.mapPointsData !== mapPointsData) {
       this.getmapPointsData(mapPointsData)
     }
@@ -57,7 +60,44 @@ class InterworkingHome extends Component {
     if (prevState.data.dcuPopData !== dcuPopData) {
       this.getdcuPopData(dcuPopData)
     }
+    // if (prevState.data.rebootData !== rebootData) {
+    //   console.log(rebootData, 'AAAA')
+    //   this.setState({ rebootData: null }, () => {
+    //     this.setState({ rebootData })
+    //   })
+    // }
+    // if (prevState.data.offLineData !== offLineData) {
+    //   console.log(offLineData, 'BBBB')
+    //   this.setState({ offLineData: null }, () => {
+    //     this.setState({ offLineData })
+    //   })
+    // }
+    // if (prevState.data.proofreadTimeData !== proofreadTimeData) {
+    //   console.log(proofreadTimeData, 'CCCC')
+    //   this.setState({ proofreadTimeData: null }, () => {
+    //     debugger
+    //     this.setState({ proofreadTimeData })
+    //   })
+    // }
   }
+  getSetOffLine = (item) => {
+    console.log(item, '离线')
+    this.props.getSetOffLine(item.interId).then(() => {
+      message.info(this.props.data.offLineData)
+    })
+  }
+  getProofreadTime = (item, proofreadType) => {
+    console.log(item,'校时')
+    this.props.getProofreadTime(item.interId, proofreadType).then(()=>{
+      message.info(this.props.data.proofreadTimeData)
+    })
+  }
+  getReboot = (item, rebootDeviceType) => {
+    console.log(item, '重启')
+    this.props.getReboot(item.interId, rebootDeviceType).then(()=>{
+      message.info(this.props.data.rebootData)
+    })
+  } 
   getdcuPopData = (dcuPopData) => {
     this.setState({ dcuPopData })
   }
@@ -217,6 +257,7 @@ class InterworkingHome extends Component {
   }
   //在指定位置打开信息窗体
   openInfoWin = (map, dataItem, marker, name) => {
+    console.log(dataItem, '看下数据')
     var info = [];
     let itemData = JSON.parse(JSON.stringify(this.props.data.dcuPopData))
     // this.dataItem = JSON.parse(JSON.stringify(dataItem))
@@ -231,7 +272,7 @@ class InterworkingHome extends Component {
     info.push(`<p class='input-item'>设备状态：<span id='phasestageName'></span></p>`);
     info.push(`<p class='input-item'>信号接入状态：<span>${'暂无'}</span></p>`);
     info.push(`<p class='input-item'>发布服务状态：<span>${'暂无'}</span></p>`);
-    this.userLimit.indexOf(301) !== -1 ? info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>路口监视</span></p>`) : '';
+    this.userLimit.indexOf(301) !== -1 ? info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-items'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>路口监视</span><span title='DCU手动离线' class='paramsBtn' onclick='getSetOffLine(` + JSON.stringify(dataItem) + `)'>手动离线</span><span title='DCU校时' class='paramsBtn' onclick='getProofreadTime(` + JSON.stringify(dataItem)+ `,1 )'>校时</span><span title='DCU重启' class='paramsBtn' onclick='getReboot(` + JSON.stringify(dataItem) + `,1)'>重启</span></p>`) : '';
     const infoWindow = new AMap.InfoWindow({
       content: info.join("")  //使用默认信息窗体框样式，显示信息内容
     });
@@ -429,6 +470,9 @@ const mapDisPatchToProps = (dispatch) => {
     checkUnitTree: bindActionCreators(checkUnitTree, dispatch),
     getMapUnitInfoList: bindActionCreators(getMapUnitInfoList, dispatch),
     getUnitPop: bindActionCreators(getUnitPop, dispatch),
+    getReboot: bindActionCreators(getReboot, dispatch),
+    getSetOffLine: bindActionCreators(getSetOffLine, dispatch),
+    getProofreadTime: bindActionCreators(getProofreadTime, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(InterworkingHome)

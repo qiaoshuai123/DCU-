@@ -728,7 +728,7 @@ class Information extends Component {
               </div>
             </div>
             {/* 列表 */}
-            <div className={styles.rTit}><span>信号机基础信息</span><em onClick={this.addSigna}>保存</em><em onClick={() => this.btnreboot(2)}>设置重启</em><em onClick={this.InfeditData}>下发配置</em><em onClick={this.InfloadData}>上传配置</em></div>
+            <div className={styles.rTit}><span>信号机基础信息</span><em onClick={this.addSigna}>保存</em>{/* <em onClick={() => this.btnreboot(2)}>设置重启</em> */}<em onClick={this.InfeditData}>下发配置</em><em onClick={this.InfloadData}>上传配置</em></div>
             <div className={styles.rCon}>
               <div className={styles.itemInputBox}>
                 <span>生产厂家：</span><Input path="brand" onChange={this.handleChangeValue} value={brand} placeholder="请输入生产厂家" />

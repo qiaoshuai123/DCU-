@@ -12,3 +12,7 @@ export const API_UPDATE_SIGNAL = '/DCU/signalInfo/updateSignal' //信号机基�
 
 // 系统字典API
 export const API_SYSTEM_CODE_TYPE = '/DCU/sys/code/systemCodeListByCodeType'
+
+export const API_REBOOT = '/DCU/unitInfo/reboot' // 设备重启
+export const API_SET_OFF_LINE = '/DCU/unitInfo/setOffline' // 手动离线
+export const API_PROOFREAD_TIME = '/DCU/dcuInfo/proofreadTime' //校时

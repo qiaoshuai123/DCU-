@@ -243,6 +243,13 @@ $bor_color: #27343b;
     font-size: 12px;
     padding: 0 30px;
   }
+  :global(.content_box_title p.input-items) {
+    line-height: 25px;
+    font-size: 12px;
+    padding: 0 30px;
+    display: flex;
+    justify-content: center;
+  }
   :global(.content_box_title p.input-item span b.icon_phase) {
     width: 24px;
     height: 24px;
@@ -259,6 +266,26 @@ $bor_color: #27343b;
     width: 120px;
     line-height: 30px;
     display: block;
+    text-align: center;
+    font-size: 14px;
+    margin: 15px auto 0;
+    border: 1px #838a9a solid;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+    color: #838a9a;
+    cursor: pointer;
+    &:hover {
+      color: #38c4d1;
+      background-color: #1f2531;
+    }
+  }
+  :global(.content_box_title p.input-items span.paramsBtn) {
+    padding:0 10px;
+    line-height: 30px;
+    display: flex;
     text-align: center;
     font-size: 14px;
     margin: 15px auto 0;

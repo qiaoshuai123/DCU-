@@ -58,6 +58,9 @@ class PhaseConfigRight extends PureComponent {
         case 'phaseLampgroupId':
           newObj = {key: p, label: '相位包含灯组'}
           break;
+        case 'laneIds':
+          newObj = {key: p, label: '相位包含车道'}
+          break;
         case 'rightofwayLoseLamp1TypeName':
           newObj = {key: p, label: '失去路权过渡灯色1类型'}
           break;
@@ -160,63 +163,90 @@ class PhaseConfigRight extends PureComponent {
     this.props.popLayerShowHide(name, flag, event, stepType)
   }
   handleClickFind = (e, itemData) => {
-    debugger
     if ($(e.currentTarget).hasClass(Liststyles.hover)){
       $(e.currentTarget).removeClass(Liststyles.hover)
-      if (itemData.phaseLampgroupId.indexOf(',') === -1) {
+      if (itemData.phaseLampgroupId && itemData.phaseLampgroupId.indexOf(',') === -1) {
         $('div[pic-mark]').map(( i, item ) => {
-          if (item.getAttribute('pic-mark') === ('lampgroup'+itemData.phaseLampgroupId) || item.getAttribute('pic-mark') === ('lane'+itemData.phasestageLane)) {
+          if (item.getAttribute('pic-mark') === ('lampgroup'+itemData.phaseLampgroupId) || item.getAttribute('pic-mark') === ('detector'+itemData.phaseDemand) || item.getAttribute('pic-mark') === ('detector'+itemData.laneIds)) {
             $(item).removeClass(styles.imgCurrent)
           }
         })
       } else {
-        const leftSelArr = itemData.phaseLampgroupId.split(',')
-        leftSelArr.map((items) => {
-          $('div[pic-mark]').map(( i, item ) => {
-            if (item.getAttribute('pic-mark') === ('lampgroup'+items)) {
-              $(item).removeClass(styles.imgCurrent)
-            }
+        if(itemData.phaseLampgroupId !== null && itemData.phaseLampgroupId !== ""){
+          const leftSelArr = itemData.phaseLampgroupId.split(',')
+          leftSelArr.map((items) => {
+            $('div[pic-mark]').map(( i, item ) => {
+              if (item.getAttribute('pic-mark') === ('lampgroup'+items)) {
+                $(item).removeClass(styles.imgCurrent)
+              }
+            })
           })
-        })
-        const leftdetectorArr = itemData.phaseDemand.split(',')
-        leftdetectorArr.map((items) => {
-          $('div[pic-mark]').map(( i, item ) => {
-            if (item.getAttribute('pic-mark') === ('detector'+items)) {
-              $(item).removeClass(styles.imgCurrent)
-            }
+        }
+        if(itemData.phaseDemand !== null && itemData.phaseDemand !== ""){
+          const leftdetectorArr = itemData.phaseDemand.split(',')
+          leftdetectorArr.map((items) => {
+            $('div[pic-mark]').map(( i, item ) => {
+              if (item.getAttribute('pic-mark') === ('detector'+items)) {
+                $(item).removeClass(styles.imgCurrent)
+              }
+            })
           })
-        })
+        }
+        if(itemData.laneIds !== null && itemData.laneIds !== ""){
+          const leftLaneArr = itemData.laneIds.split(',')
+          leftLaneArr.map((items) => {
+            $('div[pic-mark]').map(( i, item ) => {
+              if (item.getAttribute('pic-mark') === ('lane'+items)) {
+                $(item).removeClass(styles.imgCurrent)
+              }
+            })
+          })
+        }
       }
     } else {
       $(e.currentTarget).addClass(Liststyles.hover).siblings().removeClass(Liststyles.hover)
-      if (itemData.phaseLampgroupId.indexOf(',') === -1) {
+      if (itemData.phaseLampgroupId && itemData.phaseLampgroupId.indexOf(',') === -1) {
         $('div[pic-mark]').map(( i, item ) => {
-          if (item.getAttribute('pic-mark') === ('lampgroup'+itemData.phaseLampgroupId) || item.getAttribute('pic-mark') === ('lane'+itemData.phasestageLane)) {
+          if (item.getAttribute('pic-mark') === ('lampgroup'+itemData.phaseLampgroupId) || item.getAttribute('pic-mark') === ('lane'+itemData.phaseDemand) || item.getAttribute('pic-mark') === ('detector'+itemData.laneIds)) {
             $(item).addClass(styles.imgCurrent).siblings().removeClass(styles.imgCurrent)
           }
         })
       } else {
         $('div[pic-mark]').map(( i, item ) => {
-          if (item.getAttribute('pic-mark').indexOf('lampgroup') > -1 || item.getAttribute('pic-mark').indexOf('detector') > -1) {
+          if (item.getAttribute('pic-mark').indexOf('lampgroup') > -1 || item.getAttribute('pic-mark').indexOf('detector') > -1 || item.getAttribute('pic-mark').indexOf('lane') > -1) {
             $(item).removeClass(styles.imgCurrent)
           }
         })
-        const leftSelArr = itemData.phaseLampgroupId.split(',')
-        leftSelArr.map((items) => {
-          $('div[pic-mark]').map(( i, item ) => {
-            if (item.getAttribute('pic-mark') === ('lampgroup'+items)) {
-              $(item).addClass(styles.imgCurrent)
-            }
+        if(itemData.phaseLampgroupId !== null && itemData.phaseLampgroupId !== ""){
+          const leftSelArr = itemData.phaseLampgroupId.split(',')
+          leftSelArr.map((items) => {
+            $('div[pic-mark]').map(( i, item ) => {
+              if (item.getAttribute('pic-mark') === ('lampgroup'+items)) {
+                $(item).addClass(styles.imgCurrent)
+              }
+            })
           })
-        })
-        const leftdetectorArr = itemData.phaseDemand.split(',')
-        leftdetectorArr.map((items) => {
-          $('div[pic-mark]').map(( i, item ) => {
-            if (item.getAttribute('pic-mark') === ('detector'+items)) {
-              $(item).addClass(styles.imgCurrent)
-            }
+        }
+        if(itemData.phaseDemand !== null && itemData.phaseDemand !== ""){
+          const leftdetectorArr = itemData.phaseDemand.split(',')
+          leftdetectorArr.map((items) => {
+            $('div[pic-mark]').map(( i, item ) => {
+              if (item.getAttribute('pic-mark') === ('detector'+items)) {
+                $(item).addClass(styles.imgCurrent)
+              }
+            })
           })
-        })
+        }
+        if(itemData.laneIds !== null && itemData.laneIds !== ""){
+          const leftLaneArr = itemData.laneIds.split(',')
+          leftLaneArr.map((items) => {
+            $('div[pic-mark]').map(( i, item ) => {
+              if (item.getAttribute('pic-mark') === ('lane'+items)) {
+                $(item).addClass(styles.imgCurrent)
+              }
+            })
+          })
+        }
       }
     }
   }

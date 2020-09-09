@@ -924,6 +924,7 @@ class SignalManagement extends PureComponent {
             "phaseMaxgreen2Time": 0, //相位最大绿时间2
             "phaseMingreenTime": 0, //相位最小绿时间
             "phaseName": "", //相位名称
+            "laneIds": null,
             "phaseNo": '', //相位序号手写
             "phaseShield": 0, //相位屏蔽 0 正常，1 屏蔽输出（强红），
             "rightofwayAccessLamp1Time": 0,
@@ -1157,6 +1158,7 @@ class SignalManagement extends PureComponent {
         this.cyclicComparison(this.state.typeData, 'rightofwayStartingupLoseLamp3Type', itemDetailData.rightofwayStartingupLoseLamp3Type, 'phaseShowDetail', true)
         itemDetailData.phaseLampgroupId === '请点击进行编辑' ? itemDetailData.phaseLampgroupId = null : ''
         itemDetailData.phaseDemand === '请点击进行编辑' ? itemDetailData.phaseDemand = null : ''
+        itemDetailData.laneIds === '请点击进行编辑' ? itemDetailData.laneIds = null : ''
         itemDetailData = JSON.parse(JSON.stringify(this.state.phaseShowDetail))
         this.state.popAddEditText === '编辑' ? resData = this.state.editData : resData = this.props.data.phaseLists
         if (this.isNotEmpty(itemDetailData.phaseNo, '相位序号不能为空！')) return
@@ -1370,7 +1372,7 @@ class SignalManagement extends PureComponent {
   btnSelectOver = (flag, defaultSelectLists) => {
     if (flag) {
       if (this.state.laneSelectLists) {
-        this.state.stageShowDetail.phasestageLane = defaultSelectLists
+        this.state.phaseShowDetail.laneIds = defaultSelectLists
       } else if (this.state.lightSelectLists) {
         this.state.phaseShowDetail.phaseLampgroupId = defaultSelectLists
       } else if (this.state.detectorSelectLists) {
@@ -2472,6 +2474,9 @@ class SignalManagement extends PureComponent {
                   <div className={styles.itemInputBox}>
                     <span>相位包含灯组：</span><div onClick={() => this.getSelectLists(roadInterId, roadNodeNo, 'LIGHT', 'phaseShowDetail', 'phaseLampgroupId')} className={styles.editItem}><b>{!phaseShowDetail.phaseLampgroupId ? "请点击进行编辑" : phaseShowDetail.phaseLampgroupId}</b><em>编辑</em></div>
                   </div>
+                  <div className={styles.itemInputBox} style={{ alignSelf: 'flex-start' }}>
+                    <span>相位中包含车道：</span><div onClick={() => this.getSelectLists(roadInterId, roadNodeNo, 'LANE', 'phaseShowDetail', 'laneIds')} className={styles.editItem}><b>{!phaseShowDetail.laneIds ? "请点击进行编辑" : phaseShowDetail.laneIds}</b><em>编辑</em></div>
+                  </div>
                   <div className={styles.itemInputBox}>
                     <span>相位延迟绿时间：</span><Input type='number' value={phaseShowDetail.phaseDelaygreenTime} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'phaseDelaygreenTime')} placeholder="请输入" />
                   </div>
@@ -2721,9 +2726,9 @@ class SignalManagement extends PureComponent {
                   <div className={styles.itemInputBox}>
                     <span>相位阶段软件需求：</span><div onClick={() => this.getSelectLists(roadInterId, roadNodeNo, 'DETECTOR', 'stageShowDetail', 'softwareRequirement')} className={styles.editItem}><b>{!stageShowDetail.softwareRequirement ? "请点击进行编辑" : stageShowDetail.softwareRequirement}</b><em>编辑</em></div>
                   </div>
-                  <div className={styles.itemInputBox} style={{ alignSelf: 'flex-start' }}>
+                  {/* <div className={styles.itemInputBox} style={{ alignSelf: 'flex-start' }}>
                     <span>阶段中包含车道：</span><div onClick={() => this.getSelectLists(roadInterId, roadNodeNo, 'LANE', 'stageShowDetail', 'phasestageLane')} className={styles.editItem}><b>{!stageShowDetail.phasestageLane ? "请点击进行编辑" : stageShowDetail.phasestageLane}</b><em>编辑</em></div>
-                  </div>
+                  </div> */}
                   {/* <div className={styles.itemInputBox}>
                   <span>相位阶段禁止标志：</span>
                     <Select
