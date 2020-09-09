@@ -6,10 +6,14 @@ import axios from 'axios'
 // })
 // 请求拦截
 if (process.env.NODE_ENV === 'development') {
-  axios.defaults.baseURL = 'http://192.168.1.213:20203'
+  // axios.defaults.baseURL = 'http://192.168.1.213:20203' // http://192.168.1.213:20203
 } else if (process.env.NODE_ENV === 'production') {
+<<<<<<< HEAD
   axios.defaults.baseURL = 'http://127.0.0.1:20203' // http://192.168.1.213:20203
   // axios.defaults.baseURL = 'http://39.100.128.220:20203' // http://192.168.1.213:20203
+=======
+  axios.defaults.baseURL = 'http://127.0.0.1:20203' // http://39.100.128.220:20203
+>>>>>>> 3f4ccbf146a8829b144badbc04f1f98548acc0a4
 }
 axios.interceptors.request.use((config) => {
   const pathName = (config.url.split('/')).pop()
@@ -35,8 +39,12 @@ axios.interceptors.response.use((response) => {
       // axios.defaults.baseURL = 'http://192.168.1.213:20203'
       window.location.href = 'http://localhost:20204/#/login'
     } else if (process.env.NODE_ENV === 'production') {
+<<<<<<< HEAD
       window.location.href = 'http://127.0.0.1:12345/build/index.html#/login'
       // window.location.href = 'http://39.100.128.220:12345/build/index.html#/login'
+=======
+      window.location.href = 'http://http://127.0.0.1:20203:12345/build/index.html#/login'
+>>>>>>> 3f4ccbf146a8829b144badbc04f1f98548acc0a4
     }
   }
   return response

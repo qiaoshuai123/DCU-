@@ -1,10 +1,15 @@
 import * as types from '../actionTypes/actionTypes'
 
 const objs = {
+<<<<<<< HEAD
   // devSockets: 'ws://127.0.0.1:20203', // 本地地址
   // devImage: 'http://127.0.0.1:20203', // 本地地址
   devSockets: 'ws://192.168.1.213:20203', // 本地地址
   devImage: 'http://192.168.1.213:20203', // 本地地址
+=======
+  devSockets: 'ws://127.0.0.1:20203', // 本地地址  192.168.1.213:20203
+  devImage: 'http://127.0.0.1:20203', // 本地地址
+>>>>>>> 3f4ccbf146a8829b144badbc04f1f98548acc0a4
 
   // devSockets: 'ws://39.100.128.220:20203', // 线上地址
   // devImage: 'http://39.100.128.220:20203', // 线上地址
