@@ -247,6 +247,8 @@ class SignalStatus extends Component {
     })
   }
   handleData = (e) => {
+    let result = JSON.parse(e);
+    console.log(result,'socket 数据')
     const { signalStateList } = JSON.parse(e)
     this.setState(
       {

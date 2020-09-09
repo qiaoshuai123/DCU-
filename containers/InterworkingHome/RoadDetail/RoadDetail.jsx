@@ -188,6 +188,8 @@ class RoadDetail extends Component {
     })
   }
   handleData = (e) => {
+    let result = JSON.parse(e);
+    console.log(result,'socket 数据')
     const { lampgroupState, phasestageState, running, isOnline, detectorState } = JSON.parse(e)
     const { remainingTime, phasestageNo, runningTime } = phasestageState
     const { localTime } = running
@@ -203,6 +205,8 @@ class RoadDetail extends Component {
   }
 
   handleDataSc = (e) => {
+    let result = JSON.parse(e);
+    console.log(result,'socket 数据')
     const { phasestageList, allTime, schemeName } = JSON.parse(e)
     this.insWidth = 960 / allTime
     this.setState({
@@ -211,12 +215,16 @@ class RoadDetail extends Component {
     })
   }
   handleDcu = (e) => {
+    let result = JSON.parse(e);
+    console.log(result,'socket 数据')
     const schemeDcu = JSON.parse(e)
     this.setState({
       schemeDcu,
     })
   }
   handleTime = (e) => {
+    let result = JSON.parse(e);
+    console.log(result,'socket 数据')
     const { signalTime, dcuTime } = JSON.parse(e)
     this.setState({
       signalTime,

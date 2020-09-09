@@ -250,6 +250,8 @@ class InterworkingHome extends Component {
     })
   }
   handleData = (e) => {
+    let result = JSON.parse(e);
+    console.log(result,'socket 数据')
     const { offlineNum, onlineNum, dcuStateList } = JSON.parse(e)
     this.setState({
       offlineNum,

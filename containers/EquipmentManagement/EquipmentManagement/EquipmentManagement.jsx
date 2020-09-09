@@ -342,6 +342,8 @@ class EquipmentManagement extends Component {
     })
   }
   handleData = (e) => {
+    let result = JSON.parse(e);
+    console.log(result,'socket 数据')
     const { dcuStateList } = JSON.parse(e)
     // this.drawMarkers(this.state.mapPointsData, 'pointLayers', dcuStateList)
     this.updateMapPonitsColor(dcuStateList)

@@ -1934,7 +1934,7 @@ class SignalManagement extends PureComponent {
   }
   handleData(data) {
     let result = JSON.parse(data);
-    // console.log(result,'socket 数据')
+    console.log(result,'socket 数据')
     this.setState({
       onlineNum: result.onlineNum,
       offlineNum: result.offlineNum,

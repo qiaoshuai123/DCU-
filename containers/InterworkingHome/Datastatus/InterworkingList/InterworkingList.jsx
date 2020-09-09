@@ -93,6 +93,8 @@ class InterworkingList extends Component {
     this.props.detectorRealTimeListByPage(objs)
   }
   handleData = (e) => {
+    let result = JSON.parse(e);
+    console.log(result,'socket 数据')
     const { stateList } = JSON.parse(e)
     this.setState({
       stylesList: stateList,

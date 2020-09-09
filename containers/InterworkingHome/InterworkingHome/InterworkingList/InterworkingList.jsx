@@ -95,6 +95,8 @@ class InterworkingList extends Component {
     this.props.dcuListByPages(objs)
   }
   handleData = (e) => {
+    let result = JSON.parse(e);
+    console.log(result,'socket 数据')
     const { dcuStateList } = JSON.parse(e)
     this.setState(
       {
