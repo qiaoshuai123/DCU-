@@ -335,7 +335,7 @@ class RoadDetail extends Component {
               }
               let as = ''
               let str = `${this.props.data.devImage}/DCU/dcuImage/lampgroup`
-              arrs.map((items) => {
+              arrs && arrs.map((items) => {
                 if (item.lampgroupNo === items.lampgroupNo) {
                   as = items.lamogroupStatus
                 }
@@ -356,7 +356,7 @@ class RoadDetail extends Component {
               }
               let as = ''
               let str = `${this.props.data.devImage}/DCU/dcuImage/detector`
-              detectorState.map((items) => {
+              detectorState && detectorState.map((items) => {
                 if (item.detectorId === items.detectorId) {
                   if (items.isOnline === '1') {
                     if (items.detectorVehicleIsexist === '1') {
