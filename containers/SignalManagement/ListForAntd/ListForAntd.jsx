@@ -70,7 +70,7 @@ class ListForAntd extends Component {
     this.props.handleClickFind(e, itemData)
   }
   formatNumberStr = (str) => {
-    let arr = str.split(',')
+    let arr = (str !== null && str !== "" ? str.split(',') : "")
     let i = 0
     let ret = []
     for (let j = 1; j <= arr.length; j++) {
@@ -170,7 +170,7 @@ class ListForAntd extends Component {
                                     </div>
                             }) : 
                             val.key === 'coordinationImagePath' && !!item[val.key] ? <img style={{width: '30px', height: '30px'}} src={`${this.props.imgIconUrl}${item[val.key]}`} /> :
-                            !item[val.key] ? '暂无' : item[val.key]
+                            item[val.key] === '' || item[val.key] === null ? '暂无' : item[val.key]
                         }
                         </span>
                       })
