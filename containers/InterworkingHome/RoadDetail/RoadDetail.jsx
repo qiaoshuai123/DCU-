@@ -153,7 +153,7 @@ class RoadDetail extends Component {
     let s = time.getSeconds()
     return `${y}-${this.add0(m)}-${this.add0(d)} ${this.add0(h)}:${this.add0(mm)}:${this.add0(s)}`
   }
-  newdate() {
+  newdate = () => {
     const date = new Date() * 1
     this.setState({
       datas: this.format(date),
@@ -265,9 +265,9 @@ class RoadDetail extends Component {
       console.log(time, nos.phasetageTime, '时间')
       if (time < nos.green) {
         colors = 'green'
-      } else if (nos.green < time < (nos.green + nos.yellow)) {
+      } else if (nos.green < time && time < (nos.green + nos.yellow)) {
         colors = 'yellow'
-      } else if ((nos.green + nos.yellow) < time < nos.phasetageTime) {
+      } else if ((nos.green + nos.yellow) < time && time < nos.phasetageTime) {
         colors = 'red'
       }
       console.log(colors, '颜色')
