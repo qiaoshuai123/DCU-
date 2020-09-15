@@ -38,6 +38,8 @@ class RoadDetail extends Component {
       detectorState: [], // 动态更改检测器汽车显示
       signalTime: '', // 信号机时间
       dcuTime: '', // dcu时间
+      datas: '', // 显示时间
+      colors: '',
     }
     this.imgshref = '/DCU/dcuImage/background/'
     this.laneBgUrl = '/DCU/dcuImage/lane/' // 车道
@@ -54,6 +56,7 @@ class RoadDetail extends Component {
     this.props.laneInfoAndDetail(this.objs)
     this.props.lampgroupDetailList(this.objs)
     this.props.detectorDetailList(this.objs)
+    this.timer = setInterval(this.getDate, 1000)
     this.setState({
       RoadImg: this.bac,
     })
@@ -86,6 +89,7 @@ class RoadDetail extends Component {
     // this.handleClose()
     // this.handleCloseSc()
     // window.open('#777')
+    clearInterval(this.timer)
   }
   getschemeInfoListinfo = (schemeInfoListinfo) => {
     // console.log(schemeInfoListinfo, '当前方案全部阶段')
@@ -110,19 +114,19 @@ class RoadDetail extends Component {
     this.setState({ dcuPopData })
   }
   getlaneInfoAndDetailinfo = (laneInfoAndDetailinfo) => {
-    // console.log(laneInfoAndDetailinfo, '车道图片接口')
+    console.log(laneInfoAndDetailinfo, '车道图片接口')
     this.setState({
       laneInfoAndDetailinfo,
     })
   }
   getlampgroupDetailListinfo = (lampgroupDetailListinfo) => {
-    // console.log(lampgroupDetailListinfo, '灯组图片接口')
+    console.log(lampgroupDetailListinfo, '灯组图片接口')
     this.setState({
       lampgroupDetailListinfo,
     })
   }
   getdetectorDetailListinfo = (detectorDetailListinfo) => {
-    // console.log(detectorDetailListinfo, '检测器接口')
+    console.log(detectorDetailListinfo, '检测器接口')
     this.setState({
       detectorDetailListinfo,
     })
@@ -136,6 +140,24 @@ class RoadDetail extends Component {
     this.unitId = search.substring(lastNums + 6)
     this.bac = JSON.parse(localStorage.getItem('bac'))
     this.objs = `interId=${this.interId}&nodeNo=${this.nodeId}`
+  }
+  add0 = (m) => { return m < 10 ? `0${m}` : m }
+  format(shijianchuo) {
+    // shijianchuo是整数，否则要parseInt转换
+    let time = new Date(shijianchuo)
+    let y = time.getFullYear()
+    let m = time.getMonth() + 1
+    let d = time.getDate()
+    let h = time.getHours()
+    let mm = time.getMinutes()
+    let s = time.getSeconds()
+    return `${y}-${this.add0(m)}-${this.add0(d)} ${this.add0(h)}:${this.add0(mm)}:${this.add0(s)}`
+  }
+  newdate() {
+    const date = new Date() * 1
+    this.setState({
+      datas: this.format(date),
+    })
   }
   // 关闭控制窗口
   closeStage = () => {
@@ -189,7 +211,7 @@ class RoadDetail extends Component {
   }
   handleData = (e) => {
     let result = JSON.parse(e);
-    console.log(result,'socket 数据')
+    console.log(result, 'socket 数据')
     const { lampgroupState, phasestageState, running, isOnline, detectorState } = JSON.parse(e)
     const { remainingTime, phasestageNo, runningTime } = phasestageState
     const { localTime } = running
@@ -206,7 +228,7 @@ class RoadDetail extends Component {
 
   handleDataSc = (e) => {
     let result = JSON.parse(e);
-    console.log(result,'socket 数据')
+    console.log(result, 'socketsc 数据')
     const { phasestageList, allTime, schemeName } = JSON.parse(e)
     this.insWidth = 960 / allTime
     this.setState({
@@ -216,7 +238,7 @@ class RoadDetail extends Component {
   }
   handleDcu = (e) => {
     let result = JSON.parse(e);
-    console.log(result,'socket 数据')
+    console.log(result, 'socket 数据')
     const schemeDcu = JSON.parse(e)
     this.setState({
       schemeDcu,
@@ -224,7 +246,7 @@ class RoadDetail extends Component {
   }
   handleTime = (e) => {
     let result = JSON.parse(e);
-    console.log(result,'socket 数据')
+    console.log(result, 'socket 数据')
     const { signalTime, dcuTime } = JSON.parse(e)
     this.setState({
       signalTime,
@@ -234,14 +256,22 @@ class RoadDetail extends Component {
   startWidth = (time, no) => {
     const { planRunStage } = this.state
     if (planRunStage) {
-      let num = 0
-      planRunStage.forEach((item) => {
-        if (item.phasetageTime < no) {
-          num += item.phasetageTime
-        }
-      })
+      const nos = planRunStage[no - 1]
+      let colors = ''
+      let nums = 0
+      for (let index = 0; index < no - 1; index++) {
+        nums += planRunStage[index].phasetageTime
+      }
+      if (time < nos.green) {
+        colors = 'green'
+      } else if (nos.green < time < (nos.green + nos.yellow)) {
+        colors = 'yellow'
+      } else if ((nos.green + nos.yellow) < time < (nos.green + nos.yellow + nos.red)) {
+        colors = 'red'
+      }
       this.setState({
-        widths: (num + time) * this.insWidth
+        widths: (nums + time) * this.insWidth,
+        colors,
       })
     }
   }
@@ -260,7 +290,7 @@ class RoadDetail extends Component {
       IsspanMessage, RoadImg, laneInfoAndDetailinfo, lampgroupDetailListinfo, detectorDetailListinfo,
       isMeessage, dcuPopData, schemeInfoListinfo, lockStateListinfo, nowPhasestageInfos, planRunStage,
       arrs, remainingTime, schemeName, imgPaths, phasestageNames, widths, isOnline, phasestageNo,
-      schemeDcu, detectorState, signalTime, dcuTime,
+      schemeDcu, detectorState, signalTime, dcuTime, datas, colors
     } = this.state
     return (
       <div className={styles.RoadDetail}>
@@ -325,8 +355,8 @@ class RoadDetail extends Component {
           }
         </div>
         <div style={{ backgroundImage: `url(${this.props.data.devImage}${this.imgshref}${RoadImg})` }} className={styles.imgBox} >
-          <div className={styles.centralBox}>
-            20
+          <div style={{ backgroundColor: `${colors}` }} className={styles.centralBox}>
+            {remainingTime}
           </div>
           {
             lampgroupDetailListinfo && lampgroupDetailListinfo.map((item, ind) => {
@@ -401,8 +431,8 @@ class RoadDetail extends Component {
                 <img width="30px" height="30px" src={`${this.props.data.devImage}/DCU/dcuImage/phasestage1/${imgPaths}`} alt="" />
               </span>
             </li>
-            <li>当前方案:<span className={styles.fontColor}></span>{schemeName}</li>
-            <li>2019/12/02 22:43:20</li>
+            <li>当前方案:<span className={styles.fontColor} />{schemeName}</li>
+            <li>{datas}</li>
           </ul>
           <div className={styles.DeviceStatus_right}>
             {
@@ -459,9 +489,6 @@ class RoadDetail extends Component {
               </span>
             </div>
             <div className={styles.Timing}>
-              <div className={styles.timingLeft}>
-                校时:
-              </div>
               <div className={styles.timingRight}>
                 <span onClick={() => this.proofread(1, 'DCU')}>DCU校时</span>
                 <span onClick={() => this.proofread(2, '信号机')}>信号机校时</span>
