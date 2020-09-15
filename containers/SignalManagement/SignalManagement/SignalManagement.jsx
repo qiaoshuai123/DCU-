@@ -842,10 +842,10 @@ class SignalManagement extends PureComponent {
           this.showHidePop('stepTwoFlag', true)
           const resultP = Promise.resolve(this.props.getUnitPop(this.state.roadInterId))
           resultP.then(() => {
-            debugger
             const itemData = JSON.parse(JSON.stringify(this.props.data.dcuPopData))
             itemData.interName = this.state.interName
             itemData.background = this.state.interRoadPic
+            itemData.nodeId = this.state.roadNodeNo
             this.setGetParams(itemData)
           })
           this.props.getStepStatus(this.state.roadInterId, this.state.roadNodeNo)

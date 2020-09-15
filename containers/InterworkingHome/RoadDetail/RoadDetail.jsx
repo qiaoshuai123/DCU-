@@ -234,14 +234,18 @@ class RoadDetail extends Component {
   startWidth = (time, no) => {
     const { planRunStage } = this.state
     if (planRunStage) {
-      let num = 0
-      planRunStage.forEach((item) => {
-        if (item.phasetageTime < no) {
-          num += item.phasetageTime
-        }
-      })
+      // let num = 0
+      let nums = 0
+      for (let index = 0; index < no - 1; index++) {
+        nums += planRunStage[index].phasetageTime
+      }
+      // planRunStage.forEach((item) => {
+      //   if (item.phasetageTime < no) {
+      //     num += item.phasetageTime
+      //   }
+      // })
       this.setState({
-        widths: (num + time) * this.insWidth
+        widths: (nums + time) * this.insWidth
       })
     }
   }
@@ -325,9 +329,7 @@ class RoadDetail extends Component {
           }
         </div>
         <div style={{ backgroundImage: `url(${this.props.data.devImage}${this.imgshref}${RoadImg})` }} className={styles.imgBox} >
-          <div className={styles.centralBox}>
-            20
-          </div>
+          <div className={styles.centralBox}>{remainingTime}</div>
           {
             lampgroupDetailListinfo && lampgroupDetailListinfo.map((item, ind) => {
               const imgStyleL = {
