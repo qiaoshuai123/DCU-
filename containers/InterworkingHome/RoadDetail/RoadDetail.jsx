@@ -56,7 +56,7 @@ class RoadDetail extends Component {
     this.props.laneInfoAndDetail(this.objs)
     this.props.lampgroupDetailList(this.objs)
     this.props.detectorDetailList(this.objs)
-    this.timer = setInterval(this.getDate, 1000)
+    this.timer = setInterval(this.newdate, 1000)
     this.setState({
       RoadImg: this.bac,
     })
@@ -262,13 +262,15 @@ class RoadDetail extends Component {
       for (let index = 0; index < no - 1; index++) {
         nums += planRunStage[index].phasetageTime
       }
+      console.log(time, nos.phasetageTime, '时间')
       if (time < nos.green) {
         colors = 'green'
       } else if (nos.green < time < (nos.green + nos.yellow)) {
         colors = 'yellow'
-      } else if ((nos.green + nos.yellow) < time < (nos.green + nos.yellow + nos.red)) {
+      } else if ((nos.green + nos.yellow) < time < nos.phasetageTime) {
         colors = 'red'
       }
+      console.log(colors, '颜色')
       this.setState({
         widths: (nums + time) * this.insWidth,
         colors,
@@ -290,7 +292,7 @@ class RoadDetail extends Component {
       IsspanMessage, RoadImg, laneInfoAndDetailinfo, lampgroupDetailListinfo, detectorDetailListinfo,
       isMeessage, dcuPopData, schemeInfoListinfo, lockStateListinfo, nowPhasestageInfos, planRunStage,
       arrs, remainingTime, schemeName, imgPaths, phasestageNames, widths, isOnline, phasestageNo,
-      schemeDcu, detectorState, signalTime, dcuTime, datas, colors
+      schemeDcu, detectorState, signalTime, dcuTime, datas, colors,
     } = this.state
     return (
       <div className={styles.RoadDetail}>
