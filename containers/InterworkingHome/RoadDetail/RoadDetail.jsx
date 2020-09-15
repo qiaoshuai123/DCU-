@@ -263,11 +263,11 @@ class RoadDetail extends Component {
         nums += planRunStage[index].phasetageTime
       }
       console.log(time, nos.phasetageTime, '时间')
-      if (time < nos.green) {
+      if (time <= nos.green) {
         colors = 'green'
-      } else if (nos.green < time && time < (nos.green + nos.yellow)) {
+      } else if (nos.green < time && time <= (nos.green + nos.yellow)) {
         colors = 'yellow'
-      } else if ((nos.green + nos.yellow) < time && time < nos.phasetageTime) {
+      } else if ((nos.green + nos.yellow) < time && time <= nos.phasetageTime) {
         colors = 'red'
       }
       console.log(colors, '颜色')
