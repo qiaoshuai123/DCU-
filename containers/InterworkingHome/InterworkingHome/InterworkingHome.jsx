@@ -24,7 +24,7 @@ class InterworkingHome extends Component {
       searchInterList: [],
       treeListBackups: null,
       dcuStateList: [], // socket实时推送数据
-      IswarningBox: false,
+      IswarningBox: true,
       IsWarningBoxLister: false,
       warningBoxList: [{ id: 1, interName: '12' }, { id: 4, interName: '123' }]
     }
@@ -412,17 +412,24 @@ class InterworkingHome extends Component {
     }, 200)
   }
   warningBox = () => {
-    const { mapPointsData, dcuStateList, IsWarningBoxLister } = this.state
+    const { IsWarningBoxLister } = this.state
+    // mapPointsData, dcuStateList, 
+    const mapPointsData = [{ interId: 1, }, { interId: 6 }, { interId: 5 }, { interId: 2 }]
+    const dcuStateList = [{ interId: 1, }]
     this.setState({
       IsWarningBoxLister: !IsWarningBoxLister,
     })
-    const arrs = []
+    let arrs = []
     mapPointsData.forEach((item) => {
-      dcuStateList.forEach((items) => {
-        if (item.interId !== items.interId) {
-          arrs.push(item)
-        }
-      })
+      if (dcuStateList.length) {
+        dcuStateList.forEach((items) => {
+          if (item.interId !== items.interId) {
+            arrs.push(item)
+          }
+        })
+      } else {
+        arrs = mapPointsData
+      }
     })
     this.setState({
       warningBoxList: arrs,
