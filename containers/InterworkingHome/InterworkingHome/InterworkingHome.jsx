@@ -26,7 +26,7 @@ class InterworkingHome extends Component {
       dcuStateList: [], // socket实时推送数据
       IswarningBox: true,
       IsWarningBoxLister: false,
-      warningBoxList: [{ id: 1, interName: '12' }, { id: 4, interName: '123' }]
+      warningBoxList: []
     }
     this.searchInterList = []
     this.token = JSON.parse(localStorage.getItem('userInfo')).token
@@ -412,10 +412,7 @@ class InterworkingHome extends Component {
     }, 200)
   }
   warningBox = () => {
-    const { IsWarningBoxLister } = this.state
-    // mapPointsData, dcuStateList, 
-    const mapPointsData = [{ interId: 1, }, { interId: 6 }, { interId: 5 }, { interId: 2 }]
-    const dcuStateList = [{ interId: 1, }]
+    const { IsWarningBoxLister, mapPointsData, dcuStateList } = this.state
     this.setState({
       IsWarningBoxLister: !IsWarningBoxLister,
     })
@@ -439,7 +436,6 @@ class InterworkingHome extends Component {
     const { Search } = Input
     const { Option } = Select
     const { isInterworkingList, offlineNum, onlineNum, searchInterList, interListHeight, roadUnitId, roadInterId, roadNodeNo, handOffline, IswarningBox, IsWarningBoxLister, warningBoxList } = this.state
-    console.log(warningBoxList, '123456')
     return (
       <div className={styles.InterworkingHomeBox}>
         <Websocket
