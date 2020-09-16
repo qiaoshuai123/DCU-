@@ -24,8 +24,8 @@ class InterworkingHome extends Component {
       searchInterList: [],
       treeListBackups: null,
       dcuStateList: [], // socket实时推送数据
-      IswarningBox: false,
-      isWarningBoxList: false,
+      IswarningBox: true,
+      IsWarningBoxLister: false,
       warningBoxList: [{ id: 1, interName: '12' }, { id: 4, interName: '123' }]
     }
     this.searchInterList = []
@@ -312,7 +312,7 @@ class InterworkingHome extends Component {
     } else {
       this.setState({
         IswarningBox: false,
-        IswarningBoxList: false,
+        IsWarningBoxLister: false,
       })
     }
     this.updateMapPonitsColor(dcuStateList)
@@ -412,9 +412,9 @@ class InterworkingHome extends Component {
     }, 200)
   }
   warningBox = () => {
-    const { mapPointsData, dcuStateList, isWarningBoxList } = this.state
+    const { mapPointsData, dcuStateList, IsWarningBoxLister } = this.state
     this.setState({
-      isWarningBoxList: !isWarningBoxList,
+      IsWarningBoxLister: !IsWarningBoxLister,
     })
     const arrs = []
     mapPointsData.forEach((item) => {
@@ -431,7 +431,7 @@ class InterworkingHome extends Component {
   render() {
     const { Search } = Input
     const { Option } = Select
-    const { isInterworkingList, offlineNum, onlineNum, searchInterList, interListHeight, roadUnitId, roadInterId, roadNodeNo, handOffline, IswarningBox, IswarningBoxList, warningBoxList } = this.state
+    const { isInterworkingList, offlineNum, onlineNum, searchInterList, interListHeight, roadUnitId, roadInterId, roadNodeNo, handOffline, IswarningBox, IsWarningBoxLister, warningBoxList } = this.state
     return (
       <div className={styles.InterworkingHomeBox}>
         <Websocket
@@ -489,7 +489,7 @@ class InterworkingHome extends Component {
           <div className={styles.turnBtn} onClick={() => this.showInterworkingList(true)} />
         </div>
         {
-          IswarningBoxList &&
+          IsWarningBoxLister &&
           <div className={styles.warningBoxList}>
             {
               warningBoxList && warningBoxList.map(item => <div title={item.interName} key={item.id}>点位名称:<span>{item.interName}</span></div>)
