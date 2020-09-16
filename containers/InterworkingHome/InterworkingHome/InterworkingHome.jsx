@@ -24,7 +24,7 @@ class InterworkingHome extends Component {
       searchInterList: [],
       treeListBackups: null,
       dcuStateList: [], // socket实时推送数据
-      IswarningBox: true,
+      IswarningBox: false,
       IsWarningBoxLister: false,
       warningBoxList: []
     }
