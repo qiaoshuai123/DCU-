@@ -137,27 +137,25 @@ $bor_color: #27343b;
     }
   }
   .tagMarker {
-    height: 30px;
     display: flex;
     justify-content: space-around;
-    align-items: center;
     position: absolute;
     top: 70px;
     right: 20px;
     z-index: 17;
     .statusBox {
+      width: 270px;
       display: flex;
-      justify-content: space-around;
-      align-items: center;
+      flex-wrap: wrap;
       background-color: rgba(28, 33, 39, 0.9);
       border: 1px #353c46 solid;
       padding: 6px 0 6px 5px;
       margin-right: 5px;
       > span {
+        width: 50%;
         line-height: 18px;
-        display: inline-block;
         padding-left: 35px;
-        margin-right: 15px;
+        margin: 3px 0;
       }
       > span.tagOnLine {
         background: url("./img/04.png") no-repeat;
@@ -169,12 +167,52 @@ $bor_color: #27343b;
         background-position: 10px center;
         background-size: 18px 18px;
       }
+      > span.tagYellLine {
+        background: url("./img/06.png") no-repeat;
+        background-position: 10px center;
+        background-size: 18px 18px;
+      }
     }
     .turnBtn {
       width: 32px;
       height: 32px;
-      background:url(../../../images/icon_turn.png) no-repeat;
+      background: url(../../../images/icon_turn.png) no-repeat;
       cursor: pointer;
+    }
+  }
+  .warningBox {
+    position: absolute;
+    bottom: 150px;
+    right: 60px;
+    width: 80px;
+    height: 80px;
+    z-index: 17;
+    background-image: url("./img/warning.jpg");
+    background-size: 100% 100%;
+    cursor: pointer;
+  }
+  .warningBoxList {
+    width: 300px;
+    height: 275px;
+    position: absolute;
+    bottom: 230px;
+    right: 60px;
+    background-color: #324172;
+    z-index: 17;
+    overflow-y: auto;
+    padding:0 8px;
+    > div {
+      font-size: 16px;
+      width: 100%;
+      height: 35px;
+      line-height: 35px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      border-bottom: 1px solid #ccc;
+      span{
+        color: red;
+      }
     }
   }
   .InterworkingList {
@@ -283,7 +321,7 @@ $bor_color: #27343b;
     }
   }
   :global(.content_box_title p.input-items span.paramsBtn) {
-    padding:0 10px;
+    padding: 0 10px;
     line-height: 30px;
     display: flex;
     text-align: center;
@@ -345,6 +383,12 @@ $bor_color: #27343b;
     height: 32px;
     display: block;
     background: url(../../../images/markerGreen.png) no-repeat;
+  }
+  :global(.marker-tagYellLine) {
+    width: 32px;
+    height: 32px;
+    display: block;
+    background: url(../../../images/markerYellow.png) no-repeat;
   }
   :global(.marker-hoverline) {
     background-color: green;

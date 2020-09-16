@@ -19,9 +19,14 @@ class InterworkingHome extends Component {
       mapPointsData: null, // 地图中所有的点
       offlineNum: '',
       onlineNum: '',
+      handOffline: '',
       treeFlag: true,
       searchInterList: [],
       treeListBackups: null,
+      dcuStateList: [], // socket实时推送数据
+      IswarningBox: false,
+      isWarningBoxList: false,
+      warningBoxList: [{ id: 1, interName: '12' }, { id: 4, interName: '123' }]
     }
     this.searchInterList = []
     this.token = JSON.parse(localStorage.getItem('userInfo')).token
@@ -87,17 +92,17 @@ class InterworkingHome extends Component {
     })
   }
   getProofreadTime = (item, proofreadType) => {
-    console.log(item,'校时')
-    this.props.getProofreadTime(item.interId, proofreadType).then(()=>{
+    console.log(item, '校时')
+    this.props.getProofreadTime(item.interId, proofreadType).then(() => {
       message.info(this.props.data.proofreadTimeData)
     })
   }
   getReboot = (item, rebootDeviceType) => {
     console.log(item, '重启')
-    this.props.getReboot(item.interId, rebootDeviceType).then(()=>{
+    this.props.getReboot(item.interId, rebootDeviceType).then(() => {
       message.info(this.props.data.rebootData)
     })
-  } 
+  }
   getdcuPopData = (dcuPopData) => {
     this.setState({ dcuPopData })
   }
@@ -272,7 +277,7 @@ class InterworkingHome extends Component {
     info.push(`<p class='input-item'>设备状态：<span id='phasestageName'></span></p>`);
     info.push(`<p class='input-item'>信号接入状态：<span>${'暂无'}</span></p>`);
     info.push(`<p class='input-item'>发布服务状态：<span>${'暂无'}</span></p>`);
-    this.userLimit.indexOf(301) !== -1 ? info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-items'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>路口监视</span><span title='DCU手动离线' class='paramsBtn' onclick='getSetOffLine(` + JSON.stringify(dataItem) + `)'>手动离线</span><span title='DCU校时' class='paramsBtn' onclick='getProofreadTime(` + JSON.stringify(dataItem)+ `,1 )'>校时</span><span title='DCU重启' class='paramsBtn' onclick='getReboot(` + JSON.stringify(dataItem) + `,1)'>重启</span></p>`) : '';
+    this.userLimit.indexOf(301) !== -1 ? info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-items'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>路口监视</span><span title='DCU手动离线' class='paramsBtn' onclick='getSetOffLine(` + JSON.stringify(dataItem) + `)'>手动离线</span><span title='DCU校时' class='paramsBtn' onclick='getProofreadTime(` + JSON.stringify(dataItem) + `,1 )'>校时</span><span title='DCU重启' class='paramsBtn' onclick='getReboot(` + JSON.stringify(dataItem) + `,1)'>重启</span></p>`) : '';
     const infoWindow = new AMap.InfoWindow({
       content: info.join("")  //使用默认信息窗体框样式，显示信息内容
     });
@@ -292,12 +297,24 @@ class InterworkingHome extends Component {
   }
   handleData = (e) => {
     let result = JSON.parse(e);
-    console.log(result,'socket 数据')
-    const { offlineNum, onlineNum, dcuStateList } = JSON.parse(e)
+    console.log(result, 'socket 数据')
+    const { offlineNum, onlineNum, handOffline, dcuStateList } = JSON.parse(e)
     this.setState({
       offlineNum,
       onlineNum,
+      handOffline,
+      dcuStateList,
     })
+    if (offlineNum > 0) {
+      this.setState({
+        IswarningBox: true,
+      })
+    } else {
+      this.setState({
+        IswarningBox: false,
+        IswarningBoxList: false,
+      })
+    }
     this.updateMapPonitsColor(dcuStateList)
   }
   hanleSelectInter = (e, item) => {
@@ -334,8 +351,13 @@ class InterworkingHome extends Component {
       const timeDiv = $($('div[inter-id]')[i])
       data.map((item) => {
         if (item.interId === timeDiv.attr('inter-id') && !!item.state) {
-          timeDiv.removeClass('marker-online')
-          timeDiv.addClass('marker-offline')
+          if (item.state === 1) {
+            timeDiv.removeClass('marker-online')
+            timeDiv.addClass('marker-offline')
+          } else if (item.state === 2) {
+            timeDiv.removeClass('marker-online')
+            timeDiv.addClass('marker-tagYellLine')
+          }
         } else {
           timeDiv.addClass('marker-online')
         }
@@ -389,10 +411,27 @@ class InterworkingHome extends Component {
       })
     }, 200)
   }
+  warningBox = () => {
+    const { mapPointsData, dcuStateList, isWarningBoxList } = this.state
+    this.setState({
+      isWarningBoxList: !isWarningBoxList,
+    })
+    const arrs = []
+    mapPointsData.forEach((item) => {
+      dcuStateList.forEach((items) => {
+        if (item.interId !== items.interId) {
+          arrs.push(item)
+        }
+      })
+    })
+    this.setState({
+      warningBoxList: arrs,
+    })
+  }
   render() {
     const { Search } = Input
     const { Option } = Select
-    const { isInterworkingList, offlineNum, onlineNum, searchInterList, interListHeight, roadUnitId, roadInterId, roadNodeNo } = this.state
+    const { isInterworkingList, offlineNum, onlineNum, searchInterList, interListHeight, roadUnitId, roadInterId, roadNodeNo, handOffline, IswarningBox, IswarningBoxList, warningBoxList } = this.state
     return (
       <div className={styles.InterworkingHomeBox}>
         <Websocket
@@ -445,9 +484,21 @@ class InterworkingHome extends Component {
           <div className={styles.statusBox}>
             <span className={styles.tagOnLine}>在线设备{onlineNum}处</span>
             <span className={styles.tagOffLine}>离线设备{offlineNum}处</span>
+            <span className={styles.tagYellLine}>手动离线{handOffline}处</span>
           </div>
           <div className={styles.turnBtn} onClick={() => this.showInterworkingList(true)} />
         </div>
+        {
+          IswarningBoxList &&
+          <div className={styles.warningBoxList}>
+            {
+              warningBoxList && warningBoxList.map(item => <div title={item.interName} key={item.id}>点位名称:<span>{item.interName}</span></div>)
+            }
+          </div>
+        }
+        {
+          IswarningBox && <div onClick={this.warningBox} className={styles.warningBox} />
+        }
         {
           isInterworkingList &&
           <div className={styles.InterworkingList}>
