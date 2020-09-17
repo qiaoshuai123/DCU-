@@ -323,14 +323,14 @@ class EquipmentManagement extends Component {
     const that = this
     confirm({
       title: '确定要删除此点位?',
-      okText: 'Yes',
+      okText: '是',
       okType: 'danger',
-      cancelText: 'No',
+      cancelText: '否',
       onOk() {
         that.delectRoad()
       },
       onCancel() {
-        this.setState({
+        that.setState({
           visible: false,
         })
       },

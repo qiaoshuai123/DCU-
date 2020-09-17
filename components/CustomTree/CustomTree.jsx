@@ -119,7 +119,7 @@ class CustomTree extends React.Component {
         return (
           <li
             className={styles.childLi}
-            onMouseDown={(e) => { this.rightDown(e, item.interId, false, item) }}
+            onMouseDown={(e) => { this.rightDown(e, item.id, false, item) }}
             key={item.id}
             id={item.id}
             lng={item.lng}
