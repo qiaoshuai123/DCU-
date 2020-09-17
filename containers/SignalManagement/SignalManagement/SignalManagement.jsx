@@ -77,6 +77,8 @@ class SignalManagement extends PureComponent {
       roadNodeNo: null,
       onlineNum: 0, //实时在线数
       offlineNum: 0, //实时离线数
+      handOffline: 0,
+      dcuStateList: [], // socket实时推送数据
       treeFlag: true,
       searchInterList: null,
       treeListBackups: null,
@@ -271,9 +273,9 @@ class SignalManagement extends PureComponent {
     if (prevState.data.dispatchClickInfo !== dispatchClickInfo) {
       this.getListDayData(dispatchClickInfo)
     }
-    
+
     if (prevState.data.planCheckTimeRes !== planCheckTimeRes) {
-      if (planCheckTimeRes === 0){
+      if (planCheckTimeRes === 0) {
         message.info('时间不合法,请重新输入！')
         const planStageLists = JSON.parse(JSON.stringify(this.state.planStageLists))
         planStageLists[this.state.phaseIndex].phaseTimeIndex = 0
@@ -587,7 +589,7 @@ class SignalManagement extends PureComponent {
     this.setState({
       phaseIndex: i,
     })
-    if (this.state.blurFlag){
+    if (this.state.blurFlag) {
       this.props.getCheckPhaseTime(interId, phasestageNo, e.target.value)
     }
   }
@@ -1165,7 +1167,7 @@ class SignalManagement extends PureComponent {
         if (this.verificationID(resData, 'phaseNo', itemDetailData.phaseNo, '相位序号已存在')) return
         if (this.isNotEmpty(itemDetailData.phaseName, '相位名称不能为空！')) return
         if (this.isNotEmpty(itemDetailData.phaseDelaygreenTime, '相位延迟绿时间不能为空！', true)) return
-        
+
         if (this.isNotEmpty(itemDetailData.phaseMingreenTime, '相位最小绿时间不能为空！', true)) return
         if (this.isNotEmpty(itemDetailData.phaseMaxgreen1Time, '相位最大绿时间1不能为空且大于0！')) return
         if (this.isNotEmpty(itemDetailData.phaseMaxgreen2Time, '相位最大绿时间2不能为空且大于0！')) return
@@ -1180,28 +1182,28 @@ class SignalManagement extends PureComponent {
         if (this.isNotEmpty(itemDetailData.rightofwayAccessLamp2Time, '获得路权过渡灯色2时间不能为空！', true)) return
         if (this.isNotEmpty(itemDetailData.rightofwayAccessLamp3Type, '请选择获得路权过渡灯色3类型！')) return
         if (this.isNotEmpty(itemDetailData.rightofwayAccessLamp3Time, '获得路权过渡灯色3时间不能为空！', true)) return
-        
+
         if (this.isNotEmpty(itemDetailData.rightofwayLoseLamp1Type, '请选择失去路权过渡灯色1类型！')) return
         if (this.isNotEmpty(itemDetailData.rightofwayLoseLamp1Time, '失去路权过渡灯色1时间不能为空！', true)) return
         if (this.isNotEmpty(itemDetailData.rightofwayLoseLamp2Type, '请选择失去路权过渡灯色2类型！')) return
         if (this.isNotEmpty(itemDetailData.rightofwayLoseLamp2Time, '失去路权过渡灯色2时间不能为空！', true)) return
         if (this.isNotEmpty(itemDetailData.rightofwayLoseLamp3Type, '请选择失去路权过渡灯色3类型！')) return
         if (this.isNotEmpty(itemDetailData.rightofwayLoseLamp3Time, '失去路权过渡灯色3时间不能为空！', true)) return
-        
+
         if (this.isNotEmpty(itemDetailData.rightofwayStartingupAccessLamp1Type, '请选择开机获得路权灯色1类型！')) return
         if (this.isNotEmpty(itemDetailData.rightofwayStartingupAccessLamp1Time, '开机获得路权灯色1时间不能为空！', true)) return
         if (this.isNotEmpty(itemDetailData.rightofwayStartingupAccessLamp2Type, '请选择开机获得路权灯色2类型！')) return
         if (this.isNotEmpty(itemDetailData.rightofwayStartingupAccessLamp2Time, '开机获得路权灯色2时间不能为空！', true)) return
         if (this.isNotEmpty(itemDetailData.rightofwayStartingupAccessLamp3Type, '请选择开机获得路权灯色3类型！')) return
         if (this.isNotEmpty(itemDetailData.rightofwayStartingupAccessLamp3Time, '开机获得路权灯色3时间不能为空！', true)) return
-        
+
         if (this.isNotEmpty(itemDetailData.rightofwayStartingupLoseLamp1Type, '请选择开机失去路权灯色1类型！')) return
         if (this.isNotEmpty(itemDetailData.rightofwayStartingupLoseLamp1Time, '开机失去路权灯色1时间不能为空！', true)) return
         if (this.isNotEmpty(itemDetailData.rightofwayStartingupLoseLamp2Type, '请选择开机失去路权灯色2类型！')) return
         if (this.isNotEmpty(itemDetailData.rightofwayStartingupLoseLamp2Time, '开机失去路权灯色2时间不能为空！', true)) return
         if (this.isNotEmpty(itemDetailData.rightofwayStartingupLoseLamp3Type, '请选择开机失去路权灯色3类型！')) return
         if (this.isNotEmpty(itemDetailData.rightofwayStartingupLoseLamp3Time, '开机失去路权灯色3时间不能为空！', true)) return
-        
+
         break;
       case 'STAGE':
         typeStr = '阶段'
@@ -1245,15 +1247,15 @@ class SignalManagement extends PureComponent {
         if (this.isNotEmpty(itemDetailData.dailyplanNo, '日计划编号不能为空！')) return
         if (this.verificationID(resData, 'dailyplanNo', itemDetailData.dailyplanNo, '日计划编号已存在')) return
         const itemDayData = itemDetailData.timeintervalList
-        for( let d = 0; d < itemDayData.length; d++) {
-          if (itemDayData[d+1]) {
-            let dTime = new Date("2020-01-01 "+itemDayData[d].timeintervalStarttime+":00").getTime() / 1000
-            let dTime1 = new Date("2020-01-01 "+itemDayData[d+1].timeintervalStarttime+":00").getTime() / 1000
-            if (dTime === dTime1){
+        for (let d = 0; d < itemDayData.length; d++) {
+          if (itemDayData[d + 1]) {
+            let dTime = new Date("2020-01-01 " + itemDayData[d].timeintervalStarttime + ":00").getTime() / 1000
+            let dTime1 = new Date("2020-01-01 " + itemDayData[d + 1].timeintervalStarttime + ":00").getTime() / 1000
+            if (dTime === dTime1) {
               message.info('开始时间不能相同！');
               return false
             }
-            if (dTime > dTime1){
+            if (dTime > dTime1) {
               message.info('开始时间必须递增,不能少于以前的时间！');
               return false
             }
@@ -1273,14 +1275,14 @@ class SignalManagement extends PureComponent {
         if (this.isNotEmpty(itemDetailData.scheduleNo, '调度方案编号不能为空！')) return
         if (this.verificationID(resData, 'scheduleNo', itemDetailData.scheduleNo, '调度编号已存在')) return
         const itemData = itemDetailData.scheduleDetailList
-        for( let d = 0; d < itemData.length; d++) {
+        for (let d = 0; d < itemData.length; d++) {
           if (this.isNotEmpty(itemData[d].dailyPlanId, '请选择日计划！')) return false
           if (this.isNotEmpty(itemData[d].priority, '请选择优选级！')) return false
           if (this.isNotEmpty(itemData[d].dateType, '请选择调度类型！')) return false
           if (itemData[d].dateType === 1) {
             if (this.isNotEmpty(itemData[d].monthValueCodes, '请选择月份！')) return false
             if (this.isNotEmpty(itemData[d].dataValueCodes, '请选择日期！')) return false
-          }else{
+          } else {
             if (this.isNotEmpty(itemData[d].dataValueCodes, '请选择星期！')) return false
           }
         }
@@ -1461,7 +1463,7 @@ class SignalManagement extends PureComponent {
           position: new AMap.LngLat(positions[i].lng, positions[i].lat),
           offset: new AMap.Pixel(-16, -16),
           content: "<div inter-id='" + positions[i].id + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
-          extData: { id: positions[i].id},
+          extData: { id: positions[i].id },
           // content: "<div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
         })
         marker.on('click', (e) => {
@@ -1513,10 +1515,10 @@ class SignalManagement extends PureComponent {
     this.infoWindow = infoWindow
     window.infoWindowClose = infoWindow
     map.on('click', (e) => {
-      if ($("#roadKey"+dataItem.id).parent().hasClass('drawCircle')) {
-        if ($("#roadKey"+dataItem.id).hasClass('marker-offline')) {
+      if ($("#roadKey" + dataItem.id).parent().hasClass('drawCircle')) {
+        if ($("#roadKey" + dataItem.id).hasClass('marker-offline')) {
           marker.setContent("<div inter-id='" + dataItem.id + "' class='marker-online marker-offline'></div>");
-        }else{
+        } else {
           marker.setContent("<div inter-id='" + dataItem.id + "' class='marker-online'></div>");
         }
       }
@@ -1781,7 +1783,14 @@ class SignalManagement extends PureComponent {
       timeDiv.addClass('marker-offline')
       data && data.map((item) => {
         if (item.interId === timeDiv.attr('inter-id') && !!item.state) {
-          timeDiv.removeClass('marker-offline') 
+          if (item.state === 1) {
+            timeDiv.removeClass('marker-offline')
+          } else if (item.state === 2) {
+            timeDiv.removeClass('marker-offline')
+            timeDiv.addClass('marker-tagYellLine')
+          }
+        } else {
+          timeDiv.addClass('marker-offline')
         }
       })
     }
@@ -1898,8 +1907,8 @@ class SignalManagement extends PureComponent {
     console.log(result, 'socket 上传数据')
   }
   editDataType = (flag) => {
-    this.props.getEditCheckData(this.state.roadInterId).then(() =>{     
-      if (this.state.editCheckData.length > 0){
+    this.props.getEditCheckData(this.state.roadInterId).then(() => {
+      if (this.state.editCheckData.length > 0) {
         this.setState({ editCheckDataFlag: true })
       } else {
         this.setState({
@@ -1926,7 +1935,7 @@ class SignalManagement extends PureComponent {
           nowText: '基础信息配置',
         })
       }
-      
+
     })
   }
   editData(data) {
@@ -1936,10 +1945,12 @@ class SignalManagement extends PureComponent {
   }
   handleData(data) {
     let result = JSON.parse(data);
-    console.log(result,'socket 数据')
+    console.log(result, 'socket 数据')
     this.setState({
       onlineNum: result.onlineNum,
       offlineNum: result.offlineNum,
+      handOffline: result.handOffline,
+      dcuStateList: result.dcuStateList,
     });
     this.updateMapPonitsColor(result.dcuStateList)
   }
@@ -1974,7 +1985,7 @@ class SignalManagement extends PureComponent {
       phaseShowDetail, stageShowDetail, planShowDetail, dayplanShowDetail, dispatchShowDetail, laneSelectLists, lightSelectLists, detectorSelectLists, selectFlag, phaseDefaultSelectLists, laneDefaultSelectLists, lightDefaultSelectLists, detectorDefaultSelectLists, phaseIconLists, phaseSelectLists, phaseFlag, schemePhasestageTypeData, timeintervalModelChainData, laneSdtypeNoData,
       priorityData, monthData, dayData, weekData, Dcu_Io_Ids, dayPlanClickInfo, dispatchClickInfo, popItemFlag, listNames, loadFlag, editFlag, userLimit,
       oneFlag, twoFlag, threeFlag, fourFlag, fiveFlag, sixFlag, sevenFlag, eightFlag, nineFlag, tenFlag,
-      oneText, twoText, threeText, fourText, fiveText, sixText, sevenText, eightText, nineText, nowText, editCheckDataFlag, editCheckData
+      oneText, twoText, threeText, fourText, fiveText, sixText, sevenText, eightText, nineText, nowText, editCheckDataFlag, editCheckData, handOffline
     } = this.state
     const { Search } = Input
     return (
@@ -1984,16 +1995,16 @@ class SignalManagement extends PureComponent {
             <div className={styles.popBox} style={{ width: '600px' }}>
               <div className={styles.popTit}>下发配置问题 <Icon className={styles.Close} type="close" onClick={() => { this.popLayerShowHide("editCheckDataFlag", null) }} /></div>
               <div className={styles.popCon} style={{ width: '380px', margin: '0 auto', maxHeight: '500px' }}>
-                { editCheckData && editCheckData.map((item) => {
-                    return <div className={styles.loadItemBox}><Icon type="issues-close" /> <em>{item}</em></div>
-                  })
+                {editCheckData && editCheckData.map((item) => {
+                  return <div className={styles.loadItemBox}><Icon type="issues-close" /> <em>{item}</em></div>
+                })
                 }
               </div>
               <div className={styles.popBottom} style={{ padding: '15px 0' }}>
                 <em onClick={() => { this.popLayerShowHide("editCheckDataFlag", null) }}>关 闭</em>
               </div>
             </div>
-          </div> : null 
+          </div> : null
         }
         {loadFlag || editFlag ?
           <div className={styles.maskBg}>
@@ -2020,7 +2031,7 @@ class SignalManagement extends PureComponent {
                 {tenFlag ? <em onClick={() => { this.popLayerShowHide("loadFlag", null) }}>关 闭</em> : null}
               </div>
             </div>
-          </div> : null 
+          </div> : null
         }
         {loadFlag ? <Websocket url={`${this.props.data.devSockets}${this.socketLoadDataUrl}${0}/${roadInterId}/${0}?Authorization=${this.token}`} onMessage={this.loadData.bind(this)} /> : null}
         {editFlag ? <Websocket url={`${this.props.data.devSockets}${this.socketEditDataUrl}${0}/${roadInterId}/${0}?Authorization=${this.token}`} onMessage={this.editData.bind(this)} /> : null}
@@ -2520,7 +2531,7 @@ class SignalManagement extends PureComponent {
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>获得路权过渡灯色2时间：</span><Input type='number' value={phaseShowDetail.rightofwayAccessLamp2Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayAccessLamp2Time')} placeholder="请输入" />
-                  </div>                  
+                  </div>
                   <div className={styles.itemInputBox}>
                     <span>获得路权过渡灯色3类型：</span>
                     <Select
@@ -2536,7 +2547,7 @@ class SignalManagement extends PureComponent {
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>获得路权过渡灯色3时间：</span><Input type='number' value={phaseShowDetail.rightofwayAccessLamp3Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayAccessLamp3Time')} placeholder="请输入" />
-                  </div>                  
+                  </div>
                   <div className={styles.itemInputBox}>
                     <span>失去路权过渡灯色1类型：</span>
                     <Select
@@ -2552,7 +2563,7 @@ class SignalManagement extends PureComponent {
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>失去路权过渡灯色1时间：</span><Input type='number' value={phaseShowDetail.rightofwayLoseLamp1Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayLoseLamp1Time')} placeholder="请输入" />
-                  </div>                  
+                  </div>
                   <div className={styles.itemInputBox}>
                     <span>失去路权过渡灯色2类型：</span>
                     <Select
@@ -2568,7 +2579,7 @@ class SignalManagement extends PureComponent {
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>失去路权过渡灯色2时间：</span><Input type='number' value={phaseShowDetail.rightofwayLoseLamp2Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayLoseLamp2Time')} placeholder="请输入" />
-                  </div>                  
+                  </div>
                   <div className={styles.itemInputBox}>
                     <span>失去路权过渡灯色3类型：</span>
                     <Select
@@ -2584,7 +2595,7 @@ class SignalManagement extends PureComponent {
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>失去路权过渡灯色3时间：</span><Input type='number' value={phaseShowDetail.rightofwayLoseLamp3Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayLoseLamp3Time')} placeholder="请输入" />
-                  </div>                  
+                  </div>
                   <div className={styles.itemInputBox}>
                     <span>开机获得路权灯色1类型：</span>
                     <Select
@@ -2600,7 +2611,7 @@ class SignalManagement extends PureComponent {
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>开机获得路权灯色1时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupAccessLamp1Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayStartingupAccessLamp1Time')} placeholder="请输入" />
-                  </div>                  
+                  </div>
                   <div className={styles.itemInputBox}>
                     <span>开机获得路权灯色2类型：</span>
                     <Select
@@ -2616,7 +2627,7 @@ class SignalManagement extends PureComponent {
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>开机获得路权灯色2时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupAccessLamp2Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayStartingupAccessLamp2Time')} placeholder="请输入" />
-                  </div>                  
+                  </div>
                   <div className={styles.itemInputBox}>
                     <span>开机获得路权灯色3类型：</span>
                     <Select
@@ -2632,7 +2643,7 @@ class SignalManagement extends PureComponent {
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>开机获得路权灯色3时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupAccessLamp3Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayStartingupAccessLamp3Time')} placeholder="请输入" />
-                  </div>                  
+                  </div>
                   <div className={styles.itemInputBox}>
                     <span>开机失去路权灯色1类型：</span>
                     <Select
@@ -2648,7 +2659,7 @@ class SignalManagement extends PureComponent {
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>开机失去路权灯色1时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupLoseLamp1Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayStartingupLoseLamp1Time')} placeholder="请输入" />
-                  </div>                  
+                  </div>
                   <div className={styles.itemInputBox}>
                     <span>开机失去路权灯色2类型：</span>
                     <Select
@@ -2664,7 +2675,7 @@ class SignalManagement extends PureComponent {
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>开机失去路权灯色2时间：</span><Input type='number' value={phaseShowDetail.rightofwayStartingupLoseLamp2Time} onChange={e => this.handleChangeInput(e, 'state', 'phaseShowDetail', 'rightofwayStartingupLoseLamp2Time')} placeholder="请输入" />
-                  </div>                  
+                  </div>
                   <div className={styles.itemInputBox}>
                     <span>开机失去路权灯色3类型：</span>
                     <Select
@@ -2811,7 +2822,7 @@ class SignalManagement extends PureComponent {
                     </Select>
                   </div>
                   <div className={styles.itemInputBox}>
-                    <span>方案周期：</span><Input readOnly='readOnly' style={{cursor: 'no-drop'}} type='number' value={planShowDetail.schemeCycle} onChange={e => this.handleChangeInput(e, 'state', 'planShowDetail', 'schemeCycle')} placeholder="请输入" />
+                    <span>方案周期：</span><Input readOnly='readOnly' style={{ cursor: 'no-drop' }} type='number' value={planShowDetail.schemeCycle} onChange={e => this.handleChangeInput(e, 'state', 'planShowDetail', 'schemeCycle')} placeholder="请输入" />
                   </div>
                   <div className={styles.itemInputBox}>
                     <span>方案相位差时间：</span><Input type='number' value={planShowDetail.schemePhaseDiferenceTime} onChange={e => this.handleChangeInput(e, 'state', 'planShowDetail', 'schemePhaseDiferenceTime')} placeholder="请输入" />
@@ -2837,7 +2848,7 @@ class SignalManagement extends PureComponent {
                           planStageLists.map((item, i) => {
                             return <div key={'phaseStage' + i} className={styles.imageName}>
                               <span title={`${item.phasestageNo} - ${item.phasestageName}`} className={styles.IdName}><em />{`${item.phasestageNo} - ${item.phasestageName}`}：</span>
-                              <Input type='number' value={Number(item.phaseTimeIndex)} onChange={e => this.handleChangeInput(e, 'state', 'planStageLists', 'phaseTimeIndex', i)} onBlur={ e => this.getCheckPhaseTime(e, roadInterId, item.phasestageNo, i) } placeholder="请输入" />
+                              <Input type='number' value={Number(item.phaseTimeIndex)} onChange={e => this.handleChangeInput(e, 'state', 'planStageLists', 'phaseTimeIndex', i)} onBlur={e => this.getCheckPhaseTime(e, roadInterId, item.phasestageNo, i)} placeholder="请输入" />
                               <img src={`${this.phaseBgUrl}${item.imagePath}`} />
                             </div>
                           })
@@ -2887,7 +2898,7 @@ class SignalManagement extends PureComponent {
                             return <div key={'dayPlan' + i} className={styles.timeThreeBox}>
 
                               <span>开始时间：</span>
-                              <TimePicker disabled={ i===0 ? 'disabled' : ''} key={item.timeintervalStarttime} defaultValue={moment(item.timeintervalStarttime, format)} format={format} allowClear={false} onChange={(v, time) => this.handleChangeTime(v, time, 'state', 'dayplanShowDetail', 'timeintervalList', i, 'timeintervalStarttime')} />
+                              <TimePicker disabled={i === 0 ? 'disabled' : ''} key={item.timeintervalStarttime} defaultValue={moment(item.timeintervalStarttime, format)} format={format} allowClear={false} onChange={(v, time) => this.handleChangeTime(v, time, 'state', 'dayplanShowDetail', 'timeintervalList', i, 'timeintervalStarttime')} />
                               <span>运行方案：</span><Select
                                 value={Number(item.timeintervalScheme) ? Number(item.timeintervalScheme) : 0}
                                 onChange={v => this.handleChangeSel(v, 'state', 'dayplanShowDetail', 'timeintervalList', i, 'timeintervalScheme')}>
@@ -3392,6 +3403,7 @@ class SignalManagement extends PureComponent {
             <div className={styles.statusBox}>
               <span className={styles.tagOnLine}>在线设备{onlineNum}处</span>
               <span className={styles.tagOffLine}>离线设备{offlineNum}处</span>
+              <span className={styles.tagYellLine}>手动离线{handOffline}处</span>
             </div>
             <div title="切换视图" className={styles.turnBtn} onClick={() => this.showInterworkingList(true)} />
           </div>

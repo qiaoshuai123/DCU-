@@ -1,21 +1,21 @@
 $bor_color: #27343b;
 $stepBor_col: #393f4f;
 :global(.ant-modal-content) {
-    background-color: #343a52!important;
-    :global(.ant-modal-confirm-body .ant-modal-confirm-title){
-      color:#fff;
+    background-color: #343a52 !important;
+    :global(.ant-modal-confirm-body .ant-modal-confirm-title) {
+        color: #fff;
     }
-  }
+}
 .SignalManagement {
     width: 100%;
     height: 100%;
     background-color: #021035;
-    .imgCurrent{
-        padding:14px;
-        border:2px yellow dotted;
+    .imgCurrent {
+        padding: 14px;
+        border: 2px yellow dotted;
     }
-    .mouseStatus{
-        cursor: move!important;
+    .mouseStatus {
+        cursor: move !important;
     }
     /* 弹层start */
     .maskBg {
@@ -48,7 +48,7 @@ $stepBor_col: #393f4f;
             border-bottom: 1px solid #292a2d;
             color: #bbbdbc;
             position: relative;
-            padding-right:30px;
+            padding-right: 30px;
             .Close {
                 font-size: 16px;
                 position: absolute;
@@ -64,7 +64,7 @@ $stepBor_col: #393f4f;
                 }
             }
         }
-        
+
         .popCon {
             max-height: 780px;
             display: flex;
@@ -75,69 +75,69 @@ $stepBor_col: #393f4f;
             border-bottom: 1px solid #292a2d;
             flex-wrap: wrap;
             overflow-y: auto;
-            .loadItemBox{
+            .loadItemBox {
                 width: 100%;
                 margin-bottom: 8px;
                 display: flex;
                 justify-content: flex-start;
                 align-items: center;
                 color: yellowgreen;
-                > span{
+                > span {
                     width: 120px;
                     text-align: right;
                     font-size: 16px;
                     color: yellowgreen;
                     font-weight: bold;
                     display: inline-block;
-                    margin-right:10px;
+                    margin-right: 10px;
                 }
-                > em{
-                    padding-left:10px;
+                > em {
+                    padding-left: 10px;
                     color: orangered;
                     font-style: normal;
                     font-size: 12px;
                 }
-                :global(.anticon-check-circle){
-                    color:greenyellow;
+                :global(.anticon-check-circle) {
+                    color: greenyellow;
                     font-size: 16px;
                 }
-                :global(.anticon-close-circle){
-                    color:orangered;
+                :global(.anticon-close-circle) {
+                    color: orangered;
                     font-size: 16px;
                 }
-                :global(.ant-spin-spinning){
-                    margin-top:6px;
+                :global(.ant-spin-spinning) {
+                    margin-top: 6px;
                 }
-                :global(.ant-spin-lg .ant-spin-dot i){
+                :global(.ant-spin-lg .ant-spin-dot i) {
                     background: green;
                 }
             }
-            :global(.ant-radio-wrapper){
-                color:#fff;
+            :global(.ant-radio-wrapper) {
+                color: #fff;
                 font-size: 12px;
-                margin-right:10px;
+                margin-right: 10px;
             }
-            :global(.ant-checkbox-group){
-                color:#bbbdbc;
-                font-size:12px;
-                :global(.ant-row){
+            :global(.ant-checkbox-group) {
+                color: #bbbdbc;
+                font-size: 12px;
+                :global(.ant-row) {
                     line-height: 30px;
                     text-align: center;
-                    color:#bbbdbc;
+                    color: #bbbdbc;
                 }
-                :global(.ant-row:first-child){
-                    background: #26394A;
+                :global(.ant-row:first-child) {
+                    background: #26394a;
                 }
-                :global(.ant-checkbox + span){
-                    color:#bbbdbc;
+                :global(.ant-checkbox + span) {
+                    color: #bbbdbc;
                 }
             }
-            >img{
+            > img {
                 align-self: flex-start;
                 padding: 8px;
             }
             // 表单
-            .itemInputBox{
+            .itemInputBox {
                 width: 50%;
                 display: flex;
                 justify-content: center;
@@ -149,13 +149,13 @@ $stepBor_col: #393f4f;
                     flex: 2;
                     text-align: right;
                 }
-                .noImage{
+                .noImage {
                     width: 120px;
                     line-height: 80px;
                     text-align: center;
-                    border:1px $bor_color solid;
+                    border: 1px $bor_color solid;
                     background: $stepBor_col;
-                    color:#bbbdbc;
+                    color: #bbbdbc;
                     cursor: pointer;
                     user-select: none;
                     border-radius: 4px;
@@ -164,12 +164,12 @@ $stepBor_col: #393f4f;
                     -ms-border-radius: 4px;
                     -o-border-radius: 4px;
                 }
-                .yesImage{
-                    padding:10px;
+                .yesImage {
+                    padding: 10px;
                     min-width: 120px;
                     text-align: center;
-                    border:1px $bor_color solid;
-                    color:#bbbdbc;
+                    border: 1px $bor_color solid;
+                    color: #bbbdbc;
                     cursor: pointer;
                     user-select: none;
                     display: inline-block;
@@ -180,28 +180,28 @@ $stepBor_col: #393f4f;
                     -moz-border-radius: 4px;
                     -ms-border-radius: 4px;
                     -o-border-radius: 4px;
-                    
-                    >img{
+
+                    > img {
                         display: inline-block;
                     }
                 }
-                :global(.ant-checkbox-group){
-                    flex:4.4;
+                :global(.ant-checkbox-group) {
+                    flex: 4.4;
                     height: 30px;
                     display: flex;
                     justify-content: flex-start;
                     align-content: flex-start;
                     flex-wrap: wrap;
                 }
-                :global(.ant-checkbox-group-item){
-                    width:49%;
+                :global(.ant-checkbox-group-item) {
+                    width: 49%;
                     margin: 0;
                 }
-                :global(.ant-checkbox + span){
-                    width:100%;
+                :global(.ant-checkbox + span) {
+                    width: 100%;
                     height: 30px;
                     line-height: 30px;
-                    color: #bbbdbc!important;
+                    color: #bbbdbc !important;
                 }
                 :global(.ant-input) {
                     flex: 4;
@@ -228,20 +228,19 @@ $stepBor_col: #393f4f;
                     -ms-border-radius: 4px;
                     -o-border-radius: 4px;
                 }
-                :global(.ant-select-selection){
+                :global(.ant-select-selection) {
                     background: unset;
                     border: unset;
                 }
-                :global(.ant-select-arrow){
+                :global(.ant-select-arrow) {
                     color: unset;
                 }
                 :global(.ant-calendar-picker) {
                     flex: 4.2;
                 }
                 :global(.ant-calendar-picker-icon) {
-                    color:white;
+                    color: white;
                 }
-                
             }
             // 路口底图
             .typePic {
@@ -272,18 +271,18 @@ $stepBor_col: #393f4f;
                     -ms-border-radius: 4px;
                     -o-border-radius: 4px;
                     > p {
-                        width:120px;
-                        height:80px;
+                        width: 120px;
+                        height: 80px;
                         position: absolute;
-                        top:-28px;
-                        left:-140px;
+                        top: -28px;
+                        left: -140px;
                         z-index: 100;
                         border-radius: 4px;
                         -webkit-border-radius: 4px;
                         -moz-border-radius: 4px;
                         -ms-border-radius: 4px;
                         -o-border-radius: 4px;
-}
+                    }
                 }
                 :global(.ant-radio-wrapper) {
                     color: #bbbdbc;
@@ -294,9 +293,9 @@ $stepBor_col: #393f4f;
                     background-color: transparent !important;
                 }
             }
-            .bgImgBox{
-                width:100px;
-                height:100px;
+            .bgImgBox {
+                width: 100px;
+                height: 100px;
                 margin: 8px;
                 cursor: pointer;
             }
@@ -304,10 +303,10 @@ $stepBor_col: #393f4f;
         .popConTurn {
             padding: 15px 30px 15px 0;
             // 表单
-            .itemInputBox{
-                .phaseStageBox{
-                    flex:7.5;
-                    .phaseStageIdBox{
+            .itemInputBox {
+                .phaseStageBox {
+                    flex: 7.5;
+                    .phaseStageIdBox {
                         width: 99%;
                         min-height: 40px;
                         max-height: 150px;
@@ -316,20 +315,20 @@ $stepBor_col: #393f4f;
                         justify-content: space-between;
                         align-items: center;
                         flex-wrap: wrap;
-                        .dispatchBox{
+                        .dispatchBox {
                             height: 200px;
                             width: 100%;
-                            border-bottom:1px solid #292a2d;
-                            margin-bottom:10px;
-                            >span{
-                                margin:0 5px 8px;
+                            border-bottom: 1px solid #292a2d;
+                            margin-bottom: 10px;
+                            > span {
+                                margin: 0 5px 8px;
                             }
-                            .dateDisBox{
+                            .dateDisBox {
                                 width: 100%;
                                 display: flex;
                                 justify-content: flex-start;
                                 align-content: flex-start;
-                                margin:10px 0;
+                                margin: 10px 0;
                                 :global(.ant-checkbox-group) {
                                     width: 80%;
                                     display: flex;
@@ -340,10 +339,10 @@ $stepBor_col: #393f4f;
                                     width: 48px;
                                     height: 25px;
                                     position: relative;
-                                    top:-4px;
+                                    top: -4px;
                                 }
-                                .spanWidth{
-                                    width:58px;
+                                .spanWidth {
+                                    width: 58px;
                                     justify-content: right;
                                     align-content: flex-start;
                                     text-align: right;
@@ -353,12 +352,11 @@ $stepBor_col: #393f4f;
                             :global(.ant-select) {
                                 width: 100px;
                             }
-                            
                         }
-                        .timeThreeBox{
+                        .timeThreeBox {
                             width: 100%;
-                            >span{
-                                margin:0 5px 8px;
+                            > span {
+                                margin: 0 5px 8px;
                             }
                             :global(.ant-select) {
                                 width: 135px;
@@ -368,37 +366,36 @@ $stepBor_col: #393f4f;
                             }
                             :global(.ant-time-picker-input) {
                                 background-color: #1b2d2f;
-                                border: 1px solid #3B5268;
+                                border: 1px solid #3b5268;
                                 color: #f1f1fb;
                             }
                             :global(.ant-time-picker-clock-icon) {
                                 color: #f1f1fb;
-                                
                             }
                         }
-                        .imageName{
+                        .imageName {
                             width: 48%;
-                            :global(.ant-input){
+                            :global(.ant-input) {
                                 width: 56px;
                                 vertical-align: top;
                             }
-                            .IdName{
+                            .IdName {
                                 text-align: right;
-                                width:120px;
+                                width: 120px;
                                 line-height: 30px;
                                 display: inline-block;
                                 white-space: nowrap;
                                 text-overflow: ellipsis;
                                 overflow: hidden;
-                                padding-left:15px;
-                                > em{
-                                    width:10px;
-                                    height:10px;
+                                padding-left: 15px;
+                                > em {
+                                    width: 10px;
+                                    height: 10px;
                                     display: inline-block;
                                     background: green;
                                     position: relative;
-                                    top:0;
-                                    right:10px;
+                                    top: 0;
+                                    right: 10px;
                                     border-radius: 100%;
                                     -webkit-border-radius: 100%;
                                     -moz-border-radius: 100%;
@@ -406,22 +403,22 @@ $stepBor_col: #393f4f;
                                     -o-border-radius: 100%;
                                 }
                             }
-                            > img{
+                            > img {
                                 width: 30px;
                                 height: 30px;
                                 vertical-align: top;
-                                margin-left:10px;
+                                margin-left: 10px;
                             }
                         }
                     }
-                    .addReduceBtn{
+                    .addReduceBtn {
                         width: 100%;
                         height: 30px;
                         position: relative;
-                        >s{
+                        > s {
                             position: absolute;
                             right: -50px;
-                            :global(.anticon){
+                            :global(.anticon) {
                                 background: blueviolet;
                                 padding: 3px;
                                 border-radius: 4px;
@@ -431,24 +428,24 @@ $stepBor_col: #393f4f;
                         }
                     }
                 }
-                .editItem{
-                    flex:2.25;
+                .editItem {
+                    flex: 2.25;
                     line-height: 30px;
                     border-bottom: 1px solid $stepBor_col;
                     cursor: pointer;
                     position: relative;
                     user-select: none;
                     font-size: 12px;
-                    > b{
-                        flex:1.5;
-                        color:yellowgreen;
+                    > b {
+                        flex: 1.5;
+                        color: yellowgreen;
                     }
                     > em {
                         font-style: normal;
                         position: absolute;
-                        top:0;
-                        right:0;
-                        color:#3c6ac5;
+                        top: 0;
+                        right: 0;
+                        color: #3c6ac5;
                     }
                 }
                 > span {
@@ -456,11 +453,11 @@ $stepBor_col: #393f4f;
                     flex: 2.5;
                     text-align: right;
                 }
-                :global(.ant-checkbox-group){
-                    flex:2.2;
+                :global(.ant-checkbox-group) {
+                    flex: 2.2;
                 }
-                :global(.ant-col-4){
-                    padding-left:20px;
+                :global(.ant-col-4) {
+                    padding-left: 20px;
                     text-align: left;
                 }
                 :global(.ant-input) {
@@ -502,18 +499,18 @@ $stepBor_col: #393f4f;
                     -ms-border-radius: 4px;
                     -o-border-radius: 4px;
                     > p {
-                        width:120px;
-                        height:80px;
+                        width: 120px;
+                        height: 80px;
                         position: absolute;
-                        top:-28px;
-                        left:-140px;
+                        top: -28px;
+                        left: -140px;
                         z-index: 100;
                         border-radius: 4px;
                         -webkit-border-radius: 4px;
                         -moz-border-radius: 4px;
                         -ms-border-radius: 4px;
                         -o-border-radius: 4px;
-}
+                    }
                 }
                 :global(.ant-radio-wrapper) {
                     color: #bbbdbc;
@@ -524,9 +521,9 @@ $stepBor_col: #393f4f;
                     background-color: transparent !important;
                 }
             }
-            .bgImgBox{
-                width:100px;
-                height:100px;
+            .bgImgBox {
+                width: 100px;
+                height: 100px;
                 margin: 8px;
                 cursor: pointer;
             }
@@ -577,7 +574,7 @@ $stepBor_col: #393f4f;
         bottom: 0;
         z-index: 9;
         .searchBox {
-            margin:0 0 0;
+            margin: 0 0 0;
             border-top: 1px solid $bor_color;
             border-bottom: 1px solid $bor_color;
             height: 60px;
@@ -595,40 +592,40 @@ $stepBor_col: #393f4f;
                 outline: none;
                 border-radius: 4px;
                 outline: none;
-                color: #F1F1FB;
-                margin:0 15px;
+                color: #f1f1fb;
+                margin: 0 15px;
             }
             .searchIcon {
                 position: absolute;
                 right: 25px;
                 top: 20px;
                 font-size: 18px;
-                color: #07BDFB;
+                color: #07bdfb;
                 cursor: pointer;
             }
-          }
-          .interList {
+        }
+        .interList {
             position: absolute;
             top: 48px;
             left: 15px;
             right: 15px;
             border-radius: 4px;
-            background-color: rgba(0,0,0, .6);
-            transition: all .2s;
+            background-color: rgba(0, 0, 0, 0.6);
+            transition: all 0.2s;
             overflow-y: hidden;
             z-index: 99;
             .interItem {
-              height: 30px;
-              padding-left: 10px;
-              font-size: 14px;
-              line-height: 30px;
-              transition: all .2s;
-              cursor: pointer;
-              &:hover {
-                background-color: #06234F;
-              }
+                height: 30px;
+                padding-left: 10px;
+                font-size: 14px;
+                line-height: 30px;
+                transition: all 0.2s;
+                cursor: pointer;
+                &:hover {
+                    background-color: #06234f;
+                }
             }
-          }
+        }
         .InterworkLeft_search {
             border-top: 1px solid $bor_color;
             border-bottom: 1px solid $bor_color;
@@ -764,7 +761,7 @@ $stepBor_col: #393f4f;
                 width: 980px;
                 height: 780px;
                 user-select: none;
-                margin:0 auto;
+                margin: 0 auto;
                 position: relative;
                 background-image: url(../../../images/intersectionBg.png) no-repeat;
                 background-position: center center;
@@ -804,7 +801,7 @@ $stepBor_col: #393f4f;
                 padding: 0 20px;
                 font-size: 12px;
                 color: #bbbdbc;
-                .noData{
+                .noData {
                     font-size: 16px;
                     border: 2px solid #393f4f;
                     padding: 50px 0;
@@ -828,11 +825,11 @@ $stepBor_col: #393f4f;
                     }
                 }
                 // 表单类
-                .rCon{
-                    border:1px solid $stepBor_col;
-                    padding:15px;
+                .rCon {
+                    border: 1px solid $stepBor_col;
+                    padding: 15px;
                     // display: none;
-                    .itemInputBox{
+                    .itemInputBox {
                         display: flex;
                         justify-content: center;
                         align-items: center;
@@ -857,15 +854,15 @@ $stepBor_col: #393f4f;
                             flex: 4.2;
                         }
                         :global(.ant-calendar-picker-icon) {
-                            color:white;
+                            color: white;
                         }
-                        :global(.ant-radio-wrapper){
-                            color:#fff;
+                        :global(.ant-radio-wrapper) {
+                            color: #fff;
                             font-size: 12px;
-                            margin-right:10px;
+                            margin-right: 10px;
                         }
-                        :global(.ant-radio-disabled + span){
-                            color:#fff;
+                        :global(.ant-radio-disabled + span) {
+                            color: #fff;
                         }
                     }
                 }
@@ -903,20 +900,20 @@ $stepBor_col: #393f4f;
                         > span {
                             border-bottom: 1px solid #26394a;
                         }
-                        span.del{
-                            b{
-                                margin:0 6px;
+                        span.del {
+                            b {
+                                margin: 0 6px;
                                 text-decoration: none;
                                 display: inline-block;
                                 font-weight: lighter;
-                                &:hover{
+                                &:hover {
                                     color: yellowgreen;
                                     text-decoration: underline;
                                     font-weight: bold;
                                 }
                             }
                         }
-                        
+
                         &:hover span {
                             background-color: #153a61;
                         }
@@ -937,27 +934,24 @@ $stepBor_col: #393f4f;
         top: 134px;
         z-index: 8;
         .tagMarker {
-            height: 30px;
             display: flex;
             justify-content: space-around;
-            align-items: center;
             position: absolute;
             top: 10px;
             right: 20px;
-            z-index: 9;
+            z-index: 17;
             .statusBox {
                 display: flex;
-                justify-content: space-around;
-                align-items: center;
+                flex-wrap: wrap;
                 background-color: rgba(28, 33, 39, 0.9);
                 border: 1px #353c46 solid;
                 padding: 6px 0 6px 5px;
                 margin-right: 5px;
                 > span {
+                    width: 50%;
                     line-height: 18px;
-                    display: inline-block;
                     padding-left: 35px;
-                    margin-right: 15px;
+                    margin: 3px 0;
                 }
                 > span.tagOnLine {
                     background: url(../../../images/markerGreen.png) no-repeat;
@@ -966,6 +960,11 @@ $stepBor_col: #393f4f;
                 }
                 > span.tagOffLine {
                     background: url(../../../images/markerRed.png) no-repeat;
+                    background-position: 10px center;
+                    background-size: 18px 18px;
+                }
+                > span.tagYellLine {
+                    background: url(../../../images/markerYellow.png) no-repeat;
                     background-position: 10px center;
                     background-size: 18px 18px;
                 }
@@ -1090,7 +1089,16 @@ $stepBor_col: #393f4f;
         background: url(../../../images/markerGreen.png) no-repeat;
     }
     :global(.marker-offline) {
+        width: 32px;
+        height: 32px;
+        display: block;
         background: url(../../../images/markerRed.png) no-repeat;
+    }
+    :global(.marker-tagYellLin) {
+        width: 32px;
+        height: 32px;
+        display: block;
+        background: url(../../../images/markerYellow.png) no-repeat;
     }
     :global(.marker-hoverline) {
         background-color: green;
@@ -1159,19 +1167,19 @@ $stepBor_col: #393f4f;
 }
 @keyframes playGo {
     from {
-      transform: rotate(0deg);
+        transform: rotate(0deg);
     }
     to {
-      transform: rotate(360deg);
+        transform: rotate(360deg);
     }
-  }
-.timeWarpper{
+}
+.timeWarpper {
     position: absolute;
-    z-index:99999;
-    width:500px;
-    height:100px;
+    z-index: 99999;
+    width: 500px;
+    height: 100px;
     bottom: -20px;
-    right:-8px;
+    right: -8px;
     .timeBox {
         display: flex;
         height: 35px;
@@ -1186,173 +1194,173 @@ $stepBor_col: #393f4f;
         user-select: none;
         box-sizing: content-box;
         mark {
-          padding: 5px 15px;
-          position: absolute;
-          right: 10px;
-          top: -66px;
-          font-weight: bold;
-          border-radius: 2px;
-          font-size: 0px;
-          cursor: pointer;
-          height: 30px;
-          width: 30px;
-          background: url(./imgs/play.png) no-repeat;
-          i {
-            width: 50px;
-            height: 50px;
-            display: block;
+            padding: 5px 15px;
             position: absolute;
-            top: -10px;
-            left: -10px;
-            background: url(./imgs/timeBtnHover.png) no-repeat;
-            animation: playGo 3s linear infinite;
-            animation: playGo 3s linear infinite;
-            &:hover {
-              background: url(./imgs/timeBtnHover.png) no-repeat;
-              animation: unset;
-              animation: unset;
+            right: 10px;
+            top: -66px;
+            font-weight: bold;
+            border-radius: 2px;
+            font-size: 0px;
+            cursor: pointer;
+            height: 30px;
+            width: 30px;
+            background: url(./imgs/play.png) no-repeat;
+            i {
+                width: 50px;
+                height: 50px;
+                display: block;
+                position: absolute;
+                top: -10px;
+                left: -10px;
+                background: url(./imgs/timeBtnHover.png) no-repeat;
+                animation: playGo 3s linear infinite;
+                animation: playGo 3s linear infinite;
+                &:hover {
+                    background: url(./imgs/timeBtnHover.png) no-repeat;
+                    animation: unset;
+                    animation: unset;
+                }
             }
-          }
         }
         .btnSuspend {
-          background: url(./imgs/suspend.png) no-repeat;
-          i {
-            width: 50px;
-            height: 50px;
-            display: block;
-            position: absolute;
-            top: -10px;
-            left: -10px;
-            background: url(./imgs/timeBtnHover.png) no-repeat;
-            animation: playGo 3s linear infinite;
-            animation: playGo 3s linear infinite;
-            &:hover {
-              background: url(./imgs/timeBtnHover.png) no-repeat;
-              animation: unset;
-              animation: unset;
+            background: url(./imgs/suspend.png) no-repeat;
+            i {
+                width: 50px;
+                height: 50px;
+                display: block;
+                position: absolute;
+                top: -10px;
+                left: -10px;
+                background: url(./imgs/timeBtnHover.png) no-repeat;
+                animation: playGo 3s linear infinite;
+                animation: playGo 3s linear infinite;
+                &:hover {
+                    background: url(./imgs/timeBtnHover.png) no-repeat;
+                    animation: unset;
+                    animation: unset;
+                }
             }
-          }
         }
-      
+
         em {
-          height: 100%;
-          width: 0;
-          border-right: 1px #b63d5d solid;
-          position: absolute;
-          top: 0;
-          left: 15px;
-          z-index: 2;
-          transition: all .2s;
-          transition-timing-function: linear;
-      }
+            height: 100%;
+            width: 0;
+            border-right: 1px #b63d5d solid;
+            position: absolute;
+            top: 0;
+            left: 15px;
+            z-index: 2;
+            transition: all 0.2s;
+            transition-timing-function: linear;
+        }
         em > i {
-          display: inline-block;
-          height: 30%;
-          width: 16px;
-          border-radius: 2px;
-          background: #dedede;
-          position: absolute;
-          top: 35%;
-          left: -8px;
-          border-radius: 2px;
-          -moz-border-radius: 2px;
-          -ms-border-radius: 2px;
-          -o-border-radius: 2px;
+            display: inline-block;
+            height: 30%;
+            width: 16px;
+            border-radius: 2px;
+            background: #dedede;
+            position: absolute;
+            top: 35%;
+            left: -8px;
+            border-radius: 2px;
+            -moz-border-radius: 2px;
+            -ms-border-radius: 2px;
+            -o-border-radius: 2px;
         }
         /* 横向效果style */
         .stepGapHor {
-          display: inline-block;
-          height: 10%;
-          position: relative;
-          top: 40%;
+            display: inline-block;
+            height: 10%;
+            position: relative;
+            top: 40%;
         }
         .horStepGap {
-          display: inline-block;
-          height: 30%;
-          position: relative;
-          top: 35%;
+            display: inline-block;
+            height: 30%;
+            position: relative;
+            top: 35%;
         }
         .horStepGapBig {
-          display: inline-block;
-          height: 100%;
-          justify-content: stretch;
-          position: relative;
-          cursor: pointer;
+            display: inline-block;
+            height: 100%;
+            justify-content: stretch;
+            position: relative;
+            cursor: pointer;
         }
-      
+
         .horStepGapBig time {
-          position: absolute;
-          left: 0;
-          bottom: 0;
-          transform: translate(-50%, 120%);
-          font-size: 12px;
-          color: #debdc2;
-          cursor: default;
-      
-          .timePlanNames{
             position: absolute;
-            left:0;
-            top:20px;
-            // border:1px yellow solid;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            > s{
-              width: 70px;
-              height: 25px;
-              line-height:25px;
-              padding:0 5px;
-              background: url(./imgs/leftBg.png) center center no-repeat;
-              background-size: 100% 100%;
-              text-decoration: none;
-              text-align: center;
-              cursor: pointer;
-              >span {
-                display: none;
-              }
-              &:hover {
-                color: #00d31f;
-                box-shadow: inset 0 0 10px #fff;
-                border-radius: 5px;
-                >span {
-                  display: flex;
+            left: 0;
+            bottom: 0;
+            transform: translate(-50%, 120%);
+            font-size: 12px;
+            color: #debdc2;
+            cursor: default;
+
+            .timePlanNames {
+                position: absolute;
+                left: 0;
+                top: 20px;
+                // border:1px yellow solid;
+                display: flex;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                > s {
+                    width: 70px;
+                    height: 25px;
+                    line-height: 25px;
+                    padding: 0 5px;
+                    background: url(./imgs/leftBg.png) center center no-repeat;
+                    background-size: 100% 100%;
+                    text-decoration: none;
+                    text-align: center;
+                    cursor: pointer;
+                    > span {
+                        display: none;
+                    }
+                    &:hover {
+                        color: #00d31f;
+                        box-shadow: inset 0 0 10px #fff;
+                        border-radius: 5px;
+                        > span {
+                            display: flex;
+                        }
+                        :global(.anticon-close) {
+                            color: #fff;
+                            font-size: 12px;
+                            display: block;
+                            position: absolute;
+                            top: -7px;
+                            right: -6px;
+                            border: 1px rgb(20, 50, 129) solid;
+                            background: #151b32;
+                            border-radius: 100%;
+                            -webkit-border-radius: 100%;
+                            -moz-border-radius: 100%;
+                            -ms-border-radius: 100%;
+                            -o-border-radius: 100%;
+                        }
+                    }
                 }
-                :global(.anticon-close){
-                  color: #fff;
-                  font-size:12px;
-                  display: block;
-                  position: absolute;
-                  top:-7px;
-                  right:-6px;
-                  border:1px rgb(20, 50, 129) solid;
-                  background:#151b32;
-                  border-radius: 100%;
-                  -webkit-border-radius: 100%;
-                  -moz-border-radius: 100%;
-                  -ms-border-radius: 100%;
-                  -o-border-radius: 100%;
-                }
-              }
             }
-          }
         }
         .horStepGapBig:first-child {
-          >time .timePlanNames:first-child{
-            s{
-              span{
-                display: none;
-              }
+            > time .timePlanNames:first-child {
+                s {
+                    span {
+                        display: none;
+                    }
+                }
             }
-          }
         }
     }
-    .cycleLengthBox{
+    .cycleLengthBox {
         position: absolute;
         text-align: center;
-        left:0;
-        right:0;
-        bottom:10px;
-        font-size:14px;
-        color:#fff;
-      }
-}  
+        left: 0;
+        right: 0;
+        bottom: 10px;
+        font-size: 14px;
+        color: #fff;
+    }
+}

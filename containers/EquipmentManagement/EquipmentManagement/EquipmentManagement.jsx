@@ -343,7 +343,7 @@ class EquipmentManagement extends Component {
   }
   handleData = (e) => {
     let result = JSON.parse(e);
-    console.log(result,'socket 数据')
+    console.log(result, 'socket 数据')
     const { dcuStateList } = JSON.parse(e)
     // this.drawMarkers(this.state.mapPointsData, 'pointLayers', dcuStateList)
     this.updateMapPonitsColor(dcuStateList)
@@ -353,8 +353,13 @@ class EquipmentManagement extends Component {
       const timeDiv = $($('div[inter-id]')[i])
       data.map((item) => {
         if (item.interId === timeDiv.attr('inter-id') && !!item.state) {
-          timeDiv.removeClass('marker-online')
-          timeDiv.addClass('marker-offline')
+          if (item.state === 1) {
+            timeDiv.removeClass('marker-online')
+            timeDiv.addClass('marker-offline')
+          } else if (item.state === 2) {
+            timeDiv.removeClass('marker-online')
+            timeDiv.addClass('marker-tagYellLine')
+          }
         } else {
           timeDiv.addClass('marker-online')
         }

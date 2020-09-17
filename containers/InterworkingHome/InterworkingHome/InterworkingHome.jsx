@@ -17,9 +17,9 @@ class InterworkingHome extends Component {
       interListHeight: 0,
       isInterworkingList: false,
       mapPointsData: null, // 地图中所有的点
-      offlineNum: '',
-      onlineNum: '',
-      handOffline: '',
+      offlineNum: 0,
+      onlineNum: 0,
+      handOffline: 0,
       treeFlag: true,
       searchInterList: [],
       treeListBackups: null,
