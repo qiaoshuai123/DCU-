@@ -8,7 +8,7 @@ import axios from 'axios'
 if (process.env.NODE_ENV === 'development') {
   axios.defaults.baseURL = 'http://192.168.1.213:20203' // http://192.168.1.213:20203
 } else if (process.env.NODE_ENV === 'production') {
-  axios.defaults.baseURL = 'http://127.0.0.1:20203' // http://192.168.1.213:20203
+  axios.defaults.baseURL = 'http://33.89.129.41:20203' // http://192.168.1.213:20203
   // axios.defaults.baseURL = 'http://39.100.128.220:20203' // http://192.168.1.213:20203
 }
 axios.interceptors.request.use((config) => {
@@ -35,7 +35,7 @@ axios.interceptors.response.use((response) => {
       // axios.defaults.baseURL = 'http://192.168.1.213:20203'
       window.location.href = 'http://localhost:20204/#/login'
     } else if (process.env.NODE_ENV === 'production') {
-      window.location.href = 'http://127.0.0.1:20203/build/index.html#/login'
+      window.location.href = 'http://33.89.129.41/build/index.html#/login'
       // window.location.href = 'http://39.100.128.220:12345/build/index.html#/login'
     }
   }

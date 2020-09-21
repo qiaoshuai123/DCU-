@@ -454,8 +454,14 @@ class RoadDetail extends Component {
         {IsspanMessage &&
           <div className={styles.spanMessage}>
             <span onClick={this.closeStage} className={styles.closeStage}><Icon type="close" /></span>
+            <div className={styles.Timing}>
+              <div className={styles.timingRight}>
+                <span onClick={() => this.centerControls('', '锁定控制', 4)}>锁定控制</span>
+                <span onClick={() => this.centerControls('', '切换控制', 5)}>切换控制</span>
+              </div>
+            </div>
             <div className={styles.stage}>
-              <div className={styles.stageLeft}>锁定阶段控制:</div>
+              <div className={styles.stageLeft}>跳相控制:</div>
               <ul className={styles.stageRight}>
                 {
                   nowPhasestageInfos && nowPhasestageInfos.map(item => <li key={item.id} onDoubleClick={() => this.centerControls(item.phasestageNo, '锁定阶段控制', 1)} style={{ backgroundImage: `url(${this.props.data.devImage}${this.phaseBgUrl}${item.imagePath})` }} />)
@@ -489,6 +495,11 @@ class RoadDetail extends Component {
                   signalTime
                 }
               </span>
+            </div>
+            <div className={styles.Timings}>
+              <div onClick={() => this.centerControls('', '还原控制', 6)} className={styles.Timinger}>
+                还原控制
+              </div>
             </div>
             <div className={styles.Timing}>
               <div className={styles.timingRight}>
