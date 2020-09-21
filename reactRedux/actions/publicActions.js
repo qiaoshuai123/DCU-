@@ -8,7 +8,7 @@ import RestUtil from '../RestUtil'
 
 import {
   API_UNIT_INFO_LIST, API_UNIT_TREE, API_SIGNAL_BY_INTERID, API_UPDATE_SIGNAL, API_SYSTEM_CODE_TYPE,
-  API_REBOOT, API_SET_OFF_LINE, API_PROOFREAD_TIME
+  API_REBOOT, API_SET_OFF_LINE, API_PROOFREAD_TIME, API_GET_DCU_STATE,
 } from '../actionTypes/publicAPIs'
 
 // 系统字典方法
@@ -136,6 +136,21 @@ export const getProofreadTime = (interId, proofreadType) => {
       const result = await RestUtil.get(`${API_PROOFREAD_TIME}?interId=${interId}&proofreadType=${proofreadType}`)
       if (result.data.code === 0 || result.data.code === -1) {
         dispatch({ type: types.GET_PROOFREAD_TIME, payload: result.data.msg })
+      } else {
+        console.error(result.data.msg)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+}
+// DCU状态校验
+export const getDcuState = (interId) => {
+  return async (dispatch) => {
+    try {
+      const result = await RestUtil.get(`${API_GET_DCU_STATE}?interId=${interId}`)
+      if (result.data.code === 0) {
+        dispatch({ type: types.GET_DCU_STATE, payload: result.data.data })
       } else {
         console.error(result.data.msg)
       }

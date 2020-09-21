@@ -9,7 +9,7 @@ import InterworkingList from './InterworkingList/InterworkingList'
 import styles from './SignalManagement.scss'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { getSystemCodeType, getMapUnitInfoList, getUnitPop, checkUnitTree } from '../../../reactRedux/actions/publicActions'
+import { getSystemCodeType, getMapUnitInfoList, getUnitPop, checkUnitTree, getDcuState } from '../../../reactRedux/actions/publicActions'
 import { getStepStatus, getPicListsType, getInfoListsType, getInfoListsTypeMore, postBgBySelect, postBgByUpload, postAddOthersType, postUpdateOthersType, postAddAllType, postUpdateAllType, getIconImageList, getUpdateAllType, getSelectLists, getCheckPhaseTime, getEditCheckData } from '../../../reactRedux/actions/signalmanagementActions'
 import StepNavMenu from './StepNavMenu/StepNavMenu'
 import BasicInfoLeft from './StepConfigLeft/BasicInfoLeft'
@@ -1871,48 +1871,16 @@ class SignalManagement extends PureComponent {
         break;
       case 10:
         this.setState({
-          tenFlag: Boolean(result.code),
+          tenFlag: result.step,
         })
         break;
     }
   }
   loadDataType = (flag) => {
-    this.setState({
-      loadFlag: flag,
-      oneFlag: null,
-      oneText: '传输中~~~',
-      twoFlag: null,
-      twoText: '等待中...',
-      threeFlag: null,
-      threeText: '等待中...',
-      fourFlag: null,
-      fourText: '等待中...',
-      fiveFlag: null,
-      fiveText: '等待中...',
-      sixFlag: null,
-      sixText: '等待中...',
-      sevenFlag: null,
-      sevenText: '等待中...',
-      eightFlag: null,
-      eightText: '等待中...',
-      nineFlag: null,
-      nineText: '等待中...',
-      tenFlag: null,
-      nowText: '基础信息配置',
-    })
-  }
-  loadData(data) {
-    let result = JSON.parse(data);
-    this.returnStep(result)
-    console.log(result, 'socket 上传数据')
-  }
-  editDataType = (flag) => {
-    this.props.getEditCheckData(this.state.roadInterId).then(() => {
-      if (this.state.editCheckData.length > 0) {
-        this.setState({ editCheckDataFlag: true })
-      } else {
+    this.props.getDcuState().then(() => {
+      if (this.props.data.dcuStateData !== 0 ){
         this.setState({
-          editFlag: flag,
+          loadFlag: flag,
           oneFlag: null,
           oneText: '传输中~~~',
           twoFlag: null,
@@ -1934,8 +1902,51 @@ class SignalManagement extends PureComponent {
           tenFlag: null,
           nowText: '基础信息配置',
         })
+      } else {
+        message.info('设备离线状态, 上传失败!')
       }
-
+    })
+  }
+  loadData(data) {
+    let result = JSON.parse(data);
+    this.returnStep(result)
+    console.log(result, 'socket 上传数据')
+  }
+  editDataType = (flag) => {
+    this.props.getDcuState().then(() => {
+      if (this.props.data.dcuStateData !== 0 ){
+        this.props.getEditCheckData(this.state.roadInterId).then(() => {
+          if (this.state.editCheckData.length > 0) {
+            this.setState({ editCheckDataFlag: true })
+          } else {
+            this.setState({
+              editFlag: flag,
+              oneFlag: null,
+              oneText: '传输中~~~',
+              twoFlag: null,
+              twoText: '等待中...',
+              threeFlag: null,
+              threeText: '等待中...',
+              fourFlag: null,
+              fourText: '等待中...',
+              fiveFlag: null,
+              fiveText: '等待中...',
+              sixFlag: null,
+              sixText: '等待中...',
+              sevenFlag: null,
+              sevenText: '等待中...',
+              eightFlag: null,
+              eightText: '等待中...',
+              nineFlag: null,
+              nineText: '等待中...',
+              tenFlag: null,
+              nowText: '基础信息配置',
+            })
+          }
+        })
+      } else {
+        message.info('设备离线状态, 下发失败!')
+      }    
     })
   }
   editData(data) {
@@ -2011,7 +2022,7 @@ class SignalManagement extends PureComponent {
             <div className={styles.popBox} style={{ width: '600px' }}>
               <div className={styles.popTit}>
                 {loadFlag ? '上传配置' : editFlag ? '下发配置' : null}
-                {tenFlag ? <Icon className={styles.Close} type="close" onClick={() => { this.popLayerShowHide("loadFlag", null) }} /> : null}
+                {tenFlag === 10 ? <Icon className={styles.Close} type="close" onClick={() => { this.popLayerShowHide("loadFlag", null) }} /> : null}
               </div>
               <div className={styles.popCon} style={{ width: '380px', margin: '0 auto' }}>
                 <div className={styles.loadItemBox}><span>基础信息配置：</span>{oneFlag === null ? <Spin size="small" /> : (oneFlag ? <Icon type="check-circle" /> : <Icon type="close-circle" />)}<em>{oneText}</em></div>
@@ -2028,7 +2039,7 @@ class SignalManagement extends PureComponent {
                 </div>
               </div>
               <div className={styles.popBottom} style={{ padding: '15px 0' }}>
-                {tenFlag ? <em onClick={() => { this.popLayerShowHide("loadFlag", null) }}>关 闭</em> : null}
+                {tenFlag === 10 ? <em onClick={() => { this.popLayerShowHide("loadFlag", null) }}>关 闭</em> : null}
               </div>
             </div>
           </div> : null
@@ -3439,6 +3450,7 @@ const mapDisPatchToProps = (dispatch) => {
     getSelectLists: bindActionCreators(getSelectLists, dispatch), // 编辑车道、灯组、检测器的列表
     getCheckPhaseTime: bindActionCreators(getCheckPhaseTime, dispatch), // 方案相位阶段链时间的合法不
     getEditCheckData: bindActionCreators(getEditCheckData, dispatch), // 下发配置验证
+    getDcuState: bindActionCreators(getDcuState, dispatch), // 验证设备是否在线
   }
 }
 export default connect(mapStateToProps, mapDisPatchToProps)(SignalManagement)

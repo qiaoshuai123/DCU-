@@ -15,3 +15,6 @@ export const GET_SYSTEM_CODE_TYPE = 'GET_SYSTEM_CODE_TYPE'
 export const GET_REBOOT = 'GET_REBOOT' // 设备重启
 export const GET_SET_OFF_LINE = 'GET_SET_OFF_LINE' // 手动离线
 export const GET_PROOFREAD_TIME = 'GET_PROOFREAD_TIME' //校时
+
+// 设备状态验证
+export const GET_DCU_STATE = 'GET_DCU_STATE' //状态校验

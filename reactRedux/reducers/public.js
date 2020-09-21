@@ -19,6 +19,8 @@ const publics = (state = {}, action) => {
       return Object.assign({}, state, { offLineData: payload })
     case types.GET_PROOFREAD_TIME:
       return Object.assign({}, state, { proofreadTimeData: payload })
+    case types.GET_DCU_STATE:
+      return Object.assign({}, state, { dcuStateData: payload })
     default:
       return state
   }
