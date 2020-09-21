@@ -227,7 +227,7 @@ class EquipmentManagement extends Component {
         const marker = new AMap.Marker({
           position: new AMap.LngLat(positions[i].lng, positions[i].lat),
           offset: new AMap.Pixel(-16, -16),
-          content: "<div inter-id='" + positions[i].id + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
+          content: "<div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
           extData: { id: positions[i].id },
           // content: "<div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div>",
         })
@@ -235,7 +235,7 @@ class EquipmentManagement extends Component {
           map.emit('click', {
             lnglat: map.getCenter()
           })
-          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].id + "' id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
+          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
           const nowZoom = map.getZoom()
           map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
           this.setState({
@@ -277,9 +277,9 @@ class EquipmentManagement extends Component {
     map.on('click', (e) => {
       if ($("#roadKey" + dataItem.id).parent().hasClass('drawCircle')) {
         if ($("#roadKey" + dataItem.id).hasClass('marker-offline')) {
-          marker.setContent("<div inter-id='" + dataItem.id + "' class='marker-online marker-offline'></div>");
+          marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online marker-offline'></div>");
         } else {
-          marker.setContent("<div inter-id='" + dataItem.id + "' class='marker-online'></div>");
+          marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online'></div>");
         }
       }
       infoWindow.close()
@@ -349,22 +349,36 @@ class EquipmentManagement extends Component {
     this.updateMapPonitsColor(dcuStateList)
   }
   updateMapPonitsColor = (data) => {
-    for (let i = 0; i < $('div[inter-id]').length; i++) {
-      const timeDiv = $($('div[inter-id]')[i])
-      data.map((item) => {
-        if (item.interId === timeDiv.attr('inter-id') && !!item.state) {
+    data && data.map((item) => {
+      for (let i = 0; i < $('div[inter-id]').length; i++) {
+        if (item.interId === $($('div[inter-id]')[i]).attr('inter-id')) {
           if (item.state === 1) {
-            timeDiv.removeClass('marker-online')
-            timeDiv.addClass('marker-offline')
+            $($('div[inter-id]')[i]).removeClass()
+            $($('div[inter-id]')[i]).addClass('marker-offline')
           } else if (item.state === 2) {
-            timeDiv.removeClass('marker-online')
-            timeDiv.addClass('marker-tagYellLine')
+            $($('div[inter-id]')[i]).removeClass().addClass('marker-tagYellLine')
+          }else{
+            $($('div[inter-id]')[i]).removeClass().addClass('marker-online')
           }
-        } else {
-          timeDiv.addClass('marker-online')
         }
-      })
-    }
+      }
+    })
+    // for (let i = 0; i < $('div[inter-id]').length; i++) {
+    //   const timeDiv = $($('div[inter-id]')[i])
+    //   data.map((item) => {
+    //     if (item.interId === timeDiv.attr('inter-id') && !!item.state) {
+    //       if (item.state === 1) {
+    //         timeDiv.removeClass('marker-online')
+    //         timeDiv.addClass('marker-offline')
+    //       } else if (item.state === 2) {
+    //         timeDiv.removeClass('marker-online')
+    //         timeDiv.addClass('marker-tagYellLine')
+    //       }
+    //     } else {
+    //       timeDiv.addClass('marker-online')
+    //     }
+    //   })
+    // }
   }
   searchBtnSelect = (event) => {
     this.searchBtn = event.target
