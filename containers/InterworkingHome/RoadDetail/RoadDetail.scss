@@ -99,45 +99,31 @@
             border: 10px solid #bad5ac;
         }
     }
-    .dcuStyles {
-        font-size: 16px;
+
+    .messageBox {
+        width: 310px;
+        background: rgba(31, 37, 49, 0.7);
+        padding: 30px;
         position: absolute;
-        bottom: 180px;
-        left: 90px;
-        width: 60px;
-        height: 35px;
-        text-align: center;
-        line-height: 35px;
-        color: #3da6c0;
-        border-radius: 4px;
-        cursor: pointer;
-        border: 1px solid #3da6c0;
-        background-color: #253646;
-        .messageBox {
-            width: 310px;
-            background: rgba(31, 37, 49, 0.7);
-            padding: 30px;
-            position: absolute;
-            left: 60px;
-            top: -260px;
-            .IconClose {
-                position: absolute;
-                font-size: 16px;
-                cursor: pointer;
-                right: 10px;
-                top: 10px;
-            }
-            > div {
-                height: 25px;
-                line-height: 25px;
-                overflow: hidden;
-                text-align: left;
-                padding-left: 50px;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-                > span {
-                    color: green;
-                }
+        left: 0px;
+        top: 70px;
+        // .IconClose {
+        //     position: absolute;
+        //     font-size: 16px;
+        //     cursor: pointer;
+        //     right: 10px;
+        //     top: 10px;
+        // }
+        > div {
+            height: 25px;
+            line-height: 25px;
+            overflow: hidden;
+            text-align: left;
+            padding-left: 50px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            > span {
+                color: green;
             }
         }
     }
@@ -188,7 +174,6 @@
             top: 10px;
         }
         .stage,
-        .control,
         .programme {
             height: 60px;
             display: flex;
@@ -205,16 +190,49 @@
                 padding-left: 15px;
             }
         }
-        .stageNone {
+        .stageNone,
+        .control {
             height: 60px;
             display: flex;
-            .stageLeftNone {
+            .stageLeftNone,
+            .controlLeft {
                 width: 110px;
                 text-align: right;
                 padding-right: 15px;
                 line-height: 60px;
             }
-            .stageRightNone{
+            .controlRight {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                li {
+                    color: #abb0b6;
+                    border: 1px solid #abb0b6;
+                    border-radius: 3px;
+                    width: 110px;
+                    height: 30px;
+                    text-align: right;
+                    padding-right: 13px;
+                    margin-right: 5px;
+                    &:nth-child(1) {
+                        background: url("./img/01.png") no-repeat;
+                        background-size: contain;
+                    }
+                    &:nth-child(2) {
+                        background: url("./img/03.png") no-repeat;
+                        background-size: contain;
+                    }
+                    &:nth-child(3) {
+                        background: url("./img/02.png") no-repeat;
+                        background-size: contain;
+                    }
+                    &:hover{
+                        color: white;
+                        background-color: #3DA6C0;
+                    }
+                }
+            }
+            .stageRightNone {
                 flex: 1;
                 display: flex;
                 align-items: center;
@@ -228,6 +246,10 @@
                     text-align: center;
                     cursor: pointer;
                     line-height: 30px;
+                    &:hover{
+                        color: white;
+                        background-color: #3DA6C0;
+                    }
                 }
             }
         }
@@ -245,6 +267,10 @@
                 color: #abb0b6;
                 border: 1px solid #abb0b6;
                 margin-right: 5px;
+                &:hover{
+                    color: white;
+                    background-color: #3DA6C0;
+                }
             }
             li {
                 width: 45px;
@@ -263,10 +289,6 @@
                 height: 25px;
                 line-height: 25px;
                 cursor: pointer;
-                &:hover {
-                    color: black;
-                    background-color: #ccc;
-                }
             }
         }
         .times {
@@ -298,6 +320,10 @@
                     color: #abb0b6;
                     border: 1px solid #abb0b6;
                     margin-right: 5px;
+                    &:hover{
+                        color: white;
+                        background-color: #3DA6C0;
+                    }
                     // &:nth-child(1) {
                     //     color: #3da6c0;
                     //     border: 1px solid #3da6c0;

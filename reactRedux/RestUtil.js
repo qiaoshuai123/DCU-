@@ -32,8 +32,9 @@ axios.interceptors.request.use((config) => {
 // 返回拦截
 axios.interceptors.response.use((response) => {
   if (response.data.code === -10) {
-    localStorage.clear()
+    // localStorage.clear()
     if (process.env.NODE_ENV === 'development') {
+      console.log(response)
       // axios.defaults.baseURL = 'http://192.168.1.213:20203'
       window.location.href = 'http://localhost:20204/#/login'
     } else if (process.env.NODE_ENV === 'production') {
