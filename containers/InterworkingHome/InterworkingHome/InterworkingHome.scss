@@ -144,6 +144,7 @@ $bor_color: #27343b;
     right: 20px;
     z-index: 17;
     .statusBox {
+      width: 170px;
       display: flex;
       flex-wrap: wrap;
       background-color: rgba(28, 33, 39, 0.9);
@@ -151,7 +152,7 @@ $bor_color: #27343b;
       padding: 6px 0 6px 5px;
       margin-right: 5px;
       > span {
-        width: 50%;
+        width: 100%;
         line-height: 18px;
         padding-left: 35px;
         margin: 3px 0;

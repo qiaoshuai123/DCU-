@@ -142,7 +142,7 @@ class EquipmentManagement extends Component {
     localStorage.setItem('bac', JSON.stringify(dataItem.background))
     // console.log(JSON.stringify(dataItem.background), '123132132132')
     // window.open(`#/information?id=${dataItem.interId}&ids=${dataItem.id}`)
-    window.open(`#/information?id=${dataItem.interId}&ids=${dataItem.id}&ider=${dataItem.nodeId}`)
+    window.open(encodeURI(`#/information?interId=${dataItem.interId}&id=${dataItem.id}&nodeId=${dataItem.nodeId}&interName=${encodeURI(dataItem.interName)}`))
   }
   btnClick = (e) => {
     this.visibleShowLeft('', '', false)
@@ -357,7 +357,7 @@ class EquipmentManagement extends Component {
             $($('div[inter-id]')[i]).addClass('marker-offline')
           } else if (item.state === 2) {
             $($('div[inter-id]')[i]).removeClass().addClass('marker-tagYellLine')
-          }else{
+          } else {
             $($('div[inter-id]')[i]).removeClass().addClass('marker-online')
           }
         }

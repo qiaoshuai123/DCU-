@@ -347,20 +347,24 @@ class InterworkingHome extends Component {
     }
   }
   updateMapPonitsColor = (data) => {
-    data && data.map((item) => {
-      for (let i = 0; i < $('div[inter-id]').length; i++) {
-        if (item.interId === $($('div[inter-id]')[i]).attr('inter-id')) {
-          if (item.state === 1) {
-            $($('div[inter-id]')[i]).removeClass()
-            $($('div[inter-id]')[i]).addClass('marker-offline')
-          } else if (item.state === 2) {
-            $($('div[inter-id]')[i]).removeClass().addClass('marker-tagYellLine')
-          }else{
-            $($('div[inter-id]')[i]).removeClass().addClass('marker-online')
+    if (data.length) {
+      data.map((item) => {
+        for (let i = 0; i < $('div[inter-id]').length; i++) {
+          if (item.interId === $($('div[inter-id]')[i]).attr('inter-id')) {
+            if (item.state === 1) {
+              $($('div[inter-id]')[i]).removeClass()
+              $($('div[inter-id]')[i]).addClass('marker-offline')
+            } else if (item.state === 2) {
+              $($('div[inter-id]')[i]).removeClass().addClass('marker-tagYellLine')
+            } else {
+              $($('div[inter-id]')[i]).removeClass().addClass('marker-online')
+            }
           }
         }
-      }
-    })
+      })
+    } else {
+      $($('div[inter-id]')[i]).removeClass().addClass('marker-online')
+    }
   }
   handlePopData(data) {
     const { isOnline } = JSON.parse(data);

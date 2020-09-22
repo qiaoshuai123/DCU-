@@ -193,7 +193,7 @@
             height: 60px;
             display: flex;
             > div {
-                width: 130px;
+                width: 110px;
                 text-align: right;
                 padding-right: 15px;
                 line-height: 60px;
@@ -205,9 +205,47 @@
                 padding-left: 15px;
             }
         }
+        .stageNone {
+            height: 60px;
+            display: flex;
+            .stageLeftNone {
+                width: 110px;
+                text-align: right;
+                padding-right: 15px;
+                line-height: 60px;
+            }
+            .stageRightNone{
+                flex: 1;
+                display: flex;
+                align-items: center;
+                span {
+                    width: 150px;
+                    height: 30px;
+                    border-radius: 5px;
+                    color: #3da6c0;
+                    border: 1px solid #3da6c0;
+                    background-color: #253646;
+                    text-align: center;
+                    cursor: pointer;
+                    line-height: 30px;
+                }
+            }
+        }
         .stageRight {
             display: flex;
+            flex: 1;
             align-items: center;
+            > span {
+                width: 48%;
+                height: 30px;
+                text-align: center;
+                line-height: 30px;
+                border-radius: 3px;
+                cursor: pointer;
+                color: #abb0b6;
+                border: 1px solid #abb0b6;
+                margin-right: 5px;
+            }
             li {
                 width: 45px;
                 height: 45px;
@@ -219,6 +257,7 @@
         }
         .controlRight,
         .programmeRight {
+            flex: 1;
             overflow: auto;
             li {
                 height: 25px;
@@ -239,23 +278,6 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-            }
-        }
-        .Timings {
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            .Timinger {
-                width: 210px;
-                height: 30px;
-                border-radius: 5px;
-                color: #3da6c0;
-                border: 1px solid #3da6c0;
-                background-color: #253646;
-                text-align: center;
-                cursor: pointer;
-                line-height: 30px;
             }
         }
         .Timing {
