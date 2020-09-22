@@ -1875,7 +1875,7 @@ class SignalManagement extends PureComponent {
     }
   }
   loadDataType = (flag) => {
-    this.props.getDcuState().then(() => {
+    this.props.getDcuState(this.state.roadInterId).then(() => {
       if (this.props.data.dcuStateData !== 0 ){
         this.setState({
           loadFlag: flag,
@@ -1911,7 +1911,7 @@ class SignalManagement extends PureComponent {
     console.log(result, 'socket 上传数据')
   }
   editDataType = (flag) => {
-    this.props.getDcuState().then(() => {
+    this.props.getDcuState(this.state.roadInterId).then(() => {
       if (this.props.data.dcuStateData !== 0 ){
         this.props.getEditCheckData(this.state.roadInterId).then(() => {
           if (this.state.editCheckData.length > 0) {
