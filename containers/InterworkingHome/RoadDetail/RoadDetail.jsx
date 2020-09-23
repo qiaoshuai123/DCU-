@@ -10,6 +10,7 @@ import {
   proofreadTime, centerControl,
 } from '../../../reactRedux/actions/equipmentManagement'
 import { getUnitPop } from '../../../reactRedux/actions/publicActions'
+import getaddress from '../../../utils/address'
 // import Equipment from './Equipment/Equipment
 
 class RoadDetail extends Component {
@@ -61,6 +62,7 @@ class RoadDetail extends Component {
     this.setState({
       RoadImg: this.bac,
     })
+    document.title = this.titleName
   }
   componentDidUpdate = (prevState) => {
     const { dcuPopData, laneInfoAndDetailinfo, lampgroupDetailListinfo, detectorDetailListinfo, nowPhasestageInfos, lockStateListinfo, schemeInfoListinfo } = this.props.data
@@ -134,12 +136,12 @@ class RoadDetail extends Component {
   }
   getInter = () => {
     const { search } = this.props.location
-    const nums = search.indexOf('&')
-    const lastNums = search.lastIndexOf('&')
-    this.interId = search.substring(4, nums)
-    this.nodeId = search.substring(nums + 5, lastNums)
-    this.unitId = search.substring(lastNums + 6)
+    const objs = getaddress(decodeURI(search))
+    this.interId = objs.interId
+    this.nodeId = objs.nodeId
+    this.unitId = objs.id
     this.bac = JSON.parse(localStorage.getItem('bac'))
+    this.titleName = decodeURI(objs.interName, 'utf-8')
     this.objs = `interId=${this.interId}&nodeNo=${this.nodeId}`
   }
   add0 = (m) => { return m < 10 ? `0${m}` : m }
@@ -411,7 +413,7 @@ class RoadDetail extends Component {
           }
         </div>
         <div className={styles.roadName}>
-        <div className={styles.roadNameTitle}>路口：{dcuPopData.interName}</div>
+          <div className={styles.roadNameTitle}>路口：{dcuPopData.interName}</div>
           <div>所属区域：{dcuPopData.areaName}</div>
           <div>信号机品牌：{dcuPopData.brand}</div>
           <span onClick={this.showStage}>控制窗口</span>

@@ -108,7 +108,7 @@ class SignalStatus extends Component {
   }
   setGetParams = (dataItem) => {
     localStorage.setItem('bac', JSON.stringify(dataItem.background))
-    window.open(`#/roaddetail?id=${dataItem.interId}&ids=${dataItem.nodeId}&ider=${dataItem.id}`)
+    window.open(`#/roaddetail?interId=${dataItem.interId}&nodeId=${dataItem.nodeId}&id=${dataItem.id}&interName=${encodeURI(dataItem.interName)}`)
     // window.open(`#roaddetail/1`)
   }
   visibleShowLeft = (top, id, show) => { // 框的跳转与位置

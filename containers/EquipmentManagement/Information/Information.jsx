@@ -10,6 +10,7 @@ import {
   loadData, editData, dculoadData, dcueditData, reboot,
 } from '../../../reactRedux/actions/equipmentManagement'
 import { getBgLists, postBgBySelect, postBgByUpload } from '../../../reactRedux/actions/signalmanagementActions'
+import getaddress from '../../../utils/address'
 import styles from './Information.scss'
 
 // 图片转64位
@@ -269,23 +270,10 @@ class Information extends Component {
       this.signalIds = false
     }
   }
-  getaddress = (str) => {
-    const ars = str.substring(1).split('&')
-    const ars1 = ars.map((item) => {
-      return (
-        item.replace('=', ':')
-      )
-    })
-    const obj = {}
-    ars1.forEach((item) => {
-      const newArr = item.split(':')
-      obj[newArr[0]] = newArr[1]
-    })
-    return obj
-  }
+
   getInter = () => {
     const { search } = this.props.location
-    const objs = this.getaddress(decodeURI(search))
+    const objs = getaddress(decodeURI(search))
     this.interId = objs.interId
     this.id = objs.id
     this.nodeId = objs.nodeId
