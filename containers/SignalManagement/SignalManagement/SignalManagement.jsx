@@ -1515,8 +1515,8 @@ class SignalManagement extends PureComponent {
     this.infoWindow = infoWindow
     window.infoWindowClose = infoWindow
     map.on('click', (e) => {
-      if ($("#roadKey" + dataItem.id).parent().hasClass('drawCircle')) {
-        if ($("#roadKey" + dataItem.id).hasClass('marker-offline')) {
+      if ($("#roadKey" + dataItem.interId).parent().hasClass('drawCircle')) {
+        if ($("#roadKey" + dataItem.interId).hasClass('marker-offline')) {
           marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online marker-offline'></div>");
         } else {
           marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online'></div>");
