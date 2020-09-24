@@ -85,6 +85,10 @@ class InterworkingHome extends Component {
     //   })
     // }
   }
+  componentWillUnmount = () => {
+    this.classNs = null
+    this.searchTimer = null
+  }
   getSetOffLine = (item) => {
     console.log(item, '离线')
     this.props.getSetOffLine(item.interId).then(() => {
@@ -240,8 +244,8 @@ class InterworkingHome extends Component {
           map.emit('click', {
             lnglat: map.getCenter(),
           })
-          const classNs = $(marker.getContent()).attr('class')
-          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='" + classNs + "'></div></div>");
+          this.classNs = $(marker.getContent()).attr('class')
+          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='" + this.classNs + "'></div></div>");
           const nowZoom = map.getZoom()
           map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
           this.setState({

@@ -385,6 +385,9 @@ class SignalManagement extends PureComponent {
     this.getSystemCodeType(33) // 方案相位阶段出现类型
     this.getSystemCodeType(35) // 进出口方向
   }
+  componentWillUnmount = () => {
+    this.classNs = null
+  }
   // 非空验证
   isNotEmpty = (keyVal, msg, flag) => {
     if (flag) {
@@ -1470,8 +1473,8 @@ class SignalManagement extends PureComponent {
           map.emit('click', {
             lnglat: map.getCenter()
           })
-          const classNs = $(marker.getContent()).attr('class')
-          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].interId + "' class='" + classNs + "'></div></div>");
+          this.classNs = $(marker.getContent()).attr('class')
+          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].interId + "' class='" + this.classNs + "'></div></div>");
           const nowZoom = map.getZoom()
           map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
           this.setState({
