@@ -10,6 +10,7 @@ class MessagePage extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      pointName: '',
       roadName: '',
       interId: '',
       interName: '',
@@ -18,6 +19,7 @@ class MessagePage extends Component {
       lng: '',
       lat: '',
       btnShows: true,
+      pointNameList: [],
     }
     this.interTypeNum = ''
     this.formsVerification = {
@@ -40,29 +42,37 @@ class MessagePage extends Component {
     ]
   }
   componentDidMount = () => {
-    this.roadNames()
+    // this.roadNames()
     this.AllList()
   }
 
   componentDidUpdate = (nextProps) => {
-    const { getObjNum } = this.props.data
+    // const { getObjNum } = this.props.data
     if (nextProps.lng !== this.props.lng || nextProps.lat !== this.props.lat) {
       this.getLngLat(this.props.lng, this.props.lat)
     }
-    if (nextProps.data.getObjNum !== getObjNum) {
-      console.log(getObjNum)
-      this.getObjNums(getObjNum)
-    }
+    // if (nextProps.data.getObjNum !== getObjNum) {
+    //   console.log(getObjNum)
+    //   this.getObjNums(getObjNum)
+    // }
   }
-  getObjNums = (getObjNum) => {
-    if (getObjNum.codeName) {
-      this.setState({
-        roadName: getObjNum.codeName,
-      }, () => {
-        this.areaCode = this.props.data.getObjNum.dictCode
-      })
-    }
+  getpointNameList = () => {
+    const { dcuTreeData } = this.props.data
+    this.setState({
+      pointNameList: dcuTreeData,
+      pointName: dcuTreeData[0].codeName
+    })
+    this.areaCode = dcuTreeData[0].dictCode
   }
+  // getObjNums = (getObjNum) => {
+  //   if (getObjNum.codeName) {
+  //     this.setState({
+  //       roadName: getObjNum.codeName,
+  //     }, () => {
+  //       this.areaCode = this.props.data.getObjNum.dictCode
+  //     })
+  //   }
+  // }
   getLngLat = (lng, lat) => {
     this.setState({
       lng,
@@ -70,16 +80,18 @@ class MessagePage extends Component {
     })
   }
   // 获取点位名称区域编号
-  roadNames = () => {
-    this.setState({
-      roadName: this.props.data.getObjNum.codeName
-    })
-    this.areaCode = this.props.data.getObjNum.dictCode
-  }
+  // roadNames = () => {
+  //   this.setState({
+  //     roadName: this.props.data.getObjNum.codeName
+  //   })
+  //   this.areaCode = this.props.data.getObjNum.dictCode
+  // }
   // 判断是否回显数据
   AllList = () => {
     const { AllList } = this.props
     if (AllList) {
+      const { dcuTreeData } = this.props.data
+      this.areaCode = dcuTreeData[0].dictCode
       const { areaCode, interId, interName, interType, nodeId, lng, lat, id } = AllList
       const interTypes = this.objArr.find(item => item.num === interType).name
       this.interTypeNum = interType
@@ -87,6 +99,8 @@ class MessagePage extends Component {
       this.addMsg = true
       this.id = id
       this.setState({
+        pointNameList: dcuTreeData,
+        pointName: AllList.areaName,
         interId,
         interName,
         interType: interTypes,
@@ -96,6 +110,7 @@ class MessagePage extends Component {
         btnShows: false,
       })
     } else {
+      this.getpointNameList()
       this.setState({
         lng: '',
         lat: '',
@@ -117,6 +132,13 @@ class MessagePage extends Component {
         [interName]: values,
       })
     }
+  }
+  changePointName = (e, optios) => {
+    const { pname, pnum } = optios.props
+    this.setState({
+      [pname]: e,
+    })
+    this.areaCode = pnum
   }
   // 路口序号验证
   changBlur = () => {
@@ -208,10 +230,22 @@ class MessagePage extends Component {
       lat,
       roadName,
       btnShows,
+      pointNameList,
+      pointName,
     } = this.state
     return (
       <div className={styles.MessagePageBox}>
-        <div className={styles.topTitle}><b style={{ color: '#15AEE5', margin: '0 3px' }}>{roadName}</b>点位信息<span onClick={this.closeMessage}><Icon type="close" /></span></div>
+        <div className={styles.topTitle}>
+          <b style={{ margin: '0 10px 0 3px' }}>点位信息</b>
+          <Select value={pointName} style={{ width: 270, margin: 0 }} onChange={this.changePointName}>
+            {
+              pointNameList && pointNameList.map(item => <Option key={item.id} pnum={item.dictCode} pname="pointName" value={item.codeName}>{item.codeName}</Option>)
+            }
+          </Select>
+          <span onClick={this.closeMessage}>
+            <Icon type="close" />
+          </span>
+        </div>
         <div className={styles.items}><span>路口ID:</span><Input disabled={!btnShows} paths="interId" style={{ width: 300 }} value={interId} onBlur={this.changBlur} onChange={this.changeNumber} /></div>
         <div className={styles.items}><span>路口名称:</span><Input paths="interName" style={{ width: 300 }} value={interName} onChange={this.changeNumber} /></div>
         <div className={styles.items}><span>是否主控路口:</span>
@@ -236,7 +270,7 @@ class MessagePage extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    data: { ...state.equipmentManagement }
+    data: { ...state.equipmentManagement, ...state.publicData }
   }
 }
 const mapDisPatchToProps = (dispatch) => {

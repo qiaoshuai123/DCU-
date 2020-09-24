@@ -18,7 +18,7 @@ class RoadDetail extends Component {
     super(props)
     this.state = {
       dcuPopData: '',
-      IsspanMessage: false,
+      IsspanMessage: true,
       RoadImg: '',
       // isMeessage: false,
       laneInfoAndDetailinfo: '', // 车道图片接口
@@ -58,6 +58,9 @@ class RoadDetail extends Component {
     this.props.lampgroupDetailList(this.objs)
     this.props.detectorDetailList(this.objs)
     this.props.getUnitPop(this.interId)
+    this.props.schemeInfoList(this.objs)
+    this.props.nowPhasestageInfo(this.objs)
+    this.props.lockStateList()
     this.timer = setInterval(this.newdate, 1000)
     this.setState({
       RoadImg: this.bac,
@@ -170,9 +173,9 @@ class RoadDetail extends Component {
   }
   // 打开控制窗口
   showStage = () => {
-    this.props.schemeInfoList(this.objs)
-    this.props.nowPhasestageInfo(this.objs)
-    this.props.lockStateList()
+    // this.props.schemeInfoList(this.objs)
+    // this.props.nowPhasestageInfo(this.objs)
+    // this.props.lockStateList()
     this.setState({
       IsspanMessage: true,
     })
@@ -416,7 +419,7 @@ class RoadDetail extends Component {
           <div className={styles.roadNameTitle}>路口：{dcuPopData.interName}</div>
           <div>所属区域：{dcuPopData.areaName}</div>
           <div>信号机品牌：{dcuPopData.brand}</div>
-          <span onClick={this.showStage}>控制窗口</span>
+          {/* <span onClick={this.showStage}>控制窗口</span> */}
         </div>
         <div className={styles.DeviceStatus}>
           <ul className={styles.DeviceStatus_left}>
@@ -449,7 +452,7 @@ class RoadDetail extends Component {
         {
           IsspanMessage &&
           <div className={styles.spanMessage}>
-            <span onClick={this.closeStage} className={styles.closeStage}><Icon type="close" /></span>
+            {/* <span onClick={this.closeStage} className={styles.closeStage}><Icon type="close" /></span> */}
             <div className={styles.stage}>
               <div className={styles.stageLeft}>阶段控制:</div>
               <div className={styles.stageRight}>

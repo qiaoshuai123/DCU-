@@ -4,6 +4,7 @@ import styles from './InterworkingList.scss'
 
 import getResponseDatas from '../../../../utils/getResponseDatas'
 import resetTimeStep from '../../../../utils/resetTimeStep'
+import getRequestBaseUrl from '../../../../utils/getRequestBaseUrl'
 
 class InterworkingList extends Component {
   constructor(props) {
@@ -17,6 +18,8 @@ class InterworkingList extends Component {
     this.listParams = {
       pageNo: 1,
       keyword: '',
+      startTime: '',
+      endTime: '',
     }
     this.exportUrl = '/DCU/log/exportDcuFaultList'
     this.token = JSON.parse(localStorage.getItem('userInfo')).token
@@ -67,12 +70,29 @@ class InterworkingList extends Component {
   handleSearchList = () => {
     this.getLogFaultLists()
   }
+
+  handleStartTimeChange = (moments) => {
+    if (moments) {
+      const timeStep = moments._d.getTime()
+      this.listParams.startTime = timeStep
+    } else {
+      this.listParams.startTime = ''
+    }
+  }
+  handleEndTimeChange = (moments) => {
+    if (moments) {
+      const timeStep = moments._d.getTime()
+      this.listParams.endTime = timeStep
+    } else {
+      this.listParams.endTime = ''
+    }
+  }
   handleKeyWordChange = (e) => {
     this.listParams.keyword = e.target.value
   }
   // 导出excel表格
   exportTable = () => {
-    window.location.href = `${this.exportUrl}${this.getResetParams(this.listParams)}&Authorization=${this.token}`
+    window.location.href = `${getRequestBaseUrl()}${this.exportUrl}${this.getResetParams(this.listParams)}&Authorization=${this.token}`
   }
   render() {
     const { systemList, totalPage, currentPage } = this.state
@@ -85,6 +105,12 @@ class InterworkingList extends Component {
           <div className={styles.syetem_item}>
             <span className={styles.item}>关键词:</span>
             <div className={styles.inSle}><Input onChange={this.handleKeyWordChange} /></div>
+          </div>
+          <div className={styles.syetem_item} style={{ flex: 1.2 }}>
+            <span className={styles.item}>日志时间:</span>
+            <div className={styles.inSle}><DatePicker showTime onChange={this.handleStartTimeChange} style={{ minWidth: '100px' }} /></div>
+            <span style={{ margin: '0 10px' }}>至</span>
+            <div className={styles.inSle}><DatePicker showTime onChange={this.handleEndTimeChange} style={{ minWidth: '100px' }} /></div>
           </div>
           <span className={styles.searchBtn} onClick={this.handleSearchList} limitid="13">查询</span>
         </div>

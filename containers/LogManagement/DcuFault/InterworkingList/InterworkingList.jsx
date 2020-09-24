@@ -4,6 +4,7 @@ import styles from './InterworkingList.scss'
 
 import getResponseDatas from '../../../../utils/getResponseDatas'
 import resetTimeStep from '../../../../utils/resetTimeStep'
+import getRequestBaseUrl from '../../../../utils/getRequestBaseUrl'
 
 const { Option } = Select
 class InterworkingList extends Component {
@@ -72,7 +73,7 @@ class InterworkingList extends Component {
   }
   // 导出excel表格
   exportTable = () => {
-    window.location.href = `${this.exportUrl}${this.getResetParams(this.logListParams)}&Authorization=${this.token}`
+    window.location.href = `${getRequestBaseUrl()}${this.exportUrl}${this.getResetParams(this.logListParams)}&Authorization=${this.token}`
   }
   handleChangeType = (value, options) => {
     this.logListParams.faultType = options.key

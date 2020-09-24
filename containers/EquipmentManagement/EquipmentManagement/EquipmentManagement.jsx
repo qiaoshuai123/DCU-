@@ -33,6 +33,7 @@ class EquipmentManagement extends Component {
     window.myFunc = () => {
       this.props.getMapUnitInfoList()
     }
+    this.userLimit = (JSON.parse(localStorage.getItem('userLimit'))).map(item => item.id)
   }
   componentDidMount = () => {
     this.loadingMap()
@@ -46,7 +47,6 @@ class EquipmentManagement extends Component {
     window.showHidePop = this.showHidePop
     window.setGetParams = this.setGetParams
     this.props.getMapUnitInfoList()
-    this.userLimit = (JSON.parse(localStorage.getItem('userLimit'))).map(item => item.id)
     document.addEventListener('click', (e) => {
       this.visibleShowLeft('', '', false)
     })
@@ -500,7 +500,8 @@ class EquipmentManagement extends Component {
             visibleShowLeft={this.visibleShowLeft}
           />
           {
-            isAddPoint && this.userLimit.indexOf(301) !== -1 ?
+            // isAddPoint &&
+             this.userLimit.indexOf(301) !== -1 ?
               <div onClick={this.addPoint} className={styles.addPoint}>
                 添加点位
               </div> : ''

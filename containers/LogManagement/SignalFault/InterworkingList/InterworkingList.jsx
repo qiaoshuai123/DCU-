@@ -4,6 +4,7 @@ import styles from './InterworkingList.scss'
 
 import getResponseDatas from '../../../../utils/getResponseDatas'
 import resetTimeStep from '../../../../utils/resetTimeStep'
+import getRequestBaseUrl from '../../../../utils/getRequestBaseUrl'
 
 const { Option } = Select
 class InterworkingList extends Component {
@@ -70,7 +71,7 @@ class InterworkingList extends Component {
   }
   // 导出excel表格
   exportTable = () => {
-    window.location.href = `${this.exportUrl}${this.getResetParams(this.logListParams)}&Authorization=${this.token}`
+    window.location.href = `${getRequestBaseUrl()}${this.exportUrl}${this.getResetParams(this.logListParams)}&Authorization=${this.token}`
   }
   handleChangeType = (value, options) => {
     const types = options.key === 'null' ? null : options.key
@@ -137,7 +138,7 @@ class InterworkingList extends Component {
         </div>
         <div className={styles.equipmentList}>
           {
-            this.userLimit && this.userLimit.indexOf(421 ) !== -1 ?
+            this.userLimit && this.userLimit.indexOf(421) !== -1 ?
               <span onClick={this.exportTable}>导出设备表</span> : ''
           }
         </div>

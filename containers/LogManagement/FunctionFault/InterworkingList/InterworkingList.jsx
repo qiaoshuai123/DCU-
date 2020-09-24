@@ -4,6 +4,7 @@ import styles from './InterworkingList.scss'
 
 import getResponseDatas from '../../../../utils/getResponseDatas'
 import resetTimeStep from '../../../../utils/resetTimeStep'
+import getRequestBaseUrl from '../../../../utils/getRequestBaseUrl'
 
 const { Option } = Select
 class InterworkingList extends Component {
@@ -85,7 +86,7 @@ class InterworkingList extends Component {
   }
   // 导出excel表格
   exportTable = () => {
-    window.location.href = `${this.exportUrl}${this.getResetParams(this.logListParams)}&Authorization=${this.token}`
+    window.location.href = `${getRequestBaseUrl()}${this.exportUrl}${this.getResetParams(this.logListParams)}&Authorization=${this.token}`
   }
   handleChangeType = (value, options) => {
     const { pname } = options.props
@@ -167,7 +168,7 @@ class InterworkingList extends Component {
             </div>
           </div>
           <div className={styles.syetem_item} style={{ flex: 1.2 }}>
-            <span className={styles.item}>故障时间:</span>
+            <span className={styles.item}>日志时间:</span>
             <div className={styles.inSle}><DatePicker showTime onChange={this.handleStartTimeChange} style={{ minWidth: '100px' }} /></div>
             <span style={{ margin: '0 10px' }}>至</span>
             <div className={styles.inSle}><DatePicker showTime onChange={this.handleEndTimeChange} style={{ minWidth: '100px' }} /></div>
