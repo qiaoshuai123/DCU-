@@ -10,6 +10,7 @@ import {
   loadData, editData, dculoadData, dcueditData, reboot,
 } from '../../../reactRedux/actions/equipmentManagement'
 import { getBgLists, postBgBySelect, postBgByUpload } from '../../../reactRedux/actions/signalmanagementActions'
+import getaddress from '../../../utils/address'
 import styles from './Information.scss'
 
 // 图片转64位
@@ -207,9 +208,10 @@ class Information extends Component {
       this.dcuIds = true
       const {
         id, deviceId, manufactor,
-        maintainPhone, deviceModel, signalConnectIp, signalConnectPort,
-        signalContentMask, applicationConnectIp, signalType, detectorType,
-        // interId, serverTimeZone, applicationIp, applicationPort, signalIp, signalPort, applicationConnectPort, applicationConnectMask,
+        maintainPhone, deviceModel, signalConnectIp,
+        applicationConnectIp, signalType, detectorType,
+        applicationConnectPort, applicationConnectMask,
+        // interId, serverTimeZone, applicationIp, applicationPort, signalIp, signalPort,  signalConnectPort,signalContentMask,
       } = getInterId
       this.setState({
         idDcu: id,
@@ -220,11 +222,11 @@ class Information extends Component {
         maintainPhoneDCU: maintainPhone,
         deviceModel,
         signalConnectIp,
-        signalConnectPort,
-        signalContentMask,
+        // signalConnectPort,
+        // signalContentMask,
         applicationConnectIp,
-        // applicationConnectPort,
-        // applicationConnectMask,
+        applicationConnectPort,
+        applicationConnectMask,
         // applicationIp,
         // applicationPort,
         // signalIp,
@@ -268,23 +270,10 @@ class Information extends Component {
       this.signalIds = false
     }
   }
-  getaddress = (str) => {
-    const ars = str.substring(1).split('&')
-    const ars1 = ars.map((item) => {
-      return (
-        item.replace('=', ':')
-      )
-    })
-    const obj = {}
-    ars1.forEach((item) => {
-      const newArr = item.split(':')
-      obj[newArr[0]] = newArr[1]
-    })
-    return obj
-  }
+
   getInter = () => {
     const { search } = this.props.location
-    const objs = this.getaddress(decodeURI(search))
+    const objs = getaddress(decodeURI(search))
     this.interId = objs.interId
     this.id = objs.id
     this.nodeId = objs.nodeId
@@ -691,13 +680,13 @@ class Information extends Component {
                 <span>设备编号：</span><Input path="deviceIdDCU" onChange={this.handleChangeValue} value={deviceIdDCU} placeholder="请输入设备编号" />
               </div>
               <div className={styles.itemInputBox}>
-                <span>IP设置：</span><Input path="applicationConnectIp" onChange={this.handleChangeValue} value={applicationConnectIp} placeholder="请输入IP2" />
+                <span>IP设置：</span><Input path="applicationConnectIp" onChange={this.handleChangeValue} value={applicationConnectIp} placeholder="请输入IP" />
               </div>
               <div className={styles.itemInputBox}>
-                <span>IP端口号设置：</span><Input path="applicationConnectPort" onChange={this.handleChangeValue} value={applicationConnectPort} placeholder="请输入IP2端口号" />
+                <span>IP端口号：</span><Input path="applicationConnectPort" onChange={this.handleChangeValue} value={applicationConnectPort} placeholder="请输入IP端口号" />
               </div>
               <div className={styles.itemInputBox}>
-                <span>IP子网掩码：</span><Input path="applicationConnectMask" onChange={this.handleChangeValue} value={applicationConnectMask} placeholder="请输入IP2子网掩码" />
+                <span>IP子网掩码：</span><Input path="applicationConnectMask" onChange={this.handleChangeValue} value={applicationConnectMask} placeholder="请输入IP子网掩码" />
               </div>
               <div className={styles.itemInputBox}>
                 <span>设备型号：</span><Input path="deviceModel" onChange={this.handleChangeValue} value={deviceModel} placeholder="请输入设备型号" />

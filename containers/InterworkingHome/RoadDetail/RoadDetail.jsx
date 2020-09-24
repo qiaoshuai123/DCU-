@@ -10,6 +10,7 @@ import {
   proofreadTime, centerControl,
 } from '../../../reactRedux/actions/equipmentManagement'
 import { getUnitPop } from '../../../reactRedux/actions/publicActions'
+import getaddress from '../../../utils/address'
 // import Equipment from './Equipment/Equipment
 
 class RoadDetail extends Component {
@@ -19,7 +20,7 @@ class RoadDetail extends Component {
       dcuPopData: '',
       IsspanMessage: false,
       RoadImg: '',
-      isMeessage: false,
+      // isMeessage: false,
       laneInfoAndDetailinfo: '', // 车道图片接口
       lampgroupDetailListinfo: [], // 灯组图片
       arrs: [],
@@ -56,10 +57,12 @@ class RoadDetail extends Component {
     this.props.laneInfoAndDetail(this.objs)
     this.props.lampgroupDetailList(this.objs)
     this.props.detectorDetailList(this.objs)
+    this.props.getUnitPop(this.interId)
     this.timer = setInterval(this.newdate, 1000)
     this.setState({
       RoadImg: this.bac,
     })
+    document.title = this.titleName
   }
   componentDidUpdate = (prevState) => {
     const { dcuPopData, laneInfoAndDetailinfo, lampgroupDetailListinfo, detectorDetailListinfo, nowPhasestageInfos, lockStateListinfo, schemeInfoListinfo } = this.props.data
@@ -133,12 +136,12 @@ class RoadDetail extends Component {
   }
   getInter = () => {
     const { search } = this.props.location
-    const nums = search.indexOf('&')
-    const lastNums = search.lastIndexOf('&')
-    this.interId = search.substring(4, nums)
-    this.nodeId = search.substring(nums + 5, lastNums)
-    this.unitId = search.substring(lastNums + 6)
+    const objs = getaddress(decodeURI(search))
+    this.interId = objs.interId
+    this.nodeId = objs.nodeId
+    this.unitId = objs.id
     this.bac = JSON.parse(localStorage.getItem('bac'))
+    this.titleName = decodeURI(objs.interName, 'utf-8')
     this.objs = `interId=${this.interId}&nodeNo=${this.nodeId}`
   }
   add0 = (m) => { return m < 10 ? `0${m}` : m }
@@ -174,19 +177,18 @@ class RoadDetail extends Component {
       IsspanMessage: true,
     })
   }
-  showImgMessage = (e) => {
-    e.preventDefault()
-    this.props.getUnitPop(this.interId)
-    this.setState({
-      isMeessage: true,
-    })
-  }
-  btnCloseMessage = (e) => {
-    e.stopPropagation()
-    this.setState({
-      isMeessage: false,
-    })
-  }
+  // showImgMessage = (e) => {
+  //   e.preventDefault()
+  //   this.setState({
+  //     isMeessage: true,
+  //   })
+  // }
+  // btnCloseMessage = (e) => {
+  //   e.stopPropagation()
+  //   this.setState({
+  //     isMeessage: false,
+  //   })
+  // }
   proofread = (num, name) => {
     const str = `interId=${this.interId}&proofreadType=${num}`
     this.props.proofreadTime(str).then((res) => {
@@ -290,7 +292,7 @@ class RoadDetail extends Component {
   render() {
     const {
       IsspanMessage, RoadImg, laneInfoAndDetailinfo, lampgroupDetailListinfo, detectorDetailListinfo,
-      isMeessage, dcuPopData, schemeInfoListinfo, lockStateListinfo, nowPhasestageInfos, planRunStage,
+      dcuPopData, schemeInfoListinfo, lockStateListinfo, nowPhasestageInfos, planRunStage,
       arrs, remainingTime, schemeName, imgPaths, phasestageNames, widths, isOnline, phasestageNo,
       schemeDcu, detectorState, signalTime, dcuTime, datas, colors,
     } = this.state
@@ -327,34 +329,27 @@ class RoadDetail extends Component {
           onMessage={this.handleDataSc.bind(this)}
         // onClose={() => this.handleCloseSc()}
         />
-        {
-          isMeessage && <Websocket
-            url={`${this.props.data.devSockets}/DCU/websocket/dcuRunState/${this.unitId}/${this.interId}/${this.nodeId}?Authorization=${this.token}`}
-            onMessage={this.handleDcu.bind(this)}
-          />
-        }
+        <Websocket
+          url={`${this.props.data.devSockets}/DCU/websocket/dcuRunState/${this.unitId}/${this.interId}/${this.nodeId}?Authorization=${this.token}`}
+          onMessage={this.handleDcu.bind(this)}
+        />
+
         {
           IsspanMessage && <Websocket
             url={`${this.props.data.devSockets}/DCU/websocket/deviceTime/0/${this.interId}/0?Authorization=${this.token}`}
             onMessage={this.handleTime.bind(this)}
           />
         }
-        <div className={styles.dcuStyles} onClick={this.showImgMessage}>
-          DCU
-          {
-            isMeessage &&
-            <div className={styles.messageBox}>
-              <span onClick={this.btnCloseMessage} className={styles.IconClose}><Icon type="close" /></span>
-              <div>设备编号:{dcuPopData.deviceId}</div>
-              <div>设备型号:{dcuPopData.brand}</div>
-              <div>设备IP:{dcuPopData.ip}</div>
-              <div>生产厂商:{dcuPopData.deviceVersion}</div>
-              <div>维护电话:{dcuPopData.maintainPhone}</div>
-              <div>设备状态:<span>{schemeDcu.isOnline == 1 ? '正常在线' : '离线状态'}</span></div>
-              <div>信号接入状态:<span></span></div>
-              <div>发布服务状态:<span></span></div>
-            </div>
-          }
+        <div className={styles.messageBox}>
+          {/* <span onClick={this.btnCloseMessage} className={styles.IconClose}><Icon type="close" /></span> */}
+          <div>设备编号:{dcuPopData.deviceId}</div>
+          <div>设备型号:{dcuPopData.brand}</div>
+          <div>设备IP:{dcuPopData.ip}</div>
+          {/* <div>生产厂商:{dcuPopData.deviceVersion}</div>
+          <div>维护电话:{dcuPopData.maintainPhone}</div> */}
+          <div>设备状态:<span>{schemeDcu.isOnline == 1 ? '正常在线' : '离线状态'}</span></div>
+          <div>信号接入状态:<span></span></div>
+          <div>发布服务状态:<span></span></div>
         </div>
         <div style={{ backgroundImage: `url(${this.props.data.devImage}${this.imgshref}${RoadImg})` }} className={styles.imgBox} >
           <div style={{ backgroundColor: `${colors}` }} className={styles.centralBox}>
@@ -418,9 +413,9 @@ class RoadDetail extends Component {
           }
         </div>
         <div className={styles.roadName}>
-          <div className={styles.roadNameTitle}>路口1</div>
-          <div>所属区域:海淀区</div>
-          <div>信号机品牌:海信</div>
+          <div className={styles.roadNameTitle}>路口：{dcuPopData.interName}</div>
+          <div>所属区域：{dcuPopData.areaName}</div>
+          <div>信号机品牌：{dcuPopData.brand}</div>
           <span onClick={this.showStage}>控制窗口</span>
         </div>
         <div className={styles.DeviceStatus}>
@@ -451,7 +446,8 @@ class RoadDetail extends Component {
             }
           </div>
         </div>
-        {IsspanMessage &&
+        {
+          IsspanMessage &&
           <div className={styles.spanMessage}>
             <span onClick={this.closeStage} className={styles.closeStage}><Icon type="close" /></span>
             <div className={styles.stage}>
@@ -462,7 +458,7 @@ class RoadDetail extends Component {
               </div>
             </div>
             <div className={styles.stage}>
-              <div className={styles.stageLeft}>锁相控制:</div>
+              <div className={styles.stageLeft}>跳相控制:</div>
               <ul className={styles.stageRight}>
                 {
                   nowPhasestageInfos && nowPhasestageInfos.map(item => <li key={item.id} onDoubleClick={() => this.centerControls(item.phasestageNo, '锁定阶段控制', 1)} style={{ backgroundImage: `url(${this.props.data.devImage}${this.phaseBgUrl}${item.imagePath})` }} />)
@@ -487,8 +483,8 @@ class RoadDetail extends Component {
             </div>
             <div className={styles.stageNone}>
               <div className={styles.stageLeftNone}>取消控制:</div>
-              <ul onClick={() => this.centerControls(0, '还原控制', 6)} className={styles.stageRightNone}>
-                <span>
+              <ul className={styles.stageRightNone}>
+                <span onClick={() => this.centerControls(0, '还原控制', 6)}>
                   还原控制
                 </span>
               </ul>
@@ -513,7 +509,7 @@ class RoadDetail extends Component {
             </div>
           </div>
         }
-      </div>
+      </div >
     )
   }
 }
