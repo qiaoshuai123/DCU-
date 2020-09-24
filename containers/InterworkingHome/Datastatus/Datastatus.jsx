@@ -190,7 +190,8 @@ class Datastatus extends Component {
           map.emit('click', {
             lnglat: map.getCenter()
           })
-          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
+          const classNs = $(marker.getContent()).attr('class')
+          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='" + classNs + "'></div></div>");
           const nowZoom = map.getZoom()
           map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
           this.setState({
@@ -308,7 +309,7 @@ class Datastatus extends Component {
   }
   handleData = (e) => {
     let result = JSON.parse(e);
-    console.log(result,'socket 数据')
+    console.log(result, 'socket 数据')
     const { normal, notNormal, stateList } = JSON.parse(e)
     this.setState({
       normal,
@@ -322,9 +323,9 @@ class Datastatus extends Component {
       data.map((item) => {
         if (item.interId === timeDiv.attr('inter-id') && !!item.state) {
           if (item.isNormal === '1') {
-            timeDiv.removeClass('marker-online')
+            timeDiv.removeClass().addClass('marker-offline')
           } else {
-            timeDiv.addClass('marker-online')
+            timeDiv.removeClass().addClass('marker-online')
           }
         } else {
           timeDiv.addClass('marker-online')

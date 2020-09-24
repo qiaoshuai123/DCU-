@@ -1470,7 +1470,8 @@ class SignalManagement extends PureComponent {
           map.emit('click', {
             lnglat: map.getCenter()
           })
-          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].interId + "' class='marker-offline'></div></div>");
+          const classNs = $(marker.getContent()).attr('class')
+          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].interId + "' class='" + classNs + "'></div></div>");
           const nowZoom = map.getZoom()
           map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
           this.setState({
@@ -1786,7 +1787,7 @@ class SignalManagement extends PureComponent {
             $($('div[inter-id]')[i]).addClass('marker-online')
           } else if (item.state === 2) {
             $($('div[inter-id]')[i]).removeClass().addClass('marker-tagYellLine')
-          }else{
+          } else {
             $($('div[inter-id]')[i]).removeClass().addClass('marker-offline')
           }
         }
@@ -1876,7 +1877,7 @@ class SignalManagement extends PureComponent {
   }
   loadDataType = (flag) => {
     this.props.getDcuState(this.state.roadInterId).then(() => {
-      if (this.props.data.dcuStateData !== 0 ){
+      if (this.props.data.dcuStateData !== 0) {
         this.setState({
           loadFlag: flag,
           oneFlag: null,
@@ -1912,7 +1913,7 @@ class SignalManagement extends PureComponent {
   }
   editDataType = (flag) => {
     this.props.getDcuState(this.state.roadInterId).then(() => {
-      if (this.props.data.dcuStateData !== 0 ){
+      if (this.props.data.dcuStateData !== 0) {
         this.props.getEditCheckData(this.state.roadInterId).then(() => {
           if (this.state.editCheckData.length > 0) {
             this.setState({ editCheckDataFlag: true })
@@ -1944,7 +1945,7 @@ class SignalManagement extends PureComponent {
         })
       } else {
         message.info('设备离线状态, 下发失败!')
-      }    
+      }
     })
   }
   editData(data) {

@@ -20,6 +20,7 @@ class SignalStatus extends Component {
       searchInterList: [],
       treeFlag: true,
       treeListBackups: null,
+      signalStateList: [],
     }
     this.searchInterList = []
     this.phaseBgUrl = `${this.props.data.devImage}/DCU/dcuImage/phasestage/`
@@ -193,7 +194,8 @@ class SignalStatus extends Component {
           map.emit('click', {
             lnglat: map.getCenter()
           })
-          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
+          const classNs = $(marker.getContent()).attr('class')
+          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='" + classNs + "'></div></div>");
           const nowZoom = map.getZoom()
           map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
           this.setState({
@@ -248,11 +250,12 @@ class SignalStatus extends Component {
   }
   handleData = (e) => {
     let result = JSON.parse(e);
-    console.log(result,'socket 数据')
+    console.log(result, 'socket 数据')
     const { signalStateList } = JSON.parse(e)
     this.setState(
       {
         statisticsMap: JSON.parse(e),
+        signalStateList,
       }
     )
     this.updateMapPonitsColor(signalStateList)
@@ -263,18 +266,19 @@ class SignalStatus extends Component {
       data.map((item) => {
         if (item.interId === timeDiv.attr('inter-id') && !!item.state) {
           if (item.nodeModelType === 'special') {
-            timeDiv.removeClass('marker-online')
-            timeDiv.addClass('marker-online')
+            timeDiv.removeClass()
+            timeDiv.addClass('marker-offline')
           } else if (item.nodeModelType === 'manual') {
-            timeDiv.removeClass('marker-online')
+            timeDiv.removeClass()
             timeDiv.addClass('marker-yellow')
           } else if (item.nodeModelType === 'local') {
-            timeDiv.removeClass('marker-online')
+            timeDiv.removeClass()
             timeDiv.addClass('marker-blackishGreen')
           } else if (item.nodeModelType === 'optimize') {
-            timeDiv.removeClass('marker-online')
+            timeDiv.removeClass()
             timeDiv.addClass('marker-blue')
           } else {
+            timeDiv.removeClass()
             timeDiv.addClass('marker-online')
           }
         }

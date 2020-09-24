@@ -235,7 +235,8 @@ class EquipmentManagement extends Component {
           map.emit('click', {
             lnglat: map.getCenter()
           })
-          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='marker-online'></div></div>");
+          const classNs = $(marker.getContent()).attr('class')
+          marker.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + positions[i].interId + "' id='roadKey" + positions[i].id + "' class='" + classNs + "'></div></div>");
           const nowZoom = map.getZoom()
           map.setZoomAndCenter(nowZoom, [positions[i].lng, positions[i].lat]); //同时设置地图层级与中心点
           this.setState({

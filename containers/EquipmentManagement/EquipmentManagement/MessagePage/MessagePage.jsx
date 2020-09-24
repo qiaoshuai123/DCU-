@@ -23,7 +23,7 @@ class MessagePage extends Component {
     this.formsVerification = {
       interId: '路口ID',
       interName: '路口名称',
-      interType: '是不是主控路口',
+      interType: '是否主控路口',
       nodeId: '路口序号',
       lng: '经度',
       lat: '纬度',
@@ -214,7 +214,7 @@ class MessagePage extends Component {
         <div className={styles.topTitle}><b style={{ color: '#15AEE5', margin: '0 3px' }}>{roadName}</b>点位信息<span onClick={this.closeMessage}><Icon type="close" /></span></div>
         <div className={styles.items}><span>路口ID:</span><Input disabled={!btnShows} paths="interId" style={{ width: 300 }} value={interId} onBlur={this.changBlur} onChange={this.changeNumber} /></div>
         <div className={styles.items}><span>路口名称:</span><Input paths="interName" style={{ width: 300 }} value={interName} onChange={this.changeNumber} /></div>
-        <div className={styles.items}><span>是不是主控路口:</span>
+        <div className={styles.items}><span>是否主控路口:</span>
           <Select value={interType} style={{ width: 300, margin: 0 }} onChange={this.changeNumber}>
             <Option pname="interType" value="">请选择</Option>
             <Option pname="interType" value="0">是</Option>
