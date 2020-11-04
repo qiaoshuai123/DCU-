@@ -16,6 +16,8 @@ const regUtil = {
       message.info('设备ID不能为负数')
       $('#'+idType).focus()
       return false;
+    }else{
+      return true;
     }
   },
   isValidIp: function (e, idType) { // IP
@@ -23,6 +25,8 @@ const regUtil = {
       message.info('ip不符合规则')
       $('#'+idType).focus()
       return false
+    }else{
+      return true;
     }
   },
   isValidSubnetMask: function (e, idType) { //subnetMask
@@ -30,6 +34,8 @@ const regUtil = {
       message.info('子网不符合规则')
       $('#'+idType).focus()
       return false
+    }else{
+      return true;
     }
   },
   isValidGateway: function (e, idType) { //网关
@@ -37,6 +43,8 @@ const regUtil = {
       message.info('网关不符合规则')
       $('#'+idType).focus()
       return false
+    }else{
+      return true;
     }
   },
   isValidPort: function (e, idType) { //端口
@@ -44,6 +52,8 @@ const regUtil = {
       message.info('端口不符合规则')
       $('#'+idType).focus()
       return false
+    }else{
+      return true;
     }
   }
 }
@@ -77,14 +87,16 @@ class BasicInfoRight extends PureComponent {
   }
   // step 2 基础信息配置保存
   stepTwoAddForList = () => {
-    if (!regUtil.isEmpty(this.showPopData.deviceId, 'deviceId') ) return false
-    if (!regUtil.isValidIp(this.showPopData.ip, 'ip') ) return false
-    if (!regUtil.isValidIp(this.showPopData.serverIp, 'serverIp') ) return false
-    if (!regUtil.isValidSubnetMask(this.showPopData.subnetMask, 'subnetMask')) return false
-    if (!regUtil.isValidGateway(this.showPopData.gateway, 'gateway')) return false
-    if (!regUtil.isValidPort(this.showPopData.serverPort, 'serverPort')) return false
-    if (!regUtil.isValidPort(this.showPopData.port, 'port')) return false
-    this.props.postSignalSave(this.showPopData)
+    const deviceIdFlag = regUtil.isEmpty(this.showPopData.deviceId, 'deviceId') 
+    const iPFlag = regUtil.isValidIp(this.showPopData.ip, 'ip') 
+    const serverIpFlag = regUtil.isValidIp(this.showPopData.serverIp, 'serverIp') 
+    const subnetMaskFlag = regUtil.isValidSubnetMask(this.showPopData.subnetMask, 'subnetMask')
+    const gatewayFlag = regUtil.isValidGateway(this.showPopData.gateway, 'gateway')
+    const serverPortFlag = regUtil.isValidPort(this.showPopData.serverPort, 'serverPort')
+    const portFlag = regUtil.isValidPort(this.showPopData.port, 'port')
+    if (deviceIdFlag && iPFlag && serverIpFlag && subnetMaskFlag && gatewayFlag && serverPortFlag && portFlag) {
+      this.props.postSignalSave(this.showPopData)
+    }
   }
   popLayerShowHide = (name, flag) => {
     this.props.popLayerShowHide(name, flag)
