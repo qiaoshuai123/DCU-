@@ -31,7 +31,6 @@ class InterworkingHome extends Component {
     this.searchInterList = []
     this.token = JSON.parse(localStorage.getItem('userInfo')).token
   }
-
   componentDidMount = () => {
     this.loadingMap()
     document.addEventListener('click', (e) => {
