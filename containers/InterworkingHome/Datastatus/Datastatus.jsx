@@ -138,7 +138,8 @@ class Datastatus extends Component {
   loadingMap = () => {
     const map = new AMap.Map('mapContent', {
       resizeEnable: true, //是否监控地图容器尺寸变化
-      center: [120.202633, 30.266603], //初始化地图中心点
+      center: [102.71566093,25.04232215], //初始化地图中心点 昆明
+      // center: [120.202633, 30.266603], //初始化地图中心点
       mapStyle: "amap://styles/f9281194c6119ea4669f1dd2e75af292",
       zoom: 11,
     })
