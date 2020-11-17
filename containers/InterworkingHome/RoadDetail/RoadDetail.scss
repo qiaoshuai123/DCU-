@@ -37,6 +37,15 @@
                 position: relative;
                 height: 100%;
                 display: flex;
+                &::after {
+                    content: "";
+                    position: absolute;
+                    width: 1px;
+                    height: 60px;
+                    top: 0;
+                    right: 0;
+                    background-color: blue;
+                }
                 .stageMsg {
                     position: absolute;
                     left: 10px;
