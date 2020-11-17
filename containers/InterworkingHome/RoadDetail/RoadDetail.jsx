@@ -260,11 +260,13 @@ class RoadDetail extends Component {
   }
   startWidth = (time, no) => {
     const { planRunStage } = this.state
+    const Index = planRunStage && planRunStage.findIndex(item => item.phasestageNo == no) + 1
+    console.log(Index, 'ffdfdf')
     if (planRunStage) {
-      const nos = planRunStage[no - 1]
+      const nos = planRunStage[Index - 1]
       let colors = ''
       let nums = 0
-      for (let index = 0; index < no - 1; index++) {
+      for (let index = 0; index < Index - 1; index++) {
         nums += planRunStage[index].phasetageTime
       }
       console.log(time, nos.phasetageTime, '时间')
