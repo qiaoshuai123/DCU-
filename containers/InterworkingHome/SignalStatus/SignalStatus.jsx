@@ -58,10 +58,6 @@ class SignalStatus extends Component {
   getSelectTreeId = (id) => {
     this.props.getVipRouteChild(id)
   }
-  // 从子集获取区域id和index 请求路口
-  getSelectTreeId = (id) => {
-    this.props.getVipRouteChild(id)
-  }
   // 获取子id, 路口id
   getSelectChildId = (childId) => {
     const _this = this
