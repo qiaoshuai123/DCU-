@@ -1,8 +1,8 @@
 import * as types from '../actionTypes/actionTypes'
 
 const objs = {
-  devSockets: 'ws://33.89.129.42:20203', // 本地地址
-  devImage: 'http://33.89.129.42:20203', // 本地地址
+  devSockets: 'ws://53.101.255.23:20203', // 本地地址
+  devImage: 'http://53.101.255.23:20203', // 本地地址
   // devSockets: 'ws://192.168.1.213:20203', // 本地地址
   // devImage: 'http://192.168.1.213:20203', // 本地地址
 

@@ -16,6 +16,11 @@ class Login extends React.Component {
     }
   }
   componentDidMount = () => {
+    if(window.location.href.indexOf('userName') > -1){
+      this.loginParams.loginName = window.location.href.split("?")[1].split("&")[0].split("=")[1]
+      this.loginParams.password = window.location.href.split("?")[1].split("&")[1].split("=")[1]
+      this.handleLogin()
+    }
     this.loginBox.addEventListener('keydown', (e) => {
       if (e.keyCode === 13) {
         console.log(e, e.keCode)
@@ -41,6 +46,7 @@ class Login extends React.Component {
      })
    }
   handleLogin = () => {
+    debugger
     const { loginName, passWord } = this.loginParams
     if (loginName !== '' && passWord !== '') {
       getResponseDatas('post', this.loginUrl, this.getFormData(this.loginParams)).then((res) => {
@@ -54,6 +60,7 @@ class Login extends React.Component {
           }
         } else {
           message.warning(msg)
+          if (window.location.href.indexOf('userName') > -1) { this.props.history.goBack() }
         }
       })
     } else {
