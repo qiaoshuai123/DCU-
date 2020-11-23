@@ -41,6 +41,7 @@ class RoadDetail extends Component {
       dcuTime: '', // dcu时间
       datas: '', // 显示时间
       colors: '',
+      nodeModels: '',
     }
     this.imgshref = '/DCU/dcuImage/background/'
     this.laneBgUrl = '/DCU/dcuImage/lane/' // 车道
@@ -219,13 +220,53 @@ class RoadDetail extends Component {
     console.log(result, 'socket 数据')
     const { lampgroupState, phasestageState, running, isOnline, detectorState } = JSON.parse(e)
     const { remainingTime, phasestageNo, runningTime } = phasestageState
-    const { localTime } = running
+    const { localTime, nodeModel } = running
+    let nodeModels = ''
+    switch (nodeModel) {
+      case 17:
+        nodeModels = "中心日计划控制"
+        break;
+      case 18:
+        nodeModels = "中心优化控制"
+        break;
+      case 19:
+        nodeModels = "中心协调控制"
+        break;
+      case 20:
+        nodeModels = "中心自适应控制"
+        break;
+      case 21:
+        nodeModels = "中心手动控制"
+        break;
+      case 33:
+        nodeModels = "本地定周期控制"
+        break;
+      case 34:
+        nodeModels = "本地感应控制"
+        break;
+      case 35:
+        nodeModels = '本地协调控制'
+      case 36:
+        nodeModels = "本地自适应控制"
+        break;
+      case 37:
+        nodeModels = '本地手动控制'
+      case 49:
+        nodeModels = "黄闪控制"
+        break;
+      case 50:
+        nodeModels = '全红控制'
+      case 51:
+        nodeModels = '关灯控制'
+        break
+    }
     this.setState({
       arrs: lampgroupState,
       remainingTime,
       phasestageNo,
       isOnline,
       detectorState,
+      nodeModels,
     })
     this.startWidth(runningTime, phasestageNo)
     this.phasestageNos(phasestageNo)
@@ -299,7 +340,7 @@ class RoadDetail extends Component {
       IsspanMessage, RoadImg, laneInfoAndDetailinfo, lampgroupDetailListinfo, detectorDetailListinfo,
       dcuPopData, schemeInfoListinfo, lockStateListinfo, nowPhasestageInfos, planRunStage,
       arrs, remainingTime, schemeName, imgPaths, phasestageNames, widths, isOnline, phasestageNo,
-      schemeDcu, detectorState, signalTime, dcuTime, datas, colors,
+      schemeDcu, detectorState, signalTime, dcuTime, datas, colors, nodeModels
     } = this.state
     return (
       <div className={styles.RoadDetail}>
@@ -426,7 +467,7 @@ class RoadDetail extends Component {
         <div className={styles.DeviceStatus}>
           <ul className={styles.DeviceStatus_left}>
             <li>设备状态:<span className={styles.fontColor}>&nbsp;{isOnline === 1 ? '正常在线' : '离线'}</span></li>
-            <li>控制状态:<span className={styles.fontColor}></span>本地多时段</li>
+            <li>控制状态:<span className={styles.fontColor}></span>{nodeModels}</li>
             <li>
               当前阶段:<span className={styles.fontColor}>{phasestageNames}</span>
               <span className={styles.stageImgBox}>
@@ -482,7 +523,7 @@ class RoadDetail extends Component {
               <div className={styles.programmeLeft}>锁定方案:</div>
               <ul className={styles.programmeRight}>
                 {
-                  schemeInfoListinfo && schemeInfoListinfo.map(item => <li key={item.id} onDoubleClick={() => this.centerControls(item.schemeNodeNo, '锁定方案', 3)}>{item.schemeName}</li>)
+                  schemeInfoListinfo && schemeInfoListinfo.map(item => <li key={item.id} onDoubleClick={() => this.centerControls(item.schemeNo, '锁定方案', 3)}>{item.schemeName}</li>)
                 }
               </ul>
             </div>
