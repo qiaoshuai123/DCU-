@@ -1,0 +1,44 @@
+ul li{list-style: none;}
+.ol-popup {
+    position: absolute;
+    background-color: #fff;
+    -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+    filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+    padding: 5px;
+    border: 1px solid #cccccc;
+    bottom: 30px;
+    left: -175px;
+    width: 350px;
+    color: black;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -ms-border-radius: 5px;
+    -o-border-radius: 5px;
+}
+.ol-popup:after, .ol-popup:before {
+    top: 100%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+.ol-popup:after {
+    border-top-color: white;
+    border-width: 10px;
+    left: 50%;
+    margin-left: -9px;
+}
+.ol-popup-closer {
+    text-decoration: none;
+    position: absolute;
+    top: -4px;
+    right: 8px;
+    z-index: 10;
+}
+.ol-popup-closer:after {
+    content: "×";
+    font-size: 20px;
+}

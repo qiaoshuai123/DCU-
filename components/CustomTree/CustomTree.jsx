@@ -1,6 +1,6 @@
 import React from 'react'
 import { Icon, Tooltip } from 'antd'
-
+import { fromLonLat } from 'ol/proj'
 import styles from './CustomTree.scss'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -68,13 +68,30 @@ class CustomTree extends React.Component {
     this.setState({ expendsKey: this.state.expendsKey })
     // this.props.getSelectTreeId(id)
   }
-  handleTreeChildSelect = (e) => {
+  handleTreeChildSelect = (e, dataItem) => {
     e.stopPropagation()
     const id = Number(e.currentTarget.getAttribute('id'))
     const lng = Number(e.currentTarget.getAttribute('lng'))
     const lat = Number(e.currentTarget.getAttribute('lat'))
-    if (id) {
-      this.props.getSelectChildId(id, lng, lat)
+    if (this.props.oLMapFlag){
+      if (lng && lat && id) {
+        this.props.getSelectChildId(id, lng, lat)
+        // 查找坐标弹层
+        const overLayer = mapOL.getOverlayById("oLMarker")
+        // 坐标转换
+        // const resultLngLat = fromLonLat([lng, lat])
+        const resultLngLat = fromLonLat([102.829999, 24.894869])
+        // 把浮层显示出来
+        overLayer.setPosition(resultLngLat)
+        // 内容自定
+        // $("#message").html("<div>"+resultLngLat+"<div style='width:100px;height:30px;border:1px yellow solid;' onclick='setGetParams(" + JSON.stringify(dataItem) + ")'>点我</div></div>")
+      } else {
+        message.info('未能找到相应坐标！')
+      }
+    } else {
+      if (id) {
+        this.props.getSelectChildId(id, lng, lat)
+      }
     }
   }
   rightDown = (e, id, boolean, objs) => { // 鼠标右击
@@ -124,7 +141,7 @@ class CustomTree extends React.Component {
             id={item.id}
             lng={item.lng}
             lat={item.lat}
-            onClick={(e) => { this.handleTreeChildSelect(e) }}
+            onClick={(e) => { this.handleTreeChildSelect(e, item) }}
           >
             <span className={styles.childIcon}><Icon type="environment" theme="filled" /></span>
             <span title={item.interName} className={styles.childNode}>{item.interName}</span>

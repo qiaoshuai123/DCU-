@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux'
 import { getMapUnitInfoList, getUnitPop, checkUnitTree } from '../../../reactRedux/actions/publicActions'
 import Header from '../../../components/Header/Header'
 import CustomTree from '../../../components/CustomTree/CustomTree'
+import OLMapLayers from '../../../components/OpenLayers/OpenLayers'
 import InterworkingList from './InterworkingList/InterworkingList'
 import styles from './SignalStatus.scss'
 
@@ -13,6 +14,7 @@ class SignalStatus extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      oLMapFlag: true,
       isInterworkingList: false,
       mapPointsData: null, // 地图中所有的点s
       statisticsMap: {},
@@ -27,7 +29,7 @@ class SignalStatus extends Component {
     this.token = JSON.parse(localStorage.getItem('userInfo')).token
   }
   componentDidMount = () => {
-    this.loadingMap()
+    this.loadingMap() // old 高德地图
     document.addEventListener('click', (e) => {
       if (e.target !== this.searchInputBox) {
         if (e.target !== this.searchBtn) {
@@ -217,8 +219,8 @@ class SignalStatus extends Component {
     var info = [];
     let itemData = JSON.parse(JSON.stringify(this.props.data.dcuPopData))
     // this.dataItem = JSON.parse(JSON.stringify(dataItem))
-    info.push(`<div class='content_box'>`);
-    info.push(`<div class='content_box_title'><h4>点位详情</h4>`);
+    info.push(`<div class='content_box' style='background:none!important'>`);
+    info.push(`<div class='content_box_title' style='background:none!important;color:#343434'><h4 style='color:#343434;'>点位详情</h4>`);
     info.push(`<p class='input-item' style='border-top: 1px #838a9a solid;margin-top:-10px;padding-top:15px;'>点位名称：<span>` + name + `</span></p>`);
     info.push(`<p class='input-item'>信号机编号：<span>${itemData.deviceId || '暂无'}</span></p>`);
     info.push(`<p class='input-item'>信号机品牌：<span>${itemData.brand || '暂无'}</span></p>`);
@@ -228,6 +230,9 @@ class SignalStatus extends Component {
     info.push(`<p class='input-item'>信号运行方案：<span class='greenFont' id='schemeName'>暂无</span></p>`);
     info.push(`<p class='input-item'>信号控制方式：<span class='greenFont' id='nodeModelName'>暂无</span></p>`);
     this.userLimit.indexOf(301) !== -1 ? info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>路口监视</span></p>`) : '';
+    if (this.state.oLMapFlag){
+      $("#message").html(info.join(""))
+    } else {
     const infoWindow = new AMap.InfoWindow({
       content: info.join("")  //使用默认信息窗体框样式，显示信息内容
     });
@@ -244,6 +249,7 @@ class SignalStatus extends Component {
       }
       infoWindow.close()
     })
+  }
   }
   handleData = (e) => {
     let result = JSON.parse(e);
@@ -361,7 +367,7 @@ class SignalStatus extends Component {
   }
   render() {
     const { Search } = Input
-    const { isInterworkingList, statisticsMap, searchInterList, interListHeight, roadUnitId, roadInterId, roadNodeNo } = this.state
+    const { isInterworkingList, statisticsMap, searchInterList, interListHeight, roadUnitId, roadInterId, roadNodeNo, oLMapFlag } = this.state
     return (
       <div className={styles.SignalStatus}>
         <Websocket
@@ -405,6 +411,7 @@ class SignalStatus extends Component {
           </div>
           <CustomTree
             {...this.props}
+            oLMapFlag={oLMapFlag}
             getSelectTreeId={this.getSelectTreeId}
             getSelectChildId={this.getSelectChildId}
             visibleShowLeft={this.visibleShowLeft}
@@ -434,7 +441,10 @@ class SignalStatus extends Component {
             <InterworkingList showInterworkingList={this.showInterworkingList} />
           </div>
         }
-        <div className={styles.mapContent} id="mapContent" />
+        <div className={styles.mapContent} style={{display:'none'}} id="mapContent" />
+        <div style={{width:'100%', height: '100%'}}>
+          { this.state.mapPointsData && <OLMapLayers oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildId} centerPoint={[102.829999, 24.894869]} urlXYZ="http://192.168.1.123:30001/YunNan/KunMing" /> }
+        </div>
       </div>
     )
   }

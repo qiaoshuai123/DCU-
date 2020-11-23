@@ -4,6 +4,7 @@ import moment from 'moment';
 import classNames from 'classnames'
 import Header from '../../../components/Header/Header'
 import CustomTree from '../../../components/CustomTree/CustomTree'
+import OLMapLayers from '../../../components/OpenLayers/OpenLayers'
 import ListForAntd from '../ListForAntd/ListForAntd'
 import InterworkingList from './InterworkingList/InterworkingList'
 import styles from './SignalManagement.scss'
@@ -40,6 +41,7 @@ class SignalManagement extends PureComponent {
     super(props)
     this.state = {
       popAddEditText: '添加', // 添加或编辑状态
+      oLMapFlag: true,
       popAddEditName: '',
       moveFlag: null,
       stepOneFlag: true,
@@ -368,7 +370,7 @@ class SignalManagement extends PureComponent {
     }
     this.setState({ dayData, monthData, weekData, Dcu_Io_Ids })
     // 初始化地图
-    this.loadingMap()
+    this.loadingMap() // old 高德地图
     window.showHidePop = this.showHidePop
     window.setGetParams = this.setGetParams
     this.props.getMapUnitInfoList() // 地图中的点
@@ -803,6 +805,7 @@ class SignalManagement extends PureComponent {
   }
   // 更新参数
   setGetParams = params => {
+    debugger
     // console.log(params, '更新名称')
     this.setState({
       stepOneText: params.interName,
@@ -1501,8 +1504,8 @@ class SignalManagement extends PureComponent {
     // console.log(this.props.data.dcuPopData, '弹层所需数据')
     var info = [];
     let itemData = JSON.parse(JSON.stringify(this.props.data.dcuPopData))
-    info.push(`<div class='content_box'>`);
-    info.push(`<div class='content_box_title'><h4>点位详情</h4>`);
+    info.push(`<div class='content_box' style='background:none!important'>`);
+    info.push(`<div class='content_box_title' style='background:none!important;color:#343434'><h4 style='color:#343434;'>点位详情</h4>`);
     info.push(`<p class='input-item' style='border-top: 1px #838a9a solid;margin-top:-10px;padding-top:15px;'>点位名称：<span>` + name + `</span></p>`);
     info.push(`<p class='input-item'>信号机编号：<span>${itemData.deviceId || '暂无'}</span></p>`);
     info.push(`<p class='input-item'>信号机品牌：<span>${itemData.brand || '暂无'}</span></p>`);
@@ -1513,22 +1516,26 @@ class SignalManagement extends PureComponent {
     info.push(`<p class='input-item'>信号控制方式：<span class='greenFont' id='nodeModelName'>暂无</span></p>`);
     info.push(`<p class='input-item' style='height:15px;'></p>`);
     info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>参数配置</span></p>`);
-    const infoWindow = new AMap.InfoWindow({
-      content: info.join("")  //使用默认信息窗体框样式，显示信息内容
-    });
-    infoWindow.open(map, [dataItem.lng, dataItem.lat]);
-    this.infoWindow = infoWindow
-    window.infoWindowClose = infoWindow
-    map.on('click', (e) => {
-      if ($("#roadKey" + dataItem.interId).parent().hasClass('drawCircle')) {
-        if ($("#roadKey" + dataItem.interId).hasClass('marker-offline')) {
-          marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online marker-offline'></div>");
-        } else {
-          marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online'></div>");
+    if (this.state.oLMapFlag){
+      $("#message").html(info.join(""))
+    } else {
+      const infoWindow = new AMap.InfoWindow({
+        content: info.join("")  //使用默认信息窗体框样式，显示信息内容
+      });
+      infoWindow.open(map, [dataItem.lng, dataItem.lat]);
+      this.infoWindow = infoWindow
+      window.infoWindowClose = infoWindow
+      map.on('click', (e) => {
+        if ($("#roadKey" + dataItem.interId).parent().hasClass('drawCircle')) {
+          if ($("#roadKey" + dataItem.interId).hasClass('marker-offline')) {
+            marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online marker-offline'></div>");
+          } else {
+            marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online'></div>");
+          }
         }
-      }
-      infoWindow.close()
-    })
+        infoWindow.close()
+      })
+    }
   }
   handleChangeBaseMap = (info) => {
     // debugger
@@ -1982,7 +1989,7 @@ class SignalManagement extends PureComponent {
   }
 
   render() {
-    const { interListHeight, searchInterList, stepStatusData, popAddEditText, popAddEditName, moveFlag, stepOneFlag, stepTwoFlag,
+    const { oLMapFlag, interListHeight, searchInterList, stepStatusData, popAddEditText, popAddEditName, moveFlag, stepOneFlag, stepTwoFlag,
       stepRoadFlag, stepRoadAddEdit,
       stepThreeFlag, stepThreeAddEdit,
       stepFourFlag, stepFourAddEdit, lightStatus, lightSelectIds,
@@ -3407,6 +3414,7 @@ class SignalManagement extends PureComponent {
           </div>
           <CustomTree
             {...this.props}
+            oLMapFlag={oLMapFlag}
             getSelectTreeId={this.getSelectTreeId}
             getSelectChildId={this.getSelectChildId}
             visibleShowLeft={this.visibleShowLeft}
@@ -3421,7 +3429,10 @@ class SignalManagement extends PureComponent {
             </div>
             <div title="切换视图" className={styles.turnBtn} onClick={() => this.showInterworkingList(true)} />
           </div>
-          <div style={{ position: 'absolute', top: '0', right: '0', bottom: '0', left: '0' }} id='mapContent' />
+          <div style={{ position: 'absolute', top: '0', right: '0', bottom: '0', left: '0', display:'none' }} id='mapContent' />  
+          <div style={{width:'100%', height: '100%'}}>
+            { this.state.mapPointsData && <OLMapLayers oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildId} centerPoint={[102.829999, 24.894869]} urlXYZ="http://192.168.1.123:30001/YunNan/KunMing" /> }
+          </div>
         </div>
       </div>
     )

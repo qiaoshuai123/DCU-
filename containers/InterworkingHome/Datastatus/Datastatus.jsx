@@ -7,6 +7,7 @@ import { getMapUnitInfoList, getUnitPop, checkUnitTree } from '../../../reactRed
 import { unitInfoList, detectorTypeNameByInterId } from '../../../reactRedux/actions/equipmentManagement'
 import Header from '../../..//components/Header/Header'
 import CustomTree from '../../../components/CustomTree/CustomTree'
+import OLMapLayers from '../../../components/OpenLayers/OpenLayers'
 import InterworkingList from './InterworkingList/InterworkingList'
 import styles from './Datastatus.scss'
 
@@ -14,6 +15,7 @@ class Datastatus extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      oLMapFlag: true,
       isInterworkingList: false,
       mapPointsData: null, // 地图中所有的点
       interListHeight: 0,
@@ -27,7 +29,7 @@ class Datastatus extends Component {
     this.token = JSON.parse(localStorage.getItem('userInfo')).token
   }
   componentDidMount = () => {
-    this.loadingMap()
+    this.loadingMap() // old 高德地图
     document.addEventListener('click', (e) => {
       if (e.target !== this.searchInputBox) {
         if (e.target !== this.searchBtn) {
@@ -217,13 +219,16 @@ class Datastatus extends Component {
     var info = [];
     let itemData = JSON.parse(JSON.stringify(this.props.data.detectorTypeNameByInterIds))
     // this.dataItem = JSON.parse(JSON.stringify(dataItem))
-    info.push(`<div class='content_box'>`);
-    info.push(`<div class='content_box_title'><h4>点位详情</h4>`);
+    info.push(`<div class='content_box' style='background:none!important'>`);
+    info.push(`<div class='content_box_title' style='background:none!important;color:#343434'><h4 style='color:#343434;'>点位详情</h4>`);
     info.push(`<p class='input-item' style='border-top: 1px #838a9a solid;margin-top:-10px;padding-top:15px;'>点位名称：<span>` + name + `</span></p>`);
     info.push(`<p class='input-item'>数据来源：<span>${itemData || '暂无'}</span></p>`);
     info.push(`<p class='input-item'>数据接入状态：<span>` + '暂无' + `</span></p>`);
     info.push(`<p class='input-item'>数据输出状态：<span>` + '暂无' + `</span></p>`);
     this.userLimit.indexOf(301) !== -1 ? info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>路口监视</span></p>`) : '';
+    if (this.state.oLMapFlag){
+      $("#message").html(info.join(""))
+    } else {
     const infoWindow = new AMap.InfoWindow({
       content: info.join("")  //使用默认信息窗体框样式，显示信息内容
     });
@@ -240,6 +245,7 @@ class Datastatus extends Component {
       }
       infoWindow.close()
     })
+  }
   }
   hanleSelectInter = (e, item) => {
     let marker
@@ -335,7 +341,7 @@ class Datastatus extends Component {
     }
   }
   render() {
-    const { isInterworkingList, searchInterList, interListHeight, normal, notNormal } = this.state
+    const { isInterworkingList, searchInterList, interListHeight, normal, notNormal, oLMapFlag } = this.state
     return (
       <div className={styles.Datastatus}>
         <Websocket
@@ -379,6 +385,7 @@ class Datastatus extends Component {
           </div>
           <CustomTree
             {...this.props}
+            oLMapFlag={oLMapFlag}
             getSelectTreeId={this.getSelectTreeId}
             getSelectChildId={this.getSelectChildId}
             visibleShowLeft={this.visibleShowLeft}
@@ -397,7 +404,10 @@ class Datastatus extends Component {
             <InterworkingList showInterworkingList={this.showInterworkingList} />
           </div>
         }
-        <div className={styles.mapContent} id="mapContent" />
+        <div className={styles.mapContent} style={{display:'none'}} id="mapContent" />
+        <div style={{width:'100%', height: '100%'}}>
+          { this.state.mapPointsData && <OLMapLayers oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildId} centerPoint={[102.829999, 24.894869]} urlXYZ="http://192.168.1.123:30001/YunNan/KunMing" /> }
+        </div>
       </div>
     )
   }
