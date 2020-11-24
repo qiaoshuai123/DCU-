@@ -16,14 +16,14 @@ class OpenLayers extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      centerPoint: [102.829999, 24.894869],
+      centerPoint: this.props.centerPoint ? this.props.centerPoint : [108.3582,22.8268],
       urlXYZ: this.props.urlXYZ ? this.props.urlXYZ : 'http://192.168.1.123:30001/GuangXi/NanNing',
       pointDatas: this.props.pointDatas ? this.props.pointDatas : [
         {
           "id":9,
           "interId":"80",
           "interName":"青年路-人民中路",
-          "lng":102.829999,
+          "lng":102.820999,
           "lat":24.894869,
           "interType":1,
           "ownInterId":"",
@@ -72,13 +72,7 @@ class OpenLayers extends React.Component {
     this.mapOL = null
   }
   componentDidMount = () => {
-    if (this.props.centerPoint){
-      this.setState({
-        centerPoint: this.props.centerPoint
-      }, () => {
-        this.renderMap()
-      })
-    }
+    this.renderMap()
   }
 
   renderMap = () => {
