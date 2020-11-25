@@ -60,8 +60,17 @@ class Datastatus extends Component {
   getSelectTreeId = (id) => {
     this.props.getVipRouteChild(id)
   }
+  // 获取子id, 路口id olMap
+  getSelectChildIdOlMap = (childId, interName) => {
+    debugger
+    const _this = this
+    const resultP = Promise.resolve(_this.props.detectorTypeNameByInterId(childId))
+    resultP.then(() => {
+      _this.openInfoWin('','','', interName)
+    })
+  }
   // 获取子id, 路口id
-  getSelectChildId = (childId) => {
+  getSelectChildId = (childId, interName) => {
     const _this = this
     let marker, lng, lat
     const childrenArr = this.props.data.dcuTreeData
@@ -83,7 +92,7 @@ class Datastatus extends Component {
             })
             const resultP = Promise.resolve(_this.props.detectorTypeNameByInterId(item.interId))
             resultP.then(() => {
-              _this.openInfoWin(_this.map, item, marker, item.interName)
+              _this.state.oLMapFlag ? _this.openInfoWin('','','', interName) : _this.openInfoWin(_this.map, item, marker, item.interName)
             })
           })
         }
@@ -406,7 +415,7 @@ class Datastatus extends Component {
         }
         <div className={styles.mapContent} style={{display:'none'}} id="mapContent" />
         <div style={{width:'100%', height: '100%'}}>
-          { this.state.mapPointsData && <OLMapLayers oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildId} centerPoint={[102.829999, 24.894869]} urlXYZ="http://192.168.1.123:30001/YunNan/KunMing" /> }
+          { this.state.mapPointsData && <OLMapLayers oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildId} centerPoint={[102.829999, 24.894869]} urlXYZ="http://53.101.224.151/YunNan/KunMing" /> }
         </div>
       </div>
     )

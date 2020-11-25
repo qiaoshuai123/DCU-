@@ -728,6 +728,14 @@ class SignalManagement extends PureComponent {
     }, 200)
 
   }
+  // 获取子id, 路口id olMap
+  getSelectChildIdOlMap = (childId, interName) => {
+    const _this = this
+    const resultP = Promise.resolve(_this.props.getUnitPop(childId))
+    resultP.then(() => {
+      _this.openInfoWin('','','', interName)
+    })
+  }
   // 获取子id, 路口id
   getSelectChildId = (childId) => {
     const _this = this;
@@ -1500,7 +1508,7 @@ class SignalManagement extends PureComponent {
   }
   //在指定位置打开信息窗体
   openInfoWin = (map, dataItem, marker, name) => {
-    // debugger
+     debugger
     // console.log(this.props.data.dcuPopData, '弹层所需数据')
     var info = [];
     let itemData = JSON.parse(JSON.stringify(this.props.data.dcuPopData))
@@ -3431,7 +3439,7 @@ class SignalManagement extends PureComponent {
           </div>
           <div style={{ position: 'absolute', top: '0', right: '0', bottom: '0', left: '0', display:'none' }} id='mapContent' />  
           <div style={{width:'100%', height: '100%'}}>
-            { this.state.mapPointsData && <OLMapLayers oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildId} centerPoint={[102.829999, 24.894869]} urlXYZ="http://192.168.1.123:30001/YunNan/KunMing" /> }
+            { this.state.mapPointsData && <OLMapLayers oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildIdOlMap} centerPoint={[102.829999, 24.894869]} urlXYZ="http://53.101.224.151/YunNan/KunMing" /> }
           </div>
         </div>
       </div>

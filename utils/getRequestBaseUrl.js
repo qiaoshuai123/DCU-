@@ -4,7 +4,8 @@ const getRequestBaseUrl = () => {
   if (process.env.NODE_ENV === 'development') {
     return 'http://192.168.1.213:20203'
   } else if (process.env.NODE_ENV === 'production') {
-    return 'http://53.101.255.23:20203'
+    return 'http://53.101.224.151:20203'
+    // return 'http://53.101.255.23:20203'
     // return 'http://39.100.128.220:12345'
   }
 }

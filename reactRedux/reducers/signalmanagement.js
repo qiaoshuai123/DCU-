@@ -3,9 +3,11 @@ import * as types from '../actionTypes/actionTypes'
 const objs = {
   // devSockets: 'ws://53.101.255.23:20203', // 本地地址
   // devImage: 'http://53.101.255.23:20203', // 本地地址
-  devSockets: 'ws://192.168.1.213:20203', // 本地地址
-  devImage: 'http://192.168.1.213:20203', // 本地地址
+  // devSockets: 'ws://192.168.1.213:20203', // 本地地址
+  // devImage: 'http://192.168.1.213:20203', // 本地地址
 
+  devSockets: 'ws://53.101.224.151:20203', // 昆明本地地址
+  devImage: 'http://53.101.224.151:20203', // 昆明本地地址
   // devSockets: 'ws://39.100.128.220:20203', // 线上地址
   // devImage: 'http://39.100.128.220:20203', // 线上地址
 }

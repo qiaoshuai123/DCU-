@@ -85,6 +85,8 @@ class OpenLayers extends React.Component {
       id: 'oLMarker',
       element: container,
       autoPan: true,
+      offset: [0, -30],
+      positioning: 'bottom-center',
       autoPanAnimation: {
         duration: 500
       }
@@ -136,6 +138,45 @@ class OpenLayers extends React.Component {
       image: new Icon(feature),
     });
   }
+  // 图标下面显示interName
+  setPointName = (interName, lnglat) => {
+    const element = document.createElement("div");
+    element.className = "point_name";
+    element.innerHTML = interName
+    const point_overlay = new Overlay({
+    element: element,
+    positioning: 'top-center',
+    });
+    mapOL.addOverlay(point_overlay);
+    point_overlay.setPosition(lnglat);
+  }
+  // 图标动画
+  setFlashPoint = (lnglat) => {
+    //第一种样式
+    const element = document.createElement("div");
+    element.className = "point_animation";
+    const p = document.createElement("p");
+    const span = document.createElement("span");
+    element.appendChild(p);
+    element.appendChild(span);
+    const point_overlay = new Overlay({
+    element: element,
+    positioning: 'center-center',
+    });
+    mapOL.addOverlay(point_overlay);
+    point_overlay.setPosition(lnglat);
+
+    //第二种样式
+    const ele = document.createElement("div");
+    ele.className = "css_animation";
+    const point_overlay2 = new Overlay({
+    element: ele,
+    positioning: 'center-center',
+    });
+    mapOL.addOverlay(point_overlay2);
+    point_overlay2.setPosition(lnglat);
+
+   }
   renderMarkers = (popLayer, pointDatas) => {
     const _this = this
     this.featuresAll = []
@@ -145,8 +186,9 @@ class OpenLayers extends React.Component {
       // 点样式二
       const pointStyleTwo = this.state.pointStyles[1]
       for (let i = 0; i < pointDatas.length; i++) {
-        console.log(pointDatas)
         const pointItem = fromLonLat([pointDatas[i].lng, pointDatas[i].lat])  // 坐标点
+        // _this.setPointName(pointDatas[i].interName, pointItem)
+        // _this.setFlashPoint(pointItem)
         //创建Marker 点
         const iconFeature = new Feature({
           geometry: new Point(pointItem),          // 设置坐标
@@ -166,21 +208,22 @@ class OpenLayers extends React.Component {
           source: vectorSource
         });
         mapOL.addLayer(vectorLayer);
-  
+
         mapOL.on('click', function (evt) {
+          // console.log('能看到我几次？')
           var pixel = mapOL.getEventPixel(evt.originalEvent);
-          var element = document.getElementById('message');
+          var elementName = document.getElementById('popup-name"');
           var feature = mapOL.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
             return feature;
           });
           if (feature) {
-            _this.props.getSelectChildId(pointDatas[i].id, pointDatas[i].lng, pointDatas[i].lat)
             let iconName = feature.get('name');
+            _this.props.getSelectChildId(pointDatas[i].id, iconName)
             var coordinates = feature.getGeometry().getCoordinates();
             // $(element).html("<div>"+coordinates+"<div style='width:100px;height:30px;border:1px yellow solid;' onclick='setGetParams(" + JSON.stringify(pointDatas[i]) + ")'>点我</div></div>")
             popLayer.setPosition(coordinates);
           } else {
-            $(element).html("")
+            $("#message").html("")
             popLayer.setPosition(undefined);
           }
         });
@@ -197,12 +240,11 @@ class OpenLayers extends React.Component {
         <div id="oLmap" style={{ width: '100%', height: '100%', position: 'relative' }} />
         <div id="popup" className='ol-popup'>
           <a href="#" id="popup-closer" className="ol-popup-closer"></a>
-          <div id="popup-content">
             <div id="message">
               hello world
             </div>
-          </div>
         </div>
+        <div id="popup-name">1212</div>
       </div>
     )
   }
