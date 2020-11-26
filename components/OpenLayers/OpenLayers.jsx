@@ -222,6 +222,7 @@ class OpenLayers extends React.Component {
             var coordinates = feature.getGeometry().getCoordinates();
             // $(element).html("<div>"+coordinates+"<div style='width:100px;height:30px;border:1px yellow solid;' onclick='setGetParams(" + JSON.stringify(pointDatas[i]) + ")'>点我</div></div>")
             popLayer.setPosition(coordinates);
+            mapOL.getView().setCenter(coordinates) // 设置中心点
           } else {
             $("#message").html("")
             popLayer.setPosition(undefined);
