@@ -75,16 +75,17 @@ class CustomTree extends React.Component {
     const lat = Number(e.currentTarget.getAttribute('lat'))
     if (this.props.oLMapFlag){
       if (lng && lat && id) {
-        this.props.getSelectChildId(id, lng, lat)
+        this.props.getSelectChildId(id, dataItem.interName, dataItem)
         // 查找坐标弹层
         const overLayer = mapOL.getOverlayById("oLMarker")
         // 坐标转换
-        // const resultLngLat = fromLonLat([lng, lat])
-        const resultLngLat = fromLonLat([102.829999, 24.894869])
+        const resultLngLat = fromLonLat([lng, lat])
+        // const resultLngLat = fromLonLat([102.829999, 24.894869])
         // 把浮层显示出来
         overLayer.setPosition(resultLngLat)
+        mapOL.getView().setCenter(resultLngLat) // 设置中心点
         // 内容自定
-        // $("#message").html("<div>"+resultLngLat+"<div style='width:100px;height:30px;border:1px yellow solid;' onclick='setGetParams(" + JSON.stringify(dataItem) + ")'>点我</div></div>")
+        // $("#message").trigger('click')
       } else {
         message.info('未能找到相应坐标！')
       }

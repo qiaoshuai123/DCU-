@@ -61,12 +61,26 @@ class Datastatus extends Component {
     this.props.getVipRouteChild(id)
   }
   // 获取子id, 路口id olMap
-  getSelectChildIdOlMap = (childId, interName) => {
-    debugger
-    const _this = this
-    const resultP = Promise.resolve(_this.props.detectorTypeNameByInterId(childId))
-    resultP.then(() => {
-      _this.openInfoWin('','','', interName)
+  getSelectChildIdOlMap = (childId, interName, dataItem) => {
+    const _this = this;
+    var marker, lng, lat;
+    const childrenArr = this.state.treeListBackups
+    childrenArr.map((data) => {
+      data.units && data.units.map((item) => {
+          if (childId === item.id) {
+            lng = item.lng
+            lat = item.lat
+            _this.setState({
+              roadUnitId: item.id,
+              roadInterId: item.interId,
+              roadNodeNo: item.nodeId,
+            })
+            const resultP = Promise.resolve(_this.props.detectorTypeNameByInterId(childId))
+            resultP.then(() => {
+              _this.openInfoWin('',dataItem,'', interName)
+            })
+          }
+      })
     })
   }
   // 获取子id, 路口id
@@ -147,21 +161,21 @@ class Datastatus extends Component {
   }
   // 创建地图层
   loadingMap = () => {
-    const map = new AMap.Map('mapContent', {
-      resizeEnable: true, //是否监控地图容器尺寸变化
-      center: [102.71566093,25.04232215], //初始化地图中心点 昆明
-      // center: [120.202633, 30.266603], //初始化地图中心点
-      mapStyle: "amap://styles/f9281194c6119ea4669f1dd2e75af292",
-      zoom: 11,
-    })
-    this.map = map
-    map.on("click", function (e) {
-      // console.log(e.lnglat.getLng() + ',' + e.lnglat.getLat())
-    })
-    this.createLayerGroup('pointLayers') // map中显示点的图层
-    if (this.state.mapPointsData !== null) {
-      this.drawMarkers(this.state.mapPointsData, 'pointLayers') // 初始化点
-    }
+    // const map = new AMap.Map('mapContent', {
+    //   resizeEnable: true, //是否监控地图容器尺寸变化
+    //   center: [102.71566093,25.04232215], //初始化地图中心点 昆明
+    //   // center: [120.202633, 30.266603], //初始化地图中心点
+    //   mapStyle: "amap://styles/f9281194c6119ea4669f1dd2e75af292",
+    //   zoom: 11,
+    // })
+    // this.map = map
+    // map.on("click", function (e) {
+    //   // console.log(e.lnglat.getLng() + ',' + e.lnglat.getLat())
+    // })
+    // this.createLayerGroup('pointLayers') // map中显示点的图层
+    // if (this.state.mapPointsData !== null) {
+    //   this.drawMarkers(this.state.mapPointsData, 'pointLayers') // 初始化点
+    // }
   }
   // 筛选左侧树型结构
   checkUnitTree = () => {
@@ -231,7 +245,7 @@ class Datastatus extends Component {
     info.push(`<div class='content_box' style='background:none!important'>`);
     info.push(`<div class='content_box_title' style='background:none!important;color:#343434'><h4 style='color:#343434;'>点位详情</h4>`);
     info.push(`<p class='input-item' style='border-top: 1px #838a9a solid;margin-top:-10px;padding-top:15px;'>点位名称：<span>` + name + `</span></p>`);
-    info.push(`<p class='input-item'>数据来源：<span>${itemData || '暂无'}</span></p>`);
+    info.push(`<p class='input-item'>数据来源：<span>${itemData || '暂无' } </span></p>`);
     info.push(`<p class='input-item'>数据接入状态：<span>` + '暂无' + `</span></p>`);
     info.push(`<p class='input-item'>数据输出状态：<span>` + '暂无' + `</span></p>`);
     this.userLimit.indexOf(301) !== -1 ? info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>路口监视</span></p>`) : '';
@@ -396,7 +410,7 @@ class Datastatus extends Component {
             {...this.props}
             oLMapFlag={oLMapFlag}
             getSelectTreeId={this.getSelectTreeId}
-            getSelectChildId={this.getSelectChildId}
+            getSelectChildId={ !oLMapFlag ? this.getSelectChildId : this.getSelectChildIdOlMap}
             visibleShowLeft={this.visibleShowLeft}
           />
         </div>
@@ -415,7 +429,7 @@ class Datastatus extends Component {
         }
         <div className={styles.mapContent} style={{display:'none'}} id="mapContent" />
         <div style={{width:'100%', height: '100%'}}>
-          { this.state.mapPointsData && <OLMapLayers oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildId} centerPoint={[102.829999, 24.894869]} urlXYZ="http://53.101.224.151/YunNan/KunMing" /> }
+          { this.state.mapPointsData && <OLMapLayers pointDatas={this.state.mapPointsData} oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildIdOlMap} centerPoint={[102.829999, 24.894869]} urlXYZ="http://53.101.224.151/YunNan/KunMing" /> }
         </div>
       </div>
     )

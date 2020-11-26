@@ -96,11 +96,26 @@ class EquipmentManagement extends Component {
     this.props.getVipRouteChild(id)
   }
   // 获取子id, 路口id olMap
-  getSelectChildIdOlMap = (childId, interName) => {
-    const _this = this
-    const resultP = Promise.resolve(_this.props.getUnitPop(childId))
-    resultP.then(() => {
-      _this.openInfoWin('','','', interName)
+  getSelectChildIdOlMap = (childId, interName, dataItem) => {
+    const _this = this;
+    var marker, lng, lat;
+    const childrenArr = this.state.treeListBackups
+    childrenArr.map((data) => {
+      data.units && data.units.map((item) => {
+          if (childId === item.id) {
+            lng = item.lng
+            lat = item.lat
+            _this.setState({
+              roadUnitId: item.id,
+              roadInterId: item.interId,
+              roadNodeNo: item.nodeId,
+            })
+            const resultP = Promise.resolve(_this.props.getUnitPop(childId))
+            resultP.then(() => {
+              _this.openInfoWin('',dataItem,'', interName)
+            })
+          }
+      })
     })
   }
   // 获取子id, 路口id
@@ -181,31 +196,31 @@ class EquipmentManagement extends Component {
   }
   // 创建地图层
   loadingMap = () => {
-    const map = new AMap.Map('mapContent', {
-      resizeEnable: true, //是否监控地图容器尺寸变化
-      center: [102.71566093,25.04232215], //初始化地图中心点 昆明
-      // center: [120.202633, 30.266603], //初始化地图中心点
-      mapStyle: "amap://styles/f9281194c6119ea4669f1dd2e75af292",
-      zoom: 11,
-    })
-    this.map = map
-    try {
-      map.on('click', (e) => {
-        if (this.state.isMessagePage) {
-          this.setState({
-            lng: e.lnglat.getLng(),
-            lat: e.lnglat.getLat(),
-          })
-        }
-        // console.log(e.lnglat.getLng() + ',' + e.lnglat.getLat())
-      })
-    } catch (error) {
-      console.log(error)
-    }
-    this.createLayerGroup('pointLayers') // map中显示点的图层
-    if (this.state.mapPointsData !== null) {
-      this.drawMarkers(this.state.mapPointsData, 'pointLayers') // 初始化点
-    }
+    // const map = new AMap.Map('mapContent', {
+    //   resizeEnable: true, //是否监控地图容器尺寸变化
+    //   center: [102.71566093,25.04232215], //初始化地图中心点 昆明
+    //   // center: [120.202633, 30.266603], //初始化地图中心点
+    //   mapStyle: "amap://styles/f9281194c6119ea4669f1dd2e75af292",
+    //   zoom: 11,
+    // })
+    // this.map = map
+    // try {
+    //   map.on('click', (e) => {
+    //     if (this.state.isMessagePage) {
+    //       this.setState({
+    //         lng: e.lnglat.getLng(),
+    //         lat: e.lnglat.getLat(),
+    //       })
+    //     }
+    //     // console.log(e.lnglat.getLng() + ',' + e.lnglat.getLat())
+    //   })
+    // } catch (error) {
+    //   console.log(error)
+    // }
+    // this.createLayerGroup('pointLayers') // map中显示点的图层
+    // if (this.state.mapPointsData !== null) {
+    //   this.drawMarkers(this.state.mapPointsData, 'pointLayers') // 初始化点
+    // }
   }
   // 筛选左侧树型结构
   checkUnitTree = () => {
@@ -512,7 +527,7 @@ class EquipmentManagement extends Component {
             {...this.props}
             oLMapFlag={oLMapFlag}
             getSelectTreeId={this.getSelectTreeId}
-            getSelectChildId={this.getSelectChildId}
+            getSelectChildId={ !oLMapFlag ? this.getSelectChildId : this.getSelectChildIdOlMap}
             visibleShowLeft={this.visibleShowLeft}
           />
           {
@@ -528,7 +543,7 @@ class EquipmentManagement extends Component {
         }
         <div className={styles.mapContent} style={{display:'none'}} id="mapContent" />
         <div style={{width:'100%', height: '100%'}}>
-          { this.state.mapPointsData && <OLMapLayers oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildIdOlMap} centerPoint={[102.829999, 24.894869]} urlXYZ="http://53.101.224.151/YunNan/KunMing" /> }
+          { this.state.mapPointsData && <OLMapLayers pointDatas={this.state.mapPointsData} oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildIdOlMap} centerPoint={[102.829999, 24.894869]} urlXYZ="http://53.101.224.151/YunNan/KunMing" /> }
         </div>
         {
           visible &&
