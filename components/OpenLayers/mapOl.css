@@ -5,6 +5,36 @@ ul li{list-style: none;}
     border:1px blue solid;
     color:black;
 }
+.marker-online{
+    width: 32px;
+    height: 32px;
+    display: block;
+    background: url(../../images/markerGreen.png) no-repeat;
+}
+.marker-offline{
+    width: 32px;
+    height: 32px;
+    display: block;
+    background: url(../../images/markerRed.png) no-repeat;
+}
+.marker-tagYellLine {
+    width: 32px;
+    height: 32px;
+    display: block;
+    background: url(../../images/markerYellow.png) no-repeat;
+}
+.marker-blackishGreen{
+    width: 32px;
+    height: 32px;
+    display: block;
+    background: url(../../images/markerblackishGreen.png) no-repeat;
+}
+.marker-blue{
+    width: 32px;
+    height: 32px;
+    display: block;
+    background: url(../../images/markerBlue.png) no-repeat;
+}
 .point_animation{
     background: #ff9900;
     width: 6px;

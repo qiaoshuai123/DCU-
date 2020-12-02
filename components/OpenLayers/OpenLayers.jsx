@@ -70,6 +70,7 @@ class OpenLayers extends React.Component {
       ]
     }
     this.mapOL = null
+    window.OperlayerMarkers = []
   }
   componentDidMount = () => {
     this.renderMap()
@@ -150,6 +151,39 @@ class OpenLayers extends React.Component {
     mapOL.addOverlay(point_overlay);
     point_overlay.setPosition(lnglat);
   }
+  // layerMarker
+  addMarkers = (itemData) => {
+    const element = document.createElement("div")
+    element.setAttribute("inter-id", itemData.interId)
+    element.className = "marker-online"
+    const point_overlay = new Overlay({
+      element: element,
+      positioning: 'center-center',
+      name: itemData.interName,                         //名称属性
+      // id: "OpenMark"+itemData.id
+    });
+    mapOL.addOverlay(point_overlay)
+    point_overlay.setPosition(fromLonLat([itemData.lng, itemData.lat]))
+    mapOL.on('click', function (evt) {
+      // console.log('能看到我几次？')
+      var pixel = mapOL.getEventPixel(evt.originalEvent);
+      var elementName = document.getElementById('popup-name"');
+      var feature = mapOL.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
+        return feature;
+      });
+      if (feature) {
+        let iconName = feature.get('name');
+        _this.props.getSelectChildId(pointDatas[i].id, iconName, pointDatas[i])
+        var coordinates = feature.getGeometry().getCoordinates();
+        // $(element).html("<div>"+coordinates+"<div style='width:100px;height:30px;border:1px yellow solid;' onclick='setGetParams(" + JSON.stringify(pointDatas[i]) + ")'>点我</div></div>")
+        popLayer.setPosition(coordinates);
+        mapOL.getView().setCenter(coordinates) // 设置中心点
+      } else {
+        $("#message").html("")
+        popLayer.setPosition(undefined);
+      }
+    })
+    }
   // 图标动画
   setFlashPoint = (lnglat) => {
     //第一种样式
@@ -175,7 +209,6 @@ class OpenLayers extends React.Component {
     });
     mapOL.addOverlay(point_overlay2);
     point_overlay2.setPosition(lnglat);
-
    }
   renderMarkers = (popLayer, pointDatas) => {
     const _this = this
@@ -186,48 +219,52 @@ class OpenLayers extends React.Component {
       // 点样式二
       const pointStyleTwo = this.state.pointStyles[1]
       for (let i = 0; i < pointDatas.length; i++) {
+        console.log(pointDatas[i])
         const pointItem = fromLonLat([pointDatas[i].lng, pointDatas[i].lat])  // 坐标点
+        _this.addMarkers(pointDatas[i])// 添加点
         // _this.setPointName(pointDatas[i].interName, pointItem)
         // _this.setFlashPoint(pointItem)
-        //创建Marker 点
-        const iconFeature = new Feature({
-          geometry: new Point(pointItem),          // 设置坐标
-          name: pointDatas[i].interName,                         //名称属性
-          // population: 2115                       //人口数（万）
-        });
-        //设置点图标样式
-        iconFeature.setStyle(_this.createLabelStyle(pointStyleOne));
-        this.featuresAll.push(iconFeature)
-        //设置点的数据源
-        const vectorSource = new Vector({
-          features: _this.featuresAll
-        });
-        //用于显示在客户端渲染的矢量数据
-        // popLayer.setSource(vectorSource)
-        const vectorLayer = new VectorLayer({
-          source: vectorSource
-        });
-        mapOL.addLayer(vectorLayer);
+        // //创建Marker 点
+        // const iconFeature = new Feature({
+        //   geometry: new Point(pointItem),          // 设置坐标
+        //   name: pointDatas[i].interName,                         //名称属性
+        //   id: "OpenMark"+pointDatas[i].id
+        //   // population: 2115                       //人口数（万）
+        // });
+        // //设置点图标样式
+        // iconFeature.setStyle(_this.createLabelStyle(pointStyleOne));
+        // this.featuresAll.push(iconFeature)
+        // //设置点的数据源
+        // const vectorSource = new Vector({
+        //   features: _this.featuresAll
+        // });
+        // //用于显示在客户端渲染的矢量数据
+        // // popLayer.setSource(vectorSource)
+        // const vectorLayer = new VectorLayer({
+        //   source: vectorSource
+        // });
+        // window.OperlayerMarkers.push(iconFeature)
+        // mapOL.addLayer(vectorLayer);
 
-        mapOL.on('click', function (evt) {
-          // console.log('能看到我几次？')
-          var pixel = mapOL.getEventPixel(evt.originalEvent);
-          var elementName = document.getElementById('popup-name"');
-          var feature = mapOL.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
-            return feature;
-          });
-          if (feature) {
-            let iconName = feature.get('name');
-            _this.props.getSelectChildId(pointDatas[i].id, iconName, pointDatas[i])
-            var coordinates = feature.getGeometry().getCoordinates();
-            // $(element).html("<div>"+coordinates+"<div style='width:100px;height:30px;border:1px yellow solid;' onclick='setGetParams(" + JSON.stringify(pointDatas[i]) + ")'>点我</div></div>")
-            popLayer.setPosition(coordinates);
-            mapOL.getView().setCenter(coordinates) // 设置中心点
-          } else {
-            $("#message").html("")
-            popLayer.setPosition(undefined);
-          }
-        });
+        // mapOL.on('click', function (evt) {
+        //   // console.log('能看到我几次？')
+        //   var pixel = mapOL.getEventPixel(evt.originalEvent);
+        //   var elementName = document.getElementById('popup-name"');
+        //   var feature = mapOL.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
+        //     return feature;
+        //   });
+        //   if (feature) {
+        //     let iconName = feature.get('name');
+        //     _this.props.getSelectChildId(pointDatas[i].id, iconName, pointDatas[i])
+        //     var coordinates = feature.getGeometry().getCoordinates();
+        //     // $(element).html("<div>"+coordinates+"<div style='width:100px;height:30px;border:1px yellow solid;' onclick='setGetParams(" + JSON.stringify(pointDatas[i]) + ")'>点我</div></div>")
+        //     popLayer.setPosition(coordinates);
+        //     mapOL.getView().setCenter(coordinates) // 设置中心点
+        //   } else {
+        //     $("#message").html("")
+        //     popLayer.setPosition(undefined);
+        //   }
+        // });
       }
 
 
