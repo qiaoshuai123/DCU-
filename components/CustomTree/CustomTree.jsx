@@ -23,10 +23,20 @@ class CustomTree extends React.Component {
   componentDidUpdate = (prevState) => {
     const { dcuTreeData } = this.props.data
     if (prevState.data.dcuTreeData !== dcuTreeData) {
+      this.countNumber(dcuTreeData)
       this.setState({
         dcuTreeData: dcuTreeData,
       })
     }
+  }
+  countNumber = (data) => {
+    let onNum = 0, allNum = 0;
+    data.map(item => {
+      onNum += item.onlineUnitNum
+      allNum += item.unitNum
+    })
+    localStorage.setItem('countOnNum', onNum)
+    localStorage.setItem('countAllNum', allNum)
   }
   btns = (id) => {
     // console.log(id)
@@ -162,7 +172,7 @@ class CustomTree extends React.Component {
                   <span className={styles.treeIcon}>
                     <span className={styles.childIcon}><Icon type={isOpen ? 'minus-circle' : 'plus-circle'} /></span>
                   </span>
-                  <span title={item.codeName} onClick={() => this.btns(item.id)} onMouseDown={e => this.rightDown(e, '', true)} className={styles.childNode}>{item.codeName}</span>
+                  <span title={item.codeName} onClick={() => this.btns(item.id)} onMouseDown={e => this.rightDown(e, '', true)} className={styles.childNode}>{item.codeName}( <em style={{fontSize: '16px', color: 'orange'}}>{item.onlineUnitNum}</em> / <em style={{fontSize: '12px'}}>{item.unitNum}</em> )</span>
                   {
                     isOpen &&
                     <ul className={styles.childTree} key={item.id}>

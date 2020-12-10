@@ -191,16 +191,10 @@ class InterworkingList extends Component {
                     stateStr = 'DCU在线'
                     break;
                   case 2:
-                    stateStr = '边缘手动离线'
+                    stateStr = '盒子在线'
                     break;
                   case 3:
-                    stateStr = '边缘设备在线'
-                    break;
-                  case 4:
                     stateStr = '全部在线'
-                    break;
-                  case 5:
-                    stateStr = '边缘手动在线'
                     break;
                 }
               })

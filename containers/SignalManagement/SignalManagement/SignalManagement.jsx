@@ -180,6 +180,8 @@ class SignalManagement extends PureComponent {
     this.itemDetailData = null
     this.selImage = null
     this.token = JSON.parse(localStorage.getItem('userInfo')).token
+    this.countOnNum = JSON.parse(localStorage.getItem('countOnNum'))
+    this.countAllNum = JSON.parse(localStorage.getItem('countAllNum'))
   }
   componentDidUpdate = (prevState) => {
     const { mapPointsData, dcuPopData, stepStatusData, basicBgLists, basicUplSuccess, dcuTreeData, codeTypeData, phaseLists,
@@ -3433,7 +3435,7 @@ class SignalManagement extends PureComponent {
             </div>
           </div>
           <div className={styles.InterworkLeft_Title}>
-            <span />DCU点位列表
+            <span />DCU点位列表（ <em style={{ fontSize: '20px', color: 'orange'}}>{this.countOnNum}</em> <b style={{margin:'0 3px'}}>/</b> <em>{this.countAllNum}</em> ）
           </div>
           <CustomTree
             {...this.props}

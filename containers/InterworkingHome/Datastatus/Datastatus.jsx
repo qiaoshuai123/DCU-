@@ -27,6 +27,8 @@ class Datastatus extends Component {
     }
     this.searchInterList = []
     this.token = JSON.parse(localStorage.getItem('userInfo')).token
+    this.countOnNum = JSON.parse(localStorage.getItem('countOnNum'))
+    this.countAllNum = JSON.parse(localStorage.getItem('countAllNum'))
   }
   componentDidMount = () => {
     this.loadingMap() // old 高德地图
@@ -404,7 +406,7 @@ class Datastatus extends Component {
             </div>
           </div>
           <div className={styles.InterworkLeft_Title}>
-            <span />DCU点位列表
+            <span />DCU点位列表（ <em style={{ fontSize: '20px', color: 'orange'}}>{this.countOnNum}</em> <b style={{margin:'0 3px'}}>/</b> <em>{this.countAllNum}</em> ）
           </div>
           <CustomTree
             {...this.props}

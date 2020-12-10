@@ -38,6 +38,8 @@ class InterworkingHome extends Component {
     }
     this.searchInterList = []
     this.token = JSON.parse(localStorage.getItem('userInfo')).token
+    this.countOnNum = JSON.parse(localStorage.getItem('countOnNum'))
+    this.countAllNum = JSON.parse(localStorage.getItem('countAllNum'))
   }
   componentDidMount = () => {
     this.loadingMap() // old 高德地图
@@ -311,6 +313,7 @@ class InterworkingHome extends Component {
     info.push(`<p class='input-item'>生产厂商：<span>${itemData.deviceVersion || '暂无'}</span></p>`);
     info.push(`<p class='input-item'>维护电话：<span>${itemData.maintainPhone || '暂无'}</span></p>`);
     info.push(`<p class='input-item'>设备状态：<span id='phasestageName'></span></p>`);
+    info.push(`<p class='input-item'>信号机状态：<span id='signalStatusText'></span></p>`);
     info.push(`<p class='input-item'>信号接入状态：<span>${'暂无'}</span></p>`);
     info.push(`<p class='input-item'>发布服务状态：<span>${'暂无'}</span></p>`);
     this.userLimit.indexOf(301) !== -1 ? info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;padding:0;' class='input-items'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>路口监视</span><span title='DCU手动离线' class='paramsBtn' onclick='getSetOffLine(` + JSON.stringify(dataItem) + `)'>手动离线</span><span title='DCU校时' class='paramsBtn' onclick='getProofreadTime(` + JSON.stringify(dataItem) + `,1 )'>校时</span><span title='DCU重启' class='paramsBtn' onclick='getReboot(` + JSON.stringify(dataItem) + `,1)'>重启</span></p>`) : '';
@@ -338,9 +341,9 @@ class InterworkingHome extends Component {
   handleData = (e) => {
     let result = JSON.parse(e);
     console.log(result, 'socket 数据')
-    const { allOffline, allOnline, dcuOnline, handOffAndTneuroOff, handOffAndTneuroOn, tneuroOnline, dcuStateList } = JSON.parse(e)
+    const { allOffline, allOnline, dcuOnline, tneuroOnline, dcuStateList } = JSON.parse(e)
     this.setState({
-      allOffline, allOnline, dcuOnline, handOffAndTneuroOff, handOffAndTneuroOn, tneuroOnline,
+      allOffline, allOnline, dcuOnline, tneuroOnline,
       dcuStateList,
     })
     // if (offlineNum > 0) {
@@ -395,22 +398,19 @@ class InterworkingHome extends Component {
             } else if (item.state === 1) {
               $($('div[inter-id]')[i]).removeClass().addClass('dcuOnLine')
             } else if (item.state === 2) {
-              $($('div[inter-id]')[i]).removeClass().addClass('borderHandLine')
+              $($('div[inter-id]')[i]).removeClass().addClass('borderOnLine')
             } else if (item.state === 3) {
-              $($('div[inter-id]')[i]).removeClass().addClass('borderOffLine')
-            } else if (item.state === 4) {
               $($('div[inter-id]')[i]).removeClass().addClass('allOnLine')
-            } else if (item.state === 5) {
-              $($('div[inter-id]')[i]).removeClass().addClass('borderHandLine')
-            } 
+            }  
           }
         }
       })
     }
   }
   handlePopData(data) {
-    const { isOnline } = JSON.parse(data);
+    const { isOnline, signalIsOnline } = JSON.parse(data);
     isOnline === '1' ? $('#phasestageName').text('正常在线') : $('#phasestageName').text('离线状态')
+    signalIsOnline === '1' ? $('#signalStatusText').text('在线') : $('#signalStatusText').text('离线')
     // $('#schemeName').text(result.schemeName)
     // $('#nodeModelName').text(result.nodeModelName)
     // result !== -1 ? $('#phasestageImage').prop('src', `${this.phaseBgUrl}${result.phasestageImage}`).attr('style', 'width:30px;height:30px;margin-left:8px;') : null
@@ -519,7 +519,7 @@ class InterworkingHome extends Component {
             </div>
           </div>
           <div className={styles.InterworkLeft_Title}>
-            <span />DCU点位列表
+            <span />DCU点位列表（ <em style={{ fontSize: '20px', color: 'orange'}}>{this.countOnNum}</em> <b style={{margin:'0 3px'}}>/</b> <em>{this.countAllNum}</em> ）
           </div>
           <CustomTree
             {...this.props}
@@ -531,12 +531,12 @@ class InterworkingHome extends Component {
         </div>
         <div className={styles.tagMarker}>
           <div className={styles.statusBox}>
-            <span className={styles.allOffLine}>全部离线：{allOffline}处</span>
             <span className={styles.allOnLine}>全部在线：{allOnline}处</span>
+            <span className={styles.allOffLine}>全部离线：{allOffline}处</span>
             <span className={styles.dcuOnLine}>DCU在线：{dcuOnline}处</span>
-            <span className={styles.borderOffLine}>边缘手动离线：{handOffAndTneuroOff}处</span>
-            <span className={styles.borderHandLine}>边缘手动在线：{handOffAndTneuroOn}处</span>
             <span className={styles.borderOnLine}>边缘设备在线：{tneuroOnline}处</span>
+            {/* <span className={styles.borderOffLine}>边缘手动离线：{handOffAndTneuroOff}处</span>
+            <span className={styles.borderHandLine}>边缘手动在线：{handOffAndTneuroOn}处</span> */}
             {/* <span className={styles.tagOnLine}>在线设备{onlineNum}处</span>
             <span className={styles.tagOffLine}>离线设备{offlineNum}处</span>
             <span className={styles.tagYellLine}>手动离线{handOffline}处</span> */}

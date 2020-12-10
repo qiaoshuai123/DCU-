@@ -301,9 +301,17 @@ class Header extends React.Component {
     return (
       <div className={styles.headerWrapper}>
         <Websocket
-          url={`${this.props.data.devSockets}/DCU/websocket/aliserverState/0/0/0?Authorization=${this.token}`}
+          url={`ws://192.168.1.213:20203/DCU/websocket/aliserverState/0/0/0?Authorization=${this.token}`}
           onMessage={this.handleData.bind(this)}
         />
+        {/* <Websocket
+          url={`ws://53.101.224.151:20203/DCU/websocket/aliserverState/0/0/0?Authorization=${this.token}`}
+          onMessage={this.handleData.bind(this)}
+        /> */}
+        {/* <Websocket
+          url={`ws://39.100.128.220:20203/DCU/websocket/aliserverState/0/0/0?Authorization=${this.token}`}
+          onMessage={this.handleData.bind(this)}
+        /> */}
         {
           showSysMsg &&
           <div className={styles.aboutSystem}>
