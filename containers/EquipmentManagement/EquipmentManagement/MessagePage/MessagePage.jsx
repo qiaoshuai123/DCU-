@@ -12,6 +12,7 @@ class MessagePage extends Component {
     this.state = {
       pointName: '',
       roadName: '',
+      borderId: '',
       interId: '',
       interName: '',
       interType: '',
@@ -92,7 +93,7 @@ class MessagePage extends Component {
     if (AllList) {
       const { dcuTreeData } = this.props.data
       this.areaCode = dcuTreeData[0].dictCode
-      const { areaCode, interId, interName, interType, nodeId, lng, lat, id } = AllList
+      const { areaCode, borderId, interId, interName, interType, nodeId, lng, lat, id } = AllList
       const interTypes = this.objArr.find(item => item.num === interType).name
       this.interTypeNum = interType
       this.areaCode = areaCode
@@ -101,6 +102,7 @@ class MessagePage extends Component {
       this.setState({
         pointNameList: dcuTreeData,
         pointName: AllList.areaName,
+        borderId,
         interId,
         interName,
         interType: interTypes,
@@ -162,10 +164,11 @@ class MessagePage extends Component {
     // as不为真做提交请求
     // console.log(as, this.addMsg, '2333')
     if (!as && this.addMsg) {
-      const { interId, interName, lat, lng, nodeId } = this.state
+      const { interId, interName, lat, lng, nodeId, borderId } = this.state
       const strMsg = {
         areaCode: this.areaCode,
         interId,
+        borderId,
         interName,
         interType: this.interTypeNum,
         lat,
@@ -223,6 +226,7 @@ class MessagePage extends Component {
     const { Option } = Select
     const {
       interId,
+      borderId,
       interName,
       lng,
       nodeId,
@@ -247,6 +251,7 @@ class MessagePage extends Component {
           </span>
         </div>
         <div className={styles.items}><span>路口ID:</span><Input disabled={!btnShows} paths="interId" style={{ width: 300 }} value={interId} onBlur={this.changBlur} onChange={this.changeNumber} /></div>
+        <div className={styles.items}><span>边缘设备ID:</span><Input disabled={!btnShows} paths="borderId" style={{ width: 300 }} value={borderId} onBlur={this.changBlur} onChange={this.changeNumber} /></div>
         <div className={styles.items}><span>路口名称:</span><Input paths="interName" style={{ width: 300 }} value={interName} onChange={this.changeNumber} /></div>
         <div className={styles.items}><span>是否主控路口:</span>
           <Select value={interType} style={{ width: 300, margin: 0 }} onChange={this.changeNumber}>
@@ -255,7 +260,7 @@ class MessagePage extends Component {
             <Option pname="interType" value="1">否</Option>
           </Select>
         </div>
-        <div className={styles.items}><span>路口序号:</span><Input disabled={!btnShows} paths="nodeId" style={{ width: 300 }} value={nodeId} onBlur={this.changBlur} onChange={this.changeNumber} /></div>
+        <div className={styles.items}><span>路口序号:</span><Input type="number" disabled={!btnShows} paths="nodeId" style={{ width: 300 }} value={nodeId} onBlur={this.changBlur} onChange={this.changeNumber} /></div>
         <div className={styles.items}><span>经度:</span><Input paths="lng" style={{ width: 300 }} value={lng} onChange={this.changeNumber} /></div>
         <div className={styles.items}><span>纬度:</span><Input paths="lat" style={{ width: 300 }} value={lat} onChange={this.changeNumber} /></div>
         <div className={styles.bombtn}>
@@ -263,7 +268,7 @@ class MessagePage extends Component {
             btnShows ? <span onClick={() => this.addForm(true)}>保存</span> : <span onClick={() => this.addForm(false)}>修改</span>
           }
         </div>
-      </div >
+      </div>
     )
   }
 }

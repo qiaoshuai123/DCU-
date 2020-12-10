@@ -110,7 +110,7 @@ class InterworkingList extends Component {
     return (
       <div className={styles.syetem_bg} ref={(input) => { this.userLimitBox = input }}>
         <Websocket
-          url={`${this.props.data.devSockets}/DCU/websocket/dcuState/0/0/0?Authorization=${this.token}`}
+          url={`${this.props.data.devSockets}/DCU/websocket/dcuAndTneuroState/0/0/0?Authorization=${this.token}`}
           onMessage={this.handleData.bind(this)}
         // onClose={() => this.handleClose()}
         />
@@ -178,9 +178,30 @@ class InterworkingList extends Component {
             </div>
             {systemList && systemList.map((item, index) => {
               let isc = ''
+              let stateStr = ''
               stylesList.map((items) => {
                 if (item.interId === items.interId) {
                   isc = items.state
+                }
+                switch(isc){
+                  case 0:
+                    stateStr = '全部离线'
+                    break;
+                  case 1:
+                    stateStr = 'DCU在线'
+                    break;
+                  case 2:
+                    stateStr = '边缘手动离线'
+                    break;
+                  case 3:
+                    stateStr = '边缘设备在线'
+                    break;
+                  case 4:
+                    stateStr = '全部在线'
+                    break;
+                  case 5:
+                    stateStr = '边缘手动在线'
+                    break;
                 }
               })
               return (
@@ -193,7 +214,7 @@ class InterworkingList extends Component {
                   <div className={styles.listTd} >{item.lat}</div>
                   <div className={styles.listTd} >{item.lng}</div>
                   <div className={styles.listTd} >{item.maintainPhone}</div>
-                  <div className={styles.listTd} >{isc === 1 ? '正常运行' : '停止运行'}</div>
+                  <div className={styles.listTd} >{stateStr}</div>
                   <div className={styles.listTd} >
                     {
                       this.userLimit.indexOf(301) !== -1 ?

@@ -141,6 +141,7 @@ class OpenLayers extends React.Component {
   }
   // 图标下面显示interName
   setPointName = (interName, lnglat) => {
+    const _this = this
     const element = document.createElement("div");
     element.className = "point_name";
     element.innerHTML = interName
@@ -152,10 +153,16 @@ class OpenLayers extends React.Component {
     point_overlay.setPosition(lnglat);
   }
   // layerMarker
-  addMarkers = (itemData) => {
+  addMarkers = (popLayer, itemData) => {
+    const _this = this
     const element = document.createElement("div")
+    const poplayer = document.createElement("div")
     element.setAttribute("inter-id", itemData.interId)
     element.className = "marker-online"
+    element.addEventListener('click', (event) => {
+      this.props.getSelectChildId(itemData.id, itemData.interName, itemData)
+      popLayer.setPosition(fromLonLat([itemData.lng, itemData.lat]))
+    })
     const point_overlay = new Overlay({
       element: element,
       positioning: 'center-center',
@@ -165,21 +172,21 @@ class OpenLayers extends React.Component {
     mapOL.addOverlay(point_overlay)
     point_overlay.setPosition(fromLonLat([itemData.lng, itemData.lat]))
     mapOL.on('click', function (evt) {
-      // console.log('能看到我几次？')
+      console.log('能看到我几次？', evt.originalEvent)
       var pixel = mapOL.getEventPixel(evt.originalEvent);
-      var elementName = document.getElementById('popup-name"');
+      // var elementName = document.getElementById('popup-name');
       var feature = mapOL.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
         return feature;
       });
       if (feature) {
         let iconName = feature.get('name');
-        _this.props.getSelectChildId(pointDatas[i].id, iconName, pointDatas[i])
+        _this.props.getSelectChildId(itemData.id, iconName, itemData)
         var coordinates = feature.getGeometry().getCoordinates();
         // $(element).html("<div>"+coordinates+"<div style='width:100px;height:30px;border:1px yellow solid;' onclick='setGetParams(" + JSON.stringify(pointDatas[i]) + ")'>点我</div></div>")
         popLayer.setPosition(coordinates);
         mapOL.getView().setCenter(coordinates) // 设置中心点
       } else {
-        $("#message").html("")
+        // $("#message").html("")
         popLayer.setPosition(undefined);
       }
     })
@@ -221,7 +228,7 @@ class OpenLayers extends React.Component {
       for (let i = 0; i < pointDatas.length; i++) {
         console.log(pointDatas[i])
         const pointItem = fromLonLat([pointDatas[i].lng, pointDatas[i].lat])  // 坐标点
-        _this.addMarkers(pointDatas[i])// 添加点
+        _this.addMarkers(popLayer, pointDatas[i])// 添加点
         // _this.setPointName(pointDatas[i].interName, pointItem)
         // _this.setFlashPoint(pointItem)
         // //创建Marker 点
@@ -278,11 +285,9 @@ class OpenLayers extends React.Component {
         <div id="oLmap" style={{ width: '100%', height: '100%', position: 'relative' }} />
         <div id="popup" className='ol-popup'>
           <a href="#" id="popup-closer" className="ol-popup-closer"></a>
-            <div id="message">
-              hello world
-            </div>
+            <div id="message"></div>
         </div>
-        <div id="popup-name">1212</div>
+        {/* <div id="popup-name">1212</div> */}
       </div>
     )
   }

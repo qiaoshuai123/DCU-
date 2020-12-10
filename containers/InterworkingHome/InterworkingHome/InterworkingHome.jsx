@@ -22,6 +22,12 @@ class InterworkingHome extends Component {
       offlineNum: 0,
       onlineNum: 0,
       handOffline: 0,
+      allOffline: 0, 
+      allOnline: 0, 
+      dcuOnline: 0, 
+      handOffAndTneuroOff: 0, 
+      handOffAndTneuroOn: 0, 
+      tneuroOnline: 0,
       treeFlag: true,
       searchInterList: [],
       treeListBackups: null,
@@ -332,23 +338,21 @@ class InterworkingHome extends Component {
   handleData = (e) => {
     let result = JSON.parse(e);
     console.log(result, 'socket 数据')
-    const { offlineNum, onlineNum, handOffline, dcuStateList } = JSON.parse(e)
+    const { allOffline, allOnline, dcuOnline, handOffAndTneuroOff, handOffAndTneuroOn, tneuroOnline, dcuStateList } = JSON.parse(e)
     this.setState({
-      offlineNum,
-      onlineNum,
-      handOffline,
+      allOffline, allOnline, dcuOnline, handOffAndTneuroOff, handOffAndTneuroOn, tneuroOnline,
       dcuStateList,
     })
-    if (offlineNum > 0) {
-      this.setState({
-        IswarningBox: true,
-      })
-    } else {
-      this.setState({
-        IswarningBox: false,
-        IsWarningBoxLister: false,
-      })
-    }
+    // if (offlineNum > 0) {
+    //   this.setState({
+    //     IswarningBox: true,
+    //   })
+    // } else {
+    //   this.setState({
+    //     IswarningBox: false,
+    //     IsWarningBoxLister: false,
+    //   })
+    // }
     this.updateMapPonitsColor(dcuStateList)
   }
   hanleSelectInter = (e, item) => {
@@ -385,19 +389,23 @@ class InterworkingHome extends Component {
       data.map((item) => {
         for (let i = 0; i < $('div[inter-id]').length; i++) {
           if (item.interId === $($('div[inter-id]')[i]).attr('inter-id')) {
-            if (item.state === 1) {
+            if (item.state === 0) {
               $($('div[inter-id]')[i]).removeClass()
-              $($('div[inter-id]')[i]).addClass('marker-offline')
+              $($('div[inter-id]')[i]).addClass('allOffLine')
+            } else if (item.state === 1) {
+              $($('div[inter-id]')[i]).removeClass().addClass('dcuOnLine')
             } else if (item.state === 2) {
-              $($('div[inter-id]')[i]).removeClass().addClass('marker-tagYellLine')
-            } else {
-              $($('div[inter-id]')[i]).removeClass().addClass('marker-online')
-            }
+              $($('div[inter-id]')[i]).removeClass().addClass('borderHandLine')
+            } else if (item.state === 3) {
+              $($('div[inter-id]')[i]).removeClass().addClass('borderOffLine')
+            } else if (item.state === 4) {
+              $($('div[inter-id]')[i]).removeClass().addClass('allOnLine')
+            } else if (item.state === 5) {
+              $($('div[inter-id]')[i]).removeClass().addClass('borderHandLine')
+            } 
           }
         }
       })
-    } else {
-      $($('div[inter-id]')[i]).removeClass().addClass('marker-online')
     }
   }
   handlePopData(data) {
@@ -471,11 +479,11 @@ class InterworkingHome extends Component {
   render() {
     const { Search } = Input
     const { Option } = Select
-    const { oLMapFlag, isInterworkingList, offlineNum, onlineNum, searchInterList, interListHeight, roadUnitId, roadInterId, roadNodeNo, handOffline, IswarningBox, IsWarningBoxLister, warningBoxList } = this.state
+    const { oLMapFlag, isInterworkingList, offlineNum, onlineNum, searchInterList, interListHeight, roadUnitId, roadInterId, roadNodeNo, handOffline, IswarningBox, IsWarningBoxLister, warningBoxList, allOffline, allOnline, dcuOnline, handOffAndTneuroOff, handOffAndTneuroOn, tneuroOnline, } = this.state
     return (
       <div className={styles.InterworkingHomeBox}>
         <Websocket
-          url={`${this.props.data.devSockets}/DCU/websocket/dcuState/0/0/0?Authorization=${this.token}`}
+          url={`${this.props.data.devSockets}/DCU/websocket/dcuAndTneuroState/0/0/0?Authorization=${this.token}`}
           onMessage={this.handleData.bind(this)}
         />
         {!!roadUnitId && !!roadInterId && !!roadNodeNo && <Websocket url={`${this.props.data.devSockets}/DCU/websocket/dcuRunState/${roadUnitId}/${roadInterId}/${roadNodeNo}?Authorization=${this.token}`} onMessage={this.handlePopData.bind(this)} />}
@@ -523,9 +531,15 @@ class InterworkingHome extends Component {
         </div>
         <div className={styles.tagMarker}>
           <div className={styles.statusBox}>
-            <span className={styles.tagOnLine}>在线设备{onlineNum}处</span>
+            <span className={styles.allOffLine}>全部离线：{allOffline}处</span>
+            <span className={styles.allOnLine}>全部在线：{allOnline}处</span>
+            <span className={styles.dcuOnLine}>DCU在线：{dcuOnline}处</span>
+            <span className={styles.borderOffLine}>边缘手动离线：{handOffAndTneuroOff}处</span>
+            <span className={styles.borderHandLine}>边缘手动在线：{handOffAndTneuroOn}处</span>
+            <span className={styles.borderOnLine}>边缘设备在线：{tneuroOnline}处</span>
+            {/* <span className={styles.tagOnLine}>在线设备{onlineNum}处</span>
             <span className={styles.tagOffLine}>离线设备{offlineNum}处</span>
-            <span className={styles.tagYellLine}>手动离线{handOffline}处</span>
+            <span className={styles.tagYellLine}>手动离线{handOffline}处</span> */}
           </div>
           <div className={styles.turnBtn} onClick={() => this.showInterworkingList(true)} />
         </div>
@@ -548,7 +562,9 @@ class InterworkingHome extends Component {
         }
         <div className={styles.mapContent} style={{display:'none'}} id="mapContent" />
         <div style={{width:'100%', height: '100%'}}>
-          { this.state.mapPointsData && <OLMapLayers pointDatas={this.state.mapPointsData} oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildIdOlMap} centerPoint={[102.829999, 24.894869]} urlXYZ="http://192.168.1.123:30001/YunNan/KunMing" /> }
+          { this.state.mapPointsData && <OLMapLayers pointDatas={this.state.mapPointsData} oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildIdOlMap} centerPoint={[102.829999, 24.894869]} urlXYZ="http://39.100.128.220:8080/YunNan/KunMing" /> }
+          {/* { this.state.mapPointsData && <OLMapLayers pointDatas={this.state.mapPointsData} oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildIdOlMap} centerPoint={[102.829999, 24.894869]} urlXYZ="http://192.168.1.123:30001/YunNan/KunMing" /> } */}
+          {/* { this.state.mapPointsData && <OLMapLayers pointDatas={this.state.mapPointsData} oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildIdOlMap} centerPoint={[102.708543, 25.044168187863253]} urlXYZ="http://53.101.224.151/YunNan/KunMing" /> } */}
         </div>
       </div>
     )

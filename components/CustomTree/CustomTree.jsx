@@ -122,7 +122,7 @@ class CustomTree extends React.Component {
         const isOpen = expendsKey.indexOf(item.id) >= 0
         if (item.units && item.units.length) {
           return (
-            <li className={styles.childLi} key={item.id} id={item.id} onClick={this.handleTreeSelect}>
+            <li className={styles.childLi} key={item.id} id={item.id} interid={item.interId} onClick={this.handleTreeSelect}>
               <span className={styles.childIcon}><Icon type={isOpen ? 'minus-circle' : 'plus-circle'} /></span>
               <span className={styles.childNode}>{item.codeName}</span>
               {
@@ -141,6 +141,7 @@ class CustomTree extends React.Component {
             key={item.id}
             id={item.id}
             lng={item.lng}
+            interid={item.interId}
             lat={item.lat}
             onClick={(e) => { this.handleTreeChildSelect(e, item) }}
           >

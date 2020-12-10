@@ -1,7 +1,7 @@
 import React from 'react'
 import { Menu, Dropdown, Icon, message } from 'antd'
 import styles from './Header.scss'
-
+import Websocket from 'react-websocket'
 import getResponseDatas from '../../utils/getResponseDatas'
 
 class Header extends React.Component {
@@ -14,6 +14,7 @@ class Header extends React.Component {
       userName: null,
       showChangePwd: false,
       userLimit: null,
+      systemState: null,
     }
     this.paths = this.props.match.url
     this.navItems = [
@@ -163,6 +164,7 @@ class Header extends React.Component {
     }
     this.updatePassUrl = '/DCU/sys/user/updatePassword'
     this.logoutUrl = '/DCU/sys/user/logout'
+    this.token = JSON.parse(localStorage.getItem('userInfo')).token
   }
   componentDidMount = () => {
     const userMsg = JSON.parse(localStorage.getItem('userInfo'))
@@ -286,12 +288,22 @@ class Header extends React.Component {
     const pname = e.target.getAttribute('pname')
     this.loginKeys[pname] = e.target.value
   }
+  handleData = (e) => {
+    let result = JSON.parse(e);
+    console.log(result,'header 数据')
+    const { aliserverState } = result
+    this.setState({ systemState: aliserverState === '1' ? '在线' : '离线' })
+  }
   render() {
     const {
-      selectNum, navItem, showSysMsg, userName, showChangePwd, userLimit,
+      selectNum, navItem, showSysMsg, userName, showChangePwd, userLimit, systemState,
     } = this.state
     return (
       <div className={styles.headerWrapper}>
+        <Websocket
+          url={`${this.props.data.devSockets}/DCU/websocket/aliserverState/0/0/0?Authorization=${this.token}`}
+          onMessage={this.handleData.bind(this)}
+        />
         {
           showSysMsg &&
           <div className={styles.aboutSystem}>
@@ -343,7 +355,8 @@ class Header extends React.Component {
               ))
           }
         </div>
-        <div className={styles.header_right}>
+        <div className={styles.header_right} style={{position: 'relative'}}>
+          <em style={{color: 'red'}}>{systemState}</em>
           <span />
           <Dropdown overlay={this.menu}>
             <b onClick={e => e.preventDefault()}>
@@ -351,7 +364,7 @@ class Header extends React.Component {
             </b>
           </Dropdown>
         </div>
-      </div >
+      </div>
     )
   }
 }

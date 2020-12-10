@@ -168,9 +168,21 @@
         font-weight: bold;
         display: flex;
         align-items: center;
+        em {
+            height: 30px;
+            line-height: 30px;
+            font-size:14px;
+            padding-left:35px;
+            font-style: normal;
+            position: absolute;
+            font-weight: bold;
+            left: -120px;
+            background:url(../../images/systemStatus.png) no-repeat;
+            background-size: 27px 27px;
+        }
         span {
-            width: 35px;
-            height: 35px;
+            width: 27px;
+            height: 27px;
             background: url("./img/02.png") no-repeat;
             background-size: contain;
             margin-right: 5px;
