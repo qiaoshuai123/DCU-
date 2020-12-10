@@ -292,7 +292,7 @@ class Header extends React.Component {
     let result = JSON.parse(e);
     console.log(result,'header 数据')
     const { aliserverState } = result
-    this.setState({ systemState: aliserverState === '1' ? '在线' : '离线' })
+    this.setState({ systemState: aliserverState })
   }
   render() {
     const {
@@ -356,7 +356,7 @@ class Header extends React.Component {
           }
         </div>
         <div className={styles.header_right} style={{position: 'relative'}}>
-          <em style={{color: 'red'}}>{systemState}</em>
+          <em style={systemState === '1' ? {color: 'green'} : {color: 'red'}}>{systemState === '1' ? '在线' : '离线'}</em>
           <span />
           <Dropdown overlay={this.menu}>
             <b onClick={e => e.preventDefault()}>
