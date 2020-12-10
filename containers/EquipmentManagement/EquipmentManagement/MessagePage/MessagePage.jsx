@@ -251,7 +251,7 @@ class MessagePage extends Component {
           </span>
         </div>
         <div className={styles.items}><span>路口ID:</span><Input disabled={!btnShows} paths="interId" style={{ width: 300 }} value={interId} onBlur={this.changBlur} onChange={this.changeNumber} /></div>
-        <div className={styles.items}><span>边缘设备ID:</span><Input disabled={!btnShows} paths="borderId" style={{ width: 300 }} value={borderId} onBlur={this.changBlur} onChange={this.changeNumber} /></div>
+        <div className={styles.items}><span>边缘设备ID:</span><Input paths="borderId" style={{ width: 300 }} value={borderId} onBlur={this.changBlur} onChange={this.changeNumber} /></div>
         <div className={styles.items}><span>路口名称:</span><Input paths="interName" style={{ width: 300 }} value={interName} onChange={this.changeNumber} /></div>
         <div className={styles.items}><span>是否主控路口:</span>
           <Select value={interType} style={{ width: 300, margin: 0 }} onChange={this.changeNumber}>
