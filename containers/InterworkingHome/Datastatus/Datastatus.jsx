@@ -27,8 +27,8 @@ class Datastatus extends Component {
     }
     this.searchInterList = []
     this.token = JSON.parse(localStorage.getItem('userInfo')).token
-    this.countOnNum = JSON.parse(localStorage.getItem('countOnNum'))
-    this.countAllNum = JSON.parse(localStorage.getItem('countAllNum'))
+    // this.countOnNum = JSON.parse(localStorage.getItem('countOnNum'))
+    // this.countAllNum = JSON.parse(localStorage.getItem('countAllNum'))
   }
   componentDidMount = () => {
     this.loadingMap() // old 高德地图

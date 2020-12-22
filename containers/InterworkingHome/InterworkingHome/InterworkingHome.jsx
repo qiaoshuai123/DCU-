@@ -38,8 +38,8 @@ class InterworkingHome extends Component {
     }
     this.searchInterList = []
     this.token = JSON.parse(localStorage.getItem('userInfo')).token
-    this.countOnNum = JSON.parse(localStorage.getItem('countOnNum'))
-    this.countAllNum = JSON.parse(localStorage.getItem('countAllNum'))
+    // this.countOnNum = JSON.parse(localStorage.getItem('countOnNum'))
+    // this.countAllNum = JSON.parse(localStorage.getItem('countAllNum'))
   }
   componentDidMount = () => {
     this.loadingMap() // old 高德地图
@@ -340,7 +340,7 @@ class InterworkingHome extends Component {
   }
   handleData = (e) => {
     let result = JSON.parse(e);
-    console.log(result, 'socket 数据')
+    console.log(result, 'socket 343ssssssssss数据')
     const { allOffline, allOnline, dcuOnline, tneuroOnline, dcuStateList } = JSON.parse(e)
     this.setState({
       allOffline, allOnline, dcuOnline, tneuroOnline,
@@ -432,6 +432,7 @@ class InterworkingHome extends Component {
       })
     })
     this.setState({ searchInterList: searchInters })
+    console.log(123456789)
   }
   handleSearchInputChange = (e) => {
     const { value } = e.target

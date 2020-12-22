@@ -180,8 +180,8 @@ class SignalManagement extends PureComponent {
     this.itemDetailData = null
     this.selImage = null
     this.token = JSON.parse(localStorage.getItem('userInfo')).token
-    this.countOnNum = JSON.parse(localStorage.getItem('countOnNum'))
-    this.countAllNum = JSON.parse(localStorage.getItem('countAllNum'))
+    // this.countOnNum = JSON.parse(localStorage.getItem('countOnNum'))
+    // this.countAllNum = JSON.parse(localStorage.getItem('countAllNum'))
   }
   componentDidUpdate = (prevState) => {
     const { mapPointsData, dcuPopData, stepStatusData, basicBgLists, basicUplSuccess, dcuTreeData, codeTypeData, phaseLists,

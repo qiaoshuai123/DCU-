@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
-import { Input, Pagination, DatePicker, Select } from 'antd'
+import { Input, Pagination, DatePicker, Select, message } from 'antd'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import moment from 'moment'
 import { unitInfoList, detectorDataListByPage, exportDetectorDataList } from '../../../../reactRedux/actions/equipmentManagement'
+import getRequestBaseUrl from '../../../../utils/getRequestBaseUrl'
 import styles from './InterworkingList.scss'
 
 class InterworkingList extends Component {
@@ -13,6 +15,8 @@ class InterworkingList extends Component {
       namesList: [],
       current: 1,
       currnum: '',
+      startTime: '',
+      endTime: '',
     }
     this.objs = {
       names: '',
@@ -39,10 +43,22 @@ class InterworkingList extends Component {
     }
   }
   onChangDateStart = (date, dateString) => { // 上报时间
+    // console.log(date, dateString, new Date(dateString) * 1, 'dddd')
+    this.setState({
+      startTime: moment(dateString)
+    })
     this.objs.startDate = new Date(dateString) * 1
   }
   onChangDateEnd = (date, dateString) => { // 结束上报时间
-    this.objs.endDate = new Date(dateString) * 1
+    console.log(this.objs.startDate, new Date(dateString) * 1, this.objs.startDate > new Date(dateString) * 1, 'dvvv')
+    if (this.objs.startDate > new Date(dateString) * 1) {
+      message.error('结束时间不能小于开始时间')
+    } else {
+      this.setState({
+        endTime: moment(dateString)
+      })
+      this.objs.endDate = new Date(dateString) * 1
+    }
   }
   getunitInfoLists = (unitInfoLists) => {
     this.setState({
@@ -87,7 +103,7 @@ class InterworkingList extends Component {
     return params
   }
   exportTable = () => {
-    window.location.href = `${this.exportUrl}${this.getResetParams(this.objs)}&Authorization=${this.token}`
+    window.location.href = `${getRequestBaseUrl()}${this.exportUrl}${this.getResetParams(this.objs)}&Authorization=${this.token}`
   }
   handleChange = (e, optios) => {
     if (optios) {
@@ -130,7 +146,7 @@ class InterworkingList extends Component {
     return `${y}-${MM}-${d} ${h}:${m}:${s}`
   }
   render() {
-    const { systemList, namesList, current, currnum, } = this.state
+    const { systemList, namesList, current, currnum, startTime, endTime } = this.state
     const { Option } = Select
     return (
       <div className={styles.syetem_bg} ref={(input) => { this.userLimitBox = input }}>
@@ -164,7 +180,9 @@ class InterworkingList extends Component {
           </div>
           <div className={styles.syetem_item}>
             <span className={styles.item}>上报时间:</span>
-            <div className={styles.inSle}><DatePicker style={{ width: 200, margin: 0 }} onChange={this.onChangDateStart} /></div><span style={{ margin: '0 10px' }}>至</span><div className={styles.inSle}><DatePicker style={{ width: 200, margin: 0 }} onChange={this.onChangDateEnd} /></div>
+            <div className={styles.inSle}><DatePicker style={{ width: 200, margin: 0 }} value={startTime} onChange={this.onChangDateStart} /></div>
+            <span style={{ margin: '0 10px' }}>至</span>
+            <div className={styles.inSle}><DatePicker value={endTime} style={{ width: 200, margin: 0 }} onChange={this.onChangDateEnd} /></div>
           </div>
           <span className={styles.searchBtn} onClick={this.handlePagination}>查询</span>
         </div>

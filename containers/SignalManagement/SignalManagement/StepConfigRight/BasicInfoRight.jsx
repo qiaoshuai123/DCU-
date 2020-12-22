@@ -10,49 +10,49 @@ const regUtil = {
   isEmpty: function (e, idType) {
     if (e === "") {
       message.info('设备ID不能为空！')
-      $('#'+idType).focus()
+      $('#' + idType).focus()
       return false;
-    } else if( e < 0) {
+    } else if (e < 0) {
       message.info('设备ID不能为负数')
-      $('#'+idType).focus()
+      $('#' + idType).focus()
       return false;
-    }else{
+    } else {
       return true;
     }
   },
-  isValidIp: function (e, idType) { // IP
-    if ( !/^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$/.test(e) ){
-      message.info('ip不符合规则')
-      $('#'+idType).focus()
+  isValidIp: function (e, idType, errorName) { // IP
+    if (!/^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$/.test(e)) {
+      message.info(`${errorName}`)
+      $('#' + idType).focus()
       return false
-    }else{
+    } else {
       return true;
     }
   },
   isValidSubnetMask: function (e, idType) { //subnetMask
-    if ( !/^((128|192)|2(24|4[08]|5[245]))(\.(0|(128|192)|2((24)|(4[08])|(5[245])))){3}$/.test(e) ){
+    if (!/^((128|192)|2(24|4[08]|5[245]))(\.(0|(128|192)|2((24)|(4[08])|(5[245])))){3}$/.test(e)) {
       message.info('子网不符合规则')
-      $('#'+idType).focus()
+      $('#' + idType).focus()
       return false
-    }else{
+    } else {
       return true;
     }
   },
   isValidGateway: function (e, idType) { //网关
-    if ( !/^192\.168(\.(\d|([1-9]\d)|(1\d{2})|(2[0-4]\d)|(25[0-5]))){2}$/.test(e) ){
+    if (!/^192\.168(\.(\d|([1-9]\d)|(1\d{2})|(2[0-4]\d)|(25[0-5]))){2}$/.test(e)) {
       message.info('网关不符合规则')
-      $('#'+idType).focus()
+      $('#' + idType).focus()
       return false
-    }else{
+    } else {
       return true;
     }
   },
   isValidPort: function (e, idType) { //端口
-    if (!(/^[1-9]\d*$/.test(e) && 1 <= 1 * e && 1 * e <= 65535)){
+    if (!(/^[1-9]\d*$/.test(e) && 1 <= 1 * e && 1 * e <= 65535)) {
       message.info('端口不符合规则')
-      $('#'+idType).focus()
+      $('#' + idType).focus()
       return false
-    }else{
+    } else {
       return true;
     }
   }
@@ -76,7 +76,7 @@ class BasicInfoRight extends PureComponent {
     // 获取用户权限
     const limitArr = JSON.parse(localStorage.getItem('userLimit'))
     limitArr.forEach((item) => {
-      if (item.id === 201){
+      if (item.id === 201) {
         this.setState({ userLimit: true })
       }
     })
@@ -87,9 +87,9 @@ class BasicInfoRight extends PureComponent {
   }
   // step 2 基础信息配置保存
   stepTwoAddForList = () => {
-    const deviceIdFlag = regUtil.isEmpty(this.showPopData.deviceId, 'deviceId') 
-    const iPFlag = regUtil.isValidIp(this.showPopData.ip, 'ip') 
-    const serverIpFlag = regUtil.isValidIp(this.showPopData.serverIp, 'serverIp') 
+    const deviceIdFlag = regUtil.isEmpty(this.showPopData.deviceId, 'deviceId')
+    const iPFlag = regUtil.isValidIp(this.showPopData.ip, 'ip', '信号机ip不符合规则')
+    const serverIpFlag = regUtil.isValidIp(this.showPopData.serverIp, 'serverIp', '上位机ip不符合规则')
     const subnetMaskFlag = regUtil.isValidSubnetMask(this.showPopData.subnetMask, 'subnetMask')
     const gatewayFlag = regUtil.isValidGateway(this.showPopData.gateway, 'gateway')
     const serverPortFlag = regUtil.isValidPort(this.showPopData.serverPort, 'serverPort')
@@ -102,14 +102,28 @@ class BasicInfoRight extends PureComponent {
     this.props.popLayerShowHide(name, flag)
   }
   handleChangeInput = (event, type, name) => {
-    this[type][name] = event.target.value
-    this.setState({
-      showPopData: null,
-    }, ()=>{
+    if (name === 'maintainPhone') {
+      const reg = /^[0-9]*$/.test(event.target.value)
+      if (reg) {
+        this[type][name] = event.target.value
+        this.setState({
+          showPopData: null,
+        }, () => {
+          this.setState({
+            showPopData: this.showPopData,
+          })
+        })
+      }
+    } else {
+      this[type][name] = event.target.value
       this.setState({
-        showPopData: this.showPopData,
+        showPopData: null,
+      }, () => {
+        this.setState({
+          showPopData: this.showPopData,
+        })
       })
-    })
+    }
   }
   getDate = (time, num = 0) => {
     let today = ''
@@ -131,7 +145,7 @@ class BasicInfoRight extends PureComponent {
     this.showPopData[name] = value ? this.getDate(value._d) : ''
     this.setState({
       showPopData: null,
-    }, ()=>{
+    }, () => {
       this.setState({
         showPopData: this.showPopData,
       })
@@ -144,9 +158,9 @@ class BasicInfoRight extends PureComponent {
     const configurationDateTime = !!dcuPopData && !!dcuPopData.configurationDate ? moment(dcuPopData.configurationDate, 'YYYY-MM-DD HH:mm:ss') : null
     return (
       <div className={styles.conBox}>
-      <div className={styles.rTit}>信号机基础信息{ userLimit ? <em onClick={ () =>{this.stepTwoAddForList()} }>保存</em> : null }</div>
-      {/* 表单 */}
-      <div className={styles.rCon}>
+        <div className={styles.rTit}>信号机基础信息{userLimit ? <em onClick={() => { this.stepTwoAddForList() }}>保存</em> : null}</div>
+        {/* 表单 */}
+        <div className={styles.rCon}>
           <div className={styles.itemInputBox}>
             <span>设备ID：</span><Input type="number" disabled={!userLimit} id="deviceId" onChange={e => this.handleChangeInput(e, 'showPopData', 'deviceId')} placeholder="请输入设备ID" value={!!showPopData && !!showPopData.deviceId ? showPopData.deviceId : ''} />
           </div>
@@ -198,7 +212,7 @@ class BasicInfoRight extends PureComponent {
               defaultValue={configurationDateTime}
               placeholder="-配置日期-"
               disabled={!userLimit}
-              onChange={configurationDateTime => this.onEndChangeTime(configurationDateTime, 'configurationDate') }
+              onChange={configurationDateTime => this.onEndChangeTime(configurationDateTime, 'configurationDate')}
             />
           </div>
           {/* <div className={styles.itemInputBox}>
@@ -209,16 +223,16 @@ class BasicInfoRight extends PureComponent {
           </div>
           <div className={styles.itemInputBox}>
             <span>GPS时钟标志：</span>
-            <div style={{flex: '4.2'}}>
+            <div style={{ flex: '4.2' }}>
               <Radio.Group disabled={!userLimit} onChange={e => this.handleChangeInput(e, 'showPopData', 'gpsClockSign')} value={!!showPopData && !!showPopData.gpsClockSign ? showPopData.gpsClockSign : "0"}>
                 <Radio value="0">无</Radio>
                 <Radio value="1">有</Radio>
               </Radio.Group>
             </div>
           </div>
+        </div>
+
       </div>
-      
-    </div>
     )
   }
 }
