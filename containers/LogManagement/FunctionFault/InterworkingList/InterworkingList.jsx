@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { Input, Pagination, DatePicker, Select } from 'antd'
+import { Input, Pagination, DatePicker, Select, message } from 'antd'
+import moment from 'moment'
 import styles from './InterworkingList.scss'
 
 import getResponseDatas from '../../../../utils/getResponseDatas'
@@ -15,6 +16,8 @@ class InterworkingList extends Component {
       logTypes: null,
       currentPage: 1,
       totalPage: 0,
+      startTime: '',
+      endTime: '',
     }
     this.logTypeUrl = '/DCU/sys/code/systemCodeListByCodeType?dictType=6'
     this.logsource = '/DCU/sys/code/systemCodeListByCodeType?dictType=34'
@@ -94,20 +97,22 @@ class InterworkingList extends Component {
     const types = options.key === 'null' ? null : options.key
     this.logListParams[pname] = types
   }
-  handleStartTimeChange = (moments) => {
-    if (moments) {
-      const timeStep = moments._d.getTime()
-      this.logListParams.startTime = timeStep
-    } else {
-      this.logListParams.startTime = ''
-    }
+  handleStartTimeChange = (moments, dateString) => {
+    const timeStep = moments._d.getTime()
+    this.logListParams.startTime = timeStep
+    this.setState({
+      startTime: moment(dateString)
+    })
   }
-  handleEndTimeChange = (moments) => {
-    if (moments) {
+  handleEndTimeChange = (moments, dateString) => {
+    if (this.logListParams.startTime > moments._d.getTime()) {
+      message.error('结束时间不能小于开始时间')
+    } else {
       const timeStep = moments._d.getTime()
       this.logListParams.endTime = timeStep
-    } else {
-      this.logListParams.endTime = ''
+      this.setState({
+        endTime: moment(dateString)
+      })
     }
   }
   handleSearchLogList = () => {
@@ -122,7 +127,7 @@ class InterworkingList extends Component {
     this.logListParams.keyword = e.target.value
   }
   render() {
-    const { systemList, logTypes, totalPage, currentPage, logSource } = this.state
+    const { systemList, logTypes, totalPage, currentPage, logSource, startTime, endTime, } = this.state
     return (
       <div className={styles.syetem_bg} ref={(input) => { this.userLimitBox = input }}>
         <div className={styles.syetem_title}>
@@ -169,9 +174,9 @@ class InterworkingList extends Component {
           </div>
           <div className={styles.syetem_item} style={{ flex: 1.2 }}>
             <span className={styles.item}>日志时间:</span>
-            <div className={styles.inSle}><DatePicker showTime onChange={this.handleStartTimeChange} style={{ minWidth: '100px' }} /></div>
+            <div className={styles.inSle}><DatePicker value={startTime} showTime onChange={this.handleStartTimeChange} style={{ minWidth: '100px' }} /></div>
             <span style={{ margin: '0 10px' }}>至</span>
-            <div className={styles.inSle}><DatePicker showTime onChange={this.handleEndTimeChange} style={{ minWidth: '100px' }} /></div>
+            <div className={styles.inSle}><DatePicker value={endTime} showTime onChange={this.handleEndTimeChange} style={{ minWidth: '100px' }} /></div>
           </div>
           <span className={styles.searchBtn} onClick={this.handleSearchLogList} limitid="13">查询</span>
         </div>

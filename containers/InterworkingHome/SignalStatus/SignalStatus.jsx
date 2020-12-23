@@ -27,8 +27,8 @@ class SignalStatus extends Component {
     this.searchInterList = []
     this.phaseBgUrl = `${this.props.data.devImage}/DCU/dcuImage/phasestage/`
     this.token = JSON.parse(localStorage.getItem('userInfo')).token
-    // this.countOnNum = JSON.parse(localStorage.getItem('countOnNum'))
-    // this.countAllNum = JSON.parse(localStorage.getItem('countAllNum'))
+    this.countOnNum = JSON.parse(localStorage.getItem('countOnNum'))
+    this.countAllNum = JSON.parse(localStorage.getItem('countAllNum'))
   }
   componentDidMount = () => {
     this.loadingMap() // old 高德地图

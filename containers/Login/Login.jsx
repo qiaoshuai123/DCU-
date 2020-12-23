@@ -46,7 +46,7 @@ class Login extends React.Component {
      })
    }
   handleLogin = () => {
-    debugger
+    // debugger
     const { loginName, passWord } = this.loginParams
     if (loginName !== '' && passWord !== '') {
       getResponseDatas('post', this.loginUrl, this.getFormData(this.loginParams)).then((res) => {

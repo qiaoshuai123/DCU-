@@ -17,7 +17,8 @@ class OpenLayers extends React.Component {
     super(props)
     this.state = {
       centerPoint: this.props.centerPoint ? this.props.centerPoint : [108.3582,22.8268],
-      urlXYZ: this.props.urlXYZ ? this.props.urlXYZ : 'http://192.168.1.123:30001/GuangXi/NanNing',
+      // urlXYZ: this.props.urlXYZ ? this.props.urlXYZ : 'http://192.168.1.123:30001/GuangXi/NanNing',
+      urlXYZ: this.props.urlXYZ ? this.props.urlXYZ : 'http://39.100.128.220:8080/YunNan/KunMing',
       pointDatas: this.props.pointDatas ? this.props.pointDatas : [
         {
           "id":9,

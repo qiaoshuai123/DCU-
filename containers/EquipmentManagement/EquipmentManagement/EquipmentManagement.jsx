@@ -104,19 +104,19 @@ class EquipmentManagement extends Component {
     const childrenArr = this.state.treeListBackups
     childrenArr.map((data) => {
       data.units && data.units.map((item) => {
-          if (childId === item.id) {
-            lng = item.lng
-            lat = item.lat
-            _this.setState({
-              roadUnitId: item.id,
-              roadInterId: item.interId,
-              roadNodeNo: item.nodeId,
-            })
-            const resultP = Promise.resolve(_this.props.getUnitPop(childId))
-            resultP.then(() => {
-              _this.openInfoWin('',dataItem,'', interName)
-            })
-          }
+        if (childId === item.id) {
+          lng = item.lng
+          lat = item.lat
+          _this.setState({
+            roadUnitId: item.id,
+            roadInterId: item.interId,
+            roadNodeNo: item.nodeId,
+          })
+          const resultP = Promise.resolve(_this.props.getUnitPop(childId))
+          resultP.then(() => {
+            _this.openInfoWin('', dataItem, '', interName)
+          })
+        }
       })
     })
   }
@@ -297,25 +297,25 @@ class EquipmentManagement extends Component {
     info.push(`<p class='input-item'>生产厂商：<span>${itemData.brand || '暂无'}</span></p>`)
     info.push(`<p class='input-item'>维护电话：<span>${itemData.maintainPhone || '暂无'}</span></p>`)
     this.userLimit.indexOf(301) !== -1 ? info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;' class='input-item'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `) '>设备配置</span></p>`) : '';
-    if (this.state.oLMapFlag){
+    if (this.state.oLMapFlag) {
       $("#message").html(info.join(""))
     } else {
-    const infoWindow = new AMap.InfoWindow({
-      content: info.join("")  //使用默认信息窗体框样式，显示信息内容
-    });
-    infoWindow.open(map, [dataItem.lng, dataItem.lat]);
-    this.infoWindow = infoWindow
-    window.infoWindowClose = infoWindow
-    map.on('click', (e) => {
-      if ($("#roadKey" + dataItem.id).parent().hasClass('drawCircle')) {
-        if ($("#roadKey" + dataItem.id).hasClass('marker-offline')) {
-          marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online marker-offline'></div>");
-        } else {
-          marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online'></div>");
+      const infoWindow = new AMap.InfoWindow({
+        content: info.join("")  //使用默认信息窗体框样式，显示信息内容
+      });
+      infoWindow.open(map, [dataItem.lng, dataItem.lat]);
+      this.infoWindow = infoWindow
+      window.infoWindowClose = infoWindow
+      map.on('click', (e) => {
+        if ($("#roadKey" + dataItem.id).parent().hasClass('drawCircle')) {
+          if ($("#roadKey" + dataItem.id).hasClass('marker-offline')) {
+            marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online marker-offline'></div>");
+          } else {
+            marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online'></div>");
+          }
         }
-      }
-      infoWindow.close()
-    })
+        infoWindow.close()
+      })
     }
   }
   // 禁止默认右键菜单
@@ -340,6 +340,9 @@ class EquipmentManagement extends Component {
         this.setState({
           visible: false,
         })
+        if (this.infoWindow) {
+          this.infoWindow.close()
+        }
         this.props.getUnitTree()
         this.props.getMapUnitInfoList()
       }
@@ -523,18 +526,18 @@ class EquipmentManagement extends Component {
             </div>
           </div>
           <div className={styles.InterworkLeft_Title}>
-            <span />DCU点位列表（ <em style={{ fontSize: '20px', color: 'orange'}}>{this.countOnNum}</em> <b style={{margin:'0 3px'}}>/</b> <em>{this.countAllNum}</em> ）
+            <span />DCU点位列表（ <em style={{ fontSize: '20px', color: 'orange' }}>{this.countOnNum}</em> <b style={{ margin: '0 3px' }}>/</b> <em>{this.countAllNum}</em> ）
           </div>
           <CustomTree
             {...this.props}
             oLMapFlag={oLMapFlag}
             getSelectTreeId={this.getSelectTreeId}
-            getSelectChildId={ !oLMapFlag ? this.getSelectChildId : this.getSelectChildIdOlMap}
+            getSelectChildId={!oLMapFlag ? this.getSelectChildId : this.getSelectChildIdOlMap}
             visibleShowLeft={this.visibleShowLeft}
           />
           {
             // isAddPoint &&
-             this.userLimit.indexOf(301) !== -1 ?
+            this.userLimit.indexOf(301) !== -1 ?
               <div onClick={this.addPoint} className={styles.addPoint}>
                 添加点位
               </div> : ''
@@ -543,9 +546,9 @@ class EquipmentManagement extends Component {
         {
           isMessagePage && <MessagePage closePoint={this.closePoint} AllList={this.AllList} lng={lng} lat={lat} />
         }
-        <div className={styles.mapContent} style={{display:'none'}} id="mapContent" />
-        <div style={{width:'100%', height: '100%'}}>
-          { this.state.mapPointsData && <OLMapLayers pointDatas={this.state.mapPointsData} oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildIdOlMap} centerPoint={[102.829999, 24.894869]} urlXYZ="http://39.100.128.220:8080/YunNan/KunMing" /> }
+        <div className={styles.mapContent} style={{ display: 'none' }} id="mapContent" />
+        <div style={{ width: '100%', height: '100%' }}>
+          {this.state.mapPointsData && <OLMapLayers pointDatas={this.state.mapPointsData} oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildIdOlMap} centerPoint={[102.829999, 24.894869]} urlXYZ="http://39.100.128.220:8080/YunNan/KunMing" />}
           {/* { this.state.mapPointsData && <OLMapLayers pointDatas={this.state.mapPointsData} oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildIdOlMap} centerPoint={[102.829999, 24.894869]} urlXYZ="http://192.168.1.123:30001/YunNan/KunMing" /> } */}
           {/* { this.state.mapPointsData && <OLMapLayers pointDatas={this.state.mapPointsData} oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildIdOlMap} centerPoint={[102.708543, 25.044168187863253]} urlXYZ="http://53.101.224.151/YunNan/KunMing" /> } */}
         </div>

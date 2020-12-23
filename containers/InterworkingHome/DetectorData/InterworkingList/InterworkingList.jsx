@@ -50,7 +50,7 @@ class InterworkingList extends Component {
     this.objs.startDate = new Date(dateString) * 1
   }
   onChangDateEnd = (date, dateString) => { // 结束上报时间
-    console.log(this.objs.startDate, new Date(dateString) * 1, this.objs.startDate > new Date(dateString) * 1, 'dvvv')
+    // console.log(this.objs.startDate, new Date(dateString) * 1, this.objs.startDate > new Date(dateString) * 1, 'dvvv')
     if (this.objs.startDate > new Date(dateString) * 1) {
       message.error('结束时间不能小于开始时间')
     } else {

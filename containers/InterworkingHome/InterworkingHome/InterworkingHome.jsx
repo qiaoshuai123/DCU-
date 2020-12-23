@@ -22,11 +22,11 @@ class InterworkingHome extends Component {
       offlineNum: 0,
       onlineNum: 0,
       handOffline: 0,
-      allOffline: 0, 
-      allOnline: 0, 
-      dcuOnline: 0, 
-      handOffAndTneuroOff: 0, 
-      handOffAndTneuroOn: 0, 
+      allOffline: 0,
+      allOnline: 0,
+      dcuOnline: 0,
+      handOffAndTneuroOff: 0,
+      handOffAndTneuroOn: 0,
       tneuroOnline: 0,
       treeFlag: true,
       searchInterList: [],
@@ -38,8 +38,8 @@ class InterworkingHome extends Component {
     }
     this.searchInterList = []
     this.token = JSON.parse(localStorage.getItem('userInfo')).token
-    // this.countOnNum = JSON.parse(localStorage.getItem('countOnNum'))
-    // this.countAllNum = JSON.parse(localStorage.getItem('countAllNum'))
+    this.countOnNum = JSON.parse(localStorage.getItem('countOnNum'))
+    this.countAllNum = JSON.parse(localStorage.getItem('countAllNum'))
   }
   componentDidMount = () => {
     this.loadingMap() // old 高德地图
@@ -130,19 +130,19 @@ class InterworkingHome extends Component {
     const childrenArr = this.state.treeListBackups
     childrenArr.map((data) => {
       data.units && data.units.map((item) => {
-          if (childId === item.id) {
-            lng = item.lng
-            lat = item.lat
-            _this.setState({
-              roadUnitId: item.id,
-              roadInterId: item.interId,
-              roadNodeNo: item.nodeId,
-            })
-            const resultP = Promise.resolve(_this.props.getUnitPop(childId))
-            resultP.then(() => {
-              _this.openInfoWin('',dataItem,'', interName)
-            })
-          }
+        if (childId === item.id) {
+          lng = item.lng
+          lat = item.lat
+          _this.setState({
+            roadUnitId: item.id,
+            roadInterId: item.interId,
+            roadNodeNo: item.nodeId,
+          })
+          const resultP = Promise.resolve(_this.props.getUnitPop(childId))
+          resultP.then(() => {
+            _this.openInfoWin('', dataItem, '', interName)
+          })
+        }
       })
     })
   }
@@ -317,26 +317,26 @@ class InterworkingHome extends Component {
     info.push(`<p class='input-item'>信号接入状态：<span>${'暂无'}</span></p>`);
     info.push(`<p class='input-item'>发布服务状态：<span>${'暂无'}</span></p>`);
     this.userLimit.indexOf(301) !== -1 ? info.push(`<p style='border-top: 1px #838a9a solid;margin-top:10px;padding:0;' class='input-items'><span class='paramsBtn' onclick='setGetParams(` + JSON.stringify(dataItem) + `)'>路口监视</span><span title='DCU手动离线' class='paramsBtn' onclick='getSetOffLine(` + JSON.stringify(dataItem) + `)'>手动离线</span><span title='DCU校时' class='paramsBtn' onclick='getProofreadTime(` + JSON.stringify(dataItem) + `,1 )'>校时</span><span title='DCU重启' class='paramsBtn' onclick='getReboot(` + JSON.stringify(dataItem) + `,1)'>重启</span></p>`) : '';
-    if (this.state.oLMapFlag){
+    if (this.state.oLMapFlag) {
       $("#message").html(info.join(""))
     } else {
-    const infoWindow = new AMap.InfoWindow({
-      content: info.join("")  //使用默认信息窗体框样式，显示信息内容
-    });
-    infoWindow.open(map, [dataItem.lng, dataItem.lat]);
-    this.infoWindow = infoWindow
-    window.infoWindowClose = infoWindow
-    map.on('click', (e) => {
-      if ($("#roadKey" + dataItem.id).parent().hasClass('drawCircle')) {
-        if ($("#roadKey" + dataItem.id).hasClass('marker-offline')) {
-          marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online marker-offline'></div>");
-        } else {
-          marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online'></div>");
+      const infoWindow = new AMap.InfoWindow({
+        content: info.join("")  //使用默认信息窗体框样式，显示信息内容
+      });
+      infoWindow.open(map, [dataItem.lng, dataItem.lat]);
+      this.infoWindow = infoWindow
+      window.infoWindowClose = infoWindow
+      map.on('click', (e) => {
+        if ($("#roadKey" + dataItem.id).parent().hasClass('drawCircle')) {
+          if ($("#roadKey" + dataItem.id).hasClass('marker-offline')) {
+            marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online marker-offline'></div>");
+          } else {
+            marker.setContent("<div inter-id='" + dataItem.interId + "' class='marker-online'></div>");
+          }
         }
-      }
-      infoWindow.close()
-    })
-  }
+        infoWindow.close()
+      })
+    }
   }
   handleData = (e) => {
     let result = JSON.parse(e);
@@ -361,6 +361,7 @@ class InterworkingHome extends Component {
   hanleSelectInter = (e, item) => {
     let marker
     const _this = this;
+    // console.log(item, this.pointLayers, 'xxx')
     this.pointLayers.map((point) => {
       if (point.w.extData.id === item.id) {
         point.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + item.interId + "' id='roadKey" + item.id + "' class='marker-online'></div></div>");
@@ -401,7 +402,7 @@ class InterworkingHome extends Component {
               $($('div[inter-id]')[i]).removeClass().addClass('borderOnLine')
             } else if (item.state === 3) {
               $($('div[inter-id]')[i]).removeClass().addClass('allOnLine')
-            }  
+            }
           }
         }
       })
@@ -520,13 +521,13 @@ class InterworkingHome extends Component {
             </div>
           </div>
           <div className={styles.InterworkLeft_Title}>
-            <span />DCU点位列表（ <em style={{ fontSize: '20px', color: 'orange'}}>{this.countOnNum}</em> <b style={{margin:'0 3px'}}>/</b> <em>{this.countAllNum}</em> ）
+            <span />DCU点位列表（ <em style={{ fontSize: '20px', color: 'orange' }}>{this.countOnNum}</em> <b style={{ margin: '0 3px' }}>/</b> <em>{this.countAllNum}</em> ）
           </div>
           <CustomTree
             {...this.props}
             oLMapFlag={oLMapFlag}
             getSelectTreeId={this.getSelectTreeId}
-            getSelectChildId={ !oLMapFlag ? this.getSelectChildId : this.getSelectChildIdOlMap}
+            getSelectChildId={!oLMapFlag ? this.getSelectChildId : this.getSelectChildIdOlMap}
             visibleShowLeft={this.visibleShowLeft}
           />
         </div>
@@ -561,9 +562,9 @@ class InterworkingHome extends Component {
             <InterworkingList showInterworkingList={this.showInterworkingList} />
           </div>
         }
-        <div className={styles.mapContent} style={{display:'none'}} id="mapContent" />
-        <div style={{width:'100%', height: '100%'}}>
-          { this.state.mapPointsData && <OLMapLayers pointDatas={this.state.mapPointsData} oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildIdOlMap} centerPoint={[102.829999, 24.894869]} urlXYZ="http://39.100.128.220:8080/YunNan/KunMing" /> }
+        <div className={styles.mapContent} style={{ display: 'none' }} id="mapContent" />
+        <div style={{ width: '100%', height: '100%' }}>
+          {this.state.mapPointsData && <OLMapLayers pointDatas={this.state.mapPointsData} oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildIdOlMap} centerPoint={[102.829999, 24.894869]} urlXYZ="http://39.100.128.220:8080/YunNan/KunMing" />}
           {/* { this.state.mapPointsData && <OLMapLayers pointDatas={this.state.mapPointsData} oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildIdOlMap} centerPoint={[102.829999, 24.894869]} urlXYZ="http://192.168.1.123:30001/YunNan/KunMing" /> } */}
           {/* { this.state.mapPointsData && <OLMapLayers pointDatas={this.state.mapPointsData} oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildIdOlMap} centerPoint={[102.708543, 25.044168187863253]} urlXYZ="http://53.101.224.151/YunNan/KunMing" /> } */}
         </div>
