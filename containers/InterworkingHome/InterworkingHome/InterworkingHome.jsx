@@ -3,6 +3,7 @@ import { Input, message, Select, Icon } from 'antd'
 import Websocket from 'react-websocket'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import { fromLonLat } from 'ol/proj'
 import { getMapUnitInfoList, getUnitPop, checkUnitTree, getReboot, getSetOffLine, getProofreadTime } from '../../../reactRedux/actions/publicActions'
 import Header from '../../../components/Header/Header'
 import CustomTree from '../../../components/CustomTree/CustomTree'
@@ -38,8 +39,11 @@ class InterworkingHome extends Component {
     }
     this.searchInterList = []
     this.token = JSON.parse(localStorage.getItem('userInfo')).token
-    this.countOnNum = JSON.parse(localStorage.getItem('countOnNum'))
-    this.countAllNum = JSON.parse(localStorage.getItem('countAllNum'))
+    let countAllTime = setTimeout(() => {
+      this.countOnNum = JSON.parse(localStorage.getItem('countOnNum'))
+      this.countAllNum = JSON.parse(localStorage.getItem('countAllNum'))
+      countAllTime = null
+    }, 300)
   }
   componentDidMount = () => {
     this.loadingMap() // old 高德地图
@@ -358,34 +362,63 @@ class InterworkingHome extends Component {
     // }
     this.updateMapPonitsColor(dcuStateList)
   }
-  hanleSelectInter = (e, item) => {
-    let marker
+  hanleSelectInter = (e, items) => {
     const _this = this;
-    // console.log(item, this.pointLayers, 'xxx')
-    this.pointLayers.map((point) => {
-      if (point.w.extData.id === item.id) {
-        point.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + item.interId + "' id='roadKey" + item.id + "' class='marker-online'></div></div>");
-        _this.setState({
-          roadUnitId: item.id,
-          roadInterId: item.interId,
-          roadNodeNo: item.nodeId,
+    let marker, lng, lat;
+    if ( this.state.oLMapFlag ){ this.pointLayers = this.state.treeListBackups }
+    if ( this.state.oLMapFlag ) {
+      this.pointLayers && this.pointLayers.map((data) => {
+        data.units && data.units.map((item) => {
+          if (item.id === items.id) {
+            lng = item.lng
+            lat = item.lat
+            _this.setState({
+              roadUnitId: item.id,
+              roadInterId: item.interId,
+              roadNodeNo: item.nodeId,
+              interListHeight: 0
+            })
+            this.searchInputBox.value = item.interName
+            // 查找坐标弹层
+            const overLayer = mapOL.getOverlayById("oLMarker")
+            // 坐标转换
+            const resultLngLat = fromLonLat([lng, lat])
+            // 把浮层显示出来
+            overLayer.setPosition(resultLngLat)
+            mapOL.getView().setCenter(resultLngLat) // 设置中心点
+            const resultP = Promise.resolve(_this.props.getUnitPop(item.id))
+            resultP.then(() => {
+              _this.openInfoWin('', item, '', item.interName)
+            })
+          }
         })
-        const resultP = Promise.resolve(_this.props.getUnitPop(item.id))
-        resultP.then(() => {
-          _this.openInfoWin(_this.map, item, point, item.interName)
-        })
-        marker = point
-      }
-    })
-    if (marker && this.map) {
-      this.map.setCenter([item.lng, item.lat])
-      this.searchInputBox.value = item.interName
-      this.setState({ interListHeight: 0 })
-      marker.emit('click', {
-        lnglat: this.map.getCenter()
       })
     } else {
-      message.info('该路口尚未接入')
+      this.pointLayers.map((point) => {
+        if (point.w.extData.id === item.id) {
+          point.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + item.interId + "' id='roadKey" + item.id + "' class='marker-online'></div></div>");
+          _this.setState({
+            roadUnitId: item.id,
+            roadInterId: item.interId,
+            roadNodeNo: item.nodeId,
+          })
+          const resultP = Promise.resolve(_this.props.getUnitPop(item.id))
+          resultP.then(() => {
+            _this.openInfoWin(_this.map, item, point, item.interName)
+          })
+          marker = point
+        }
+      })
+      if (marker && this.map) {
+        this.map.setCenter([item.lng, item.lat])
+        this.searchInputBox.value = item.interName
+        this.setState({ interListHeight: 0 })
+        marker.emit('click', {
+          lnglat: this.map.getCenter()
+        })
+      } else {
+        message.info('该路口尚未接入')
+      }
     }
   }
   updateMapPonitsColor = (data) => {
@@ -521,7 +554,7 @@ class InterworkingHome extends Component {
             </div>
           </div>
           <div className={styles.InterworkLeft_Title}>
-            <span />DCU点位列表（ <em style={{ fontSize: '20px', color: 'orange' }}>{this.countOnNum}</em> <b style={{ margin: '0 3px' }}>/</b> <em>{this.countAllNum}</em> ）
+            <span />DCU点位列表（ <em style={{ fontSize: '20px', color: 'orange' }}>{this.countOnNum && this.countOnNum }</em> <b style={{ margin: '0 3px' }}>/</b> <em>{this.countAllNum && this.countAllNum}</em> ）
           </div>
           <CustomTree
             {...this.props}

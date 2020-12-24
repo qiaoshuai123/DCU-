@@ -10,6 +10,7 @@ import InterworkingList from './InterworkingList/InterworkingList'
 import styles from './SignalManagement.scss'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import { fromLonLat } from 'ol/proj'
 import { getSystemCodeType, getMapUnitInfoList, getUnitPop, checkUnitTree, getDcuState } from '../../../reactRedux/actions/publicActions'
 import { getStepStatus, getPicListsType, getInfoListsType, getInfoListsTypeMore, postBgBySelect, postBgByUpload, postAddOthersType, postUpdateOthersType, postAddAllType, postUpdateAllType, getIconImageList, getUpdateAllType, getSelectLists, getCheckPhaseTime, getEditCheckData } from '../../../reactRedux/actions/signalmanagementActions'
 import StepNavMenu from './StepNavMenu/StepNavMenu'
@@ -664,34 +665,64 @@ class SignalManagement extends PureComponent {
       }
     }
   }
-  hanleSelectInter = (e, item) => {
-    let marker
+  hanleSelectInter = (e, items) => {
     const _this = this;
-    this.pointLayers.map((point) => {
-      if (point.w.extData.id === item.id) {
-        point.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + item.interId + "' id='roadKey" + item.id + "' class='marker-online'></div></div>");
-        _this.setState({
-          roadUnitId: item.id,
-          roadInterId: item.interId,
-          roadNodeNo: item.nodeId,
+    let marker, lng, lat;
+    if ( this.state.oLMapFlag ){ this.pointLayers = this.state.treeListBackups }
+    if ( this.state.oLMapFlag ) {
+      this.pointLayers && this.pointLayers.map((data) => {
+        data.units && data.units.map((item) => {
+          if (item.id === items.id) {
+            lng = item.lng
+            lat = item.lat
+            _this.setState({
+              roadUnitId: item.id,
+              roadInterId: item.interId,
+              roadNodeNo: item.nodeId,
+              interListHeight: 0
+            })
+            this.searchInputBox.value = item.interName
+            // 查找坐标弹层
+            const overLayer = mapOL.getOverlayById("oLMarker")
+            // 坐标转换
+            const resultLngLat = fromLonLat([lng, lat])
+            // 把浮层显示出来
+            overLayer.setPosition(resultLngLat)
+            mapOL.getView().setCenter(resultLngLat) // 设置中心点
+            const resultP = Promise.resolve(_this.props.getUnitPop(item.id))
+            resultP.then(() => {
+              _this.openInfoWin('', item, '', item.interName)
+            })
+          }
         })
-        const resultP = Promise.resolve(_this.props.getUnitPop(item.id))
-        resultP.then(() => {
-          _this.openInfoWin(_this.map, item, point, item.interName)
-        })
-        marker = point
-      }
-    })
-
-    if (marker && this.map) {
-      this.map.setCenter([item.lng, item.lat])
-      this.searchInputBox.value = item.interName
-      this.setState({ interListHeight: 0 })
-      marker.emit('click', {
-        lnglat: this.map.getCenter()
       })
     } else {
-      message.info('该路口尚未接入')
+      this.pointLayers.map((point) => {
+        if (point.w.extData.id === item.id) {
+          point.setContent("<div class='drawCircle'><div class='inner'></div><div inter-id='" + item.interId + "' id='roadKey" + item.id + "' class='marker-online'></div></div>");
+          _this.setState({
+            roadUnitId: item.id,
+            roadInterId: item.interId,
+            roadNodeNo: item.nodeId,
+          })
+          const resultP = Promise.resolve(_this.props.getUnitPop(item.id))
+          resultP.then(() => {
+            _this.openInfoWin(_this.map, item, point, item.interName)
+          })
+          marker = point
+        }
+      })
+
+      if (marker && this.map) {
+        this.map.setCenter([item.lng, item.lat])
+        this.searchInputBox.value = item.interName
+        this.setState({ interListHeight: 0 })
+        marker.emit('click', {
+          lnglat: this.map.getCenter()
+        })
+      } else {
+        message.info('该路口尚未接入')
+      }
     }
   }
   searchBtnSelect = (event) => {
