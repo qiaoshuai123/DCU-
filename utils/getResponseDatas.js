@@ -40,8 +40,8 @@ axios.interceptors.response.use((response) => {
       window.location.href = 'http://localhost:20204/#/login'
     } else if (process.env.NODE_ENV === 'production') {
       // window.location.href = 'http://192.168.1.213/#/login'
-      window.location.href = 'http://39.100.128.220:8080/#/login'
-      // window.location.href = 'http://53.101.224.151/'
+      // window.location.href = 'http://39.100.128.220:8080/#/login'
+      window.location.href = 'http://53.101.224.151/'
       // window.location.href = 'http://53.101.255.23:8088/index.html#/login'
       // window.location.href = 'http://39.100.128.220:12345/build/index.html#/login'
     }
