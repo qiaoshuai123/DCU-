@@ -365,8 +365,8 @@ class InterworkingHome extends Component {
   hanleSelectInter = (e, items) => {
     const _this = this;
     let marker, lng, lat;
-    if ( this.state.oLMapFlag ){ this.pointLayers = this.state.treeListBackups }
-    if ( this.state.oLMapFlag ) {
+    if (this.state.oLMapFlag) { this.pointLayers = this.state.treeListBackups }
+    if (this.state.oLMapFlag) {
       this.pointLayers && this.pointLayers.map((data) => {
         data.units && data.units.map((item) => {
           if (item.id === items.id) {
@@ -554,7 +554,7 @@ class InterworkingHome extends Component {
             </div>
           </div>
           <div className={styles.InterworkLeft_Title}>
-            <span />DCU点位列表（ <em style={{ fontSize: '20px', color: 'orange' }}>{this.countOnNum && this.countOnNum }</em> <b style={{ margin: '0 3px' }}>/</b> <em>{this.countAllNum && this.countAllNum}</em> ）
+            <span />DCU点位列表（ <em style={{ fontSize: '20px', color: 'orange' }}>{this.countOnNum && this.countOnNum}</em> <b style={{ margin: '0 3px' }}>/</b> <em>{this.countAllNum && this.countAllNum}</em> ）
           </div>
           <CustomTree
             {...this.props}
@@ -599,7 +599,7 @@ class InterworkingHome extends Component {
         <div style={{ width: '100%', height: '100%' }}>
           {this.state.mapPointsData && <OLMapLayers pointDatas={this.state.mapPointsData} oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildIdOlMap} centerPoint={[102.829999, 24.894869]} urlXYZ="http://39.100.128.220:8080/YunNan/KunMing" />}
           {/* { this.state.mapPointsData && <OLMapLayers pointDatas={this.state.mapPointsData} oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildIdOlMap} centerPoint={[102.829999, 24.894869]} urlXYZ="http://192.168.1.123:30001/YunNan/KunMing" /> } */}
-          {/* { this.state.mapPointsData && <OLMapLayers pointDatas={this.state.mapPointsData} oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildIdOlMap} centerPoint={[102.708543, 25.044168187863253]} urlXYZ="http://53.101.224.151/YunNan/KunMing" /> } */}
+          {/* {this.state.mapPointsData && <OLMapLayers pointDatas={this.state.mapPointsData} oLMapFlag={oLMapFlag} getSelectChildId={this.getSelectChildIdOlMap} centerPoint={[102.708543, 25.044168187863253]} urlXYZ="http://53.101.224.151/YunNan/KunMing" />} */}
         </div>
       </div>
     )
